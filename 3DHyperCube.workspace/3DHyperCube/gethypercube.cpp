@@ -1,4 +1,4 @@
-#include "gethypercube.h"
+#include "GetHyperCube.h"
 
 #include <QtGlobal>
 #include <QFile>

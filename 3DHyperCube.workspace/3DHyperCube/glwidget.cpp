@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 
-#include "glwidget.h"
+#include "GLWidget.h"
 #include <QtWidgets>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
@@ -377,20 +377,33 @@ void GLWidget::sliderY2ValueChanged(int value)
 
 void GLWidget::paintGL()
 {
-    glMatrixMode(GL_MODELVIEW);
+
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    QMatrix4x4 m;
-    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
-    m.translate(dx, dy, -10.0f);
-    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-    m.scale(nSca,nSca,nSca);
-    program->setUniformValue("matrix", m);
-    GLdouble modelMatrix[16];
-    GLdouble projMatrix[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+//_____________start_________________
+//    QMatrix4x4 m;
+//    m.setToIdentity();
+//    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
+//    m.translate(dx, dy, -10.0f);
+//    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+//    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+//    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+//    m.scale(nSca,nSca,nSca);
+//    program->setUniformValue("matrix", m);
+//____________end_____________________
+
+    QMatrix4x4 matrix;
+    matrix.translate(dx, dy, -10.0f);
+    matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+    matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    matrix.scale(nSca,nSca,nSca);
+    program->setUniformValue("matrix", projection * matrix);
+
+
+//    GLdouble modelMatrix[16];
+//    GLdouble projMatrix[16];
+//    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
     program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
     program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
@@ -412,6 +425,17 @@ void GLWidget::resizeGL(int width, int height)
 
     ratio=(GLfloat)height/(GLfloat)(width );
     // glViewport(0, 0, (GLint)width, (GLint)height);
+    qreal aspect = qreal(width) / qreal(height ? height : 1);
+
+       // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
+       const qreal zNear = 4.0, zFar = 150.0, fov = 15.0;
+
+       // Reset projection
+       projection.setToIdentity();
+
+       // Set perspective projection
+       //projection.perspective(fov, aspect, zNear, zFar);
+       projection.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
 
 }
 
