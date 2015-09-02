@@ -43,7 +43,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QMouseEvent>
-#include <algorithm>
+#include <GL/glu.h>
 using namespace std;
 
 int cmp(const void *a, const void *b);
@@ -86,9 +86,9 @@ GLWidget::~GLWidget()
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
         delete textures[i];
-    for (int i=0;i<CHNLS;++i)
-        delete[] data[i];
-    delete[] data;
+//    for (int i=0;i<CHNLS;++i)
+//        delete[] data[i];
+//    delete[] data;
     SidesDestructor();
     delete program;
     doneCurrent();
@@ -377,7 +377,7 @@ void GLWidget::sliderY2ValueChanged(int value)
 
 void GLWidget::paintGL()
 {
-
+    glMatrixMode(GL_MODELVIEW);
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     QMatrix4x4 m;
@@ -388,7 +388,9 @@ void GLWidget::paintGL()
     m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
     m.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", m);
-
+    GLdouble modelMatrix[16];
+    GLdouble projMatrix[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
     program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
     program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
@@ -416,6 +418,24 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
+
+
+    //gluUnProject();// http://www.gamedev.ru/code/forum/?id=83558
+
+    GLint  viewport[4];
+    GLdouble modelMatrix[16];
+    GLdouble projMatrix[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble objx;
+    GLdouble objy;
+    GLdouble objz;
+    GLdouble winx = event->pos().x();
+    GLdouble winy = event->pos().y();
+    gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
+int BREAK = 0;
+
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
