@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icon/tab">
+        <file>icons/Open Folder-50.png</file>
+        <file>icons/Exit-50.png</file>
+        <file>icons/Data Sheet-50.png</file>
+        <file>icons/Heat Map-50.png</file>
+    </qresource>
+</RCC>

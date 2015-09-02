@@ -1,0 +1,6 @@
+{
+    "Type" : "FileFormat",
+    "Name" : "AVIRIS Loader",
+    "Description" : "Заголовочные файлы проекта AVIRIS (*.hdr)",
+    "Extinsion" : "*.hdr"
+}
