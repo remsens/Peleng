@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadDataLib", "ReadDataLib\ReadDataLib.vcxproj", "{175AD6F8-AD6A-4C2C-9E54-DFD782D2692B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadDataLibTest", "ReadDataLibTest\ReadDataLibTest.vcxproj", "{65ADA538-D60A-43D9-8FE3-4079414EFFFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{175AD6F8-AD6A-4C2C-9E54-DFD782D2692B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{175AD6F8-AD6A-4C2C-9E54-DFD782D2692B}.Debug|Win32.Build.0 = Debug|Win32
+		{175AD6F8-AD6A-4C2C-9E54-DFD782D2692B}.Release|Win32.ActiveCfg = Release|Win32
+		{175AD6F8-AD6A-4C2C-9E54-DFD782D2692B}.Release|Win32.Build.0 = Release|Win32
+		{65ADA538-D60A-43D9-8FE3-4079414EFFFC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65ADA538-D60A-43D9-8FE3-4079414EFFFC}.Debug|Win32.Build.0 = Debug|Win32
+		{65ADA538-D60A-43D9-8FE3-4079414EFFFC}.Release|Win32.ActiveCfg = Release|Win32
+		{65ADA538-D60A-43D9-8FE3-4079414EFFFC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
