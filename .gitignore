@@ -1,0 +1,14 @@
+/ReadDataLib.workspace/Debug/*
+/ReadDataLib.workspace/ipch/*
+/ReadDataLib.workspace/Release/*
+/ReadDataLib.workspace/ReadDataLib.sdf
+/ReadDataLib.workspace/ReadDataLib.suo
+/ReadDataLib.workspace/ReadDataLib/Debug/*
+/ReadDataLib.workspace/ReadDataLib/Release/*
+/ReadDataLib.workspace/ReadDataLibTest/Debug/*
+/ReadDataLib.workspace/ReadDataLibTest/Release/*
+
+/3DHyperCube.workspace/Debug/*
+/3DHyperCube.workspace/Release/*
+/HyperView.workspace/Debug/*
+/HyperView.workspace/Release/*
