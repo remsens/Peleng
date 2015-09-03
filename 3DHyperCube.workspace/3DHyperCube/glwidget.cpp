@@ -389,7 +389,8 @@ void GLWidget::paintGL()
     m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
     m.scale(nSca,nSca,nSca);
-//    program->setUniformValue("matrix", m);
+
+    program->setUniformValue("matrix", m);
 //____________end_____________________
 
     matrix.setToIdentity();
@@ -398,7 +399,7 @@ void GLWidget::paintGL()
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
     matrix.scale(nSca,nSca,nSca);
-    program->setUniformValue("matrix", projection * matrix);
+   // program->setUniformValue("matrix", projection * matrix);
 
 
 //    GLdouble modelMatrix[16];
@@ -424,7 +425,7 @@ void GLWidget::resizeGL(int width, int height)
 {
 
     ratio=(GLfloat)height/(GLfloat)(width );
-    // glViewport(0, 0, (GLint)width, (GLint)height);
+    glViewport(0, 0, (GLint)width, (GLint)height);
     qreal aspect = qreal(width) / qreal(height ? height : 1);
 
        // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
@@ -467,10 +468,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     gluUnProject(winx,winy,0,modelM,projM,viewport,&objx,&objy,&objz);
     //---------------------------
     QMatrix4x4 mInvrtd = m.inverted();
+    QMatrix4x4 mInvrtdTest = (matrix * projection).inverted();//m.inverted();
     GLfloat winX,winY;
     winX = ((float)winx/viewport[2]*2)-1;
     winY = ((float)(viewport[3]-winy)/viewport[3]*2)-1;
-
+//    winX = ((float)winx/1006*2)-1;
+//    winY = ((float)(661-winy)/661*2)-1;
     QVector4D mouse3D= mInvrtd * QVector4D(winX,winY,-1,1);
 
 
