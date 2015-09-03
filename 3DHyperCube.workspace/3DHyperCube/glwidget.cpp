@@ -382,17 +382,17 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //_____________start_________________
 //    QMatrix4x4 m;
-//    m.setToIdentity();
-//    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
-//    m.translate(dx, dy, -10.0f);
-//    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-//    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-//    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-//    m.scale(nSca,nSca,nSca);
+    m.setToIdentity();
+    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
+    m.translate(dx, dy, -10.0f);
+    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    m.scale(nSca,nSca,nSca);
 //    program->setUniformValue("matrix", m);
 //____________end_____________________
 
-    QMatrix4x4 matrix;
+    matrix.setToIdentity();
     matrix.translate(dx, dy, -10.0f);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
@@ -428,13 +428,13 @@ void GLWidget::resizeGL(int width, int height)
     qreal aspect = qreal(width) / qreal(height ? height : 1);
 
        // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-       const qreal zNear = 4.0, zFar = 150.0, fov = 15.0;
+       const qreal zNear = 1.0, zFar = 150.0, fov = 15.0;
 
        // Reset projection
        projection.setToIdentity();
 
        // Set perspective projection
-       //projection.perspective(fov, aspect, zNear, zFar);
+     //  projection.perspective(fov, aspect, zNear, zFar);
        projection.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
 
 }
@@ -457,8 +457,26 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     GLdouble objz;
     GLdouble winx = event->pos().x();
     GLdouble winy = event->pos().y();
-    gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
-int BREAK = 0;
+    GLdouble modelM[16];
+    GLdouble projM[16];
+    for(int i = 0; i < 16; ++i)
+        modelM[i] = (GLdouble)matrix.constData()[i];
+    for(int i = 0; i < 16; ++i)
+        projM[i] = (GLdouble)projection.constData()[i];
+    //gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
+    gluUnProject(winx,winy,0,modelM,projM,viewport,&objx,&objy,&objz);
+    //---------------------------
+    QMatrix4x4 mInvrtd = m.inverted();
+    GLfloat winX,winY;
+    winX = ((float)winx/viewport[2]*2)-1;
+    winY = ((float)(viewport[3]-winy)/viewport[3]*2)-1;
+
+    QVector4D mouse3D= mInvrtd * QVector4D(winX,winY,-1,1);
+
+
+     int BREAK = 0;
+    BREAK=1;
+
 
 }
 
