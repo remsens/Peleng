@@ -1,15 +1,17 @@
 #include "Context.h"
 
-#include "Exception.h"
-#include "Util.h"
+#include "GenericExc.h"
+#include <QString>
+
+//#include "Util.h"
 std::string Context::MakeDefaultErrorDescription()
 {
-	return u::a2u("Внутренняя ошибка");
+    return "Внутренняя ошибка";
 }
 
 std::string Context::MakeCreateErrorDescription()
 {
-	return u::a2u("Контекст не создан");
+    return "Контекст не создан";
 }
 
 const u::uint32 Context::SuccessErrorCode = 0;
@@ -39,23 +41,23 @@ void Context::ClearError()
 	m_errorDescription.clear();
 }
 
-void Context::SetError(const std::exception& ex)
+void Context::SetError(const GenericExc& ex)
 {
-	const Exception* filesErr = dynamic_cast<const Exception*>(&ex);
+    const GenericExc* filesErr = dynamic_cast<const GenericExc*>(&ex);
 	if (filesErr != 0)
 	{
-		SetError(filesErr->GetDescription(), filesErr->GetCode());
+        SetError(filesErr->GetWhat().toStdString(), filesErr->GetErr());
 	}
 	else
 	{
-		SetError(ex.what() != 0 ? ex.what() : "");
+        SetError(ex.GetWhat() != 0 ? ex.GetWhat() : "");
 	}
 }
 
 void Context::SetError(std::string description, u::uint32 code)
 {
 	m_errorCode = (code != SuccessErrorCode ? code : DefaultErrorCode);
-	m_errorDescription = (!description.empty() ? u::a2u(description) : DefaultErrorDescription);
+    m_errorDescription = (!description.empty() ? description : DefaultErrorDescription);
 }
 
 u::uint32 Context::GetErrorCode() const

@@ -1,1 +1,0 @@
-changeset = "#ifndef REVISION_H\n#define REVISION_H\n\n#define REVISION {rev}\n\n#endif\n"

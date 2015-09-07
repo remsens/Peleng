@@ -25,14 +25,13 @@ public:
 	u::uint8 GetBytesInElements();
 	
 	u::uint32 GetSizeCube() const; // в байтах
-	void GetDataCube(u::ptr* data);
+    u::ptr* GetDataCube();
 	
 	u::uint32 GetSizeSpectrum();
 	void GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data);
 
 	u::uint32 GetSizeChannel();
 	void GetDataChannel(u::uint32 channel, u::ptr data);
-;
 
 
 private:

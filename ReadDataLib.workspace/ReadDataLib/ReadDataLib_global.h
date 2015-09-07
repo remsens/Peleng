@@ -1,0 +1,12 @@
+#ifndef READDATALIB_GLOBAL_H
+#define READDATALIB_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(READDATALIB_LIBRARY)
+#  define READDATALIB_API_EXPORT Q_DECL_EXPORT
+#else
+#  define READDATALIB_API_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // READDATALIB_GLOBAL_H
