@@ -1,33 +1,57 @@
 #include "avirisreadplugin.h"
 
-#include <QDebug>
+#include "../../../Library/GenericExc.h"
 
+void AvirisReadPlugin::ExceptionLibrary()
+{
+    ReadData::Error err = ReadDataLib_GetLastError(m_ctx);
+    MakeException(QObject::tr(err.message), err.code);
+}
 
+void AvirisReadPlugin::MakeException(QString errMessage, u::uint32 errCode)
+{
+    if (m_exception != NULL) {
+        delete m_exception;
+    }
+    m_exception = new GenericExc(errMessage, errCode);
+}
+
+GenericExc* AvirisReadPlugin::GetException()
+{
+    return m_exception;
+}
 
 AvirisReadPlugin::AvirisReadPlugin(QObject *parent) :
     QObject(parent)
 {
-    ctx = 0;
-    ReadDataLib_CreateContex(ctx);
+    m_exception = new GenericExc(QObject::tr("Плагин работает без ошибок"), 0);
+    m_ctx = 0;
+    bool res = ReadDataLib_CreateContex(m_ctx);
+    if (!res)
+    {
+        ExceptionLibrary();
+    }
 }
 
 AvirisReadPlugin::~AvirisReadPlugin()
 {
-    ReadDataLib_DestroyContex(ctx);
+    ReadDataLib_DestroyContex(m_ctx);
+    delete m_exception;
 }
 
-
-void AvirisReadPlugin::LoadFile(QString FileName)
+void AvirisReadPlugin::LoadFile(QString fileName)
 {
-
-    ReadDataLib_LoadFile(ctx, FileName.toStdString().c_str());
-    hyperCube = ReadDataLib_CreateHyperCube(ctx);    
-
+    u::logic res = ReadDataLib_LoadFile(m_ctx, fileName.toStdString().c_str());
+    if (!res)
+    {
+        ExceptionLibrary();
+    }
+    m_hyperCube = (HyperCube*)ReadDataLib_CreateHyperCube(m_ctx);
 }
 
 int AvirisReadPlugin::getProgress()
 {      
-    return ReadDataLib_GetProgress(ctx);
+    return ReadDataLib_GetProgress(m_ctx);
 }
 
 QString AvirisReadPlugin::getFormatDescription()
@@ -37,19 +61,16 @@ QString AvirisReadPlugin::getFormatDescription()
 
 HyperCube *AvirisReadPlugin::getCube()
 {
-
-    return  hyperCube;
-
+    return  m_hyperCube;
 }
 
 QList<double> AvirisReadPlugin::getListOfChannel()
 {
-
-    return QList<double>::fromStdList(ReadDataLib_GetListChannels(ctx));
+    return QList<double>::fromStdList(ReadDataLib_GetListChannels(m_ctx));
 }
 
 
 void AvirisReadPlugin::cancel()
 {
-   // ReadDataLib_BreakOperation(ctx);
+    ReadDataLib_BreakOperation(m_ctx);
 }

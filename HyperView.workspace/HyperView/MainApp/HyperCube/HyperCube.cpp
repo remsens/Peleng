@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
-#include <stdexcept>
+#include "GenericExc.h"
 
 HyperCube::HyperCube(u::ptr* data, u::uint32 sizeCube, InfoData& infoData)
 	: m_dataCube(data)
 	, m_sizeCube(sizeCube) 
 	, m_infoData(infoData)
-	, m_break(false) {
+{
 }
 
 HyperCube::~HyperCube() {
@@ -36,35 +36,29 @@ u::uint32 HyperCube::GetSizeCube() const {
 	return m_sizeCube;
 }
 
-void HyperCube::GetDataCube(u::ptr* data) {
-	try {
-		for (int i = 0; i < m_infoData.bands; i++) {
-			data[i] = m_dataCube[i];
-		}
-	} catch (...) {
-		throw std::runtime_error("Неверно выделена память под блок данных");
-	}
+u::ptr* HyperCube::GetDataCube() {
+    return m_dataCube;
 }
 
 u::uint32 HyperCube::GetSizeSpectrum() {
 	return m_infoData.bands*m_infoData.bytesType;
 }
 
-u::uint32 HyperCube::GetProgress() {
-	return m_progress;
-}
-
 void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data) {
 	if (x > m_infoData.lines) {
-		throw std::runtime_error("Неверно задана коодината X");
+        throw GenericExc("Неверно задана коодината X");
 	}
 	if (y > m_infoData.samples) {
-		throw std::runtime_error("Неверно задана коодината Y");
+        throw GenericExc("Неверно задана коодината Y");
 	}
-	u::uint32 shift = (x*m_infoData.bands*m_infoData.samples + y*m_infoData.bands)*m_infoData.bytesType;
-	/*for (int i = 0; i < m_infoData.bands; i++) {
-		memcpy(data, m_dataCube[i][shift], m_infoData.bytesType);
-	}*/
+	u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
+	try {
+		for (int i = 0; i < m_infoData.bands; i++) {
+			memcpy((u::int8*)data + i*m_infoData.bytesType, (u::int8*)m_dataCube[i] + shift, m_infoData.bytesType);
+		}
+	} catch(...) {
+        throw GenericExc("Неверно выделен размер под блок данных");
+	}
 }
 
 
@@ -73,20 +67,12 @@ u::uint32 HyperCube::GetSizeChannel() {
 }
 
 void HyperCube::GetDataChannel(u::uint32 channel, u::ptr data) {
-	u::uint32 i = 0;
 	if (channel > m_infoData.bands) {
-		throw std::runtime_error("Неверно введен канал");
+        throw GenericExc("Неверно введен канал");
 	}
-	memcpy(data, m_dataCube[channel], GetSizeChannel());
-}
-
-void HyperCube::Break() {
-	m_break = true;
-}
-
-u::uint32 HyperCube::GetSizeBorder() {
-	return 0;
-}
-void HyperCube::GetBorderData(u::ptr data) {
-
+	try {
+		memcpy(data, m_dataCube[channel], GetSizeChannel());
+	} catch (...) {
+        throw GenericExc("Неверно выделен размер под блок данных");
+	}
 }

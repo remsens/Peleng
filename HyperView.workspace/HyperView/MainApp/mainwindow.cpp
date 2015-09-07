@@ -160,8 +160,6 @@ void MainWindow::LoadFile()
 
 
         cube= FileFormatPluginList[0]->getCube();
-        //qDebug() << cube->GetColumns();
-
 
 
         QList<double> list = FileFormatPluginList[0]->getListOfChannel();
@@ -191,7 +189,7 @@ bool MainWindow::loadFilePlugin()
     QDir pluginsDir(qApp->applicationDirPath());
 #if defined(Q_OS_WIN)
     if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-        pluginsDir.cdUp();
+       // pluginsDir.cdUp();
 #elif defined(Q_OS_MAC)
     if (pluginsDir.dirName() == "MacOS") {
         pluginsDir.cdUp();
@@ -199,33 +197,28 @@ bool MainWindow::loadFilePlugin()
         pluginsDir.cdUp();
     }
 #endif
-    pluginsDir.cd("plugins");
+    //pluginsDir.cd("plugins");
 
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         if (!fileName.endsWith(".dll")) continue;
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
-
         QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
-
-
         if (MetaData["Type"].toString().contains("FileFormat")) {
-        qDebug() << pluginLoader.instance();
-        QObject *plugin = pluginLoader.instance();
-        if (plugin) {
-
-
+        //qDebug() << pluginLoader.instance();
+        try {
+            QObject *plugin = pluginLoader.instance();
+        if (plugin)
+        {
             FileFormatPluginList.append(qobject_cast<FileReadInterface *>(plugin));
            // return true;
-
         }
+        }
+            catch (...) {
+                qDebug() << pluginLoader.errorString();
+            }
 
         }
     }
-
-
-
-
-
     return false;
 }
 
