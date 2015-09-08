@@ -1,106 +1,85 @@
-#define READDATALIB_EXPORT
-
 #include "ReadDataLib.h"
 #include "Context.h"
-#include "Version.h"
+#include "FilesOperation.h"
 
-#define BEGIN_COMMAND               \
-	if (ctx == 0)                   \
-	{                               \
-	return false;               \
-	}                               \
-	\
-	Context& rctx = *(Context*)ctx; \
-	rctx.ClearError();              \
-	try
-
-#define END_COMMAND                  \
-	catch (const std::exception& ex) \
-	{                                \
-	rctx.SetError(ex);           \
-	return false;                \
-	}
-
-READDATALIB_API u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
-	try
-	{
-		ctx = new Context();
-	}
-	catch (const std::exception&)
-	{
-		ctx = 0;
-	}
-	return (ctx != 0);
+READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
+    try
+    {
+        ctx = new Context();
+    }
+    catch (const std::exception&)
+    {
+        ctx = 0;
+    }
+    return (ctx != 0);
 }
 
-READDATALIB_API u::logic ReadDataLib_LoadFile(u::ptr& ctx, u::cstr headerFileName) {
-	BEGIN_COMMAND
-	{
-		return rctx.GetFilesOperObject()->LoadFile(headerFileName);
-	}
-	END_COMMAND;
-}
-//! Удаление контекста выполнения программы
-//! @param ctx - указатель на контекст выполнения программы
-READDATALIB_API void ReadDataLib_DestroyContex(u::ptr ctx) {
-	if (ctx != 0)
-	{
-		delete (Context*)ctx;
-	}
+READDATALIB_API_EXPORT u::logic ReadDataLib_LoadFile(u::ptr& ctx, u::cstr headerFileName) {
+    if (ctx != 0)
+    {
+        Context& rctx = *(Context*)ctx;
+        rctx.ClearError();
+        return rctx.GetFilesOperObject()->LoadFile(headerFileName);
+    }
+    else
+    {
+        return false;
+    }
 }
 
-//! Функция получения версии
-//! @return - версия библиотеки
-READDATALIB_API ReadData::Version ReadDataLib_GetVersion() {
-	ReadData::Version version;
-	version.major = MAJOR_VERSION;
-	version.minor = MINOR_VERSION;
-	version.revision = REVISION_VERSION;
-	return version;
+READDATALIB_API_EXPORT void ReadDataLib_DestroyContex(u::ptr ctx) {
+    if (ctx != 0)
+    {
+        delete (Context*)ctx;
+    }
 }
 
-READDATALIB_API HyperCube* ReadDataLib_CreateHyperCube(u::ptr ctx) {
-	if (ctx == 0) {
-		return NULL;
-	} else {
-		Context& rctx = *(Context*)ctx;
-		rctx.ClearError();
-		return rctx.GetFilesOperObject()->CreateHyperCube();
-	}
+READDATALIB_API_EXPORT HyperCube* ReadDataLib_CreateHyperCube(u::ptr ctx) {
+    if (ctx == 0) {
+        return NULL;
+    } else {
+        Context& rctx = *(Context*)ctx;
+        rctx.ClearError();
+        return rctx.GetFilesOperObject()->CreateHyperCube();
+    }
 }
 
-//! Получение ошибки выполнения программы
-//! @return - объект ошибки
-READDATALIB_API ReadData::Error ReadDataLib_GetLastError(u::ptr ctx) {
-	ReadData::Error error;
-	Context& rctx = *(Context*)ctx;
-	error.code = rctx.GetErrorCode();
-	error.message = rctx.GetErrorDescription().c_str();
-	return error;
+READDATALIB_API_EXPORT ReadData::Error ReadDataLib_GetLastError(u::ptr ctx) {
+    ReadData::Error error;
+    Context& rctx = *(Context*)ctx;
+    error.code = rctx.GetErrorCode();
+    error.message = rctx.GetErrorDescription().c_str();
+    return error;
 }
 
-//! Функция получения текущего состояния прогресса работы
-//! @return - прогресс выполнения в процентах
-READDATALIB_API double ReadDataLib_GetProgress(u::ptr ctx) {
-	BEGIN_COMMAND
-	{
-		return rctx.GetFilesOperObject()->GetProgress();
-	}
-	END_COMMAND;
+READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx) {
+    if (ctx != 0)
+    {
+        Context& rctx = *(Context*)ctx;
+        rctx.ClearError();
+        double progress = rctx.GetFilesOperObject()->GetProgress();
+        //std::cout << progress << std::endl;
+        return progress;
+    } else
+    {
+        return 0;
+    }
 }
 
-READDATALIB_API std::list<double> ReadDataLib_GetListChannels(u::ptr ctx) {
-	if (ctx != 0) {
-		Context& rctx = *(Context*)ctx;
-		rctx.ClearError();
-		return rctx.GetFilesOperObject()->GetListChannels();
-	}
+READDATALIB_API_EXPORT std::list<double> ReadDataLib_GetListChannels(u::ptr ctx) {
+    if (ctx != 0)
+    {
+        Context& rctx = *(Context*)ctx;
+        rctx.ClearError();
+        return rctx.GetFilesOperObject()->GetListChannels();
+    }
 }
 
-READDATALIB_API u::logic ReadDataLib_BreakOperation(u::ptr ctx) {
-	BEGIN_COMMAND
-	{
-		rctx.GetFilesOperObject()->SetBreak();
-	}
-	END_COMMAND;
+READDATALIB_API_EXPORT void ReadDataLib_BreakOperation(u::ptr ctx) {
+    if (ctx != 0)
+    {
+        Context& rctx = *(Context*)ctx;
+        rctx.ClearError();
+        rctx.GetFilesOperObject()->SetBreak();
+    }
 }

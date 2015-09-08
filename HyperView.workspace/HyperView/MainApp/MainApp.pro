@@ -15,13 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     HyperCube/HyperCube.cpp \
-    QCustomPlot/qcustomplot.cpp
+    QCustomPlot/qcustomplot.cpp \
+    HyperCube/GenericExc.cpp
 
 HEADERS  += mainwindow.h \
     HyperCube/HyperCube.h \
     Interfaces/filereadinterface.h \
     Types.h \
-    QCustomPlot/qcustomplot.h
+    QCustomPlot/qcustomplot.h \
+    HyperCube/GenericExc.h
 
 FORMS    += mainwindow.ui
 

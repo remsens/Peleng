@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <boost/lexical_cast.hpp>
-#include <boost/locale/util.hpp>
+#include "GenericExc.h"
+#include <QString>
 
 FilesOperation::FilesOperation() {
 	m_break = false;
@@ -11,6 +11,7 @@ FilesOperation::FilesOperation() {
 
 FilesOperation::~FilesOperation() {
 	delete [] m_buffer;
+    delete m_hyperCube;
 }
 
 u::logic FilesOperation::LoadFile(std::string headerName) {
@@ -33,8 +34,7 @@ HyperCube* FilesOperation::CreateHyperCube() {
 	infoStruct.bytesType = GetNumberOfBytesFromData(m_dataType);
 	infoStruct.lines = m_lines;
 	infoStruct.samples = m_samples;
-	hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(m_buffer), GetFileSize(m_fileName), infoStruct);
-	return hyperCube;
+	return m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(m_buffer), GetFileSize(m_fileName), infoStruct);
 }
 
 double FilesOperation::GetProgress() const {
@@ -58,9 +58,9 @@ void FilesOperation::SetFileName(const std::string headerName) {
 }
 
 u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
-	std::ifstream file(fileName, std::ios_base::binary);
+    std::ifstream file(fileName.c_str(), std::ios_base::binary);
 	if (file == NULL) {
-		throw std::runtime_error("Невозможно открыть файл данных");
+        throw GenericExc("Невозможно открыть файл данных");
 		return false;
 	}
 	int size = 0;
@@ -79,7 +79,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 			m_buffer[i] = new u::uint8[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
 		}
 	} catch (...) {
-		throw std::runtime_error("Невозможно выделить память");
+        throw GenericExc("Невозможно выделить память");
 	}
 	u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
@@ -90,7 +90,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	FILE* pfile;
 	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
 	{
-		throw std::runtime_error("Невозможно открыть файл данных");
+        throw GenericExc("Невозможно открыть файл данных");
 		return false;
 	}
 	for (int i = 0; i < bcnt; i++) 
@@ -115,7 +115,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 					m_progress = (double)((double)i/bcnt)*100;
 				} catch (...) 
 				{
-					throw std::runtime_error("Ошибка чтения файла данных");
+                    throw GenericExc("Ошибка чтения файла данных");
 					return false;
 				}
 			}
@@ -174,7 +174,7 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 	pFile = fopen (headername.c_str() , "r");
 	if (pFile == NULL) 
 	{
-		throw std::runtime_error("Невозможно открыть файл заголовок");
+        throw GenericExc("Невозможно открыть файл заголовок");
 	}
 	else
 	{
@@ -216,16 +216,17 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 								double value;
 								try
 								{
-									value = boost::lexical_cast<double>(strOut);
+                                    QString str(strOut);
+                                    value = str.toDouble();//boost::lexical_cast<double>(strOut);
 								}
-								catch (boost::bad_lexical_cast const&)
+                                catch (...)
 								{
 									value = 0;
 								}
 								m_listChannel.push_back(value);
 							} catch (...)
 							{
-								throw std::runtime_error("Неверный формат данных");
+                                throw GenericExc("Неверный формат данных");
 							}
 						}
 					}
@@ -281,10 +282,11 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 u::uint32 FilesOperation::ConvertStrtoInt(const char* data) {
 	try 
 	{
-		return boost::lexical_cast<int>(data);
-	} catch (boost::bad_lexical_cast const&)
+        QString str(data);
+        return str.toInt();//boost::lexical_cast<int>(data);
+    } catch (...)
 	{
-		throw std::runtime_error("Неверный формат данных");
+        throw GenericExc("Неверный формат данных");
 	}
 }
 

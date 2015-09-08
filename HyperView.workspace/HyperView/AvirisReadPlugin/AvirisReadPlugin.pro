@@ -11,10 +11,12 @@ TEMPLATE = lib
 
 DEFINES += AVIRISREADPLUGIN_LIBRARY
 
-SOURCES += avirisreadplugin.cpp
+SOURCES += avirisreadplugin.cpp \
+    ../../../Library/GenericExc.cpp
 
 HEADERS += avirisreadplugin.h \
-    ../MainApp/Interfaces/filereadinterface.h
+    ../MainApp/Interfaces/filereadinterface.h \
+    ../../../Library/GenericExc.h
 
 unix {
     target.path = /usr/lib
@@ -34,7 +36,9 @@ DEPENDPATH += $$PWD/../MainApp/
 INCLUDEPATH += $$PWD/../MainApp/HyperCube
 DEPENDPATH += $$PWD/../MainApp/HyperCube
 
+INCLUDEPATH += $$PWD/../../../Library
+DEPENDPATH += $$PWD/../../../Library
 
-win32: LIBS += -L$$PWD//ReadDataAviris// -lReadDataLib
 INCLUDEPATH += $$PWD/ReadDataAviris
 DEPENDPATH += $$PWD/ReadDataAviris
+LIBS += $$OUT_PWD/Debug/ReadDataLib.dll

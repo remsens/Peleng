@@ -78,7 +78,7 @@ private:
 	u::uint32 m_byteorder;
 	u::uint8** m_buffer;
 	u::logic m_break;
-	HyperCube* hyperCube;
+	HyperCube* m_hyperCube;
 
 };
 

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream>
-
+#include "GenericExc.h"
 
 HyperCube::HyperCube(u::ptr* data, u::uint32 sizeCube, InfoData& infoData)
 	: m_dataCube(data)
@@ -36,14 +36,8 @@ u::uint32 HyperCube::GetSizeCube() const {
 	return m_sizeCube;
 }
 
-void HyperCube::GetDataCube(u::ptr* data) {
-	try {
-		for (int i = 0; i < m_infoData.bands; i++) {
-			data[i] = m_dataCube[i];
-		}
-	} catch (...) {
-		throw std::runtime_error("Неверно выделена память под блок данных");
-	}
+u::ptr* HyperCube::GetDataCube() {
+    return m_dataCube;
 }
 
 u::uint32 HyperCube::GetSizeSpectrum() {
@@ -52,10 +46,10 @@ u::uint32 HyperCube::GetSizeSpectrum() {
 
 void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data) {
 	if (x > m_infoData.lines) {
-		throw std::runtime_error("Неверно задана коодината X");
+        throw GenericExc("Неверно задана коодината X");
 	}
 	if (y > m_infoData.samples) {
-		throw std::runtime_error("Неверно задана коодината Y");
+        throw GenericExc("Неверно задана коодината Y");
 	}
 	u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
 	try {
@@ -63,7 +57,7 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data) {
 			memcpy((u::int8*)data + i*m_infoData.bytesType, (u::int8*)m_dataCube[i] + shift, m_infoData.bytesType);
 		}
 	} catch(...) {
-		throw std::runtime_error("Неверно выделен размер под блок данных");
+        throw GenericExc("Неверно выделен размер под блок данных");
 	}
 }
 
@@ -74,11 +68,11 @@ u::uint32 HyperCube::GetSizeChannel() {
 
 void HyperCube::GetDataChannel(u::uint32 channel, u::ptr data) {
 	if (channel > m_infoData.bands) {
-		throw std::runtime_error("Неверно введен канал");
+        throw GenericExc("Неверно введен канал");
 	}
 	try {
 		memcpy(data, m_dataCube[channel], GetSizeChannel());
 	} catch (...) {
-		throw std::runtime_error("Неверно выделен размер под блок данных");
+        throw GenericExc("Неверно выделен размер под блок данных");
 	}
 }

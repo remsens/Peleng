@@ -5,8 +5,9 @@
 #include "../MainApp/Interfaces/filereadinterface.h"
 #include "ReadDataAviris/ReadDataLib.h"
 
-
-
+#include <QLibrary>
+#include "../../../Library/Types.h"
+#include "../../../Library/GenericExc.h"
 
 class AvirisReadPlugin : public QObject, public  FileReadInterface
 {
@@ -19,19 +20,24 @@ public:
     ~AvirisReadPlugin();
 
 private:
-    u::ptr ctx;
-
-    HyperCube* hyperCube;
-
+    u::ptr m_ctx;
+    QLibrary* m_lib;
+    HyperCube* m_hyperCube;
+    GenericExc* m_exception;
     void LoadFile(QString FileName);
     int getProgress();
     QString getFormatDescription();
     HyperCube* getCube();
     QList<double> getListOfChannel();
+    GenericExc* GetException();
 
+
+    void ExceptionLibrary();
+    void MakeException(QString errMessage, u::uint32 errCode);
     // FileReadInterface interface
 public:
     void cancel();
+
 };
 
 #endif // AVIRISREADPLUGIN_H
