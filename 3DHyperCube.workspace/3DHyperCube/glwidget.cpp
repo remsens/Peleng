@@ -38,7 +38,7 @@
 **
 ****************************************************************************/
 
-#include "glwidget.h"
+#include "GLWidget.h"
 #include <QtWidgets>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
@@ -77,7 +77,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
-    rotateBy(200,400,0);
+   // rotateBy(200,400,0);
 }
 
 GLWidget::~GLWidget()
@@ -86,9 +86,7 @@ GLWidget::~GLWidget()
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
         delete textures[i];
-//    for (int i=0;i<CHNLS;++i)
-//        delete[] data[i];
-//    delete[] data;
+
     SidesDestructor();
     delete program;
     doneCurrent();
@@ -176,7 +174,7 @@ void GLWidget::sliderCh1ValueChanged(int value)// скольжение по ка
         value = Ch1;
     }
 
-    float dcH = (float)2/CHNLS; //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
+    float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
     float newVal = -1 + value * dcH;
 
     coords[0][0][1] = newVal;//первый вариант
@@ -210,8 +208,8 @@ void GLWidget::sliderCh2ValueChanged(int value)// скольжение по ка
         Ch2 = Ch1+1;
         value = Ch2;
     }
-    float dcH = (float)2/CHNLS; //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
-    float invert = CHNLS - value;
+    float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
+    float invert = CHNLS-1 - value;
     float newVal = 1 - invert * dcH;
     coords[0][2][1] = newVal;
     coords[0][3][1] = newVal;
@@ -245,7 +243,7 @@ void GLWidget::sliderX1ValueChanged(int value)// скольжение по ст�
         R1 = R2-1;
         value = R1;
     }
-    float dx = (float)2*kT/ROWS; //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
+    float dx = (float)2*kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
     float newVal = -kT + value * dx;
     coords[0][1][0] = newVal;
     coords[0][2][0] = newVal;
@@ -276,8 +274,8 @@ void GLWidget::sliderX2ValueChanged(int value)// скольжение по ст�
         R2 = R1+1;
         value = R2;
     }
-    float dx = (float)2 * kT/ROWS; //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
-    float invert = ROWS - value;
+    float dx = (float)2 * kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
+    float invert = ROWS-1 - value;
     float newVal = kT - invert * dx;
     coords[0][0][0] = newVal;
     coords[0][3][0] = newVal;
@@ -311,7 +309,7 @@ void GLWidget::sliderY1ValueChanged(int value)
         C1 = C2-1;
         value = C1;
     }
-    float dCol = (float)2/COLS; //единица столбца гиперкуба имеем длину dCol в координатах OpenGL куба
+    float dCol = (float)2/(COLS-1); //единица столбца гиперкуба имеем длину dCol в координатах OpenGL куба
     float newVal = -1 + value * dCol;
     //    float coords[6][4][3] = {
     //                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
@@ -350,8 +348,8 @@ void GLWidget::sliderY2ValueChanged(int value)
         C2 = C1+1;
         value = C2;
     }
-    float dCol = (float)2/COLS;
-    float invert = COLS - value;
+    float dCol = (float)2/(COLS-1);
+    float invert = COLS-1 - value;
     float newVal = 1 - invert * dCol;
     coords[1][2][2] = newVal;
     coords[1][3][2] = newVal;
@@ -377,23 +375,37 @@ void GLWidget::sliderY2ValueChanged(int value)
 
 void GLWidget::paintGL()
 {
-    glMatrixMode(GL_MODELVIEW);
+
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    QMatrix4x4 m;
-    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
-    m.translate(dx, dy, -10.0f);
-    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-    m.scale(nSca,nSca,nSca);
-    program->setUniformValue("matrix", m);
-    GLdouble modelMatrix[16];
-    GLdouble projMatrix[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+//_____________start_________________
+//    QMatrix4x4 m;
+//    m.setToIdentity();
+//    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
+//    m.translate(dx, dy, -10.0f);
+//    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+//    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+//    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+//    m.scale(nSca,nSca,nSca);
+
+//    program->setUniformValue("matrix", m);
+//____________end_____________________
+
+    matrix.setToIdentity();
+    matrix.translate(dx, dy, -4.0f); //было -10
+    matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+    matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    matrix.scale(nSca,nSca,nSca);
+    program->setUniformValue("matrix", projection * matrix);
+
+
+//    GLdouble modelMatrix[16];
+//    GLdouble projMatrix[16];
+//    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
     program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
-    program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));
+    program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));//5
     program->setAttributeBuffer(PROGRAM_TEXCOORD_ATTRIBUTE, GL_FLOAT, 3 * sizeof(GLfloat), 2, 5 * sizeof(GLfloat));
 
     for (int i = 0; i < 6; ++i) {
@@ -410,9 +422,26 @@ void GLWidget::paintGL()
 void GLWidget::resizeGL(int width, int height)
 {
 
-    ratio=(GLfloat)height/(GLfloat)(width );
-    // glViewport(0, 0, (GLint)width, (GLint)height);
+//    ratio=(GLfloat)height/(GLfloat)(width );
+//    glViewport(0, 0, (GLint)width, (GLint)height);
+//    projection.setToIdentity();
+//    projection.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
 
+
+
+    //-------------------------------------------------------------
+    qreal aspect = qreal(width) / qreal(height ? height : 1);
+
+    // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
+    const qreal zNear = 1.0, zFar = 105.0, fov = 30.0;
+
+    // Reset projection
+    projection.setToIdentity();
+
+    // Set perspective projection
+    projection.perspective(fov, aspect, zNear, zFar);
+
+        int stop = 1;
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -421,20 +450,46 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 
     //gluUnProject();// http://www.gamedev.ru/code/forum/?id=83558
-
-    GLint  viewport[4];
-    GLdouble modelMatrix[16];
-    GLdouble projMatrix[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    makeCurrent();
+    GLint  viewport[4];  
     glGetIntegerv(GL_VIEWPORT,viewport);
     GLdouble objx;
     GLdouble objy;
     GLdouble objz;
-    GLdouble winx = event->pos().x();
-    GLdouble winy = event->pos().y();
-    gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
-int BREAK = 0;
+    GLdouble winx = event->x();
+    GLdouble winy = viewport[3] - event->y();
+
+    GLdouble modelM[16];
+    GLdouble projM[16];
+    for(int i = 0; i < 16; ++i){
+        modelM[i] = matrix.constData()[i];
+        projM[i] = projection.constData()[i];
+    }
+
+    float depth = -99;
+
+    glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+    //gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
+    gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
+    doneCurrent();
+    objx *=5;// ПОЧЕМУ????????????????????
+    objy*=5;//костыли
+    objz*=5;//костыли
+    //----------------2ой способ-----------
+    QMatrix4x4 mInvrtd = m.inverted();
+    QMatrix4x4 mInvrtdTest = (matrix * projection).inverted();//m.inverted();
+    GLfloat winX,winY;
+    winX = ((float)winx/viewport[2]*2)-1;
+    winY = ((float)(viewport[3]-winy)/viewport[3]*2)-1;
+//    winX = ((float)winx/1006*2)-1;
+//    winY = ((float)(661-winy)/661*2)-1;
+    QVector4D mouse3D= mInvrtd * QVector4D(winX,winY,-1,1);
+
+
+     int BREAK = 0;
+    BREAK=1;
+
 
 }
 

@@ -41,9 +41,9 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QtWidgets>
-#include "mainwindow.h"
+#include "MainWindow.h"
 
-#include "glwidget.h"
+#include "GLWidget.h"
 
 int main(int argc, char *argv[])
 {

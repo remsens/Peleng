@@ -6,8 +6,8 @@
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_MAINWINDOWMY_H
-#define UI_MAINWINDOWMY_H
+#ifndef UI_MAINWINDOW3DCUBE_H
+#define UI_MAINWINDOW3DCUBE_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -22,7 +22,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include "glwidget.h"
+#include "GLWidget.h"
 #include "HyperCube.h"
 
 QT_BEGIN_NAMESPACE

@@ -46,7 +46,7 @@
 #include <QOpenGLBuffer>
 #include "qcustomplot.h"
 //#include "HyperCube.h"
-#include "gethypercube.h"
+#include "GetHyperCube.h"
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
@@ -112,7 +112,9 @@ private:
     int xRot;
     int yRot;
     int zRot;
-    QMatrix4x4 projection;
+    QMatrix4x4 projection;//попытка использовать раздельные матрицы
+    QMatrix4x4 m;
+    QMatrix4x4 matrix;
     GLfloat ratio; //отношение высоты окна к ширине
     GLfloat nSca; // переменная отвечает за масштабирование обьекта
     GLfloat dx,dy; // для трансляции матрицы (сдвиг куба)
