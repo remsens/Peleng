@@ -45,5 +45,6 @@ void GetHyperCube::CreateHyperCube()
         fileArr[j].close();
     }
     m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(data), infocube.samples*infocube.bytesType*infocube.lines*infocube.bands, infocube);
+
 }
 

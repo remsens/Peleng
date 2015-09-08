@@ -615,10 +615,11 @@ void GLWidget::makeObject()
 
 void GLWidget::loadData(HyperCube *ptrCube)
 {
-    CHNLS = (int)ptrCube->GetChannels();
+    CHNLS = (int)ptrCube->GetCountofChannels();
     COLS = (int)ptrCube->GetColumns();
     ROWS = (int)ptrCube->GetLines();
     data = (qint16**)ptrCube->GetDataCube();
+
 }
 void GLWidget::SidesDestructor()
 {

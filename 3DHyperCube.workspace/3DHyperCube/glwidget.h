@@ -45,7 +45,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include "qcustomplot.h"
-//#include "HyperCube.h"
+#include "HyperCube.h"
 #include "GetHyperCube.h"
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)

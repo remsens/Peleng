@@ -1,20 +1,24 @@
 HEADERS       = \
-    HyperCube.h \
-    Types.h \
     ui_mainwindow.h \
     GetHyperCube.h \
     MainWindow.h \
     QCustomPlot.h \
     GLWidget.h \
-    ui_MainWindow3DCube.h
+    ui_MainWindow3DCube.h \
+    ../../Library/GenericExc.h \
+    ../../Library/HyperCube.h \
+    ../../Library/Types.h
 SOURCES       = \
-    HyperCube.cpp \
     GetHyperCube.cpp \
     GLWidget.cpp \
     Main.cpp \
     MainWindow.cpp \
-    QCustomPlot.cpp
+    QCustomPlot.cpp \
+    ../../Library/GenericExc.cpp \
+    ../../Library/HyperCube.cpp
 
+INCLUDEPATH += $$PWD/../../Library
+DEPENDPATH += $$PWD/../../Library
 
 
 QT           += widgets
