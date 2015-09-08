@@ -114,6 +114,7 @@ private:
     int zRot;
     QMatrix4x4 projection;//попытка использовать раздельные матрицы
     QMatrix4x4 m;
+    QMatrix4x4 matrix;
     GLfloat ratio; //отношение высоты окна к ширине
     GLfloat nSca; // переменная отвечает за масштабирование обьекта
     GLfloat dx,dy; // для трансляции матрицы (сдвиг куба)
