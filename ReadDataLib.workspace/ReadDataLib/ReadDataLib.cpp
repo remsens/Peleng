@@ -66,15 +66,6 @@ READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx) {
     }
 }
 
-READDATALIB_API_EXPORT std::list<double> ReadDataLib_GetListChannels(u::ptr ctx) {
-    if (ctx != 0)
-    {
-        Context& rctx = *(Context*)ctx;
-        rctx.ClearError();
-        return rctx.GetFilesOperObject()->GetListChannels();
-    }
-}
-
 READDATALIB_API_EXPORT void ReadDataLib_BreakOperation(u::ptr ctx) {
     if (ctx != 0)
     {

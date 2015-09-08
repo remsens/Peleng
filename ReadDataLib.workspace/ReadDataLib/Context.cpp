@@ -1,6 +1,6 @@
 #include "Context.h"
 
-#include "GenericExc.h"
+#include "../../Library/GenericExc.h"
 #include <QString>
 
 //#include "Util.h"

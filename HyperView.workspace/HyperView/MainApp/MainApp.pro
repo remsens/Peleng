@@ -14,16 +14,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    HyperCube/HyperCube.cpp \
     QCustomPlot/qcustomplot.cpp \
-    HyperCube/GenericExc.cpp
+    ../../../Library/GenericExc.cpp \
+    ../../../Library/HyperCube.cpp
 
 HEADERS  += mainwindow.h \
-    HyperCube/HyperCube.h \
     Interfaces/filereadinterface.h \
-    Types.h \
     QCustomPlot/qcustomplot.h \
-    HyperCube/GenericExc.h
+    ../../../Library/Types.h \
+    ../../../Library/GenericExc.h \
+    ../../../Library/HyperCube.h
+
+
+INCLUDEPATH += $$PWD/../../../Library
+DEPENDPATH += $$PWD/../../../Library
 
 FORMS    += mainwindow.ui
 

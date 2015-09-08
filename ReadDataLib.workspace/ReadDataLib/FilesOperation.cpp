@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "GenericExc.h"
+#include "../../Library/GenericExc.h"
 #include <QString>
 
 FilesOperation::FilesOperation() {
@@ -34,6 +34,7 @@ HyperCube* FilesOperation::CreateHyperCube() {
 	infoStruct.bytesType = GetNumberOfBytesFromData(m_dataType);
 	infoStruct.lines = m_lines;
 	infoStruct.samples = m_samples;
+    infoStruct.listChannels = m_listChannel;
 	return m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(m_buffer), GetFileSize(m_fileName), infoStruct);
 }
 

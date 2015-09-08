@@ -14,16 +14,21 @@ DEFINES += READDATALIB_LIBRARY
 SOURCES += ReadDataLib.cpp \
     Context.cpp \
     FilesOperation.cpp \
-    HyperCube.cpp \
-    GenericExc.cpp
+    ../../Library/GenericExc.cpp \
+    ../../Library/HyperCube.cpp
 
 HEADERS += ReadDataLib.h \
     ReadDataLib_global.h \
     Types.h \
-    HyperCube.h \
     Context.h \
     FilesOperation.h \
-    GenericExc.h
+    GenericExc.h \
+    ../../Library/HyperCube.h \
+    ../../Library/Types.h \
+    ../../Library/GenericExc.h
+
+INCLUDEPATH += $$PWD/../../../Library
+DEPENDPATH += $$PWD/../../../Library
 
 unix {
     target.path = /usr/lib

@@ -4,10 +4,10 @@
 #include <string>
 #include <exception>
 
-#include "Types.h"
+#include "../../Library/Types.h"
 #include "FilesOperation.h"
-#include "HyperCube.h"
-#include "GenericExc.h"
+#include "../../Library/HyperCube.h"
+#include "../../Library/GenericExc.h"
 //! ����� ��������� ���������
 class Context
 {

@@ -28,7 +28,6 @@ private:
     int getProgress();
     QString getFormatDescription();
     HyperCube* getCube();
-    QList<double> getListOfChannel();
     GenericExc* GetException();
 
 

@@ -6,7 +6,8 @@
 #include <QListWidgetItem>
 
 #include "Interfaces/filereadinterface.h"
-#include "HyperCube/HyperCube.h"
+#include "../../../Library/HyperCube.h"
+
 
 namespace Ui {
 class MainWindow;

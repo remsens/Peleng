@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QString>
-#include "../HyperCube/HyperCube.h"
+#include "../../../Library/HyperCube.h"
 
 
 
@@ -16,9 +16,6 @@ public:
     virtual QString getFormatDescription()=0;    
     virtual HyperCube* getCube() = 0;
     virtual void cancel()=0;
-
-    virtual QList<double> getListOfChannel() = 0;
-
 
 
 };

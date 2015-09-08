@@ -162,7 +162,7 @@ void MainWindow::LoadFile()
         cube= FileFormatPluginList[0]->getCube();
 
 
-        QList<double> list = FileFormatPluginList[0]->getListOfChannel();
+        QList<double> list = cube->GetListOfChannels();
 
 
 

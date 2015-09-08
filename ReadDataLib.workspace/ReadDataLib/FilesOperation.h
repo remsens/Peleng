@@ -1,12 +1,13 @@
 #ifndef FILEOPERATIONS_H
 #define FILEOPERATIONS_H
 
-#include "Types.h"
+#include "../../Library/Types.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <list>
 #include <string>
-#include "HyperCube.h"
+#include "../../Library/HyperCube.h"
+
 //! Класс файловый операций
 class FilesOperation {
 
@@ -39,7 +40,7 @@ public:
 	
 	//! Получение указателя на объект класса HyperCube
 	//! @return - указатель на объект класса HyperCube
-	HyperCube* CreateHyperCube();
+    HyperCube* CreateHyperCube();
 
 private:
 	//! Функция, которая парсит файл-заголовок

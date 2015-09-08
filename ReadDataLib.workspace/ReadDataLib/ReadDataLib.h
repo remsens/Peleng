@@ -3,8 +3,8 @@
 
 #include "ReadDataLib_global.h"
 #include <QList>
-#include "Types.h"
-#include "HyperCube.h"
+#include "../../Library/Types.h"
+#include "../../Library/HyperCube.h"
 
 namespace ReadData
 {
@@ -31,7 +31,6 @@ READDATALIB_API_EXPORT ReadData::Error ReadDataLib_GetLastError(u::ptr ctx);
 READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx);
 READDATALIB_API_EXPORT HyperCube* ReadDataLib_CreateHyperCube(u::ptr ctx);
 READDATALIB_API_EXPORT void ReadDataLib_BreakOperation(u::ptr ctx);
-READDATALIB_API_EXPORT std::list<double> ReadDataLib_GetListChannels(u::ptr ctx);
 
 /*class READDATALIB_API_EXPORT ReadDataLib
 {

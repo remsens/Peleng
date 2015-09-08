@@ -64,12 +64,6 @@ HyperCube *AvirisReadPlugin::getCube()
     return  m_hyperCube;
 }
 
-QList<double> AvirisReadPlugin::getListOfChannel()
-{
-    return QList<double>::fromStdList(ReadDataLib_GetListChannels(m_ctx));
-}
-
-
 void AvirisReadPlugin::cancel()
 {
     ReadDataLib_BreakOperation(m_ctx);
