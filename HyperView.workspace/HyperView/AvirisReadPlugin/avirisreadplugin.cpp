@@ -4,6 +4,7 @@
 
 void AvirisReadPlugin::ExceptionLibrary()
 {
+
     ReadData::Error err = ReadDataLib_GetLastError(m_ctx);
     MakeException(QObject::tr(err.message), err.code);
 }

@@ -58,7 +58,8 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       program(0)
 {
 
-    nSca = 0.8f;
+    //nSca = 0.8f;
+    nSca = 1.2;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
     kT = float(ROWS)/float(COLS);
@@ -77,7 +78,8 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
-   // rotateBy(200,400,0);
+    //rotateBy(200,400,0);
+    rotateBy(-2560,712,0);
 }
 
 GLWidget::~GLWidget()
@@ -550,7 +552,7 @@ void GLWidget::scale_plus() // приблизить сцену
     update();
 
 }
-void GLWidget::scale_minus() // приблизить сцену
+void GLWidget::scale_minus() // отдалить сцену
 {
     nSca = nSca/1.1;
     update();
