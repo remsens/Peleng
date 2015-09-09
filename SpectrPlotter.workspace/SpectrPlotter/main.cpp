@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "PlotterWindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    PlotterWindow w;
     w.show();
 
     return a.exec();

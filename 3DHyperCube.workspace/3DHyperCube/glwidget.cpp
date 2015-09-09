@@ -44,6 +44,7 @@
 #include <QOpenGLTexture>
 #include <QMouseEvent>
 #include <GL/glu.h>
+#include <QDebug>
 using namespace std;
 
 int cmp(const void *a, const void *b);
@@ -58,7 +59,6 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       program(0)
 {
 
-    //nSca = 0.8f;
     nSca = 1.2;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -443,15 +443,15 @@ void GLWidget::resizeGL(int width, int height)
     // Set perspective projection
     projection.perspective(fov, aspect, zNear, zFar);
 
-        int stop = 1;
+
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
-
-
-    //gluUnProject();// http://www.gamedev.ru/code/forum/?id=83558
+    //
+    //-------------рассчет координат точки параллелепипеда по клику----------------
+    //
     makeCurrent();
     GLint  viewport[4];  
     glGetIntegerv(GL_VIEWPORT,viewport);
@@ -460,38 +460,31 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     GLdouble objz;
     GLdouble winx = event->x();
     GLdouble winy = viewport[3] - event->y();
-
     GLdouble modelM[16];
     GLdouble projM[16];
     for(int i = 0; i < 16; ++i){
         modelM[i] = matrix.constData()[i];
         projM[i] = projection.constData()[i];
     }
-
     float depth = -99;
-
     glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-
-    //gluUnProject(winx,winy,0,modelMatrix,projMatrix,viewport,&objx,&objy,&objz);
     gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
     doneCurrent();
     objx *=5;// ПОЧЕМУ????????????????????
     objy*=5;//костыли
-    objz*=5;//костыли
-    //----------------2ой способ-----------
-    QMatrix4x4 mInvrtd = m.inverted();
-    QMatrix4x4 mInvrtdTest = (matrix * projection).inverted();//m.inverted();
-    GLfloat winX,winY;
-    winX = ((float)winx/viewport[2]*2)-1;
-    winY = ((float)(viewport[3]-winy)/viewport[3]*2)-1;
-//    winX = ((float)winx/1006*2)-1;
-//    winY = ((float)(661-winy)/661*2)-1;
-    QVector4D mouse3D= mInvrtd * QVector4D(winX,winY,-1,1);
-
-
-     int BREAK = 0;
-    BREAK=1;
-
+    objz*=5;//костыли, но работает идеально
+    //
+    //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
+    //
+    float dRow = 2.0f * kT / (ROWS - 1);
+    float dCol = 2.0f  / (COLS - 1);
+    float dChan = 2.0f  / (CHNLS - 1);
+    float dataX = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
+    float dataY = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
+    float dataZ = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
+    qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
+    qDebug() << "x:"<< dataX<< " y:"<< dataY<< " z:"<< dataZ << endl;
+    qDebug() <<"round XYZ" <<"x:"<< round(dataX)<< " y:"<< round(dataY)<< " z:"<< round(dataZ) << endl<<endl;
 
 }
 

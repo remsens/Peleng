@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,8 +13,20 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+    ../../Library/GenericExc.cpp \
+    ../../Library/HyperCube.cpp \
+    ../../Library/QCustomPlot.cpp \
+    PlotterWindow.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += \
+    ../../Library/GenericExc.h \
+    ../../Library/HyperCube.h \
+    ../../Library/QCustomPlot.h \
+    ../../Library/Types.h \
+    PlotterWindow.h
 
-FORMS    += mainwindow.ui
+INCLUDEPATH += $$PWD/../../Library
+DEPENDPATH += $$PWD/../../Library
+
+FORMS    += \
+    PlotterWindow.ui

@@ -5,7 +5,8 @@
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
-
+//При редактировании mainwindow.ui этот файл автоматически НЕ обновляется.
+//изменения можно найти в файле .../debug/ui_mainwindow.h и копипастнуть их сюда
 #ifndef UI_MAINWINDOW3DCUBE_H
 #define UI_MAINWINDOW3DCUBE_H
 
