@@ -40,7 +40,8 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->graph()->setPen(QPen(Qt::black));
         m_customPlot->replot();
     }catch(...){
-
+        m_customPlot->clearGraphs();
+        m_customPlot->replot();
     }
 
 

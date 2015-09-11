@@ -511,26 +511,32 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     m_dataX = u::uint16(round(dataX));
     m_dataY = u::uint16(round(dataY));
     m_dataZ = u::uint16(round(dataZ));
+    if (round(dataX) < 0)
+        m_dataX = 0;
+    else if (round(dataX) > ROWS-1)
+        m_dataX = ROWS - 1;
+    else
+        m_dataX = u::uint16(round(dataX));
+
+    if (round(dataY) < 0)
+        m_dataY = 0;
+    else if (round(dataY) > COLS-1)
+        m_dataY = COLS - 1;
+    else
+        m_dataY = u::uint16(round(dataY));
+
+    if (round(dataZ) < 0)
+        m_dataZ = 0;
+    else if (round(dataZ) > CHNLS-1)
+        m_dataZ = CHNLS - 1;
+    else
+        m_dataZ = u::uint16(round(dataZ));
+
     qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
     qDebug() << "x:"<< dataX<< " y:"<< dataY<< " z:"<< dataZ << endl;
-    qDebug() <<"round XYZ" <<"x:"<< round(dataX)<< " y:"<< round(dataY)<< " z:"<< round(dataZ) << endl<<endl;   
+    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
 
-    //
-    //-------------меню по правой кнопке мыши----------------
-    //
-//    if(event->button() == Qt::RightButton)
-//    {
-//        QMenu menu;
-//        QAction* actPlot = new QAction("Plot spectrum", this);
-//        int x = 5;
-//        int y = 6;
-//        actPlot->setData(x);
-//        menu.addAction(actPlot);
-//   //     connect(menu ,SIGNAL(triggered(QAction*)),this,SLOT(plotSpectr(QAction*)));
-//        menu.exec(mapToGlobal(event->pos()));
-//    }
 
-//    QOpenGLWidget::mouseReleaseEvent(event);  //Dont forget to pass on the event to parent
 
 }
 void GLWidget::createMenus()
@@ -629,23 +635,31 @@ void GLWidget::makeTextures()
     int nCOLS = C2 - C1 + 1;
     QTransform rtt270;
     QTransform rtt90;
+    QTransform rtt180;
     rtt270.rotate(270);
     rtt90.rotate(90);
+    rtt180.rotate(180);
     for (int i = 0; i < 6; ++i){
         if (textures[i] !=NULL ){
             makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
             textures[i]->destroy();
         }
     }
-    //    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(data[chanNum]));// грань с фото
-    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true));// грань с фото
-    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+
+//    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true));// грань с фото
+//    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+//    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
+//    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270)); //
+//    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //наполовину видная грань
+//    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270));
+
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
     textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
-    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270)); //
-    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //наполовину видная грань
-    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270));
-    //    QImage newIm =  from2Dmass2QImage(data[chanNum]).copy(200,200,2000,2000);
-    //    textures[4] =  new QOpenGLTexture(newIm); //пустая грань
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
+
 }
 
 
@@ -746,27 +760,50 @@ void GLWidget::fillCubeSides()//заполнение массивов, соот�
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = 0; y < nROWS; ++y)
-            sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  COLS - C2 - 1]; //data[x+Ch1][y+R1][COLS - C2];
+            sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  C1]; //data[x+Ch1][y+R1][COLS - C2];
 
     for(int x = 0; x < nCHNLS; ++x)
-        for(int y = 0; y < nROWS; ++y)//это лицевая грань куба
-            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + COLS - C1 - 1]; //data[x+Ch1][y+R1][COLS - C1];
+        for(int y = 0; y < nROWS; ++y)//задняя грань куба
+            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + C2]; //data[x+Ch1][y+R1][COLS - C1];
+//    for(int x = 0; x < nCHNLS; ++x)
+//        for(int y = 0; y < nROWS; ++y)
+//            sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  COLS - C2 - 1]; //data[x+Ch1][y+R1][COLS - C2];
+
+//    for(int x = 0; x < nCHNLS; ++x)
+//        for(int y = 0; y < nROWS; ++y)//это лицевая грань куба
+//            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + COLS - C1 - 1]; //data[x+Ch1][y+R1][COLS - C1];
+//    for(int x = 0; x < nCHNLS; ++x)
+//        for(int y = nCOLS-1; y >= 0; --y)
+//            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + COLS - C2 - 1)];//data[x+Ch1][R1][y+COLS-C2];
+
+//    for(int x = 0; x < nCHNLS; ++x)
+//        for(int y = nCOLS-1; y >= 0; --y)
+//            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + COLS - C2 - 1)];
+
+//    for(int x = 0; x < nROWS; ++x)
+//        for(int y = 0; y < nCOLS; ++y)
+//            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + COLS - C2 - 1)];
+
+//    for(int x = 0; x < nROWS; ++x)
+//        for(int y = 0; y < nCOLS; ++y)
+//            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + COLS - C2 - 1)];
+
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
-            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + COLS - C2 - 1)];//data[x+Ch1][R1][y+COLS-C2];
+            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + C1)];//data[x+Ch1][R1][y+COLS-C2];
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
-            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + COLS - C2 - 1)];
+            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + C1)];
 
     for(int x = 0; x < nROWS; ++x)
         for(int y = 0; y < nCOLS; ++y)
-            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + COLS - C2 - 1)];
+            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + C1)];
 
     for(int x = 0; x < nROWS; ++x)
         for(int y = 0; y < nCOLS; ++y)
-            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + COLS - C2 - 1)];
+            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + C1)];
 }
 
 
