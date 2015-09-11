@@ -45,6 +45,7 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
+//#include <QAction>
 using namespace std;
 
 int cmp(const void *a, const void *b);
@@ -62,6 +63,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     nSca = 1.2;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
+    m_pHyperCube = ptrCube;
     kT = float(ROWS)/float(COLS);
     for(int i=0;i<6;++i)
         for(int j=0;j<4;++j)
@@ -80,6 +82,9 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     memset(textures, 0, sizeof(textures));
     //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
+    createMenus();
+
+
 }
 
 GLWidget::~GLWidget()
@@ -375,6 +380,27 @@ void GLWidget::sliderY2ValueChanged(int value)
 }
 
 
+
+void GLWidget::prepareToPlotSpectr()
+{
+    qDebug()<<"sendXYZ done"<<endl;
+    emit sendXYZ(m_dataX,m_dataY,m_dataZ);
+
+}
+
+void GLWidget::plotSpectr(uint x, uint y, uint z)
+{
+    qDebug()<<x<<y<<z<<endl;
+
+    windowPlotter.plotSpectr(m_pHyperCube,x,y);
+    windowPlotter.activateWindow();
+
+     windowPlotter.show();
+}
+
+
+
+
 void GLWidget::paintGL()
 {
 
@@ -482,10 +508,40 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     float dataX = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
     float dataY = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
     float dataZ = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
+    m_dataX = u::uint16(round(dataX));
+    m_dataY = u::uint16(round(dataY));
+    m_dataZ = u::uint16(round(dataZ));
     qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
     qDebug() << "x:"<< dataX<< " y:"<< dataY<< " z:"<< dataZ << endl;
-    qDebug() <<"round XYZ" <<"x:"<< round(dataX)<< " y:"<< round(dataY)<< " z:"<< round(dataZ) << endl<<endl;
+    qDebug() <<"round XYZ" <<"x:"<< round(dataX)<< " y:"<< round(dataY)<< " z:"<< round(dataZ) << endl<<endl;   
 
+    //
+    //-------------меню по правой кнопке мыши----------------
+    //
+//    if(event->button() == Qt::RightButton)
+//    {
+//        QMenu menu;
+//        QAction* actPlot = new QAction("Plot spectrum", this);
+//        int x = 5;
+//        int y = 6;
+//        actPlot->setData(x);
+//        menu.addAction(actPlot);
+//   //     connect(menu ,SIGNAL(triggered(QAction*)),this,SLOT(plotSpectr(QAction*)));
+//        menu.exec(mapToGlobal(event->pos()));
+//    }
+
+//    QOpenGLWidget::mouseReleaseEvent(event);  //Dont forget to pass on the event to parent
+
+}
+void GLWidget::createMenus()
+{
+    pContextMenu = new QMenu();
+    pPlotAction = new QAction("Спектр",this);
+
+    pContextMenu->addAction(pPlotAction);
+
+    connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -493,17 +549,21 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
 
-    if (event->buttons() & Qt::LeftButton) {
+    if (event->buttons() & Qt::LeftButton) //{
         rotateBy(8 * dy, 8 * dx, 0);
-    } else if (event->buttons() & Qt::RightButton) {
-        rotateBy(8 * dy, 0, 8 * dx);
-    }
+//    }
+//    else if (event->buttons() & Qt::RightButton) {
+//        rotateBy(8 * dy, 0, 8 * dx);
+//    }
     lastPos = event->pos();
 }
 
-void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     emit clicked();
+    //---------создание контекстного меню----------
+
+
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
@@ -536,6 +596,17 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 
     }
     update();
+}
+
+void GLWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    pContextMenu->exec(event->globalPos());
+
+//    QMenu contextMenu;
+//    QAction actPlot = new QAction("Plot spectrum!!!", this);
+//    contextMenu.addAction(&actPlot);
+//    contextMenu.exec(event->globalPos());
+
 }
 
 
@@ -725,7 +796,7 @@ void GLWidget::create2ColChanSides(int ch1, int ch2, int c1, int c2 ) // мб ф
 }
 
 
-//эта ф-ия уже не используется!!! передаем, например  data[0]
+//эта ф-ия в даный момент не используется. Передаем, например,  data[0]
 QImage GLWidget::from2Dmass2QImage(qint16 *data)
 {
     QCustomPlot customPlot;
@@ -800,7 +871,9 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
 }
 
 
-void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh) //threshold = 0.98
+
+
+void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
     minCMap =  32767;

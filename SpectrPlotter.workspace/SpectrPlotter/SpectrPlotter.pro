@@ -16,17 +16,20 @@ SOURCES += main.cpp\
     ../../Library/GenericExc.cpp \
     ../../Library/HyperCube.cpp \
     ../../Library/QCustomPlot.cpp \
-    PlotterWindow.cpp
+    PlotterWindow.cpp \
+    ../../3DHyperCube.workspace/3DHyperCube/GetHyperCube.cpp
 
 HEADERS  += \
     ../../Library/GenericExc.h \
     ../../Library/HyperCube.h \
     ../../Library/QCustomPlot.h \
     ../../Library/Types.h \
-    PlotterWindow.h
+    PlotterWindow.h \
+    ../../3DHyperCube.workspace/3DHyperCube/GetHyperCube.h
 
-INCLUDEPATH += $$PWD/../../Library
+INCLUDEPATH += $$PWD/../../Library\
+               $$PWD/../../3DHyperCube.workspace/3DHyperCube
 DEPENDPATH += $$PWD/../../Library
-
+              $$PWD/../../3DHyperCube.workspace/3DHyperCube
 FORMS    += \
     PlotterWindow.ui

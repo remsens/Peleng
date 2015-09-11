@@ -47,7 +47,8 @@
 #include "qcustomplot.h"
 #include "HyperCube.h"
 #include "GetHyperCube.h"
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
+#include "PlotterWindow.h"
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -71,8 +72,14 @@ public slots:
     void sliderX2ValueChanged(int value);
     void sliderY1ValueChanged(int value);
     void sliderY2ValueChanged(int value);
+private slots:
+
+    void prepareToPlotSpectr();
+    void plotSpectr(uint x, uint y, uint z);
 signals:
     void clicked();
+    void sendXYZ(uint, uint, uint);
+    void signalPlotSpectr();
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -83,6 +90,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE; //new
     void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+    void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
 private:
     void makeObject();
     void loadData(HyperCube* ptrCube);
@@ -98,7 +106,10 @@ private:
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,bool gray = false);
+    void  createMenus();
 
+    QMenu* pContextMenu;
+    QAction* pPlotAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
@@ -136,6 +147,9 @@ private:
     int prevChN, prevRowsN ;
     int minCMap,maxCMap;
     GetHyperCube* m_cube;
+    HyperCube *m_pHyperCube;
+    u::uint16 m_dataX, m_dataY, m_dataZ;
+    PlotterWindow windowPlotter;
 };
 
 #endif

@@ -1,9 +1,10 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef PLOTTERWINDOW_H
+#define PLOTTERWINDOW_H
 
 #include <QMainWindow>
 #include "QCustomPlot.h"
 #include "HyperCube.h"
+#include "GetHyperCube.h"
 namespace Ui {
 class PlotterWindow;
 }
@@ -16,8 +17,15 @@ public:
     explicit PlotterWindow(QWidget *parent = 0);
     ~PlotterWindow();
 
+    void plotSpectr(HyperCube* ptrCube, uint dataX, uint dataY );
+    bool getIsHold(){return m_hold;}
+private slots:
+    void on_actionHold_toggled(bool value);
+
 private:
+    bool m_hold;
     Ui::PlotterWindow *ui;
+    QCustomPlot *m_customPlot;
 };
 
-#endif // MAINWINDOW_H
+#endif // PLOTTERWINDOW_H
