@@ -8,6 +8,14 @@ PlotterWindow::PlotterWindow(QWidget *parent) :
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
+
+    QPropertyAnimation* panim2 = new QPropertyAnimation(this, "windowOpacity");
+
+    panim2->setDuration(300);
+    panim2->setStartValue(0);
+    panim2->setEndValue(1);
+    panim2->setEasingCurve(QEasingCurve::InCirc);
+    panim2->start();
 }
 
 PlotterWindow::~PlotterWindow()

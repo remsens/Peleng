@@ -83,8 +83,6 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
     createMenus();
-
-
 }
 
 GLWidget::~GLWidget()
@@ -95,6 +93,9 @@ GLWidget::~GLWidget()
         delete textures[i];
 
     SidesDestructor();
+    delete pContextMenu;
+    delete pPlotAction;
+    delete pDeletePlotsAction;
     delete program;
     doneCurrent();
 }
@@ -390,12 +391,28 @@ void GLWidget::prepareToPlotSpectr()
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
-    qDebug()<<x<<y<<z<<endl;
+    if (windowPlotter == 0 || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
+    {                                                             // иначе - графики строятся в том же окне (объекте)
+        windowPlotter = new PlotterWindow();
+        windowsArr.append(windowPlotter);
+     }
 
-    windowPlotter.plotSpectr(m_pHyperCube,x,y);
-    windowPlotter.activateWindow();
 
-     windowPlotter.show();
+    windowPlotter->plotSpectr(m_pHyperCube,x,y);
+    windowPlotter->activateWindow();
+    windowPlotter->show();
+
+}
+
+void GLWidget::deleteSpectrWindows()
+{
+    for(int i = 0; i < windowsArr.size(); ++i)
+    {
+        qDebug()<<i<<endl;
+        //windowPlotter[i].close();
+        delete windowsArr[i];
+    }
+    windowsArr.clear();
 }
 
 
@@ -406,18 +423,6 @@ void GLWidget::paintGL()
 
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//_____________start_________________
-//    QMatrix4x4 m;
-//    m.setToIdentity();
-//    m.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
-//    m.translate(dx, dy, -10.0f);
-//    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-//    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-//    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-//    m.scale(nSca,nSca,nSca);
-
-//    program->setUniformValue("matrix", m);
-//____________end_____________________
 
     matrix.setToIdentity();
     matrix.translate(dx, dy, -4.0f); //было -10
@@ -427,10 +432,6 @@ void GLWidget::paintGL()
     matrix.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", projection * matrix);
 
-
-//    GLdouble modelMatrix[16];
-//    GLdouble projMatrix[16];
-//    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
     program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
     program->setAttributeBuffer(PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3, 5 * sizeof(GLfloat));//5
@@ -449,13 +450,6 @@ void GLWidget::paintGL()
 }
 void GLWidget::resizeGL(int width, int height)
 {
-
-//    ratio=(GLfloat)height/(GLfloat)(width );
-//    glViewport(0, 0, (GLint)width, (GLint)height);
-//    projection.setToIdentity();
-//    projection.ortho(-0.5f/ratio, +0.5f/ratio, +0.5f, -0.5f, 4.0f, 15.0f);
-
-
 
     //-------------------------------------------------------------
     qreal aspect = qreal(width) / qreal(height ? height : 1);
@@ -543,10 +537,11 @@ void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
     pPlotAction = new QAction("Спектр",this);
-
+    pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
     pContextMenu->addAction(pPlotAction);
-
+    pContextMenu->addAction(pDeletePlotsAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
 }
 
@@ -567,9 +562,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     emit clicked();
-    //---------создание контекстного меню----------
-
-
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
@@ -608,12 +600,8 @@ void GLWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     pContextMenu->exec(event->globalPos());
 
-//    QMenu contextMenu;
-//    QAction actPlot = new QAction("Plot spectrum!!!", this);
-//    contextMenu.addAction(&actPlot);
-//    contextMenu.exec(event->globalPos());
-
 }
+
 
 
 void GLWidget::scale_plus() // приблизить сцену
@@ -646,12 +634,6 @@ void GLWidget::makeTextures()
         }
     }
 
-//    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true));// грань с фото
-//    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
-//    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
-//    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270)); //
-//    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //наполовину видная грань
-//    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270));
 
     textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
     textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
@@ -665,11 +647,11 @@ void GLWidget::makeTextures()
 
 void GLWidget::makeObject()
 {
-    //    QImage Qimage =from2Dmass2QImage(sidesDataCH_RO[0],CHNLS,ROWS);
-    //    QFile file("D:/Work/MY.jpg");
-    //    file.open(QIODevice::WriteOnly);
-    //    Qimage.save(&file,"JPG");
-    //    file.close();
+        QImage Qimage =from2Dmass2QImage(sidesDataRO_CO[0],ROWS,COLS,true);
+        QFile file("D:/Work/MY.jpg");
+        file.open(QIODevice::WriteOnly);
+        Qimage.save(&file,"JPG");
+        file.close();
     QVector<GLfloat> vertData;
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -880,13 +862,13 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
     customPlot.xAxis->setVisible(false);
     customPlot.yAxis->setVisible(false);
     customPlot.axisRect()->setAutoMargins(QCP::msNone);
-    customPlot.axisRect()->setMargins(QMargins(0,0,0,0));
+    customPlot.axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
     QCPColorMap *colorMap = new QCPColorMap(customPlot.xAxis, customPlot.yAxis);
     colorMap->setKeyAxis(customPlot.xAxis);
     colorMap->setValueAxis(customPlot.yAxis);
     customPlot.addPlottable(colorMap);
     colorMap->data()->setSize(dim1, dim2);
-    colorMap->data()->setRange(QCPRange(0, dim1), QCPRange(0, dim2));
+    colorMap->data()->setRange(QCPRange(0, dim1-1), QCPRange(0, dim2-1));
     for (int x=0; x<dim1; ++x) {
         for (int y=0; y<dim2; ++y) {
             colorMap->data()->setCell(x, y, sidesData[x][y]);

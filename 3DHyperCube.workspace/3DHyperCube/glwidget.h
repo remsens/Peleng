@@ -72,10 +72,12 @@ public slots:
     void sliderX2ValueChanged(int value);
     void sliderY1ValueChanged(int value);
     void sliderY2ValueChanged(int value);
+    void plotSpectr(uint x, uint y, uint z);
+    void deleteSpectrWindows();
 private slots:
 
     void prepareToPlotSpectr();
-    void plotSpectr(uint x, uint y, uint z);
+
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint);
@@ -88,7 +90,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE; //new
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
     void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
 private:
@@ -110,6 +112,7 @@ private:
 
     QMenu* pContextMenu;
     QAction* pPlotAction;
+    QAction* pDeletePlotsAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
@@ -149,7 +152,8 @@ private:
     GetHyperCube* m_cube;
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ;
-    PlotterWindow windowPlotter;
+    PlotterWindow* windowPlotter = 0;
+    QVector<PlotterWindow*> windowsArr;
 };
 
 #endif

@@ -75,7 +75,6 @@ public:
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         widgetHyperCube = new GLWidget(ptrCube,centralwidget);
         widgetHyperCube->setObjectName(QStringLiteral("widgetHyperCube"));
-
         verticalLayout->addWidget(widgetHyperCube);
 
 

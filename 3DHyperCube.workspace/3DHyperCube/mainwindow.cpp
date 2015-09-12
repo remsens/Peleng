@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include "ui_MainWindow3DCube.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -13,11 +15,18 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+void MainWindow::closeEvent(QCloseEvent *)
+{
+    ui->widgetHyperCube->deleteSpectrWindows();
+}
 
 void MainWindow::processData(HyperCube *ptrCube)
 {
     ui->setupUi(ptrCube,this);
 
+    int chnls = ptrCube->GetCountofChannels();
+    int rows = ptrCube->GetLines();
+    int cols = ptrCube->GetColumns();
     ui->horizontalScrollBar_Ch1->setMinimum(0);
     ui->horizontalScrollBar_Ch1->setMaximum(chnls-1);
     ui->horizontalScrollBar_Ch2->setMinimum(0);
