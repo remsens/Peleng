@@ -58,7 +58,6 @@ READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx) {
         Context& rctx = *(Context*)ctx;
         rctx.ClearError();
         double progress = rctx.GetFilesOperObject()->GetProgress();
-        //std::cout << progress << std::endl;
         return progress;
     } else
     {

@@ -10,6 +10,7 @@ struct InfoData {
 	u::uint32 lines;
 	u::uint32 samples;
 	u::uint8 bytesType;
+    u::uint8 bytesFormat; // 1 - int8, 2 - int 16, 3 - int32, 4 - float, 5 - double, 9 -2*double, 12 - uint16
     std::list<double> listChannels;
 };
 
@@ -25,7 +26,7 @@ public:
 	u::uint32 GetColumns();
 	
 	u::uint8 GetBytesInElements();
-	
+    u::uint8 GetBytesFormat();
 	u::uint32 GetSizeCube() const; // в байтах
     u::ptr* GetDataCube() const;
 	

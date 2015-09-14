@@ -13,18 +13,18 @@ public:
     ~HDF5FormatLib();
 
     // Записываем 2-мерные массивы
-    u::logic WriteToFile(QString filePath, QString dataSetPath, u::cptr data, u::int64 lines, u::int64 columns);
+    u::logic WriteToFile(QString filePath, QString dataSetPath, u::cptr data, u::int64 lines, u::int64 columns, int byteType);
 
-    u::logic ReadFromFile(QString filePath, QString dataSetPath, u::ptr data);
-    u::uint32 GetDataSetSize(QString filePath, QString dataSetPath);
+    u::logic ReadFromFile(QString filePath, QString dataSetPath, u::ptr data, int byteType);
+    u::uint32 GetDataSetSize(QString filePath, QString dataSetPath, int byteType);
 
     QString& GetErrorDiscription();
 
-    void GetHDF5StructFile(QString filePathJson1, QString filePathHdf);
+    u::logic GetHDF5StructFile(QString filePathJson1, QString filePathHdf);
 
 private:
     QStringList ParseFile(QString& dataSetPath);
-
+    int GetByteType(int type);
 private:
     QString m_errDescription;
 };

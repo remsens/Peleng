@@ -35,6 +35,7 @@ HyperCube* FilesOperation::CreateHyperCube() {
 	infoStruct.lines = m_lines;
 	infoStruct.samples = m_samples;
     infoStruct.listChannels = m_listChannel;
+    infoStruct.bytesFormat = m_dataType;
 	return m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(m_buffer), GetFileSize(m_fileName), infoStruct);
 }
 
@@ -284,7 +285,7 @@ u::uint32 FilesOperation::ConvertStrtoInt(const char* data) {
 	try 
 	{
         QString str(data);
-        return str.toInt();//boost::lexical_cast<int>(data);
+        return str.toInt();
     } catch (...)
 	{
         throw GenericExc("Неверный формат данных");
@@ -298,7 +299,7 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 		case 1: m_lines = ConvertStrtoInt(data); break;
 		case 2: m_bands = ConvertStrtoInt(data); break;
 		case 3: m_headerOffset = ConvertStrtoInt(data); break;
-		case 4: m_dataType =ConvertStrtoInt(data); break;
+        case 4: m_dataType = ConvertStrtoInt(data); break;
 		case 5: 
 			{
 				if (strcmp(data, "bsq") == 0)

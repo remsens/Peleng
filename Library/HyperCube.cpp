@@ -18,6 +18,10 @@ HyperCube::~HyperCube()
 
 }
 
+u::uint8 HyperCube::GetBytesFormat() {
+    return m_infoData.bytesFormat;
+}
+
 u::uint32 HyperCube::GetCountofChannels()
 {
 	return m_infoData.bands;
