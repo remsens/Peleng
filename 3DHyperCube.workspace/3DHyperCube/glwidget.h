@@ -108,7 +108,9 @@ private:
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,bool gray = false);
-    void  createMenus();
+    void createMenus();
+    void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
+//    void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
 
     QMenu* pContextMenu;
     QAction* pPlotAction;
@@ -132,12 +134,12 @@ private:
     GLfloat ratio; //отношение высоты окна к ширине
     GLfloat nSca; // переменная отвечает за масштабирование обьекта
     GLfloat dx,dy; // для трансляции матрицы (сдвиг куба)
+//    GLfloat centerCubeX, centerCubeY, centerCubeZ;// центр текущего параллелепипеда
     QOpenGLTexture *textures[6];
     QImage *sidesImages[6];
     QOpenGLShaderProgram *program;
     QOpenGLBuffer vbo;
     float kT = 1;
-   //float kT = float(ROWS)/float(COLS);//перенесено в цпп
     float coords[6][4][3] = {
                              { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
                              { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },//пустая грань
@@ -151,7 +153,8 @@ private:
     int minCMap,maxCMap;
     GetHyperCube* m_cube;
     HyperCube *m_pHyperCube;
-    u::uint16 m_dataX, m_dataY, m_dataZ;
+    u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
+    float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     PlotterWindow* windowPlotter = 0;
     QVector<PlotterWindow*> windowsArr;
 };

@@ -426,7 +426,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Spectrum</string>
+   <string>Спектр</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -449,7 +449,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="title">
-     <string>Spectrum</string>
+     <string>Опции</string>
     </property>
     <addaction name="actionHold"/>
    </widget>
@@ -464,7 +464,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Hold</string>
+    <string>На один график</string>
    </property>
   </action>
  </widget>

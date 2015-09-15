@@ -26,6 +26,7 @@ private:
     bool m_hold;
     Ui::PlotterWindow *ui;
     QCustomPlot *m_customPlot;
+    double minY = 70000, maxY = -10000;
 };
 
 #endif // PLOTTERWINDOW_H

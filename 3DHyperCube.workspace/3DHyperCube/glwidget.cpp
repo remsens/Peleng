@@ -384,9 +384,7 @@ void GLWidget::sliderY2ValueChanged(int value)
 
 void GLWidget::prepareToPlotSpectr()
 {
-    qDebug()<<"sendXYZ done"<<endl;
     emit sendXYZ(m_dataX,m_dataY,m_dataZ);
-
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
@@ -397,7 +395,6 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
         windowsArr.append(windowPlotter);
      }
 
-
     windowPlotter->plotSpectr(m_pHyperCube,x,y);
     windowPlotter->activateWindow();
     windowPlotter->show();
@@ -407,11 +404,7 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
-    {
-        qDebug()<<i<<endl;
-        //windowPlotter[i].close();
         delete windowsArr[i];
-    }
     windowsArr.clear();
 }
 
@@ -423,12 +416,14 @@ void GLWidget::paintGL()
 
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    //calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
     matrix.setToIdentity();
-    matrix.translate(dx, dy, -4.0f); //было -10
+    matrix.translate(dx, dy, -4.0f);
+   // matrix.translate(-centerCubeX, -centerCubeZ , -centerCubeY ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    //matrix.translate(centerCubeX, centerCubeZ, centerCubeY); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", projection * matrix);
 
@@ -499,35 +494,14 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     float dRow = 2.0f * kT / (ROWS - 1);
     float dCol = 2.0f  / (COLS - 1);
     float dChan = 2.0f  / (CHNLS - 1);
-    float dataX = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
-    float dataY = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
-    float dataZ = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
-    m_dataX = u::uint16(round(dataX));
-    m_dataY = u::uint16(round(dataY));
-    m_dataZ = u::uint16(round(dataZ));
-    if (round(dataX) < 0)
-        m_dataX = 0;
-    else if (round(dataX) > ROWS-1)
-        m_dataX = ROWS - 1;
-    else
-        m_dataX = u::uint16(round(dataX));
+    m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
+    m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
+    m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
 
-    if (round(dataY) < 0)
-        m_dataY = 0;
-    else if (round(dataY) > COLS-1)
-        m_dataY = COLS - 1;
-    else
-        m_dataY = u::uint16(round(dataY));
-
-    if (round(dataZ) < 0)
-        m_dataZ = 0;
-    else if (round(dataZ) > CHNLS-1)
-        m_dataZ = CHNLS - 1;
-    else
-        m_dataZ = u::uint16(round(dataZ));
+    calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
 
     qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
-    qDebug() << "x:"<< dataX<< " y:"<< dataY<< " z:"<< dataZ << endl;
+    qDebug() << "x:"<< m_dataXf<< " y:"<< m_dataYf<< " z:"<< m_dataZf << endl;
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
 
 
@@ -544,6 +518,47 @@ void GLWidget::createMenus()
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
 }
+
+void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
+{
+    if (round(dataXf) < 0 && round(dataXf) >= -3) // из-за погрешностей матриц преобразований под разными углами сторона гиперкуба может иметь координаты < 0
+        dataXu = u::uint16(0);
+    else if (round(dataXf) > ROWS-1 && round(dataXf) <= ROWS+1)
+        dataXu = u::uint16(ROWS - 1);
+    else if (round(dataXf) >= 0 && round(dataXf) <= ROWS+1 )
+        dataXu = u::uint16(round(dataXf));
+    else
+        dataXu = u::uint16(65535);
+
+
+    if (round(dataYf) < 0 && round(dataYf) >= -3)
+        dataYu = u::uint16(0);
+    else if (round(dataYf) > COLS-1 && round(dataYf) <= COLS+1)
+        dataYu = u::uint16(COLS - 1);
+    else if (round(dataYf) >= 0 && round(dataYf) <= COLS+1 )
+        dataYu = u::uint16(round(dataYf));
+    else
+        dataYu = u::uint16(65535);
+
+    if (round(dataZf) < 0 && round(dataZf) >= -3)
+        dataZu = 0;
+    else if (round(dataZf) > CHNLS-1 && round(dataZf) <= CHNLS+1)
+        dataZu = CHNLS - 1;
+    else if (round(dataZf) >= 0 && round(dataZf) <= COLS+1 )
+        dataZu = u::uint16(round(dataZf));
+    else
+        dataZu = u::uint16(65535);
+}
+
+//void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
+//{
+//    float dx = 2.0f*kT/(ROWS-1);
+//    float dy = 2.0f/(COLS-1);
+//    float dz = 2.0f/(CHNLS-1);
+//    centerCubeX = dx * (R1 + R2) / 2;
+//    centerCubeY = dy * (C1 + C2) / 2;
+//    centerCubeZ = dz * (Ch1 + Ch2) / 2;
+//}
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
@@ -647,11 +662,11 @@ void GLWidget::makeTextures()
 
 void GLWidget::makeObject()
 {
-        QImage Qimage =from2Dmass2QImage(sidesDataRO_CO[0],ROWS,COLS,true);
-        QFile file("D:/Work/MY.jpg");
-        file.open(QIODevice::WriteOnly);
-        Qimage.save(&file,"JPG");
-        file.close();
+//        QImage Qimage =from2Dmass2QImage(sidesDataRO_CO[0],ROWS,COLS,true);
+//        QFile file("D:/Work/MY.jpg");
+//        file.open(QIODevice::WriteOnly);
+//        Qimage.save(&file,"JPG");
+//        file.close();
     QVector<GLfloat> vertData;
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -747,33 +762,12 @@ void GLWidget::fillCubeSides()//заполнение массивов, соот�
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = 0; y < nROWS; ++y)//задняя грань куба
             sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + C2]; //data[x+Ch1][y+R1][COLS - C1];
-//    for(int x = 0; x < nCHNLS; ++x)
-//        for(int y = 0; y < nROWS; ++y)
-//            sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  COLS - C2 - 1]; //data[x+Ch1][y+R1][COLS - C2];
 
-//    for(int x = 0; x < nCHNLS; ++x)
-//        for(int y = 0; y < nROWS; ++y)//это лицевая грань куба
-//            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + COLS - C1 - 1]; //data[x+Ch1][y+R1][COLS - C1];
-//    for(int x = 0; x < nCHNLS; ++x)
-//        for(int y = nCOLS-1; y >= 0; --y)
-//            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + COLS - C2 - 1)];//data[x+Ch1][R1][y+COLS-C2];
-
-//    for(int x = 0; x < nCHNLS; ++x)
-//        for(int y = nCOLS-1; y >= 0; --y)
-//            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + COLS - C2 - 1)];
-
-//    for(int x = 0; x < nROWS; ++x)
-//        for(int y = 0; y < nCOLS; ++y)
-//            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + COLS - C2 - 1)];
-
-//    for(int x = 0; x < nROWS; ++x)
-//        for(int y = 0; y < nCOLS; ++y)
-//            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + COLS - C2 - 1)];
 
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
-            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + C1)];//data[x+Ch1][R1][y+COLS-C2];
+            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + C1)];//data[x+Ch1][R1][y+С1]; было data[x+Ch1][R1][y+COLS-C2];
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
@@ -888,9 +882,6 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
 
     return Q_image;
 }
-
-
-
 
 void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
