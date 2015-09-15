@@ -2,6 +2,7 @@
 
 #include "../../Library/GenericExc.h"
 #include "../HDF5FormatLib/include/hdf5.h"
+#include <QObject>
 
 HDF5FormatLib::HDF5FormatLib()
 {
