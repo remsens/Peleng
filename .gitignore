@@ -10,6 +10,8 @@
 
 /3DHyperCube.workspace/Debug/*
 /3DHyperCube.workspace/Release/*
+/3DHyperCube.workspace/3DHyperCube/3DHyperCube.pro
+/3DHyperCube.workspace/3DHyperCube/3DHyperCube.pro.user.18
 /HyperView.workspace/Debug/*
 /HyperView.workspace/Release/*
 /HDFFormatLib.workspace/Debug/*
