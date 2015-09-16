@@ -111,7 +111,7 @@ private:
     void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
-
+    void evalDataCordsFromMouse(int mouseX, int mouseY);
     QMenu* pContextMenu;
     QAction* pPlotAction;
     QAction* pDeletePlotsAction;

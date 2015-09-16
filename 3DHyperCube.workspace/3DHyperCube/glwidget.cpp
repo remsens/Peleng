@@ -83,6 +83,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
     createMenus();
+    setMouseTracking(true);
 }
 
 GLWidget::~GLWidget()
@@ -418,15 +419,14 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
     matrix.setToIdentity();
+
     matrix.translate(dx, dy, -4.0f);
    // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
-
-//    matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-//    matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-//    matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    // matrix.translate(0.2, 0.2, 0);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+
     //matrix.translate(centerCubeX, centerCubeY, centerCubeZ); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", projection * matrix);
@@ -468,48 +468,8 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
-    //
-    //-------------рассчет координат точки параллелепипеда по клику----------------
-    //
-    makeCurrent();
-    GLint  viewport[4];  
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    GLdouble objx;
-    GLdouble objy;
-    GLdouble objz;
-    GLdouble winx = event->x();
-    GLdouble winy = viewport[3] - event->y();
-    GLdouble modelM[16];
-    GLdouble projM[16];
-    for(int i = 0; i < 16; ++i){
-        modelM[i] = matrix.constData()[i];
-        projM[i] = projection.constData()[i];
-    }
-    float depth = -99;
-    glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-    gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
-    doneCurrent();
-    objx *=5;// ПОЧЕМУ????????????????????
-    objy*=5;//костыли
-    objz*=5;//костыли, но работает идеально
-    //
-    //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
-    //
-    float dRow = 2.0f * kT / (ROWS - 1);
-    float dCol = 2.0f  / (COLS - 1);
-    float dChan = 2.0f  / (CHNLS - 1);
-    m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
-    m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
-    m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
-
-    calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
-
-    qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
-    qDebug() << "x:"<< m_dataXf<< " y:"<< m_dataYf<< " z:"<< m_dataZf << endl;
+    evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-
-
-
 }
 void GLWidget::createMenus()
 {
@@ -564,18 +524,53 @@ void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
     centerCubeZ = dz * (Ch1 + Ch2) / 2;
 }
 
+void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
+{
+    makeCurrent();
+    GLint  viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble objx;
+    GLdouble objy;
+    GLdouble objz;
+    GLdouble winx = mouseX;
+    GLdouble winy = viewport[3] - mouseY;
+    GLdouble modelM[16];
+    GLdouble projM[16];
+    for(int i = 0; i < 16; ++i){
+        modelM[i] = matrix.constData()[i];
+        projM[i] = projection.constData()[i];
+    }
+    float depth = -99;
+    glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
+    doneCurrent();
+    objx *=5;// ПОЧЕМУ????????????????????
+    objy*=5;//костыли
+    objz*=5;//костыли, но работает идеально
+    //
+    //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
+    //
+    float dRow = 2.0f * kT / (ROWS - 1);
+    float dCol = 2.0f  / (COLS - 1);
+    float dChan = 2.0f  / (CHNLS - 1);
+    m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
+    m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
+    m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
+
+    calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
+    qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+}
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
 
-    if (event->buttons() & Qt::LeftButton) //{
+    if (event->buttons() & Qt::LeftButton)
         rotateBy(8 * dy, 8 * dx, 0);
-//    }
-//    else if (event->buttons() & Qt::RightButton) {
-//        rotateBy(8 * dy, 0, 8 * dx);
-//    }
     lastPos = event->pos();
+    evalDataCordsFromMouse(event->x(),event->y());
+    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

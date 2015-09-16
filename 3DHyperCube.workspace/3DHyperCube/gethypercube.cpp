@@ -2,6 +2,7 @@
 
 #include <QtGlobal>
 #include <QFile>
+#include <QDebug>
 
 using namespace u;
 GetHyperCube::GetHyperCube()
@@ -39,8 +40,13 @@ void GetHyperCube::CreateHyperCube()
     QFile fileArr[224];
     for (uint32 j = 0; j < 224; ++j)
     {
-        fileArr[j].setFileName(QString("E:/AvirisChnls/kanal%1.dat").arg(j));
-        fileArr[j].open(QFile::ReadOnly);
+
+        fileArr[j].setFileName(QString("D:/Work/Programming/QT/ForPeleng/kanal%1.dat").arg(j));
+        if(!fileArr[j].open(QFile::ReadOnly))
+        {
+             fileArr[j].setFileName(QString("E:/AvirisChnls/kanal%1.dat").arg(j));
+             fileArr[j].open(QFile::ReadOnly);
+        }
         fileArr[j].read((char*)data[j],infocube.lines*infocube.samples*infocube.bytesType);
         fileArr[j].close();
     }
