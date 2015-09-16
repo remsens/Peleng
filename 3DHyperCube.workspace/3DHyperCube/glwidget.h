@@ -110,7 +110,7 @@ private:
     QImage from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,bool gray = false);
     void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
-//    void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
+    void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
 
     QMenu* pContextMenu;
     QAction* pPlotAction;
@@ -134,7 +134,7 @@ private:
     GLfloat ratio; //отношение высоты окна к ширине
     GLfloat nSca; // переменная отвечает за масштабирование обьекта
     GLfloat dx,dy; // для трансляции матрицы (сдвиг куба)
-//    GLfloat centerCubeX, centerCubeY, centerCubeZ;// центр текущего параллелепипеда
+    GLfloat centerCubeX, centerCubeY, centerCubeZ;// центр текущего параллелепипеда
     QOpenGLTexture *textures[6];
     QImage *sidesImages[6];
     QOpenGLShaderProgram *program;

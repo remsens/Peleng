@@ -416,14 +416,18 @@ void GLWidget::paintGL()
 
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
+    calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
     matrix.setToIdentity();
     matrix.translate(dx, dy, -4.0f);
-   // matrix.translate(-centerCubeX, -centerCubeZ , -centerCubeY ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+   // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+
+//    matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+//    matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+//    matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-    //matrix.translate(centerCubeX, centerCubeZ, centerCubeY); //возвращаем обратно
+    //matrix.translate(centerCubeX, centerCubeY, centerCubeZ); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", projection * matrix);
 
@@ -550,15 +554,15 @@ void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16
         dataZu = u::uint16(65535);
 }
 
-//void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
-//{
-//    float dx = 2.0f*kT/(ROWS-1);
-//    float dy = 2.0f/(COLS-1);
-//    float dz = 2.0f/(CHNLS-1);
-//    centerCubeX = dx * (R1 + R2) / 2;
-//    centerCubeY = dy * (C1 + C2) / 2;
-//    centerCubeZ = dz * (Ch1 + Ch2) / 2;
-//}
+void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
+{
+    float dx = 2.0f*kT/(ROWS-1);
+    float dy = 2.0f/(COLS-1);
+    float dz = 2.0f/(CHNLS-1);
+    centerCubeX = dx * (R1 + R2) / 2;
+    centerCubeY = dy * (C1 + C2) / 2;
+    centerCubeZ = dz * (Ch1 + Ch2) / 2;
+}
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
