@@ -23,7 +23,7 @@ private:
     void setupUI();
 
     QWidget *centralWidget;
-    QCustomPlot* pPlotWidget;
+    QCustomPlot* m_customPlot;
     QVBoxLayout *verticalLayout;
     //uint x1,x2,y1,y2,z1,z2;
 };

@@ -85,6 +85,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
+
 }
 
 GLWidget::~GLWidget()
@@ -145,6 +146,16 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
+    glLineWidth(1);       // ширину линии
+                          // устанавливаем 1
+     glBegin(GL_LINES);
+      glColor3d(1,0,0);     // красный цвет
+      glVertex3d(-4.5,3,0); // первая линия
+      glVertex3d(-3,3,0);
+      glColor3d(0,1,0);     // зеленый
+      glVertex3d(-3,3.3,0); // вторая линия
+      glVertex3d(-4,3.4,0);
+     glEnd();
 
 
 }
@@ -424,9 +435,11 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    if (windowPlotter == 0)
+    if (pWidgLine == 0)
         pWidgLine = new PlotterAlongLine();
+
     pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
+    pWidgLine->activateWindow();
     pWidgLine->show();
 }
 

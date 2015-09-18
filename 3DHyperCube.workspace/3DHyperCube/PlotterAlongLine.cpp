@@ -5,7 +5,12 @@
 PlotterAlongLine::PlotterAlongLine(QWidget *parent) : QMainWindow(parent)
 {
     setupUI();
-
+    QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
+    panim->setDuration(300);
+    panim->setStartValue(0);
+    panim->setEndValue(1);
+    panim->setEasingCurve(QEasingCurve::InCirc);
+    panim->start();
 
 }
 PlotterAlongLine::~PlotterAlongLine()
@@ -20,35 +25,34 @@ void PlotterAlongLine::setupUI()
     verticalLayout->setSpacing(6);
     verticalLayout->setContentsMargins(11, 11, 11, 11);
     verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-    pPlotWidget = new QCustomPlot(centralWidget);
-    pPlotWidget->setObjectName(QStringLiteral("PlotWidget"));
-    verticalLayout->addWidget(pPlotWidget);
+    m_customPlot = new QCustomPlot(centralWidget);
+    m_customPlot->setObjectName(QStringLiteral("PlotWidget"));
+    verticalLayout->addWidget(m_customPlot);
     this->setCentralWidget(centralWidget);
     this->setWindowTitle("Яркость вдоль прямой");
     this->resize(518,360);
     QPalette palette;
     QBrush brush1(QColor(255, 255, 255, 255));
-    palette.setBrush(QPalette::Active, QPalette::Window, brush1);
+    palette.setBrush(QPalette::All, QPalette::Window, brush1);
     this->setPalette(palette);
 }
 
 
 void PlotterAlongLine::plotSpctr(HyperCube* pCube, uint x1, uint x2, uint y1, uint y2, uint z1, uint z2) // это data координаты
 {
-    //    QVector<double> xArr(Chnls), yArr(Chnls);
-    //    qint16* pSpectrValues = new qint16[Chnls];
-    //    ptrCube->GetSpectrumPoint(dataX, dataY,pSpectrValues);
-    uint k = 3;
+
+    m_customPlot->clearGraphs(); // только 1 график на виджете
+    uint k = 1;
     int length = round (qSqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1)) / k);
 
-    uint* cordXarr = new uint[length];
-    uint* cordYarr = new uint[length];
-    uint* cordZarr = new uint[length];
+    int* cordXarr = new int[length];
+    int* cordYarr = new int[length];
+    int* cordZarr = new int[length];
     for (int i = 0; i<length; ++i)
     {
-        cordXarr[i] = (uint)(x1 + (double)(x2-x1)/(length-1) * i);
-        cordYarr[i] = (uint)(y1 + (double)(y2-y1)/(length-1) * i);
-        cordZarr[i] = (uint)(z1 +(double)(z2-z1)/(length-1) * i);
+        cordXarr[i] = x1 + (double)((int)x2-(int)x1)/(length-1) * i;
+        cordYarr[i] = y1 + (double)((int)y2-(int)y1)/(length-1) * i;
+        cordZarr[i] = z1 +(double)((int)z2-(int)z1)/(length-1) * i;
 
     }
     QVector<double> plotXArr(length), plotYArr(length);
@@ -81,17 +85,17 @@ void PlotterAlongLine::plotSpctr(HyperCube* pCube, uint x1, uint x2, uint y1, ui
     if (sortedYArr.last() > maxY )
         maxY = sortedYArr.last();
 
-    pPlotWidget->setInteraction(QCP::iRangeDrag , true);
-    pPlotWidget->setInteraction(QCP::iRangeZoom  , true);
+    m_customPlot->setInteraction(QCP::iRangeDrag , true);
+    m_customPlot->setInteraction(QCP::iRangeZoom  , true);
    // pPlotWidget->legend->setVisible(true);
-    pPlotWidget->addGraph();
-    pPlotWidget->graph()->setPen(QPen(Qt::black));
+    m_customPlot->addGraph();
+    m_customPlot->graph()->setPen(QPen(Qt::black));
 
     //pPlotWidget->graph()->setName("grafName");
-    pPlotWidget->graph()->setData(plotXArr,plotYArr);
-    pPlotWidget->xAxis->setRange(plotXArr.first(),plotXArr.last());
-    pPlotWidget->yAxis->setRange(minY,maxY);
-    pPlotWidget->replot();
+    m_customPlot->graph()->setData(plotXArr,plotYArr);
+    m_customPlot->xAxis->setRange(plotXArr.first(),plotXArr.last());
+    m_customPlot->yAxis->setRange(minY,maxY);
+    m_customPlot->replot();
 
 
 
