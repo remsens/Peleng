@@ -544,9 +544,9 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
     doneCurrent();
-    objx *=5;// ПОЧЕМУ????????????????????
-    objy*=5;//костыли
-    objz*=5;//костыли, но работает идеально
+    objx *=5;
+    objy*=5;
+    objz*=5;
     //
     //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
     //
@@ -556,9 +556,12 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
     m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
     m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
-
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
-    qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
+        qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+    else
+        qDebug() <<"no spctr"<<endl;
+
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -595,11 +598,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         dx  -= 0.1;
         break;
     case Qt::Key_Up:
-        dy  += 0.1;
+        dy  -= 0.1;
         break;
 
     case Qt::Key_Down:
-        dy  -= 0.1;
+        dy  += 0.1;
         break;
     case Qt::Key_Space:
         dx = 0;
