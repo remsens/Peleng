@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "QCustomPlot.h"
 #include "HyperCube.h"
-#include "GetHyperCube.h"
+//#include "GetHyperCube.h"
 namespace Ui {
 class PlotterWindow;
 }

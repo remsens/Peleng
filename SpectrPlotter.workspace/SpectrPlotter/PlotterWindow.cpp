@@ -36,6 +36,7 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
            xArr[i] = i;
            yArr[i] = pSpectrValues[i];
         }
+
         QVector<double> sortedYArr;
         sortedYArr = yArr;
         qSort(sortedYArr);
@@ -76,6 +77,7 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
     }catch(...){
         m_customPlot->replot();
     }
+    delete pSpectrValues;
 
 
 

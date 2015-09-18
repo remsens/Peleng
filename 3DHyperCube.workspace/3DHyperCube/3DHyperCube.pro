@@ -7,7 +7,8 @@ HEADERS       = \
     ../../Library/HyperCube.h \
     ../../Library/Types.h \
     ../../Library/QCustomPlot.h \
-    ../../SpectrPlotter.workspace/SpectrPlotter/PlotterWindow.h
+    ../../SpectrPlotter.workspace/SpectrPlotter/PlotterWindow.h \
+    PlotterAlongLine.h
 SOURCES       = \
     GetHyperCube.cpp \
     GLWidget.cpp \
@@ -16,7 +17,8 @@ SOURCES       = \
     ../../Library/GenericExc.cpp \
     ../../Library/HyperCube.cpp \
     ../../Library/QCustomPlot.cpp \
-    ../../SpectrPlotter.workspace/SpectrPlotter/PlotterWindow.cpp
+    ../../SpectrPlotter.workspace/SpectrPlotter/PlotterWindow.cpp \
+    PlotterAlongLine.cpp
 
 INCLUDEPATH += $$PWD/../../Library\
                 $$PWD/../../SpectrPlotter.workspace/SpectrPlotter\

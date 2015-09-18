@@ -48,6 +48,7 @@
 #include "HyperCube.h"
 #include "GetHyperCube.h"
 #include "PlotterWindow.h"
+#include "PlotterAlongLine.h"
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
@@ -73,15 +74,20 @@ public slots:
     void sliderY1ValueChanged(int value);
     void sliderY2ValueChanged(int value);
     void plotSpectr(uint x, uint y, uint z);
+    void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
+
 private slots:
 
     void prepareToPlotSpectr();
+    void startIsClicked();//нажато "Начало" из контекстного меню
+    void finishIsClicked();
 
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint);
     void signalPlotSpectr();
+    void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -116,6 +122,8 @@ private:
     QMenu* pContextMenu;
     QAction* pPlotAction;
     QAction* pDeletePlotsAction;
+    QAction* pSetStartAction;
+    QAction* pSetFinishAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
@@ -156,8 +164,10 @@ private:
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
+    uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     PlotterWindow* windowPlotter = 0;
-    QVector<PlotterWindow*> windowsArr;
+    PlotterAlongLine *pWidgLine = 0;
+    QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
 };
 
 #endif

@@ -45,7 +45,8 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-//#include <QAction>
+
+
 using namespace std;
 
 int cmp(const void *a, const void *b);
@@ -388,6 +389,25 @@ void GLWidget::prepareToPlotSpectr()
     emit sendXYZ(m_dataX,m_dataY,m_dataZ);
 }
 
+void GLWidget::startIsClicked()
+{
+    pContextMenu->addAction(pSetFinishAction);
+    pContextMenu->removeAction(pSetStartAction);
+    m_x1 = m_dataX;
+    m_y1 = m_dataY;
+    m_z1 = m_dataZ;
+}
+
+void GLWidget::finishIsClicked()
+{
+    pContextMenu->removeAction(pSetFinishAction);
+    pContextMenu->addAction(pSetStartAction);
+    m_x2 = m_dataX;
+    m_y2 = m_dataY;
+    m_z2 = m_dataZ;
+    emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (windowPlotter == 0 || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
@@ -402,15 +422,20 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 }
 
+void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
+{
+    if (windowPlotter == 0)
+        pWidgLine = new PlotterAlongLine();
+    pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
+    pWidgLine->show();
+}
+
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
         delete windowsArr[i];
     windowsArr.clear();
 }
-
-
-
 
 void GLWidget::paintGL()
 {
@@ -476,11 +501,18 @@ void GLWidget::createMenus()
     pContextMenu = new QMenu();
     pPlotAction = new QAction("Спектр",this);
     pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
+    pSetStartAction = new QAction("Начало",this);
+    pSetFinishAction = new QAction("Конец",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
+    pContextMenu->addAction(pSetStartAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+
+    connect(pSetStartAction,SIGNAL(triggered()),SLOT(startIsClicked()));
+    connect(pSetFinishAction,SIGNAL(triggered()),SLOT(finishIsClicked()));
+    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
