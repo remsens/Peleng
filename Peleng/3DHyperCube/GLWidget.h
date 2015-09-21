@@ -38,6 +38,7 @@
 **
 ****************************************************************************/
 
+
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
@@ -47,6 +48,7 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../SpectrPlotter/PlotterWindow.h"
+#include "PlotterAlongLine.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -73,15 +75,20 @@ public slots:
     void sliderY1ValueChanged(int value);
     void sliderY2ValueChanged(int value);
     void plotSpectr(uint x, uint y, uint z);
+    void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
+
 private slots:
 
     void prepareToPlotSpectr();
+    void startIsClicked();//нажато "Начало" из контекстного меню
+    void finishIsClicked();
 
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint);
     void signalPlotSpectr();
+    void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -110,11 +117,14 @@ private:
     QImage from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,bool gray = false);
     void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
-//    void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
+    void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
+    void evalDataCordsFromMouse(int mouseX, int mouseY);
 
     QMenu* pContextMenu;
     QAction* pPlotAction;
     QAction* pDeletePlotsAction;
+    QAction* pSetStartAction;
+    QAction* pSetFinishAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
@@ -134,7 +144,7 @@ private:
     GLfloat ratio; //отношение высоты окна к ширине
     GLfloat nSca; // переменная отвечает за масштабирование обьекта
     GLfloat dx,dy; // для трансляции матрицы (сдвиг куба)
-//    GLfloat centerCubeX, centerCubeY, centerCubeZ;// центр текущего параллелепипеда
+    GLfloat centerCubeX, centerCubeY, centerCubeZ;// центр текущего параллелепипеда
     QOpenGLTexture *textures[6];
     QImage *sidesImages[6];
     QOpenGLShaderProgram *program;
@@ -142,21 +152,24 @@ private:
     float kT = 1;
     float coords[6][4][3] = {
                              { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
-                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },//пустая грань
-                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },//напротив наполовину видной грани
-                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },//наполовину видная грань
-                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },//грань с фото
+                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
+                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
+                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
+                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
                              { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
                             };
     int Ch1, Ch2, R1, R2, C1, C2; // хранят value слайдеров
     int prevChN, prevRowsN ;
     int minCMap,maxCMap;
-    //GetHyperCube* m_cube;
+
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
+    uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     PlotterWindow* windowPlotter = 0;
-    QVector<PlotterWindow*> windowsArr;
+    PlotterAlongLine *pWidgLine = 0;
+    QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
+    QVector<PlotterAlongLine*> windowsArrLines; //для хранения указателей на плоттер(вдоль линии) окна и их удаления
 };
 
 #endif

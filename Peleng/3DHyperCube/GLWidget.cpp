@@ -83,6 +83,8 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
     createMenus();
+    setMouseTracking(true);
+
 }
 
 GLWidget::~GLWidget()
@@ -143,6 +145,16 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
+    glLineWidth(1);       // ширину линии
+                          // устанавливаем 1
+     glBegin(GL_LINES);
+      glColor3d(1,0,0);     // красный цвет
+      glVertex3d(-4.5,3,0); // первая линия
+      glVertex3d(-3,3,0);
+      glColor3d(0,1,0);     // зеленый
+      glVertex3d(-3,3.3,0); // вторая линия
+      glVertex3d(-4,3.4,0);
+     glEnd();
 
 
 }
@@ -387,6 +399,25 @@ void GLWidget::prepareToPlotSpectr()
     emit sendXYZ(m_dataX,m_dataY,m_dataZ);
 }
 
+void GLWidget::startIsClicked()
+{
+    pContextMenu->addAction(pSetFinishAction);
+    pContextMenu->removeAction(pSetStartAction);
+    m_x1 = m_dataX;
+    m_y1 = m_dataY;
+    m_z1 = m_dataZ;
+}
+
+void GLWidget::finishIsClicked()
+{
+    pContextMenu->removeAction(pSetFinishAction);
+    pContextMenu->addAction(pSetStartAction);
+    m_x2 = m_dataX;
+    m_y2 = m_dataY;
+    m_z2 = m_dataZ;
+    emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (windowPlotter == 0 || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
@@ -401,6 +432,16 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 }
 
+void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
+{
+    if (pWidgLine == 0)
+        pWidgLine = new PlotterAlongLine();
+
+    pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
+    pWidgLine->activateWindow();
+    pWidgLine->show();
+}
+
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
@@ -408,22 +449,22 @@ void GLWidget::deleteSpectrWindows()
     windowsArr.clear();
 }
 
-
-
-
 void GLWidget::paintGL()
 {
 
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
+    calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
     matrix.setToIdentity();
+
     matrix.translate(dx, dy, -4.0f);
-   // matrix.translate(-centerCubeX, -centerCubeZ , -centerCubeY ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+   // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+    // matrix.translate(0.2, 0.2, 0);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-    //matrix.translate(centerCubeX, centerCubeZ, centerCubeY); //возвращаем обратно
+
+    //matrix.translate(centerCubeX, centerCubeY, centerCubeZ); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
     program->setUniformValue("matrix", projection * matrix);
 
@@ -464,59 +505,26 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
-    //
-    //-------------рассчет координат точки параллелепипеда по клику----------------
-    //
-    makeCurrent();
-    GLint  viewport[4];  
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    GLdouble objx;
-    GLdouble objy;
-    GLdouble objz;
-    GLdouble winx = event->x();
-    GLdouble winy = viewport[3] - event->y();
-    GLdouble modelM[16];
-    GLdouble projM[16];
-    for(int i = 0; i < 16; ++i){
-        modelM[i] = matrix.constData()[i];
-        projM[i] = projection.constData()[i];
-    }
-    float depth = -99;
-    glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-    gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
-    doneCurrent();
-    objx *=5;// ПОЧЕМУ????????????????????
-    objy*=5;//костыли
-    objz*=5;//костыли, но работает идеально
-    //
-    //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
-    //
-    float dRow = 2.0f * kT / (ROWS - 1);
-    float dCol = 2.0f  / (COLS - 1);
-    float dChan = 2.0f  / (CHNLS - 1);
-    m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
-    m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
-    m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
-
-    calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
-
-    qDebug() << "objx:"<< objx<< " objy:"<< objz<< " objz:"<< objy << endl;
-    qDebug() << "x:"<< m_dataXf<< " y:"<< m_dataYf<< " z:"<< m_dataZf << endl;
+    evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-
-
-
 }
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
     pPlotAction = new QAction("Спектр",this);
     pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
+    pSetStartAction = new QAction("Начало",this);
+    pSetFinishAction = new QAction("Конец",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
+    pContextMenu->addAction(pSetStartAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+
+    connect(pSetStartAction,SIGNAL(triggered()),SLOT(startIsClicked()));
+    connect(pSetFinishAction,SIGNAL(triggered()),SLOT(finishIsClicked()));
+    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -550,28 +558,66 @@ void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16
         dataZu = u::uint16(65535);
 }
 
-//void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
-//{
-//    float dx = 2.0f*kT/(ROWS-1);
-//    float dy = 2.0f/(COLS-1);
-//    float dz = 2.0f/(CHNLS-1);
-//    centerCubeX = dx * (R1 + R2) / 2;
-//    centerCubeY = dy * (C1 + C2) / 2;
-//    centerCubeZ = dz * (Ch1 + Ch2) / 2;
-//}
+void GLWidget::calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2)
+{
+    float dx = 2.0f*kT/(ROWS-1);
+    float dy = 2.0f/(COLS-1);
+    float dz = 2.0f/(CHNLS-1);
+    centerCubeX = dx * (R1 + R2) / 2;
+    centerCubeY = dy * (C1 + C2) / 2;
+    centerCubeZ = dz * (Ch1 + Ch2) / 2;
+}
+
+void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
+{
+    makeCurrent();
+    GLint  viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    GLdouble objx;
+    GLdouble objy;
+    GLdouble objz;
+    GLdouble winx = mouseX;
+    GLdouble winy = viewport[3] - mouseY;
+    GLdouble modelM[16];
+    GLdouble projM[16];
+    for(int i = 0; i < 16; ++i){
+        modelM[i] = matrix.constData()[i];
+        projM[i] = projection.constData()[i];
+    }
+    float depth = -99;
+    glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
+    doneCurrent();
+    objx *=5;
+    objy*=5;
+    objz*=5;
+    //
+    //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
+    //
+    float dRow = 2.0f * kT / (ROWS - 1);
+    float dCol = 2.0f  / (COLS - 1);
+    float dChan = 2.0f  / (CHNLS - 1);
+    m_dataXf = (objx / dRow) +  (float)(ROWS-1) / 2.0f;
+    m_dataYf = (objz / dCol) +  (float)(COLS-1) / 2.0f;//objz - это не ошибка
+    m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
+    calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
+        qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+    else
+        qDebug() <<"no spctr"<<endl;
+
+}
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
 
-    if (event->buttons() & Qt::LeftButton) //{
+    if (event->buttons() & Qt::LeftButton)
         rotateBy(8 * dy, 8 * dx, 0);
-//    }
-//    else if (event->buttons() & Qt::RightButton) {
-//        rotateBy(8 * dy, 0, 8 * dx);
-//    }
     lastPos = event->pos();
+    evalDataCordsFromMouse(event->x(),event->y());
+    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -596,11 +642,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         dx  -= 0.1;
         break;
     case Qt::Key_Up:
-        dy  += 0.1;
+        dy  -= 0.1;
         break;
 
     case Qt::Key_Down:
-        dy  -= 0.1;
+        dy  += 0.1;
         break;
     case Qt::Key_Space:
         dx = 0;

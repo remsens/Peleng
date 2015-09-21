@@ -16,7 +16,8 @@ HEADERS       = \
     mainwindow.h \
     ui_MainWindow3DCube.h \
     ../Library/QCustomPlot.h \
-    ../SpectrPlotter/PlotterWindow.h
+    ../SpectrPlotter/PlotterWindow.h \
+    PlotterAlongLine.h
 
 SOURCES       = \
     CubePlugin.cpp \
@@ -26,7 +27,8 @@ SOURCES       = \
     GLWidget.cpp \
     mainwindow.cpp \
     ../Library/QCustomPlot.cpp \
-    ../SpectrPlotter/PlotterWindow.cpp
+    ../SpectrPlotter/PlotterWindow.cpp \
+    PlotterAlongLine.cpp
 
 DISTFILES += \
     3DCubePlugin.json
