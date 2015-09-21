@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>751</width>
+    <height>624</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HyperView, version 0.1 alpha</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout"/>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>751</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="OpenFileAction"/>
+    <addaction name="ExitAction"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="OpenFileAction">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icon/tab/icons/Open Folder-50.png</normaloff>:/icon/tab/icons/Open Folder-50.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="ExitAction">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icon/tab/icons/Exit-50.png</normaloff>:/icon/tab/icons/Exit-50.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="CreateTableAction">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icon/tab/icons/Data Sheet-50.png</normaloff>:/icon/tab/icons/Data Sheet-50.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть канал</string>
+   </property>
+  </action>
+  <action name="PlotHeatMapAction">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icon/tab/icons/Heat Map-50.png</normaloff>:/icon/tab/icons/Heat Map-50.png</iconset>
+   </property>
+   <property name="text">
+    <string>Построить график канала</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
