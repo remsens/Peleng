@@ -13,6 +13,7 @@
 #include <QTableView>
 
 #include "../Library/QCustomPlot.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -160,10 +161,13 @@ void MainWindow::LoadFile()
 
 
         // TODO
-        cube= m_pluginsControl->GetReadPlugins().first()->getCube();
-
+        cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+        IAttributes* attr = new Cube3DPluginAttributes();
+        if (m_pluginsControl->GetPelengPlugins().size() > 0)
+        {
+            m_pluginsControl->GetPelengPlugins().first()->Execute(cube, attr);
+        }
     }
-
 }
 
 
@@ -177,40 +181,7 @@ void MainWindow::updateProgress()
 
 bool MainWindow::loadFilePlugin()
 {
-//    QDir pluginsDir(qApp->applicationDirPath());
-//#if defined(Q_OS_WIN)
-//    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-//       // pluginsDir.cdUp();
-//#elif defined(Q_OS_MAC)
-//    if (pluginsDir.dirName() == "MacOS") {
-//        pluginsDir.cdUp();
-//        pluginsDir.cdUp();
-//        pluginsDir.cdUp();
-//    }
-//#endif
-//    //pluginsDir.cd("plugins");
 
-//    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
-//        if (!fileName.endsWith(".dll")) continue;
-//        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
-//        QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
-//        if (MetaData["Type"].toString().contains("FileFormat")) {
-//        //qDebug() << pluginLoader.instance();
-//        try {
-//            QObject *plugin = pluginLoader.instance();
-//        if (plugin)
-//        {
-//            FileFormatPluginList.append(qobject_cast<FileReadInterface *>(plugin));
-//           // return true;
-//        }
-//        }
-//            catch (...) {
-//                qDebug() << pluginLoader.errorString();
-//            }
-
-//        }
-//    }
-//    return false;
 }
 
 

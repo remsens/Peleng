@@ -59,7 +59,7 @@ void PluginsControl::LoadPlugins()
                 // надо подумать, нужна тут обработка ошибок или нет
                 qDebug() << pluginLoader.errorString();
             }
-        } else if (MetaData["Type"].toString().contains("PelengPlugins"))
+        } else if (MetaData["Type"].toString().contains("PelengFormat"))
         {
             try {
                 QObject *plugin = pluginLoader.instance();

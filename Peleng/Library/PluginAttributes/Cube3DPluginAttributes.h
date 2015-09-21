@@ -3,7 +3,7 @@
 
 #include "IAttributes.h"
 
-class Cube3DPluginAttributes: IAttributes
+class Cube3DPluginAttributes: public IAttributes
 {
 public:
     Cube3DPluginAttributes();

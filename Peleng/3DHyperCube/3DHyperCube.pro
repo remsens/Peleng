@@ -11,7 +11,7 @@ HEADERS       = \
     ../Library/PluginAttributes/Cube3DPluginAttributes.h \
     ../Library/HyperCube.h \
     ../Library/Types.h \
-    ..//Library/GenericExc.h \
+    ../Library/GenericExc.h \
     GLWidget.h \
     mainwindow.h \
     ui_MainWindow3DCube.h \
