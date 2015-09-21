@@ -2,7 +2,6 @@
 #define CUBEPLUGIN_H
 
 #include <QObject>
-#include <QFILE>
 #include "../Library/Interfaces/PelengPluginsInterface.h"
 
 class CubePlugin : public QObject, public  PelengPluginsInterface

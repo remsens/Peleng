@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "HyperCube.h"
+#include "../Library/HyperCube.h"
+
 namespace Ui {
 class MainWindow;
 }

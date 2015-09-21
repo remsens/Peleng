@@ -1,5 +1,6 @@
 {
     "Type" : "PelengFormat",
     "Name" : "3DCube UI",
-    "Description" : "Гиперкуб",
+    "Description" : "HyperCube",
+    "Extinsion" : "*.hdr"
 }

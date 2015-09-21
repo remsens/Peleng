@@ -1,8 +1,8 @@
 #ifndef PELENGPLUGINSINTERFACE
 #define PELENGPLUGINSINTERFACE
 
-#include "HyperCube.h"
-#include "PluginAttributes/IAttributes.h"
+#include "../../Library/HyperCube.h"
+#include "../../Library/PluginAttributes/IAttributes.h"
 
 class PelengPluginsInterface
 {

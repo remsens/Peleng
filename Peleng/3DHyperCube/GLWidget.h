@@ -44,9 +44,9 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
-#include "qcustomplot.h"
-#include "HyperCube.h"
-#include "PlotterWindow.h"
+#include "../Library/QCustomPlot.h"
+#include "../Library/HyperCube.h"
+#include "../SpectrPlotter/PlotterWindow.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)

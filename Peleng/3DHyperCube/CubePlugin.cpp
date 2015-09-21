@@ -1,12 +1,8 @@
 #include "CubePlugin.h"
-
 #include <QSurfaceFormat>
-#include <QtWidgets>
-
-#include "GLWidget.h"
 #include "mainwindow.h"
 
-CubePlugin::CubePlugin()
+CubePlugin::CubePlugin(QObject *parent)
 {
 
 }
@@ -16,7 +12,7 @@ CubePlugin::~CubePlugin()
 
 }
 
-void Execute(HyperCube* cube, IAttributes* attr)
+void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
 {
 
     QSurfaceFormat format;

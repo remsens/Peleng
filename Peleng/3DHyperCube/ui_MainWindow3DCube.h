@@ -24,7 +24,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include "GLWidget.h"
-#include "HyperCube.h"
+#include "../Library/HyperCube.h"
 
 QT_BEGIN_NAMESPACE
 
