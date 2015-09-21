@@ -60,6 +60,8 @@ GLWidget::~GLWidget()
     delete pPlotAction;
     delete pDeletePlotsAction;
     delete program;
+    delete pWidgLine;
+    deleteSpectrWindows();
     doneCurrent();
 }
 void GLWidget::initializeGL()

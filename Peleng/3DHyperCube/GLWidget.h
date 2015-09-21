@@ -169,7 +169,6 @@ private:
     PlotterWindow* windowPlotter = 0;
     PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
-    QVector<PlotterAlongLine*> windowsArrLines; //для хранения указателей на плоттер(вдоль линии) окна и их удаления
 };
 
 #endif

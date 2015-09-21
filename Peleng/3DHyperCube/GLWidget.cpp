@@ -60,7 +60,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       program(0)
 {
 
-    nSca = 1.2;
+    nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
     m_pHyperCube = ptrCube;
@@ -99,6 +99,8 @@ GLWidget::~GLWidget()
     delete pPlotAction;
     delete pDeletePlotsAction;
     delete program;
+    delete pWidgLine;
+    deleteSpectrWindows();
     doneCurrent();
 }
 void GLWidget::initializeGL()
@@ -145,16 +147,6 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
-    glLineWidth(1);       // ширину линии
-                          // устанавливаем 1
-     glBegin(GL_LINES);
-      glColor3d(1,0,0);     // красный цвет
-      glVertex3d(-4.5,3,0); // первая линия
-      glVertex3d(-3,3,0);
-      glColor3d(0,1,0);     // зеленый
-      glVertex3d(-3,3.3,0); // вторая линия
-      glVertex3d(-4,3.4,0);
-     glEnd();
 
 
 }
@@ -434,7 +426,7 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    if (pWidgLine == 0)
+    if (pWidgLine == 0)                                         // Всегда только 1 окно
         pWidgLine = new PlotterAlongLine();
 
     pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
@@ -457,7 +449,7 @@ void GLWidget::paintGL()
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
     matrix.setToIdentity();
 
-    matrix.translate(dx, dy, -4.0f);
+    matrix.translate(dx, dy, -14.0f);
    // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
     // matrix.translate(0.2, 0.2, 0);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
@@ -588,9 +580,7 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     glReadPixels(winx, winy, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
     gluUnProject(winx,winy,depth,modelM,projM,viewport,&objx,&objy,&objz);
     doneCurrent();
-    objx *=5;
-    objy*=5;
-    objz*=5;
+
     //
     //-------------нахождение координат клика в массиве данных гиперкуба (dataX,dataY,dataZ)----------------
     //
@@ -717,9 +707,9 @@ void GLWidget::makeObject()
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 4; ++j) {
             // vertex position
-            vertData.append(0.2 * coords[i][j][0]);
-            vertData.append(0.2 * coords[i][j][1]);
-            vertData.append(0.2 * coords[i][j][2]);
+            vertData.append(coords[i][j][0]);
+            vertData.append(coords[i][j][1]);
+            vertData.append(coords[i][j][2]);
             // texture coordinate
             vertData.append(j == 0 || j == 3);
             vertData.append(j == 0 || j == 1);
