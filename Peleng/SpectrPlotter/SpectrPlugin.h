@@ -19,4 +19,4 @@ private:
     void Execute(HyperCube* cube, IAttributes* attr);
 };
 
-#endif // SPECTRPLUGIN_H
+#endif

@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow3DCube.h"
-
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -21,6 +21,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 void MainWindow::processData(HyperCube *ptrCube)
 {
+    qDebug() << "Зашли в process data";
     ui->setupUi(ptrCube,this);
 
     int chnls = ptrCube->GetCountofChannels();

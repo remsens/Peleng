@@ -9,6 +9,8 @@ QT       -= gui
 TARGET = AvirisReadPlugin
 TEMPLATE = lib
 
+CONFIG += plugin
+
 DEFINES += AVIRISREADPLUGIN_LIBRARY
 
 SOURCES += avirisreadplugin.cpp \

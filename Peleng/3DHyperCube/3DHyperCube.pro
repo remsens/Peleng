@@ -5,6 +5,14 @@ QT           += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += plugin
+CONFIG += c++11
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
+
 HEADERS       = \
     CubePlugin.h \
     ../Library/Interfaces/PelengPluginsInterface.h \
@@ -37,8 +45,6 @@ FORMS += \
     mainwindow.ui \
     ../SpectrPlotter/PlotterWindow.ui
 
-
-CONFIG += c++11
 
 SUBDIRS += \
     ../SpectrPlotter/SpectrPlotter.pro

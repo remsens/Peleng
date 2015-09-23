@@ -52,5 +52,13 @@ void GetHyperCube::CreateHyperCube()
     }
     m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(data), infocube.samples*infocube.bytesType*infocube.lines*infocube.bands, infocube);
 
+    QFile file("data2.txt");
+    file.open(QFile::WriteOnly);
+    char** data;
+    data = (char**)m_hyperCube->GetDataCube();
+    for (int i = 0; i < 224; i++)
+    {
+        file.write(data[i], m_hyperCube->GetBytesInElements()*m_hyperCube->GetColumns()*m_hyperCube->GetLines());
+    }
 }
 

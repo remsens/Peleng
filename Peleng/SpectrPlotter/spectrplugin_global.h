@@ -1,0 +1,13 @@
+#ifndef SPECTRPLUGIN_GLOBAL
+#define SPECTRPLUGIN_GLOBAL
+
+#include <QtCore/qglobal.h>
+
+#if defined(SPECTRLIB_LIBRARY)
+#  define SPECTRLIB_EXPORT Q_DECL_EXPORT
+#else
+#  define SPECTRLIB_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // SPECTRPLUGIN_GLOBAL
+

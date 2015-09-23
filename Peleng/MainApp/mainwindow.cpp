@@ -13,7 +13,8 @@
 #include <QTableView>
 
 #include "../Library/QCustomPlot.h"
-#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/SpectrPluginAttributes.h"
+#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -161,12 +162,25 @@ void MainWindow::LoadFile()
 
 
         // TODO
+
         cube = m_pluginsControl->GetReadPlugins().first()->getCube();
-        IAttributes* attr = new Cube3DPluginAttributes();
+        QFile file("datachannel0.txt");
+        file.open(QFile::WriteOnly);
+        char* data = new char[cube->GetSizeChannel()];
+        cube->GetDataChannel(1, data);
+         file.write(data, cube->GetSizeChannel());
+
+
+        file.close();
+        IAttributes* attr = new SpectrPluginAttributes(400, 200);
+        IAttributes* attrCube = new Cube3DPluginAttributes();
+
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
-            m_pluginsControl->GetPelengPlugins().first()->Execute(cube, attr);
+            //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
+           // m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube, attrCube);
         }
+
     }
 }
 

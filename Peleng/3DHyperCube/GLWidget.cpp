@@ -59,7 +59,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       zRot(0),
       program(0)
 {
-
+    qDebug() << "enter to GL";
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -89,6 +89,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
 
 GLWidget::~GLWidget()
 {
+    qDebug() << "delete GLwidget";
     makeCurrent();
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
@@ -443,7 +444,7 @@ void GLWidget::deleteSpectrWindows()
 
 void GLWidget::paintGL()
 {
-
+    qDebug() << "Paint in GL";
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
@@ -730,6 +731,7 @@ void GLWidget::loadData(HyperCube *ptrCube)
     COLS = (int)ptrCube->GetColumns();
     ROWS = (int)ptrCube->GetLines();
     data = (qint16**)ptrCube->GetDataCube();
+
 
 }
 void GLWidget::SidesDestructor()

@@ -73,6 +73,7 @@ public slots:
     void sliderX2ValueChanged(int value);
     void sliderY1ValueChanged(int value);
     void sliderY2ValueChanged(int value);
+    void BrightCheckClicked();
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
@@ -88,7 +89,7 @@ signals:
     void sendXYZ(uint, uint, uint);
     void signalPlotSpectr();
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
-
+    void drawLabel(int, int, QString);
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
@@ -169,6 +170,7 @@ private:
     PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     //QVector<PlotterAlongLine*> windowsArrLines; //для хранения указателей на плоттер(вдоль линии) окна и их удаления
+    QString strForLbl;
 };
 
 #endif

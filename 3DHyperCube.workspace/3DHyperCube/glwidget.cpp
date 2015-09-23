@@ -4,6 +4,7 @@
 #include <QOpenGLTexture>
 #include <QMouseEvent>
 #include <GL/glu.h>
+
 #include <QDebug>
 
 
@@ -345,6 +346,16 @@ void GLWidget::sliderY2ValueChanged(int value)
     }
 }
 
+void GLWidget::BrightCheckClicked()
+{
+//    QPainter pntr(this);
+//    pntr.beginNativePainting();
+//    pntr.drawText(500,300,"Hello");
+//    pntr.endNativePainting();
+   //emit drawLabel()
+
+}
+
 
 
 void GLWidget::prepareToPlotSpectr()
@@ -553,9 +564,15 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
+    {
         qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+    }
     else
+    {
         qDebug() <<"no spctr"<<endl;
+        strForLbl = "";
+    }
 
 }
 
@@ -569,6 +586,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    emit drawLabel(event->x(),event->y(),strForLbl);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

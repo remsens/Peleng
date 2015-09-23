@@ -39,7 +39,7 @@ void PluginsControl::LoadPlugins()
         pluginsDir.cdUp();
     }
 #endif
-    pluginsDir.cd("plugins");
+   // pluginsDir.cd("plugins");
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         if (!fileName.endsWith(".dll")) continue;
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
@@ -75,4 +75,6 @@ void PluginsControl::LoadPlugins()
             }
         }
     }
+    qDebug() << "FilePlugins" << m_readPlugins.size();
+    qDebug() << "PelengPlugins" << m_pelengPlugins.size();
 }

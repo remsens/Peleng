@@ -127,6 +127,9 @@
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
         <property name="text">
          <string>Канал</string>
         </property>
@@ -283,8 +286,23 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Настройки</string>
+    </property>
+    <addaction name="actionBrightCheck"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionBrightCheck">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Яркость под курсором </string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

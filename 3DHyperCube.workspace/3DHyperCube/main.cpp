@@ -55,12 +55,13 @@ int main(int argc, char *argv[])
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
 
-   // HyperCube* ptrCube;
+
     GetHyperCube* getCube = new GetHyperCube();// открывает данные авириса с диска и загружает их в память
 
 
     MainWindow mw;
     mw.processData(getCube->GetCube());// передаем в качестве параметра указатель на объект HyperCube
+
     mw.resize(1024,768);
     mw.show();
     return app.exec();
