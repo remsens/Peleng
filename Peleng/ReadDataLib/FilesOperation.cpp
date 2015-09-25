@@ -90,7 +90,6 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
 	u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
 	u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
-    //u::int16* tempbuf1 = new u::int16[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
 	m_progress = 0;
 	FILE* pfile;
 	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
@@ -112,11 +111,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 						u::uint32 k = 0;
 						while (k < m_bands*sizeEl)
 						{
-                            u::int16 temp =  tempbuf[j*m_bands+k];
-                            u::int16 bufferInCount = i*1024*sizeEl + j*sizeEl;
-                            u::int16 bufferOutCount = j*m_bands*sizeEl+k*sizeEl;
                             memcpy(m_buffer[k/sizeEl] + (i*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k), sizeEl);
-                           // memcpy(tempbuf1, m_buffer[i], m_samples*m_lines*GetNumberOfBytesFromData(m_dataType));
                             k += sizeEl;
 						}
 					}

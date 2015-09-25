@@ -163,15 +163,6 @@ void MainWindow::LoadFile()
 
         // TODO
 
-        cube = m_pluginsControl->GetReadPlugins().first()->getCube();
-        QFile file("datachannel1.txt");
-        file.open(QFile::WriteOnly);
-        char* data = new char[cube->GetSizeChannel()];
-        cube->GetDataChannel(1, data);
-         file.write(data, cube->GetSizeChannel());
-
-
-        file.close();
         IAttributes* attr = new SpectrPluginAttributes(400, 200);
         IAttributes* attrCube = new Cube3DPluginAttributes();
 
