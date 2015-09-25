@@ -21,7 +21,7 @@ public:
 
 public slots:
    void labelBright(int x, int y, QString brightValue);
-
+   void showLabel_toggled(bool value);
 protected:
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 

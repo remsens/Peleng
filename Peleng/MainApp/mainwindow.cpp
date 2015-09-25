@@ -164,7 +164,7 @@ void MainWindow::LoadFile()
         // TODO
 
         cube = m_pluginsControl->GetReadPlugins().first()->getCube();
-        QFile file("datachannel0.txt");
+        QFile file("datachannel1.txt");
         file.open(QFile::WriteOnly);
         char* data = new char[cube->GetSizeChannel()];
         cube->GetDataChannel(1, data);
@@ -178,7 +178,7 @@ void MainWindow::LoadFile()
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
             //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
-           // m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube, attrCube);
+            m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube, attrCube);
         }
 
     }

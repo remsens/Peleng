@@ -77,7 +77,7 @@ private:
 	u::uint32 m_dataType;
 	u::uint32 m_interleave;
 	u::uint32 m_byteorder;
-	u::uint8** m_buffer;
+    u::int8** m_buffer;
 	u::logic m_break;
 	HyperCube* m_hyperCube;
 

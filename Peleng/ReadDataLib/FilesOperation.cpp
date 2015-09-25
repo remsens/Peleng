@@ -10,6 +10,9 @@ FilesOperation::FilesOperation() {
 }
 
 FilesOperation::~FilesOperation() {
+    for (int i = 0; i < m_bands; i++) {
+        delete [] m_buffer[i];
+    }
 	delete [] m_buffer;
     delete m_hyperCube;
 }
@@ -76,9 +79,9 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 
 u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	try {
-		m_buffer = new u::uint8*[m_bands];
+        m_buffer = new u::int8*[m_bands];
 		for (int i = 0; i < m_bands; i++) {
-			m_buffer[i] = new u::uint8[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
+            m_buffer[i] = new u::int8[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
 		}
 	} catch (...) {
         throw GenericExc("Невозможно выделить память");
@@ -87,7 +90,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
 	u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
 	u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
-	
+    //u::int16* tempbuf1 = new u::int16[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
 	m_progress = 0;
 	FILE* pfile;
 	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
@@ -103,14 +106,18 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 			{
 				try 
 				{
-					u::uint8* tempbuf = new u::uint8[chunk_size];
+                    u::int8* tempbuf = new u::int8[chunk_size];
 					fread(tempbuf, sizeof(char), chunk_size, pfile);
 					for (int j = 0; j < 1024; j++) {
 						u::uint32 k = 0;
 						while (k < m_bands*sizeEl)
 						{
-							memcpy(m_buffer[k/sizeEl] + (i*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k*sizeEl), sizeEl);
-							k += sizeEl;
+                            u::int16 temp =  tempbuf[j*m_bands+k];
+                            u::int16 bufferInCount = i*1024*sizeEl + j*sizeEl;
+                            u::int16 bufferOutCount = j*m_bands*sizeEl+k*sizeEl;
+                            memcpy(m_buffer[k/sizeEl] + (i*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k), sizeEl);
+                           // memcpy(tempbuf1, m_buffer[i], m_samples*m_lines*GetNumberOfBytesFromData(m_dataType));
+                            k += sizeEl;
 						}
 					}
 					delete [] tempbuf;
@@ -133,7 +140,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 			u::uint32 k = 0;
 			while (k < m_bands*sizeEl)
 			{
-				memcpy(m_buffer[k/sizeEl] + (bcnt*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k*sizeEl), sizeEl);
+                memcpy(m_buffer[k/sizeEl] + (bcnt*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k), sizeEl);
 				k += sizeEl;
 			}
 		}
