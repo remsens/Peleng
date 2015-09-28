@@ -615,7 +615,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-     emit drawLabel(event->x(),event->y(),strForLbl);
+    emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
