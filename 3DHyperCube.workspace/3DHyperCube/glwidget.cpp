@@ -46,7 +46,6 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
-
 }
 
 GLWidget::~GLWidget()
@@ -415,7 +414,7 @@ void GLWidget::deleteSpectrWindows()
 
 void GLWidget::paintGL()
 {
-
+    qDebug() << "Paint in GL";
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);

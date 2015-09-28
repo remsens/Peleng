@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = SpectrPlotter
 TEMPLATE = lib
+DLLDESTDIR = ../../Debug/MainApp/debug
 
 DEFINES += SPECTRPLUGIN_LIBRARY
 

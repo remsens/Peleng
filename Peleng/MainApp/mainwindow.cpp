@@ -162,7 +162,7 @@ void MainWindow::LoadFile()
 
 
         // TODO
-
+        cube = m_pluginsControl->GetReadPlugins().first()->getCube();//было удалено коммитом "Upgrading code" (скорее всего ошибочно)
         IAttributes* attr = new SpectrPluginAttributes(400, 200);
         IAttributes* attrCube = new Cube3DPluginAttributes();
 

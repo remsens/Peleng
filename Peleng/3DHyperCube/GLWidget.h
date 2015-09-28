@@ -89,7 +89,7 @@ signals:
     void sendXYZ(uint, uint, uint);
     void signalPlotSpectr();
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
-
+    void drawLabel(int, int, QString);
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
@@ -169,6 +169,7 @@ private:
     PlotterWindow* windowPlotter = 0;
     PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
+    QString strForLbl;
 };
 
 #endif
