@@ -394,8 +394,8 @@ void GLWidget::prepareToPlotSpectr()
 
 void GLWidget::startIsClicked()
 {
-    pContextMenu->addAction(pSetFinishAction);
     pContextMenu->removeAction(pSetStartAction);
+    pContextMenu->addAction(pSetFinishAction);    
     m_x1 = m_dataX;
     m_y1 = m_dataY;
     m_z1 = m_dataZ;
@@ -500,10 +500,36 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+
+    if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
+    {
+        pContextMenu->removeAction(pSetFinishAction);
+        pContextMenu->removeAction(pSetStartAction);
+        pContextMenu->removeAction(pPlotAction);
+        QList<QAction*> allAct1 = pContextMenu->actions();
+//        if (!allAct1.contains(pDeletePlotsAction))
+//            pContextMenu->menuAction()->setVisible(false);
+    }
+    else
+    {
+
+        pContextMenu->addAction(pPlotAction);
+        QList<QAction*> allAct2 = pContextMenu->actions();
+        if (!allAct2.contains(pSetFinishAction))
+            pContextMenu->addAction(pSetStartAction);
+        else
+            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
+    }
+    if (windowsArr.isEmpty())
+        pContextMenu->removeAction(pDeletePlotsAction);
+    else
+        pContextMenu->addAction(pDeletePlotsAction);
+
 }
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
+    pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction("Спектр",this);
     pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
     pSetStartAction = new QAction("Начало",this);
