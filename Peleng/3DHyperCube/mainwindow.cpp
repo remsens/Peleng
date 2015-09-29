@@ -48,7 +48,7 @@ void MainWindow::processData(HyperCube *ptrCube)
     QFont font;
     font.setPixelSize(16);
     font.setBold(true);
-    pBrLabel->setWindowFlags(Qt::ToolTip);
+    //pBrLabel->setWindowFlags(Qt::ToolTip);
     pBrLabel->setFont(font);
     pBrLabel->setStyleSheet("QLabel { background-color: rgba(100, 255, 100, 70%);  \
                                       color : black}");
@@ -60,12 +60,18 @@ void MainWindow::processData(HyperCube *ptrCube)
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
 {
-    pBrLabel->move(x+20,y-30);
-    pBrLabel->setText(brightValue);
-    if (pBrLabel->text() =="")
-        pBrLabel->hide();
-    else
-        pBrLabel->show();
+//    pBrLabel->move(x+20,y-30);
+//    pBrLabel->setText(brightValue);
+//    if (pBrLabel->text() =="")
+//        pBrLabel->hide();
+//    else
+//        pBrLabel->show();
+    QToolTip::showText(QPoint(x,y),brightValue,ui->widgetHyperCube, rect() );
+    QFont font;
+    font.setPixelSize(16);
+    font.setBold(true);
+    QToolTip::setFont(font);
+
 }
 
 void MainWindow::showLabel_toggled(bool value)

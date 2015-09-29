@@ -642,6 +642,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
+//    QToolTip::showText(event->globalPos(),strForLbl,
+//                           this, rect() );
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

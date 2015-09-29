@@ -83,6 +83,7 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->yAxis->setRange(minY,maxY);
         m_customPlot->xAxis->setLabel("Длина волны, нм");
         m_customPlot->yAxis->setLabel("Яркость");
+        m_customPlot->xAxis->setTickStep(10);
         m_customPlot->replot();
     } catch(const GenericExc& exc)
     {
