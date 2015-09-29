@@ -1,6 +1,7 @@
 #include "PlotterWindow.h"
 #include "ui_PlotterWindow.h"
 #include <QtAlgorithms>
+#include <../Library/GenericExc.h>
 
 PlotterWindow::PlotterWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -83,7 +84,11 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->xAxis->setLabel("Длина волны, нм");
         m_customPlot->yAxis->setLabel("Яркость");
         m_customPlot->replot();
-    }catch(...){
+    } catch(const GenericExc& exc)
+    {
+        m_customPlot->replot();
+    } catch(...)
+    {
         m_customPlot->replot();
     }
 

@@ -8,8 +8,8 @@ QT       -= gui
 
 TARGET = ReadDataLib
 TEMPLATE = lib
-DLLDESTDIR += ../../Debug/AvirisReadPlugin\
-              ../../Debug/MainApp/debug
+DLLDESTDIR += ../../Debug/AvirisReadPlugin
+DLLDESTDIR += ../../Debug/MainApp/debug
 DEFINES += READDATALIB_LIBRARY
 
 SOURCES += ReadDataLib.cpp \
@@ -20,10 +20,8 @@ SOURCES += ReadDataLib.cpp \
 
 HEADERS += ReadDataLib.h \
     ReadDataLib_global.h \
-    Types.h \
     Context.h \
     FilesOperation.h \
-    GenericExc.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
     ../Library/HyperCube.h
