@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
 
     cube = 0;
 

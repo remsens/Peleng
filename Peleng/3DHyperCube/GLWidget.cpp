@@ -530,10 +530,10 @@ void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
-    pPlotAction = new QAction("Спектр",this);
-    pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
-    pSetStartAction = new QAction("Начало",this);
-    pSetFinishAction = new QAction("Конец",this);
+    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
+    pSetStartAction = new QAction(QIcon(":/IconsCube/iconsCube/start_flag.png"),"Начало",this);
+    pSetFinishAction = new QAction(QIcon(":/IconsCube/iconsCube/finish_flag.png"),"Конец",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pSetStartAction);

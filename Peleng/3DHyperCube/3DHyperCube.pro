@@ -56,3 +56,7 @@ DEPENDPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 
 win32: LIBS += -L$$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/lib/ -lopengl32
 
+RESOURCES += \
+    icons3Dcube.qrc \
+    splash.qrc
+

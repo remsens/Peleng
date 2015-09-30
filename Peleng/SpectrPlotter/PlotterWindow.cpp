@@ -10,6 +10,7 @@ PlotterWindow::PlotterWindow(QWidget *parent)
     , maxY(-10000)
 
 {
+    setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;

@@ -45,3 +45,6 @@ DEPENDPATH += $$PWD/../Library
               $$PWD/../3DHyperCube
 FORMS    += \
     PlotterWindow.ui
+
+RESOURCES += \
+    iconsplotter.qrc

@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+     setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
 
 }
 

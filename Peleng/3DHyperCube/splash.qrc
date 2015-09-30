@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Splash">
+        <file>iconsCube/CubeSplashScreen.jpg</file>
+    </qresource>
+</RCC>
