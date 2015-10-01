@@ -25,6 +25,12 @@ public:
 protected:
     void resizeEvent(QResizeEvent * event);
     void wheelEvent(QWheelEvent *);
+
+signals:
+    void closePlotterWindow(PlotterWindow* w);
+private:
+    void closeEvent(QCloseEvent *);
+
 private slots:
     void on_actionHold_toggled(bool value);
     void wheelEventCustomPlotActivated();

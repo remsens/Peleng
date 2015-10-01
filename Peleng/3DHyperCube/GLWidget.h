@@ -45,6 +45,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
+#include <QSharedPointer>
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../SpectrPlotter/PlotterWindow.h"
@@ -77,12 +78,13 @@ public slots:
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
-
+    void DeleteSpectrWindow(PlotterWindow* pl);
 private slots:
 
     void prepareToPlotSpectr();
     void startIsClicked();//нажато "Начало" из контекстного меню
     void finishIsClicked();
+
 
 signals:
     void clicked();
@@ -167,7 +169,8 @@ private:
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
-    PlotterWindow* windowPlotter = 0;
+    PlotterWindow* windowPlotter;
+    bool firstWindowPlotter;
     PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;

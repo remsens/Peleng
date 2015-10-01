@@ -10,6 +10,7 @@ PlotterWindow::PlotterWindow(QWidget *parent)
     , maxY(-10000)
 
 {
+    setAttribute(Qt::WA_DeleteOnClose, true);
     setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
@@ -30,7 +31,9 @@ PlotterWindow::~PlotterWindow()
 {
     delete ui;
 }
-
+void PlotterWindow::closeEvent(QCloseEvent *) {
+    emit closePlotterWindow(this);
+}
 void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
 {
 

@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
-
+     setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 MainWindow::~MainWindow()
@@ -17,7 +17,7 @@ MainWindow::~MainWindow()
 }
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    ui->widgetHyperCube->deleteSpectrWindows();
+    //ui->widgetHyperCube->deleteSpectrWindows();
 }
 
 void MainWindow::processData(HyperCube *ptrCube)

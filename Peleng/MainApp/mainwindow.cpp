@@ -118,6 +118,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::LoadFile()
 {
+
     // TODO
     if (m_pluginsControl->GetReadPlugins().size()) {
 
@@ -173,6 +174,7 @@ void MainWindow::LoadFile()
         }
 
     }
+   //m_pluginsControl->GetReadPlugins().first()->
 }
 
 

@@ -60,6 +60,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       program(0)
 {
     qDebug() << "enter to GL";
+    setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -84,6 +85,8 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
+    firstWindowPlotter = true;
+
 
 }
 
@@ -413,11 +416,13 @@ void GLWidget::finishIsClicked()
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
-    if (windowPlotter == 0 || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
+    if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
     {                                                             // иначе - графики строятся в том же окне (объекте)
         windowPlotter = new PlotterWindow();
+        QObject::connect(windowPlotter, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(DeleteSpectrWindow(PlotterWindow*)));
         windowsArr.append(windowPlotter);
-     }
+        firstWindowPlotter = false;
+    }
 
     windowPlotter->plotSpectr(m_pHyperCube,x,y);
     windowPlotter->activateWindow();
@@ -435,10 +440,24 @@ void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z
     pWidgLine->show();
 }
 
+void GLWidget::DeleteSpectrWindow(PlotterWindow* w)
+{
+
+    for(int i = 0; i< windowsArr.size(); i++){
+        if (w == windowsArr[i])
+        {
+            windowsArr.remove(i);
+            break;
+        }
+    }
+}
+
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
+   {
         delete windowsArr[i];
+   }
     windowsArr.clear();
 }
 
