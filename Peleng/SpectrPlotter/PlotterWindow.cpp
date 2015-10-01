@@ -14,7 +14,9 @@ PlotterWindow::PlotterWindow(QWidget *parent)
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
-
+    initSize = size();
+    connect(m_customPlot,SIGNAL(mouseWheel(QWheelEvent*)),this,SLOT(wheelEventCustomPlotActivated()));
+    qDebug()<<"init size"<<initSize;
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
 
     panim->setDuration(300);
@@ -84,8 +86,11 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->yAxis->setRange(minY,maxY);
         m_customPlot->xAxis->setLabel("Длина волны, нм");
         m_customPlot->yAxis->setLabel("Яркость");
-        m_customPlot->xAxis->setTickStep(10);
+
         m_customPlot->replot();
+        autoXStep = m_customPlot->xAxis->tickStep();
+        newXStep = autoXStep;
+
     } catch(const GenericExc& exc)
     {
         m_customPlot->replot();
@@ -98,7 +103,49 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
 
 }
 
+void PlotterWindow::chooseStep()
+{
+
+
+    if(newXStep < autoXStep)
+    {
+//        m_customPlot->xAxis->setAutoTickStep(false);
+        m_customPlot->xAxis->setTickStep( newXStep);
+
+    }
+    else
+        m_customPlot->xAxis->setTickStep( autoXStep);
+}
+
+void PlotterWindow::resizeEvent(QResizeEvent *event)
+{
+
+    qDebug()<<"step"<<autoXStep;
+    width = event->size().width();
+    double tempNewXStep = autoXStep / width * initSize.width();
+    if(tempNewXStep > 10)
+        newXStep = round(autoXStep / width * initSize.width());
+    else
+        newXStep = tempNewXStep;
+    m_customPlot->xAxis->setAutoTickStep(false);
+    chooseStep();
+    qDebug()<<"width"<<width<<" iniewidth"<<initSize.width();
+}
+
+void PlotterWindow::wheelEvent(QWheelEvent *)
+{
+
+}
+
 void PlotterWindow::on_actionHold_toggled(bool value)
 {
     m_hold = value;
+}
+
+void PlotterWindow::wheelEventCustomPlotActivated()
+{
+     m_customPlot->xAxis->setAutoTickStep(true);
+     autoXStep = m_customPlot->xAxis->tickStep();
+//     chooseStep();
+     resize(this->size());
 }
