@@ -3,7 +3,6 @@
 #include "mainwindow.h"
 #include <QDebug>
 #include "../SpectrPlotter/PlotterWindow.h"
-
 CubePlugin::CubePlugin(QObject *parent)
 {
 
@@ -21,22 +20,20 @@ void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
     qDebug() << "Зашли в плагин";
-    //    QSplashScreen *splash = new QSplashScreen(QPixmap(":/Splash/iconsCube/CubeSplashScreen.jpg"));
-    //    splash->show();
-    //    splash->raise();
-    QMainWindow* windSplash = new QMainWindow();
-    QPixmap*pix = new QPixmap(":/Splash/iconsCube/CubeSplashScreen.jpg");
+
+    QPixmap*pix = new QPixmap(":/Splash/iconsCube/the_gentlemanly_escort_cube.png");
     QLabel* labelSplash = new QLabel();
-    //labelSplash->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    labelSplash->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     labelSplash->setPixmap(*pix);
-    labelSplash->setMask(pix->mask());
-    windSplash->setCentralWidget(labelSplash);
-    windSplash->show();
+    //labelSplash->setMask(pix->mask());
+    labelSplash->show();
     MainWindow* mw = new MainWindow();
+    QCoreApplication::processEvents();
     mw->processData(cube);// передаем в качестве параметра указатель на объект HyperCube
     mw->resize(1024,768);
-    windSplash->hide();
+    labelSplash->hide();
     mw->show();
     delete labelSplash;
+    delete pix;
 
 }

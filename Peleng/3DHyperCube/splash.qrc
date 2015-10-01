@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/Splash">
         <file>iconsCube/CubeSplashScreen.jpg</file>
+        <file>iconsCube/the_gentlemanly_escort_cube.png</file>
     </qresource>
 </RCC>

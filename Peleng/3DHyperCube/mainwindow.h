@@ -20,6 +20,7 @@ public:
     ~MainWindow();
     void processData(HyperCube* ptrCube);
 
+
 public slots:
    void labelBright(int x, int y, QString brightValue);
    void showLabel_toggled(bool value);
