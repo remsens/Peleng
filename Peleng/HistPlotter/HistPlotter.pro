@@ -14,6 +14,7 @@ TEMPLATE = lib
 DEFINES += HISTPLUGIN_LIBRARY
 
 
+
 SOURCES +=\
     ../Library/GenericExc.cpp \
     ../Library/HyperCube.cpp \

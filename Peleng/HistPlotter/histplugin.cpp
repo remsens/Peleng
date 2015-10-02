@@ -24,16 +24,8 @@ void HistPlugin::Execute(HyperCube *cube, IAttributes *attr)
 
     QCPBars *bars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
 
-    //line->setClipToAxisRect(false);
-
-
-
     customPlot->addPlottable(bars);
     customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
-
-
-
-
 
     qint16 minValue = SHRT_MAX;
     qint16 maxValue = SHRT_MIN;
@@ -41,7 +33,7 @@ void HistPlugin::Execute(HyperCube *cube, IAttributes *attr)
     for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
         cube->GetDataChannel(i,data);
         for (unsigned int j = 0; j <cube->GetSizeChannel(); j++ ) {
-            if (data[i]==-50) continue;
+            if (data[i]==-50) continue; // !!!УБРАТЬ в конечной версии!!!
             if (maxValue <= data[j]) maxValue = data[j];
             if (minValue >= data[j]) minValue = data[j];
         }
@@ -60,7 +52,7 @@ void HistPlugin::Execute(HyperCube *cube, IAttributes *attr)
     for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
             cube->GetDataChannel(i,data);
             for (unsigned int j = 0; j <cube->GetSizeChannel(); j++ ) {
-                if (data[i]==-50) continue;
+                if (data[i]==-50) continue; // !!!УБРАТЬ в конечной версии!!!
                 value[100*data[j]/(maxValue-minValue)]++;
            }
     }
@@ -77,7 +69,7 @@ void HistPlugin::Execute(HyperCube *cube, IAttributes *attr)
     line->setSelectable(true);
     customPlot->addItem(line);
 
-    line->setSelected(true);
+    //line->setSelected(true);
 
 
 
