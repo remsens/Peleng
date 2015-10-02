@@ -16,7 +16,7 @@ public:
     virtual QString getFormatDescription()=0;    
     virtual HyperCube* getCube() = 0;
     virtual void cancel()=0;
-
+    virtual void DeleteData() = 0;
 
 };
 #define FileReadInteface_iid "by.nomrec.FileReadInterface"

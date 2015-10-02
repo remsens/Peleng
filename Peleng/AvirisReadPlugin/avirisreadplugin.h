@@ -29,7 +29,7 @@ private:
     QString getFormatDescription();
     HyperCube* getCube();
     GenericExc* GetException();
-
+    void DeleteData();
 
     void ExceptionLibrary();
     void MakeException(QString errMessage, u::uint32 errCode);

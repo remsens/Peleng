@@ -123,13 +123,15 @@ void MainWindow::LoadFile()
     // TODO
     if (m_pluginsControl->GetReadPlugins().size()) {
 
+        //Если это не первый вызов, но нужно почистить данные
+        //m_pluginsControl->GetReadPlugins().first()->DeleteData();
         //TODO
         QString FileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
                                                      m_pluginsControl->GetReadPlugins().first()->getFormatDescription());
 
-        //test();
-        // Create a progress dialog.
+
+          // Create a progress dialog.
             QProgressDialog dialog;
 
             dialog.setLabelText(QString("Загрузка данных из файла"));

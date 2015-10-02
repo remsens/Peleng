@@ -7,14 +7,22 @@
 
 FilesOperation::FilesOperation() {
 	m_break = false;
+    m_buffer = 0;
+    m_hyperCube = 0;
 }
 
 FilesOperation::~FilesOperation() {
-    for (int i = 0; i < m_bands; i++) {
-        delete [] m_buffer[i];
+    if (m_hyperCube != 0)
+    {
+        for (int i = 0; i < m_bands; i++) {
+            delete [] m_buffer[i];
+        }
+        delete [] m_buffer;
     }
-	delete [] m_buffer;
-    delete m_hyperCube;
+    if (m_hyperCube != 0)
+    {
+        delete m_hyperCube;
+    }
 }
 
 u::logic FilesOperation::LoadFile(std::string headerName) {
@@ -124,8 +132,8 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 				}
 			}
 		} else 
-		{
-			break;
+        {
+            break;
 		}
 	}
 	if (ost != 0) {
