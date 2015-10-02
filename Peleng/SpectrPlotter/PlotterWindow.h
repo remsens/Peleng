@@ -24,7 +24,6 @@ public:
     void chooseStep();
 protected:
     void resizeEvent(QResizeEvent * event);
-    void wheelEvent(QWheelEvent *);
 
 signals:
     void closePlotterWindow(PlotterWindow* w);
@@ -33,7 +32,6 @@ private:
 
 private slots:
     void on_actionHold_toggled(bool value);
-    void wheelEventCustomPlotActivated();
 
 private:
     bool m_hold;
@@ -42,9 +40,9 @@ private:
     double minY;
     double maxY;
     QSize initSize;
-    double autoXStep = 1;
-    double newXStep;
-    int width;
+    int autoTickCountX;
+    int autoTickCountY;
+
 };
 
 #endif // PLOTTERWINDOW_H

@@ -16,24 +16,25 @@ PlotterWindow::PlotterWindow(QWidget *parent)
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
     initSize = size();
-    connect(m_customPlot,SIGNAL(mouseWheel(QWheelEvent*)),this,SLOT(wheelEventCustomPlotActivated()));
+
     qDebug()<<"init size"<<initSize;
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
-
     panim->setDuration(300);
     panim->setStartValue(0);
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
-    panim->start();
+    panim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 PlotterWindow::~PlotterWindow()
 {
     delete ui;
 }
+
 void PlotterWindow::closeEvent(QCloseEvent *) {
     emit closePlotterWindow(this);
 }
+
 void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
 {
 
@@ -91,9 +92,8 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->yAxis->setLabel("Яркость");
 
         m_customPlot->replot();
-        autoXStep = m_customPlot->xAxis->tickStep();
-        newXStep = autoXStep;
-
+        autoTickCountX = m_customPlot->xAxis->autoTickCount();
+        autoTickCountY = m_customPlot->yAxis->autoTickCount();
     } catch(const GenericExc& exc)
     {
         m_customPlot->replot();
@@ -101,43 +101,17 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
     {
         m_customPlot->replot();
     }
-
-
-
-}
-
-void PlotterWindow::chooseStep()
-{
-
-
-    if(newXStep < autoXStep)
-    {
-//        m_customPlot->xAxis->setAutoTickStep(false);
-        m_customPlot->xAxis->setTickStep( newXStep);
-
-    }
-    else
-        m_customPlot->xAxis->setTickStep( autoXStep);
 }
 
 void PlotterWindow::resizeEvent(QResizeEvent *event)
 {
-
-    qDebug()<<"step"<<autoXStep;
-    width = event->size().width();
-    double tempNewXStep = autoXStep / width * initSize.width();
-    if(tempNewXStep > 10)
-        newXStep = round(autoXStep / width * initSize.width());
-    else
-        newXStep = tempNewXStep;
-    m_customPlot->xAxis->setAutoTickStep(false);
-    chooseStep();
-    qDebug()<<"width"<<width<<" iniewidth"<<initSize.width();
-}
-
-void PlotterWindow::wheelEvent(QWheelEvent *)
-{
-
+    int width = event->size().width();
+    int height = event->size().height();
+    int TickCountX = round(autoTickCountX * (double)width / initSize.width());
+    int TickCountY = round(autoTickCountY * (double)height / initSize.height());
+    m_customPlot->xAxis->setAutoTickCount(TickCountX);
+    m_customPlot->yAxis->setAutoTickCount(TickCountY);
+    m_customPlot->replot();
 }
 
 void PlotterWindow::on_actionHold_toggled(bool value)
@@ -145,10 +119,4 @@ void PlotterWindow::on_actionHold_toggled(bool value)
     m_hold = value;
 }
 
-void PlotterWindow::wheelEventCustomPlotActivated()
-{
-     m_customPlot->xAxis->setAutoTickStep(true);
-     autoXStep = m_customPlot->xAxis->tickStep();
-//     chooseStep();
-     resize(this->size());
-}
+

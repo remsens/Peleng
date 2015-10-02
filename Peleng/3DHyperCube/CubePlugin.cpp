@@ -25,7 +25,7 @@ void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
     QLabel* labelSplash = new QLabel();
     labelSplash->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     labelSplash->setPixmap(*pix);
-    //labelSplash->setMask(pix->mask());
+    labelSplash->setProperty("windowOpacity",0.7);
     labelSplash->show();
     MainWindow* mw = new MainWindow();
     QCoreApplication::processEvents();
