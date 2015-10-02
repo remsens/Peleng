@@ -7,7 +7,7 @@
 class PelengPluginsInterface
 {
 public:
-    virtual void Execute(HyperCube* cube, IAttributes* attr) = 0;
+    virtual void Execute(HyperCube* cube, IAttributes* attr=0) = 0;
 };
 
 #define PelengPluginsInterface_iid "by.nomrec.PelengPluginsInterface"

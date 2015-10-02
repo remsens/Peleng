@@ -163,13 +163,16 @@ void MainWindow::LoadFile()
 
         // TODO
 
-        IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        IAttributes* attrCube = new Cube3DPluginAttributes();
+      /*  IAttributes* attr = new SpectrPluginAttributes(400, 200);
+        IAttributes* attrCube = new Cube3DPluginAttributes();*/
+
+        cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
             //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
-            m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube, attrCube);
+            m_pluginsControl->GetPelengPlugins().value("Hist UI")->Execute(cube);
         }
 
     }
