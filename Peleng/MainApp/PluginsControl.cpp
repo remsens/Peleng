@@ -16,17 +16,18 @@ PluginsControl::~PluginsControl()
 
 }
 
-QMap<QString, FileReadInterface*> PluginsControl::GetReadPlugins() const
+QList<QString> PluginsControl::GetReadPlugins() const
 {
-    return m_readPlugins;
+    return m_readPluginsNames;
 }
 
-QMap<QString, PelengPluginsInterface*> PluginsControl::GetPelengPlugins() const
+QList<QString> PluginsControl::GetPelengPlugins() const
 {
-    return m_pelengPlugins;
+    return m_pelengPluginsNames;
 }
 
-void PluginsControl::LoadPlugins()
+
+void PluginsControl::LoadNamesPlugins()
 {
     QDir pluginsDir(qApp->applicationDirPath());
 #if defined(Q_OS_WIN)
@@ -46,8 +47,9 @@ void PluginsControl::LoadPlugins()
         QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
         if (MetaData["Type"].toString().contains("FileFormat"))
         {
-            try {
-                QObject *plugin = pluginLoader.instance();
+            m_readPluginsNames.append(MetaData["Name"].toString());
+           /* try {
+                //QObject *plugin = pluginLoader.instance();
                 if (plugin)
                 {
                     m_readPlugins.insert(MetaData["Name"].toString(), qobject_cast<FileReadInterface *>(plugin));
@@ -58,10 +60,11 @@ void PluginsControl::LoadPlugins()
                 // TODO
                 // надо подумать, нужна тут обработка ошибок или нет
                 qDebug() << pluginLoader.errorString();
-            }
+            }*/
         } else if (MetaData["Type"].toString().contains("PelengFormat"))
         {
-            try {
+            m_pelengPluginsNames.append(MetaData["Name"].toString());
+            /*try {
                 QObject *plugin = pluginLoader.instance();
                 if (plugin)
                 {
@@ -72,9 +75,9 @@ void PluginsControl::LoadPlugins()
             {
                 // TODO
                 qDebug() << pluginLoader.errorString();
-            }
+            }*/
         }
     }
-    qDebug() << "FilePlugins" << m_readPlugins.size();
-    qDebug() << "PelengPlugins" << m_pelengPlugins.size();
+    qDebug() << "FilePlugins" << m_readPluginsNames.size();
+    qDebug() << "PelengPlugins" << m_pelengPluginsNames.size();
 }

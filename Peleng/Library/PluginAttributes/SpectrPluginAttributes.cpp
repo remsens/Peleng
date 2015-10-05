@@ -21,3 +21,8 @@ u::uint32 SpectrPluginAttributes::GetY() const
 {
     return m_y;
 }
+
+QList<QString> SpectrPluginAttributes::GetListOfAvaliablePlugins() const
+{
+    return m_listPlugins;
+}

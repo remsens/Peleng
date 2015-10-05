@@ -16,6 +16,11 @@
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
 #include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/PluginAttributes/LinePluginAttributes.h"
+=======
+#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/ReadPluginLoader.h"
+#include "../Library/PelengPluginLoader.h"
+>>>>>>> 1
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -83,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cube = 0;
 
       m_pluginsControl = new PluginsControl();
-      m_pluginsControl->LoadPlugins();
+      m_pluginsControl->LoadNamesPlugins();
       //ui->tabWidget->setTabsClosable(true);
       ui->mainToolBar->addAction(ui->OpenFileAction);
       ui->mainToolBar->addAction(ui->ExitAction);
@@ -126,9 +131,11 @@ void MainWindow::LoadFile()
         //Если это не первый вызов, но нужно почистить данные
         //m_pluginsControl->GetReadPlugins().first()->DeleteData();
         //TODO
+        ReadPluginLoader readPlugin;
+        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().at(0));
         QString FileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
-                                                     m_pluginsControl->GetReadPlugins().first()->getFormatDescription());
+                                                    FilePlugin->getFormatDescription());
 
 
           // Create a progress dialog.
@@ -149,7 +156,7 @@ void MainWindow::LoadFile()
             //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
 
             // TODO
-            QFuture<void> future = QtConcurrent::run(m_pluginsControl->GetReadPlugins().first(), &FileReadInterface::LoadFile, FileName);
+            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::LoadFile, FileName);
 
             // Start the computation.
             futureWatcher.setFuture(future);
@@ -166,14 +173,16 @@ void MainWindow::LoadFile()
 
 
         // TODO
-        cube = m_pluginsControl->GetReadPlugins().first()->getCube();//было удалено коммитом "Upgrading code" (скорее всего ошибочно)
+        cube = FilePlugin->getCube();
         IAttributes* attr = new SpectrPluginAttributes(400, 200);
         IAttributes* attrCube = new Cube3DPluginAttributes();
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
             //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
-            m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube, attrCube);
+            PelengPluginLoader pelengLoader;
+            m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
+            m_pelengPlugins->Execute(cube, attrCube);
         }
 
     }
@@ -184,7 +193,7 @@ void MainWindow::LoadFile()
 void MainWindow::updateProgress()
 {
    // TODO
-    emit progressValueChanged(m_pluginsControl->GetReadPlugins().first()->getProgress());
+    emit progressValueChanged(FilePlugin->getProgress());
 }
 
 
@@ -222,7 +231,7 @@ void MainWindow::updateTable()
 void MainWindow::cancelOperation()
 {
     // TODO
-    m_pluginsControl->GetReadPlugins().first()->cancel();
+     FilePlugin->cancel();
     //FileFormatPluginList[0]->cancel();
 }
 

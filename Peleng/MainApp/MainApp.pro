@@ -23,6 +23,10 @@ SOURCES += main.cpp\
     ../Library/PluginAttributes/LinePluginAttributes.cpp \
     PluginsControl.cpp
 
+    ../Library/PluginLoader.cpp \
+    ../Library/ReadPluginLoader.cpp \
+    ../Library/PelengPluginLoader.cpp
+
 HEADERS  += mainwindow.h \
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
@@ -35,7 +39,10 @@ HEADERS  += mainwindow.h \
     ../Library/PluginAttributes/ChannelPluginAttributes.h \
     ../Library/PluginAttributes/LinePluginAttributes.h \
     ../Library/Interfaces/FileReadInterface.h \
-    ../Library/Interfaces/PelengPluginsInterface.h
+    ../Library/Interfaces/PelengPluginsInterface.h \
+    ../Library/PluginLoader.h \
+    ../Library/ReadPluginLoader.h \
+    ../Library/PelengPluginLoader.h
 
 
 

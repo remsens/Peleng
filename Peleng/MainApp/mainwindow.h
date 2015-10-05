@@ -8,6 +8,8 @@
 #include "../Library/Interfaces/FileReadInterface.h"
 #include "HyperCube.h"
 #include "PluginsControl.h"
+#include "../Library/ReadPluginLoader.h"
+#include "../Library/PelengPluginLoader.h"
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +46,7 @@ private:
 
     QList <FileReadInterface*> FileFormatPluginList;
     FileReadInterface* FilePlugin;
+    PelengPluginsInterface* m_pelengPlugins;
     HyperCube* cube;
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;
