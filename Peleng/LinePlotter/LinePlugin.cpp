@@ -16,6 +16,9 @@ void LinePlugin::Execute(HyperCube* cube, IAttributes* attr)
 {
     QSharedPointer<LinePlotterWindow> w(new LinePlotterWindow);
     w->show();
-    //w->plotSpectrLine(cube,((SpectrPluginAttributes*)attr)->GetX(),((SpectrPluginAttributes*)attr)->GetY());//переделать атрибуты
+    w->plotSpectrLine(cube,((LinePluginAttributes*)attr)->GetX1(),((LinePluginAttributes*)attr)->GetX2(),
+                           ((LinePluginAttributes*)attr)->GetY1(),((LinePluginAttributes*)attr)->GetY2(),
+                           ((LinePluginAttributes*)attr)->GetZ1(),((LinePluginAttributes*)attr)->GetZ2()
+                      );
 }
 
