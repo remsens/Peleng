@@ -14,7 +14,8 @@
 
 #include "../Library/QCustomPlot.h"
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
-#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/LinePluginAttributes.h"
 
 class TableModel : public QAbstractTableModel {
 private:

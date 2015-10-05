@@ -433,9 +433,9 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
     if (pWidgLine == 0)                                         // Всегда только 1 окно
-        pWidgLine = new PlotterAlongLine();
+        pWidgLine = new LinePlotterWindow();//PlotterAlongLine();
 
-    pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
+    pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
     pWidgLine->activateWindow();
     pWidgLine->show();
 }
@@ -470,14 +470,16 @@ void GLWidget::paintGL()
     matrix.setToIdentity();
 
     matrix.translate(dx, dy, -14.0f);
-   // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
-    // matrix.translate(0.2, 0.2, 0);
+    //matrix.translate(-kT + centerCubeX, -1 + centerCubeZ,-1 + centerCubeY); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+    //matrix.translate(2,1,1);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
 
-    //matrix.translate(centerCubeX, centerCubeY, centerCubeZ); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
+
+    //matrix.translate(kT - centerCubeX, 1 - centerCubeZ,1 - centerCubeY);
+    matrix.translate(kT - centerCubeX, 1 - centerCubeZ,1 - centerCubeY); //возвращаем обратно
     program->setUniformValue("matrix", projection * matrix);
 
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);

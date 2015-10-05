@@ -49,7 +49,8 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../SpectrPlotter/PlotterWindow.h"
-#include "PlotterAlongLine.h"
+//#include "PlotterAlongLine.h"
+#include "../LinePlotter/LinePlotterWindow.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -171,7 +172,7 @@ private:
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     PlotterWindow* windowPlotter;
     bool firstWindowPlotter;
-    PlotterAlongLine *pWidgLine = 0;
+    LinePlotterWindow *pWidgLine = 0;//PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;
 };

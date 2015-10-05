@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 #include <QDebug>
 #include "../SpectrPlotter/PlotterWindow.h"
+#include "../LinePlotter/LinePlotterWindow.h"
 CubePlugin::CubePlugin(QObject *parent)
 {
 

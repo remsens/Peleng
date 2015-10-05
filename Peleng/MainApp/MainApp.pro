@@ -20,6 +20,7 @@ SOURCES += main.cpp\
     ../Library/PluginAttributes/SpectrPluginAttributes.cpp \
     ../Library/PluginAttributes/Cube3DPluginAttributes.cpp \
     ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
+    ../Library/PluginAttributes/LinePluginAttributes.cpp \
     PluginsControl.cpp
 
 HEADERS  += mainwindow.h \
@@ -32,8 +33,10 @@ HEADERS  += mainwindow.h \
     ../Library/PluginAttributes/SpectrPluginAttributes.h \
     ../Library/PluginAttributes/Cube3DPluginAttributes.h \
     ../Library/PluginAttributes/ChannelPluginAttributes.h \
+    ../Library/PluginAttributes/LinePluginAttributes.h \
     ../Library/Interfaces/FileReadInterface.h \
     ../Library/Interfaces/PelengPluginsInterface.h
+
 
 
 INCLUDEPATH += $$PWD/../Library
