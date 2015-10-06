@@ -21,8 +21,7 @@ SOURCES += main.cpp\
     ../Library/PluginAttributes/Cube3DPluginAttributes.cpp \
     ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
     ../Library/PluginAttributes/LinePluginAttributes.cpp \
-    PluginsControl.cpp
-
+    PluginsControl.cpp \
     ../Library/PluginLoader.cpp \
     ../Library/ReadPluginLoader.cpp \
     ../Library/PelengPluginLoader.cpp

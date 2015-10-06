@@ -7,13 +7,14 @@ LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
 {
     setupUI();
     //setAttribute(Qt::WA_DeleteOnClose, true);
-    setWindowIcon(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"));
+    setWindowIcon(QIcon(":/IconsLine/iconsLine/PlotterLogo.ico"));
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start();
+
 }
 
 LinePlotterWindow::~LinePlotterWindow()

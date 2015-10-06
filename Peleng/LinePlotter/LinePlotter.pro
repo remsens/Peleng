@@ -41,5 +41,8 @@ INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library\
                $$PWD/../3DHyperCube
 
+RESOURCES += \
+    iconslineplotter.qrc
+
 
 

@@ -397,21 +397,36 @@ void GLWidget::prepareToPlotSpectr()
 
 void GLWidget::startIsClicked()
 {
-    pContextMenu->removeAction(pSetStartAction);
-    pContextMenu->addAction(pSetFinishAction);    
+//    pContextMenu->removeAction(pSetStartAction);
+//    pContextMenu->addAction(pSetFinishAction);
     m_x1 = m_dataX;
     m_y1 = m_dataY;
     m_z1 = m_dataZ;
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+
 }
 
 void GLWidget::finishIsClicked()
 {
-    pContextMenu->removeAction(pSetFinishAction);
-    pContextMenu->addAction(pSetStartAction);
+//    pContextMenu->removeAction(pSetFinishAction);
+//    pContextMenu->addAction(pSetStartAction);
     m_x2 = m_dataX;
     m_y2 = m_dataY;
     m_z2 = m_dataZ;
+    setCursor(Qt::ArrowCursor);
     emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+}
+
+void GLWidget::createLinePlotterSlot()
+{
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    pContextMenu->hide();
+
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
@@ -524,22 +539,21 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
     if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
     {
-        pContextMenu->removeAction(pSetFinishAction);
-        pContextMenu->removeAction(pSetStartAction);
         pContextMenu->removeAction(pPlotAction);
-        QList<QAction*> allAct1 = pContextMenu->actions();
+//        QList<QAction*> allAct1 = pContextMenu->actions();
 //        if (!allAct1.contains(pDeletePlotsAction))
 //            pContextMenu->menuAction()->setVisible(false);
     }
     else
     {
-
+        if (event->button() == Qt::LeftButton)
+            emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
         pContextMenu->addAction(pPlotAction);
-        QList<QAction*> allAct2 = pContextMenu->actions();
-        if (!allAct2.contains(pSetFinishAction))
-            pContextMenu->addAction(pSetStartAction);
-        else
-            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
+//        QList<QAction*> allAct2 = pContextMenu->actions();
+//        if (!allAct2.contains(pSetFinishAction))
+//            pContextMenu->addAction(pSetStartAction);
+//        else
+//            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
     }
     if (windowsArr.isEmpty())
         pContextMenu->removeAction(pDeletePlotsAction);
@@ -553,18 +567,15 @@ void GLWidget::createMenus()
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
     pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-    pSetStartAction = new QAction(QIcon(":/IconsCube/iconsCube/start_flag.png"),"Начало",this);
-    pSetFinishAction = new QAction(QIcon(":/IconsCube/iconsCube/finish_flag.png"),"Конец",this);
+    pPlotLineAction = new QAction("Спектральный срез", this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
-    pContextMenu->addAction(pSetStartAction);
+    pContextMenu->addAction(pPlotLineAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-
-    connect(pSetStartAction,SIGNAL(triggered()),SLOT(startIsClicked()));
-    connect(pSetFinishAction,SIGNAL(triggered()),SLOT(finishIsClicked()));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -699,7 +710,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         dx = 0;
         dy = 0;
         break;
-
     }
     update();
 }

@@ -16,6 +16,7 @@ LinePluginAttributes::~LinePluginAttributes()
 
 }
 
+
 u::uint32 LinePluginAttributes::GetX1() const
 {
     return m_x1;

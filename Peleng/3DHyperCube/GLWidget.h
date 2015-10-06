@@ -85,14 +85,16 @@ private slots:
     void prepareToPlotSpectr();
     void startIsClicked();//нажато "Начало" из контекстного меню
     void finishIsClicked();
+    void createLinePlotterSlot();
 
 
 signals:
     void clicked();
-    void sendXYZ(uint, uint, uint);
+    void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
     void signalPlotSpectr();
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
     void drawLabel(int, int, QString);
+    void signalCurrentDataXYZ(uint,uint,uint);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -129,6 +131,7 @@ private:
     QAction* pDeletePlotsAction;
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
+    QAction* pPlotLineAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
