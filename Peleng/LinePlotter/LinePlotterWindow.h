@@ -13,17 +13,24 @@ public:
     explicit LinePlotterWindow(QWidget *parent = 0);
     ~LinePlotterWindow();
     void plotSpectrLine(HyperCube* pCube, uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
+    bool getIsHold(){return m_hold;}
+protected:
+    void closeEvent(QCloseEvent *);
 
 signals:
-
-public slots:
-
+    void closeLinePlotterWindow(LinePlotterWindow*);
+private slots:
+    void set_mHold(bool flag){m_hold = flag;}
 private:
-    void setupUI();
 
+    void setupUI();
     QWidget *centralWidget;
     QCustomPlot* m_customPlot;
     QVBoxLayout *verticalLayout;
+    QAction *actionHold;
+    QMenuBar *menuBar;
+    QMenu *menuLine;
+    bool m_hold;
 };
 
 #endif // LINEPLOTTERWINDOW_H

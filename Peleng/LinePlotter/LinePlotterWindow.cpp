@@ -6,7 +6,7 @@
 LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
 {
     setupUI();
-    //setAttribute(Qt::WA_DeleteOnClose, true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     setWindowIcon(QIcon(":/IconsLine/iconsLine/PlotterLogo.ico"));
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
@@ -20,6 +20,10 @@ LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
 LinePlotterWindow::~LinePlotterWindow()
 {
 
+}
+
+void LinePlotterWindow::closeEvent(QCloseEvent *) {
+    emit closeLinePlotterWindow(this);
 }
 
 void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
@@ -99,5 +103,21 @@ void LinePlotterWindow::setupUI()
     QBrush brush1(QColor(255, 255, 255, 255));
     palette.setBrush(QPalette::All, QPalette::Window, brush1);
     this->setPalette(palette);
+
+    actionHold = new QAction(this);
+    actionHold->setCheckable(true);
+    actionHold->setChecked(false);
+    actionHold->setText("На 1 график");
+
+    menuBar = new QMenuBar(this);
+    menuBar->setGeometry(QRect(0, 0, 518, 21));
+    menuLine = new QMenu(menuBar);
+    menuBar->addAction(menuLine->menuAction());
+    menuLine->addAction(actionHold);
+    this->setMenuBar(menuBar);
+    connect(actionHold,SIGNAL(toggled(bool)),this,SLOT(set_mHold(bool)));
+
+
+
 }
 

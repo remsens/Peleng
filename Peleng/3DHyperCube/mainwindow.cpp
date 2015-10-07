@@ -84,12 +84,12 @@ void MainWindow::showLabel_toggled(bool value)
     else
     {
         QObject::disconnect(ui->widgetHyperCube, SIGNAL(drawLabel(int,int,QString)), this, SLOT(labelBright(int,int,QString)));
-        pBrLabel->hide();
+        //pBrLabel->hide();
     }
 
 }
 
-void MainWindow::labelLineHelp(QPoint mousePoint, QString label)
+void MainWindow::labelLineHelp(QPoint mousePoint, QString label)//потом удалить
 {
     QToolTip::showText(mousePoint, label, this, rect());
     QFont font;

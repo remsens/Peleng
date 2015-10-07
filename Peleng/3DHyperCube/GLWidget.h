@@ -80,6 +80,7 @@ public slots:
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
     void DeleteSpectrWindow(PlotterWindow* pl);
+    void DeleteLineWindow(LinePlotterWindow* lw);
 private slots:
 
     void prepareToPlotSpectr();
@@ -177,11 +178,13 @@ private:
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     PlotterWindow* windowPlotter;
+    LinePlotterWindow *pWidgLine = 0;
     bool firstWindowPlotter;
-    LinePlotterWindow *pWidgLine = 0;//PlotterAlongLine *pWidgLine = 0;
+    bool firstWindowLinePlotter;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
+    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;
-    QString strForLineHelp;
+    QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
 };
 

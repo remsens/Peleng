@@ -86,6 +86,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
+    firstWindowLinePlotter = true;
 
 }
 
@@ -461,9 +462,13 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    if (pWidgLine == 0)                                         // Всегда только 1 окно
-        pWidgLine = new LinePlotterWindow();//PlotterAlongLine();
-
+    if (firstWindowLinePlotter || pWidgLine->getIsHold() == false)                                         // Всегда только 1 окно
+    {
+        pWidgLine = new LinePlotterWindow();
+        QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
+        windowsLineArr.append(pWidgLine);
+        firstWindowLinePlotter = false;
+    }
     pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
     pWidgLine->activateWindow();
     pWidgLine->show();
@@ -481,13 +486,31 @@ void GLWidget::DeleteSpectrWindow(PlotterWindow* w)
     }
 }
 
+void GLWidget::DeleteLineWindow(LinePlotterWindow *w)
+{
+    for(int i = 0; i< windowsLineArr.size(); i++){
+        if (w == windowsLineArr[i])
+        {
+            windowsLineArr.remove(i);
+            break;
+        }
+    }
+}
+
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
-   {
+    {
         delete windowsArr[i];
-   }
+    }
     windowsArr.clear();
+
+    for(int i = 0; i < windowsLineArr.size(); ++i)
+    {
+        delete windowsLineArr[i];
+    }
+    windowsLineArr.clear();
+
 }
 
 void GLWidget::paintGL()
@@ -569,7 +592,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 //        else
 //            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
     }
-    if (windowsArr.isEmpty())
+    if (windowsArr.isEmpty() && windowsLineArr.isEmpty() )
         pContextMenu->removeAction(pDeletePlotsAction);
     else
         pContextMenu->addAction(pDeletePlotsAction);
