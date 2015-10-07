@@ -57,6 +57,7 @@ void MainWindow::processData(HyperCube *ptrCube)
 
 
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
+    QObject::connect(ui->widgetHyperCube,SIGNAL(flagsToolTip(QPoint, QString)),this,SLOT(labelLineHelp(QPoint, QString )));
 }
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
@@ -67,7 +68,7 @@ void MainWindow::labelBright(int x, int y, QString brightValue)
 //        pBrLabel->hide();
 //    else
 //        pBrLabel->show();
-    QToolTip::showText(QPoint(x,y),brightValue,ui->widgetHyperCube, rect() );
+    QToolTip::showText(QPoint(x,y),brightValue,this, rect() );//ui->widgetHyperCube
     QFont font;
     font.setPixelSize(16);
     font.setBold(true);
@@ -84,5 +85,15 @@ void MainWindow::showLabel_toggled(bool value)
         QObject::disconnect(ui->widgetHyperCube, SIGNAL(drawLabel(int,int,QString)), this, SLOT(labelBright(int,int,QString)));
         pBrLabel->hide();
     }
+
+}
+
+void MainWindow::labelLineHelp(QPoint mousePoint, QString label)
+{
+    QToolTip::showText(mousePoint, label, this, rect());
+    QFont font;
+    font.setPixelSize(16);
+    font.setBold(true);
+    QToolTip::setFont(font);
 
 }

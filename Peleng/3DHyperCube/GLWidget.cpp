@@ -87,7 +87,6 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     setMouseTracking(true);
     firstWindowPlotter = true;
 
-
 }
 
 GLWidget::~GLWidget()
@@ -399,9 +398,13 @@ void GLWidget::startIsClicked()
 {
 //    pContextMenu->removeAction(pSetStartAction);
 //    pContextMenu->addAction(pSetFinishAction);
+    linePlotterIsActive = true;
     m_x1 = m_dataX;
     m_y1 = m_dataY;
     m_z1 = m_dataZ;
+    QToolTip::showText(globalPos,"конечная точка",this, rect() );
+    emit flagsToolTip(globalPos,"выберите конечную точку");
+    strForLineHelp = "выберите конечную точку";
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
@@ -412,21 +415,29 @@ void GLWidget::finishIsClicked()
 {
 //    pContextMenu->removeAction(pSetFinishAction);
 //    pContextMenu->addAction(pSetStartAction);
+    linePlotterIsActive = false;
     m_x2 = m_dataX;
     m_y2 = m_dataY;
     m_z2 = m_dataZ;
+    strForLineHelp = "";
     setCursor(Qt::ArrowCursor);
     emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+    QToolTip::showText(globalPos,"",this, rect() );
+    emit flagsToolTip(globalPos,"");
 }
 
 void GLWidget::createLinePlotterSlot()
 {
+    linePlotterIsActive = true;
+    strForLineHelp = "Выберите начальную точку";
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    //QToolTip::showText(globalPos,"начальная точка",this, rect() );
+    emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     pContextMenu->hide();
-
+    this->setToolTip(strForLineHelp);
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
@@ -671,12 +682,24 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton)
         rotateBy(8 * dy, 8 * dx, 0);
     lastPos = event->pos();
+    globalPos = event->globalPos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
+
+
+    //emit labelHelpLine()
+    //emit flagsToolTip(globalPos,"help");//тест
 //    QToolTip::showText(event->globalPos(),strForLbl,
 //                           this, rect() );
+
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 && linePlotterIsActive) // если клик не на кубе - удаляем экшены из меню
+    {
+        //QToolTip::showText(QPoint(event->globalPos().x(), event->globalPos().y() + 15),strForLineHelp,this, rect() );
+
+    }
 }
+
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -687,7 +710,6 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 {
     if ((event->delta())>0) scale_plus(); else if ((event->delta())<0) scale_minus();
 }
-
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key())
@@ -713,14 +735,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     update();
 }
-
 void GLWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     pContextMenu->exec(event->globalPos());
 
 }
-
-
 
 void GLWidget::scale_plus() // приблизить сцену
 {
@@ -733,7 +752,6 @@ void GLWidget::scale_minus() // отдалить сцену
     nSca = nSca/1.1;
     update();
 }
-
 void GLWidget::makeTextures()
 {
     int nCHNLS = Ch2 - Ch1 + 1;
@@ -761,7 +779,6 @@ void GLWidget::makeTextures()
     textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
 
 }
-
 
 void GLWidget::makeObject()
 {

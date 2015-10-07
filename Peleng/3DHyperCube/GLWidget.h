@@ -95,6 +95,8 @@ signals:
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
     void drawLabel(int, int, QString);
     void signalCurrentDataXYZ(uint,uint,uint);
+    void flagsToolTip(QPoint, QString);
+    //void labelHelpLine(QString);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -134,6 +136,7 @@ private:
     QAction* pPlotLineAction;
     QColor clearColor;
     QPoint lastPos;
+    QPoint globalPos;
     int ROWS ;//= 2449;
     int COLS ;//= 792;
     int CHNLS;// = 224;
@@ -178,6 +181,8 @@ private:
     LinePlotterWindow *pWidgLine = 0;//PlotterAlongLine *pWidgLine = 0;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;
+    QString strForLineHelp;
+    bool linePlotterIsActive = false;
 };
 
 #endif
