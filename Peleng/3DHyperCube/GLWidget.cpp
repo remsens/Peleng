@@ -402,9 +402,11 @@ void GLWidget::startIsClicked()
     m_x1 = m_dataX;
     m_y1 = m_dataY;
     m_z1 = m_dataZ;
-    QToolTip::showText(globalPos,"конечная точка",this, rect() );
+    //QToolTip::showText(globalPos,"конечная точка",this, rect() );
+
     emit flagsToolTip(globalPos,"выберите конечную точку");
     strForLineHelp = "выберите конечную точку";
+    this->setToolTip(strForLineHelp);
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
@@ -424,7 +426,8 @@ void GLWidget::finishIsClicked()
     emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
-    QToolTip::showText(globalPos,"",this, rect() );
+   // QToolTip::showText(globalPos,"",this, rect() );
+    this->setToolTip(strForLineHelp);
     emit flagsToolTip(globalPos,"");
 }
 

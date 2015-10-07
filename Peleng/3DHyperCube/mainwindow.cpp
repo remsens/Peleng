@@ -9,6 +9,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
      setAttribute(Qt::WA_DeleteOnClose, true);
+     QFont font;
+     font.setPixelSize(16);
+     font.setBold(true);
+     QToolTip::setFont(font);
 }
 
 MainWindow::~MainWindow()
@@ -57,7 +61,7 @@ void MainWindow::processData(HyperCube *ptrCube)
 
 
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
-    QObject::connect(ui->widgetHyperCube,SIGNAL(flagsToolTip(QPoint, QString)),this,SLOT(labelLineHelp(QPoint, QString )));
+    //QObject::connect(ui->widgetHyperCube,SIGNAL(flagsToolTip(QPoint, QString)),this,SLOT(labelLineHelp(QPoint, QString )));
 }
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
@@ -69,10 +73,7 @@ void MainWindow::labelBright(int x, int y, QString brightValue)
 //    else
 //        pBrLabel->show();
     QToolTip::showText(QPoint(x,y),brightValue,this, rect() );//ui->widgetHyperCube
-    QFont font;
-    font.setPixelSize(16);
-    font.setBold(true);
-    QToolTip::setFont(font);
+
 
 }
 
