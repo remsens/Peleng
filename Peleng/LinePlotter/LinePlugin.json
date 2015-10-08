@@ -1,5 +1,5 @@
 {
     "Type" : "PelengFormat",
     "Name" : "Line Plotter UI",
-    "Description" : "Plot brightness along line"
+    "Description" : "Спектральный срез"
 }

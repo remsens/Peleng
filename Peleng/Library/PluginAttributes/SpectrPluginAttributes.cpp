@@ -1,8 +1,9 @@
 #include "SpectrPluginAttributes.h"
 
-SpectrPluginAttributes::SpectrPluginAttributes(u::uint32 x, u::uint32 y)
+SpectrPluginAttributes::SpectrPluginAttributes(u::uint32 x, u::uint32 y, QMap<QString, QString> mapPlugins)
     : m_x(x)
     , m_y(y)
+    , m_mapPlugins(mapPlugins)
 {
 
 }
@@ -22,7 +23,7 @@ u::uint32 SpectrPluginAttributes::GetY() const
     return m_y;
 }
 
-QList<QString> SpectrPluginAttributes::GetListOfAvaliablePlugins() const
+QMap<QString, QString> SpectrPluginAttributes::GetListOfAvaliablePlugins() const
 {
-    return m_listPlugins;
+    return m_mapPlugins;
 }

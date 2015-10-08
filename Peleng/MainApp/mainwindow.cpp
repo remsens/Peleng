@@ -16,11 +16,10 @@
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
 #include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/PluginAttributes/LinePluginAttributes.h"
-//=======
 #include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/PelengPluginLoader.h"
-//>>>>>>> 1
+
 
 class TableModel : public QAbstractTableModel {
 private:

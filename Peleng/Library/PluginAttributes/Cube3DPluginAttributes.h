@@ -2,17 +2,18 @@
 #define CUBE3DPLUGINATTRIBUTES_H
 
 #include "IAttributes.h"
-#include <QList>
+#include <QMap>
 #include <QString>
 
 class Cube3DPluginAttributes: public IAttributes
 {
 public:
-    Cube3DPluginAttributes();
+    Cube3DPluginAttributes(QMap<QString, QString> mapPlugins);
     virtual ~Cube3DPluginAttributes();
-    QList<QString> GetListOfAvaliablePlugins() const;
+
+    QMap<QString, QString> GetListOfAvaliablePlugins() const;
 private:
-    QList<QString> m_listPlugins;
+    QMap<QString, QString> m_mapPlugins;
 };
 
 #endif // CUBE3DPLUGINATTRIBUTES_H
