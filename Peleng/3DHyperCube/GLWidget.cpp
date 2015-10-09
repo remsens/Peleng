@@ -86,8 +86,6 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
-    firstWindowLinePlotter = true;
-
 }
 
 GLWidget::~GLWidget()
@@ -462,13 +460,9 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    if (firstWindowLinePlotter || pWidgLine->getIsHold() == false)                                         // Всегда только 1 окно
-    {
-        pWidgLine = new LinePlotterWindow();
-        QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
-        windowsLineArr.append(pWidgLine);
-        firstWindowLinePlotter = false;
-    }
+    pWidgLine = new LinePlotterWindow();
+    QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
+    windowsLineArr.append(pWidgLine);
     pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
     pWidgLine->activateWindow();
     pWidgLine->show();

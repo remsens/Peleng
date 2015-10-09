@@ -180,7 +180,6 @@ private:
     PlotterWindow* windowPlotter;
     LinePlotterWindow *pWidgLine = 0;
     bool firstWindowPlotter;
-    bool firstWindowLinePlotter;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;

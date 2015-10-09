@@ -13,14 +13,13 @@ public:
     explicit LinePlotterWindow(QWidget *parent = 0);
     ~LinePlotterWindow();
     void plotSpectrLine(HyperCube* pCube, uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
-    bool getIsHold(){return m_hold;}
+
 protected:
     void closeEvent(QCloseEvent *);
 
 signals:
     void closeLinePlotterWindow(LinePlotterWindow*);
-private slots:
-    void set_mHold(bool flag){m_hold = flag;}
+
 private:
 
     void setupUI();

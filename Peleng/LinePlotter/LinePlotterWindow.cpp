@@ -104,20 +104,5 @@ void LinePlotterWindow::setupUI()
     palette.setBrush(QPalette::All, QPalette::Window, brush1);
     this->setPalette(palette);
 
-    actionHold = new QAction(this);
-    actionHold->setCheckable(true);
-    actionHold->setChecked(false);
-    actionHold->setText("На 1 график");
-
-    menuBar = new QMenuBar(this);
-    menuBar->setGeometry(QRect(0, 0, 518, 21));
-    menuLine = new QMenu(menuBar);
-    menuBar->addAction(menuLine->menuAction());
-    menuLine->addAction(actionHold);
-    this->setMenuBar(menuBar);
-    connect(actionHold,SIGNAL(toggled(bool)),this,SLOT(set_mHold(bool)));
-
-
-
 }
 

@@ -24,7 +24,7 @@ public:
 public slots:
    void labelBright(int x, int y, QString brightValue);
    void showLabel_toggled(bool value);
-   void labelLineHelp(QPoint mousePoint,QString label);
+   //void labelLineHelp(QPoint mousePoint,QString label);
 protected:
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 

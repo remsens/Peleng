@@ -48,16 +48,16 @@ void MainWindow::processData(HyperCube *ptrCube)
     ui->horizontalScrollBar_Y2->setMaximum(cols-1);
     ui->horizontalScrollBar_Y2->setSliderPosition(cols-1);
 
-    pBrLabel = new QLabel(ui->widgetHyperCube);
-    pBrLabel->hide();
-    QFont font;
-    font.setPixelSize(16);
-    font.setBold(true);
-    //pBrLabel->setWindowFlags(Qt::ToolTip);
-    pBrLabel->setFont(font);
-    pBrLabel->setStyleSheet("QLabel { background-color: rgba(100, 255, 100, 70%);  \
-                                      color : black}");
-    pBrLabel->setGeometry(0,0, 62,20);//6-значные числа еще помещаются
+//    pBrLabel = new QLabel(ui->widgetHyperCube);
+//    pBrLabel->hide();
+//    QFont font;
+//    font.setPixelSize(16);
+//    font.setBold(true);
+//    //pBrLabel->setWindowFlags(Qt::ToolTip);
+//    pBrLabel->setFont(font);
+//    pBrLabel->setStyleSheet("QLabel { background-color: rgba(100, 255, 100, 70%);  \
+//                                      color : black}");
+//    pBrLabel->setGeometry(0,0, 62,20);//6-значные числа еще помещаются
 
 
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
@@ -89,12 +89,12 @@ void MainWindow::showLabel_toggled(bool value)
 
 }
 
-void MainWindow::labelLineHelp(QPoint mousePoint, QString label)//потом удалить
-{
-    QToolTip::showText(mousePoint, label, this, rect());
-    QFont font;
-    font.setPixelSize(16);
-    font.setBold(true);
-    QToolTip::setFont(font);
+//void MainWindow::labelLineHelp(QPoint mousePoint, QString label)//потом удалить
+//{
+//    QToolTip::showText(mousePoint, label, this, rect());
+//    QFont font;
+//    font.setPixelSize(16);
+//    font.setBold(true);
+//    QToolTip::setFont(font);
 
-}
+//}
