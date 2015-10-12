@@ -99,6 +99,7 @@ GLWidget::~GLWidget()
     delete pContextMenu;
     delete pPlotAction;
     delete pDeletePlotsAction;
+    delete this->pHistPlotAction;
     delete program;
     delete pWidgLine;
     deleteSpectrWindows();
@@ -508,11 +509,17 @@ void GLWidget::createMenus()
     pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
     pSetStartAction = new QAction("Начало",this);
     pSetFinishAction = new QAction("Конец",this);
+    pHistPlotAction = new QAction("Гистограмма", this);
+
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pSetStartAction);
+    pContextMenu->addAction(pHistPlotAction);
+
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
+    connect(pHistPlotAction,SIGNAL(triggered()),SLOT(executeHistogram()));
+
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
 
     connect(pSetStartAction,SIGNAL(triggered()),SLOT(startIsClicked()));

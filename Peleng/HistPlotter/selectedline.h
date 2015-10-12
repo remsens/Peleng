@@ -12,15 +12,17 @@ public:
 signals:
 
 protected:
-    //void selectEvent(QMouseEvent *event, bool additive, const QVariant & details, bool *selectionStateChanged);
-    void mousePressEvent(QMouseEvent * event);
+    void selectEvent(QMouseEvent *event, bool additive, const QVariant & details, bool *selectionStateChanged);
+    void deselectEvent(bool* selectionStateChanged	);
+    /*void mousePressEvent(QMouseEvent * event);
     void mouseReleaseEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);*/
 
 public slots:
-    void testSlot(bool test);
+   // void testSlot(bool test);
 private:
     bool isSelected;
+
 };
 
 #endif // SELECTEDLINE_H

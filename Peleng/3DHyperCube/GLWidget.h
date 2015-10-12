@@ -125,6 +125,7 @@ private:
     QAction* pDeletePlotsAction;
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
+    QAction* pHistPlotAction;
     QColor clearColor;
     QPoint lastPos;
     int ROWS ;//= 2449;
