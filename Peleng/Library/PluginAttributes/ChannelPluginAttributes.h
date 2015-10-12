@@ -10,15 +10,15 @@
 class ChannelPluginAttributes : public IAttributes
 {
 public:
-    ChannelPluginAttributes(u::uint32 channel, QMap<QString, QString> mapPlugins); // name, discription
+    ChannelPluginAttributes(u::uint32 channel, QList<ContextMenu> contextMenuList); // name, discription
     virtual ~ChannelPluginAttributes();
 
     u::uint32 GetChannel() const;
-    QMap<QString, QString> GetListOfAvaliablePlugins() const;
+    QList<ContextMenu> GetListOfAvaliablePlugins() const;
 
 private:
    u::uint32 m_channel;
-   QMap<QString, QString> m_mapPlugins;
+   QList<ContextMenu> m_contextMenuList;
 };
 
 #endif // CHANNELPLUGINATTRIBUTES_H

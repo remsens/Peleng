@@ -16,12 +16,12 @@ PluginsControl::~PluginsControl()
 
 }
 
-QList<QString> PluginsControl::GetReadPlugins() const
+QMap<QString, QString> PluginsControl::GetReadPlugins() const
 {
     return m_readPluginsNames;
 }
 
-QList<QString> PluginsControl::GetPelengPlugins() const
+QMap<QString, QString> PluginsControl::GetPelengPlugins() const
 {
     return m_pelengPluginsNames;
 }
@@ -47,11 +47,11 @@ void PluginsControl::LoadNamesPlugins()
         QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
         if (MetaData["Type"].toString().contains("FileFormat"))
         {
-            m_readPluginsNames.append(MetaData["Name"].toString());
+            m_readPluginsNames.insert(MetaData["Name"].toString(), MetaData["Description"].toString());
 
         } else if (MetaData["Type"].toString().contains("PelengFormat"))
         {
-            m_pelengPluginsNames.append(MetaData["Name"].toString());
+            m_pelengPluginsNames.insert(MetaData["Name"].toString(), MetaData["Description"].toString());
         }
     }
     qDebug() << "FilePlugins" << m_readPluginsNames.size();

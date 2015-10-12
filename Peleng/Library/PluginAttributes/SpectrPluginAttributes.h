@@ -9,16 +9,16 @@
 class SpectrPluginAttributes : public IAttributes
 {
 public:
-    SpectrPluginAttributes(u::uint32 x, u::uint32 y, QMap<QString, QString> mapPlugins);
+    SpectrPluginAttributes(u::uint32 x, u::uint32 y, QList<ContextMenu> contextMenuList);
     virtual ~SpectrPluginAttributes();
 
     u::uint32 GetX() const;
     u::uint32 GetY() const;
-    QMap<QString, QString> GetListOfAvaliablePlugins() const;
+    QList<ContextMenu> GetListOfAvaliablePlugins() const;
 private:
     u::uint32 m_x;
     u::uint32 m_y;
-    QMap<QString, QString> m_mapPlugins;
+    QList<ContextMenu> m_contextMenuList;
 };
 
 #endif // SPECTRPLUGINATTRIBUTES_H

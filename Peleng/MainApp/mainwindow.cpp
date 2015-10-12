@@ -16,10 +16,10 @@
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
 #include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/PluginAttributes/LinePluginAttributes.h"
-#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/PelengPluginLoader.h"
-
+#include "../Library/PluginAttributes/ContextMenu/PureContextMenu.h"
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -131,7 +131,11 @@ void MainWindow::LoadFile()
         //m_pluginsControl->GetReadPlugins().first()->DeleteData();
         //TODO
         ReadPluginLoader readPlugin;
-        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().at(0));
+        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().firstKey());
+        if (FilePlugin == 0)
+        {
+
+        }
         QString FileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
                                                     FilePlugin->getFormatDescription());
@@ -173,8 +177,11 @@ void MainWindow::LoadFile()
 
         // TODO
         cube = FilePlugin->getCube();
-        IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        IAttributes* attrCube = new Cube3DPluginAttributes();
+
+       // IAttributes* attr = new SpectrPluginAttributes(400, 200);
+        PureContextMenu ctxMenu;
+
+        IAttributes* attrCube = new Cube3DPluginAttributes(ctxMenu.GetContextMenuPlugin(m_pluginsControl->GetPelengPlugins()));
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {

@@ -1,9 +1,9 @@
 #include "SpectrPluginAttributes.h"
 
-SpectrPluginAttributes::SpectrPluginAttributes(u::uint32 x, u::uint32 y, QMap<QString, QString> mapPlugins)
+SpectrPluginAttributes::SpectrPluginAttributes(u::uint32 x, u::uint32 y, QList<ContextMenu> contextMenuList)
     : m_x(x)
     , m_y(y)
-    , m_mapPlugins(mapPlugins)
+    , m_contextMenuList(contextMenuList)
 {
 
 }
@@ -23,7 +23,7 @@ u::uint32 SpectrPluginAttributes::GetY() const
     return m_y;
 }
 
-QMap<QString, QString> SpectrPluginAttributes::GetListOfAvaliablePlugins() const
+QList<ContextMenu> SpectrPluginAttributes::GetListOfAvaliablePlugins() const
 {
-    return m_mapPlugins;
+    return m_contextMenuList;
 }

@@ -8,4 +8,9 @@
     <qresource prefix="/logo">
         <file>icons/PelengIcon.png</file>
     </qresource>
+    <qresource prefix="/pluginsIcons">
+        <file>icons/2D.png</file>
+        <file>icons/LinePlotter.png</file>
+        <file>icons/Spectr.png</file>
+    </qresource>
 </RCC>
