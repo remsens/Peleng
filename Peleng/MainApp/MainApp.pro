@@ -20,7 +20,14 @@ SOURCES += main.cpp\
     ../Library/PluginAttributes/SpectrPluginAttributes.cpp \
     ../Library/PluginAttributes/Cube3DPluginAttributes.cpp \
     ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
-    PluginsControl.cpp
+    ../Library/PluginAttributes/LinePluginAttributes.cpp \
+    PluginsControl.cpp \
+    ../Library/PluginLoader.cpp \
+    ../Library/ReadPluginLoader.cpp \
+    ../Library/PelengPluginLoader.cpp \
+    ../Library/PluginAttributes/ContextMenu/BaseContextMenu.cpp \
+    ../Library/PluginAttributes/ContextMenu/ContextMenu3D.cpp \
+    ../Library/PluginAttributes/ContextMenu/PureContextMenu.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/QCustomPlot.h \
@@ -32,8 +39,17 @@ HEADERS  += mainwindow.h \
     ../Library/PluginAttributes/SpectrPluginAttributes.h \
     ../Library/PluginAttributes/Cube3DPluginAttributes.h \
     ../Library/PluginAttributes/ChannelPluginAttributes.h \
+    ../Library/PluginAttributes/LinePluginAttributes.h \
     ../Library/Interfaces/FileReadInterface.h \
-    ../Library/Interfaces/PelengPluginsInterface.h
+    ../Library/Interfaces/PelengPluginsInterface.h \
+    ../Library/PluginLoader.h \
+    ../Library/ReadPluginLoader.h \
+    ../Library/PelengPluginLoader.h \
+    ../Library/PluginAttributes/ContextMenu/IContextMenu.h \
+    ../Library/PluginAttributes/ContextMenu/BaseContextMenu.h \
+    ../Library/PluginAttributes/ContextMenu/ContextMenu3D.h \
+    ../Library/PluginAttributes/ContextMenu/PureContextMenu.h
+
 
 
 INCLUDEPATH += $$PWD/../Library

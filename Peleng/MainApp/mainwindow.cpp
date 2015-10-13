@@ -14,7 +14,12 @@
 
 #include "../Library/QCustomPlot.h"
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
-#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/LinePluginAttributes.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/ReadPluginLoader.h"
+#include "../Library/PelengPluginLoader.h"
+#include "../Library/PluginAttributes/ContextMenu/PureContextMenu.h"
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -77,12 +82,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
 
     cube = 0;
 
       m_pluginsControl = new PluginsControl();
-      m_pluginsControl->LoadPlugins();
+      m_pluginsControl->LoadNamesPlugins();
       //ui->tabWidget->setTabsClosable(true);
       ui->mainToolBar->addAction(ui->OpenFileAction);
       ui->mainToolBar->addAction(ui->ExitAction);
@@ -118,16 +123,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::LoadFile()
 {
+
     // TODO
     if (m_pluginsControl->GetReadPlugins().size()) {
 
+        //Если это не первый вызов, но нужно почистить данные
+        //m_pluginsControl->GetReadPlugins().first()->DeleteData();
         //TODO
+        ReadPluginLoader readPlugin;
+        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().firstKey());
+        if (FilePlugin == 0)
+        {
+
+        }
         QString FileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                      "",
-                                                     m_pluginsControl->GetReadPlugins().first()->getFormatDescription());
+                                                    FilePlugin->getFormatDescription());
 
-        //test();
-        // Create a progress dialog.
+
+          // Create a progress dialog.
             QProgressDialog dialog;
 
             dialog.setLabelText(QString("Загрузка данных из файла"));
@@ -145,7 +159,7 @@ void MainWindow::LoadFile()
             //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
 
             // TODO
-            QFuture<void> future = QtConcurrent::run(m_pluginsControl->GetReadPlugins().first(), &FileReadInterface::LoadFile, FileName);
+            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::LoadFile, FileName);
 
             // Start the computation.
             futureWatcher.setFuture(future);
@@ -162,28 +176,35 @@ void MainWindow::LoadFile()
 
 
         // TODO
+        cube = FilePlugin->getCube();
 
-        IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        IAttributes* attrCube = new Cube3DPluginAttributes();
+       // IAttributes* attr = new SpectrPluginAttributes(400, 200);
+        PureContextMenu ctxMenu;
 
-        cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+        IAttributes* attrCube = new Cube3DPluginAttributes(ctxMenu.GetContextMenuPlugin(m_pluginsControl->GetPelengPlugins()));
+
+        //cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+
 
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
             //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
-            //m_pluginsControl->GetPelengPlugins().value("Hist UI")->Execute(cube);
-            m_pluginsControl->GetPelengPlugins().value("3DCube UI")->Execute(cube,attrCube);
+
+            PelengPluginLoader pelengLoader;
+            m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
+            m_pelengPlugins->Execute(cube, attrCube);
         }
 
     }
+   //m_pluginsControl->GetReadPlugins().first()->
 }
 
 
 void MainWindow::updateProgress()
 {
    // TODO
-    emit progressValueChanged(m_pluginsControl->GetReadPlugins().first()->getProgress());
+    emit progressValueChanged(FilePlugin->getProgress());
 }
 
 
@@ -221,7 +242,7 @@ void MainWindow::updateTable()
 void MainWindow::cancelOperation()
 {
     // TODO
-    m_pluginsControl->GetReadPlugins().first()->cancel();
+     FilePlugin->cancel();
     //FileFormatPluginList[0]->cancel();
 }
 

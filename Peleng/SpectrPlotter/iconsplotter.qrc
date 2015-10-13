@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/logo">
+        <file>IconsPlotter/PlotterLogo.ico</file>
+    </qresource>
+</RCC>

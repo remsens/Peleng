@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-09-08T13:12:16
+# Project created by QtCreator 2015-10-05T12:40:11
 #
 #-------------------------------------------------
 
@@ -8,33 +8,41 @@ QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = SpectrPlotter
+TARGET = LinePlotter
 TEMPLATE = lib
+DLLDESTDIR = ../../Debug/MainApp/debug
 
-DISTFILES += \
-    SpectrPlugin.json
+DEFINES += LINEPLOTTER_LIBRARY
 
-SOURCES +=\
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
+DISTFILES += LinePlugin.json
+
+SOURCES += \
     ../Library/GenericExc.cpp \
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
-    PlotterWindow.cpp \
-    SpectrPlugin.cpp \
-    ../Library/PluginAttributes/SpectrPluginAttributes.cpp
+    LinePlotterWindow.cpp \
+    LinePlugin.cpp \
+    ../Library/PluginAttributes/LinePluginAttributes.cpp
 
-HEADERS  += \
+HEADERS +=\
     ../Library/GenericExc.h \
     ../Library/HyperCube.h \
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
-    PlotterWindow.h \
+    LinePlotterWindow.h \
     ../Library/Interfaces/PelengPluginsInterface.h \
-    SpectrPlugin.h \
-    spectrplugin_global.h
-
+    LinePlugin.h
 INCLUDEPATH += $$PWD/../Library\
                $$PWD/../3DHyperCube
-DEPENDPATH += $$PWD/../Library
-              $$PWD/../3DHyperCube
-FORMS    += \
-    PlotterWindow.ui
+DEPENDPATH += $$PWD/../Library\
+               $$PWD/../3DHyperCube
+
+RESOURCES += \
+    iconslineplotter.qrc
+
+
+

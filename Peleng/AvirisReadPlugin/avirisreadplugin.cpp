@@ -71,4 +71,15 @@ HyperCube *AvirisReadPlugin::getCube()
 void AvirisReadPlugin::cancel()
 {
     ReadDataLib_BreakOperation(m_ctx);
+    ReadDataLib_DestroyContex(m_ctx);
+    m_ctx = 0;
+}
+
+void AvirisReadPlugin::DeleteData()
+{
+    if (m_ctx != 0)
+    {
+        ReadDataLib_DestroyContex(m_ctx);
+    }
+    m_ctx = 0;
 }

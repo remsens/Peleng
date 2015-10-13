@@ -45,10 +45,13 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
+#include <QSharedPointer>
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../SpectrPlotter/PlotterWindow.h"
-#include "PlotterAlongLine.h"
+//#include "PlotterAlongLine.h"
+#include "../LinePlotter/LinePlotterWindow.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -58,7 +61,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit GLWidget(HyperCube* ptrCube, QWidget *parent = 0);
+    explicit GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
@@ -77,18 +80,26 @@ public slots:
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void deleteSpectrWindows();
-
+    void DeleteSpectrWindow(PlotterWindow* pl);
+    void DeleteLineWindow(LinePlotterWindow* lw);
 private slots:
 
+    void executeHistogram();
     void prepareToPlotSpectr();
     void startIsClicked();//нажато "Начало" из контекстного меню
     void finishIsClicked();
+    void createLinePlotterSlot();
+
 
 signals:
     void clicked();
-    void sendXYZ(uint, uint, uint);
+    void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
     void signalPlotSpectr();
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
+    void drawLabel(int, int, QString);
+    void signalCurrentDataXYZ(uint,uint,uint);
+    void flagsToolTip(QPoint, QString);
+    //void labelHelpLine(QString);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -126,8 +137,11 @@ private:
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
     QAction* pHistPlotAction;
+    QAction* pPlotLineAction;
+
     QColor clearColor;
     QPoint lastPos;
+    QPoint globalPos;
     int ROWS ;//= 2449;
     int COLS ;//= 792;
     int CHNLS;// = 224;
@@ -167,9 +181,15 @@ private:
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
-    PlotterWindow* windowPlotter = 0;
-    PlotterAlongLine *pWidgLine = 0;
+    PlotterWindow* windowPlotter;
+    LinePlotterWindow *pWidgLine = 0;
+    bool firstWindowPlotter;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
+    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
+    QString strForLbl;
+    QString strForLineHelp; //можно переделать и удалить это
+    bool linePlotterIsActive = false;
+    Cube3DPluginAttributes *attr;
 };
 
 #endif

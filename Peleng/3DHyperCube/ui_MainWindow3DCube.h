@@ -25,12 +25,14 @@
 #include <QtWidgets/QWidget>
 #include "GLWidget.h"
 #include "../Library/HyperCube.h"
+#include "../Library/PluginAttributes/IAttributes.h"
 
 QT_BEGIN_NAMESPACE
 
 class Ui_MainWindow
 {
 public:
+    QAction *actionBrightCheck;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_5;
     QVBoxLayout *verticalLayout;
@@ -55,9 +57,10 @@ public:
     QLabel *label_20;
     QLabel *label_21;
     QMenuBar *menubar;
+    QMenu *menu;
     QStatusBar *statusbar;
 
-    void setupUi(HyperCube *ptrCube,QMainWindow *MainWindow)
+    void setupUi(HyperCube *ptrCube,  IAttributes* attr, QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
@@ -67,13 +70,16 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
+        actionBrightCheck = new QAction(MainWindow);
+        actionBrightCheck->setObjectName(QStringLiteral("action"));
+        actionBrightCheck->setCheckable(true);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayout_5 = new QVBoxLayout(centralwidget);
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        widgetHyperCube = new GLWidget(ptrCube,centralwidget);
+        widgetHyperCube = new GLWidget(ptrCube,attr,centralwidget);
         widgetHyperCube->setObjectName(QStringLiteral("widgetHyperCube"));
         verticalLayout->addWidget(widgetHyperCube);
 
@@ -226,10 +232,15 @@ public:
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
         menubar->setGeometry(QRect(0, 0, 1073, 21));
+        menu = new QMenu(menubar);
+        menu->setObjectName(QStringLiteral("menu"));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QStringLiteral("statusbar"));
         MainWindow->setStatusBar(statusbar);
+
+        menubar->addAction(menu->menuAction());
+        menu->addAction(actionBrightCheck);
 
         retranslateUi(MainWindow);
         QObject::connect(horizontalScrollBar_Ch1, SIGNAL(valueChanged(int)), widgetHyperCube, SLOT(sliderCh1ValueChanged(int)));
@@ -251,6 +262,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "\320\223\320\270\320\277\320\265\321\200\320\272\321\203\320\261", 0));
+        actionBrightCheck->setText(QApplication::translate("MainWindow", "\320\257\321\200\320\272\320\276\321\201\321\202\321\214 \320\277\320\276\320\264 \320\272\321\203\321\200\321\201\320\276\321\200\320\276\320\274 ", 0));
         label->setText(QApplication::translate("MainWindow", "0", 0));
         label_2->setText(QApplication::translate("MainWindow", ":", 0));
         label_3->setText(QApplication::translate("MainWindow", "\320\232\320\260\320\275\320\260\320\273", 0));
@@ -263,6 +275,7 @@ public:
         label_19->setText(QApplication::translate("MainWindow", "0", 0));
         label_20->setText(QApplication::translate("MainWindow", "0", 0));
         label_21->setText(QApplication::translate("MainWindow", "0", 0));
+        menu->setTitle(QApplication::translate("MainWindow", "\320\235\320\260\321\201\321\202\321\200\320\276\320\271\320\272\320\270", 0));
     } // retranslateUi
 
 };

@@ -47,6 +47,17 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     createMenus();
     setMouseTracking(true);
 
+//    pBrLabel = new QLabel(this);
+//    //pBrLabel->setWindowFlags(Qt::ToolTip);
+//    QFont font;
+//    font.setPixelSize(16);
+//    font.setBold(true);
+//    pBrLabel->setFont(font);
+//    pBrLabel->setStyleSheet("QLabel { background-color: rgba(100, 255, 100, 70%);  \
+//                                      color : black}");
+//    pBrLabel->setGeometry(0,0, 62,30);//6-значные числа еще помещаются
+//    pBrLabel->show();
+
 }
 
 GLWidget::~GLWidget()
@@ -415,7 +426,7 @@ void GLWidget::deleteSpectrWindows()
 
 void GLWidget::paintGL()
 {
-
+    qDebug() << "Paint in GL";
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
@@ -586,7 +597,10 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-    emit drawLabel(event->x(),event->y(),strForLbl);
+    emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
+//    pBrLabel->move(event->globalPos().x() + 20, event->globalPos().y() + 20);
+//    pBrLabel->setText(strForLbl);
+//    pBrLabel->show();
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

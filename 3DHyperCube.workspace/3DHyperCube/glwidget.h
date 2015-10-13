@@ -85,7 +85,6 @@ private slots:
     void finishIsClicked();
 
 signals:
-    void clicked();
     void sendXYZ(uint, uint, uint);
     void signalPlotSpectr();
     void signalPlotAlongLine(uint,uint,uint,uint,uint,uint);
@@ -149,6 +148,7 @@ private:
     QImage *sidesImages[6];
     QOpenGLShaderProgram *program;
     QOpenGLBuffer vbo;
+
     float kT = 1;
     float coords[6][4][3] = {
                              { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
