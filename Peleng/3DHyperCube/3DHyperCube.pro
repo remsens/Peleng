@@ -1,6 +1,6 @@
 TARGET = 3DCubePlugin
 TEMPLATE = lib
-
+DLLDESTDIR = ../../Debug/MainApp/debug
 QT           += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -25,7 +25,8 @@ HEADERS       = \
     ui_MainWindow3DCube.h \
     ../Library/QCustomPlot.h \
     ../SpectrPlotter/PlotterWindow.h \
-    PlotterAlongLine.h
+    ../LinePlotter/LinePlotterWindow.h
+    #PlotterAlongLine.h
 
 SOURCES       = \
     CubePlugin.cpp \
@@ -36,7 +37,8 @@ SOURCES       = \
     mainwindow.cpp \
     ../Library/QCustomPlot.cpp \
     ../SpectrPlotter/PlotterWindow.cpp \
-    PlotterAlongLine.cpp
+    ../LinePlotter/LinePlotterWindow.cpp
+    #PlotterAlongLine.cpp
 
 DISTFILES += \
     3DCubePlugin.json
@@ -55,4 +57,8 @@ INCLUDEPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 DEPENDPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 
 win32: LIBS += -L$$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/lib/ -lopengl32
+
+RESOURCES += \
+    icons3Dcube.qrc \
+    splash.qrc
 

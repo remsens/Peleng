@@ -12,13 +12,14 @@ public:
     PluginsControl();
     virtual ~PluginsControl();
 
-    QMap<QString, FileReadInterface*> GetReadPlugins() const;
-    QMap<QString, PelengPluginsInterface*> GetPelengPlugins() const;
-    void LoadPlugins();
+    QMap<QString, QString> GetReadPlugins() const;
+    QMap<QString, QString> GetPelengPlugins() const;
+    // В функции мы только получаем названия плагинов. При загрузке плагинов происходит создание объекта, что нам пока не нужно
+    void LoadNamesPlugins();
 
 private:
-    QMap<QString, FileReadInterface*> m_readPlugins;
-    QMap<QString, PelengPluginsInterface*> m_pelengPlugins;
+    QMap<QString, QString> m_readPluginsNames;
+    QMap<QString, QString> m_pelengPluginsNames;
 };
 
 #endif // PLUGINSCONTROL_H

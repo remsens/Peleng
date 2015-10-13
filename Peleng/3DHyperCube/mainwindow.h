@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtWidgets>
 #include "../Library/HyperCube.h"
 
 namespace Ui {
@@ -19,15 +20,18 @@ public:
     ~MainWindow();
     void processData(HyperCube* ptrCube);
 
+
+public slots:
+   void labelBright(int x, int y, QString brightValue);
+   void showLabel_toggled(bool value);
+   //void labelLineHelp(QPoint mousePoint,QString label);
 protected:
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
 
 private:
     Ui::MainWindow *ui;
-//    const static int chnls = 224;
-//    const static int cols = 792;
-//    const static int rows = 2449;
+    QLabel* pBrLabel;
 };
 
 #endif // MAINWINDOW_H

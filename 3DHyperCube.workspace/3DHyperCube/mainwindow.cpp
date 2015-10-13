@@ -49,17 +49,25 @@ void MainWindow::processData(HyperCube *ptrCube)
     QFont font;
     font.setPixelSize(16);
     font.setBold(true);
+    pBrLabel->setWindowFlags(Qt::ToolTip);
     pBrLabel->setFont(font);
-    pBrLabel->setStyleSheet("QLabel { background-color: rgba(200, 255, 200, 70%);  \
-                                      color : black} ");
+    pBrLabel->setStyleSheet("QLabel { background-color: rgba(100, 255, 100, 70%);  \
+                                      color : black}");
+    pBrLabel->setGeometry(0,0, 62,20);//6-значные числа еще помещаются
+
+
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
+
 }
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
 {
-    pBrLabel->setGeometry(x+20,y-30,62,30);// 6-значные числа еще помещаются
+    pBrLabel->move(x+20,y-30);
     pBrLabel->setText(brightValue);
-    pBrLabel->show();
+    if (pBrLabel->text() =="")
+        pBrLabel->hide();
+    else
+        pBrLabel->show();
 }
 
 void MainWindow::showLabel_toggled(bool value)

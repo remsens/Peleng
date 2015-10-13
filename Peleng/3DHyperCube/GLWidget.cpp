@@ -60,6 +60,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
       program(0)
 {
     qDebug() << "enter to GL";
+    setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -84,7 +85,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
-
+    firstWindowPlotter = true;
 }
 
 GLWidget::~GLWidget()
@@ -394,30 +395,62 @@ void GLWidget::prepareToPlotSpectr()
 
 void GLWidget::startIsClicked()
 {
-    pContextMenu->addAction(pSetFinishAction);
-    pContextMenu->removeAction(pSetStartAction);
+//    pContextMenu->removeAction(pSetStartAction);
+//    pContextMenu->addAction(pSetFinishAction);
+    linePlotterIsActive = true;
     m_x1 = m_dataX;
     m_y1 = m_dataY;
     m_z1 = m_dataZ;
+    //QToolTip::showText(globalPos,"конечная точка",this, rect() );
+
+    emit flagsToolTip(globalPos,"выберите конечную точку");
+    strForLineHelp = "выберите конечную точку";
+    this->setToolTip(strForLineHelp);
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+
 }
 
 void GLWidget::finishIsClicked()
 {
-    pContextMenu->removeAction(pSetFinishAction);
-    pContextMenu->addAction(pSetStartAction);
+//    pContextMenu->removeAction(pSetFinishAction);
+//    pContextMenu->addAction(pSetStartAction);
+    linePlotterIsActive = false;
     m_x2 = m_dataX;
     m_y2 = m_dataY;
     m_z2 = m_dataZ;
+    strForLineHelp = "";
+    setCursor(Qt::ArrowCursor);
     emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+   // QToolTip::showText(globalPos,"",this, rect() );
+    this->setToolTip(strForLineHelp);
+    emit flagsToolTip(globalPos,"");
+}
+
+void GLWidget::createLinePlotterSlot()
+{
+    linePlotterIsActive = true;
+    strForLineHelp = "Выберите начальную точку";
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    //QToolTip::showText(globalPos,"начальная точка",this, rect() );
+    emit flagsToolTip(globalPos,"выберите начальную точку");
+    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    pContextMenu->hide();
+    this->setToolTip(strForLineHelp);
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
-    if (windowPlotter == 0 || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
+    if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
     {                                                             // иначе - графики строятся в том же окне (объекте)
         windowPlotter = new PlotterWindow();
+        QObject::connect(windowPlotter, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(DeleteSpectrWindow(PlotterWindow*)));
         windowsArr.append(windowPlotter);
-     }
+        firstWindowPlotter = false;
+    }
 
     windowPlotter->plotSpectr(m_pHyperCube,x,y);
     windowPlotter->activateWindow();
@@ -427,19 +460,51 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    if (pWidgLine == 0)                                         // Всегда только 1 окно
-        pWidgLine = new PlotterAlongLine();
-
-    pWidgLine->plotSpctr(m_pHyperCube,x1,x2,y1,y2,z1,z2);
+    pWidgLine = new LinePlotterWindow();
+    QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
+    windowsLineArr.append(pWidgLine);
+    pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
     pWidgLine->activateWindow();
     pWidgLine->show();
+}
+
+void GLWidget::DeleteSpectrWindow(PlotterWindow* w)
+{
+
+    for(int i = 0; i< windowsArr.size(); i++){
+        if (w == windowsArr[i])
+        {
+            windowsArr.remove(i);
+            break;
+        }
+    }
+}
+
+void GLWidget::DeleteLineWindow(LinePlotterWindow *w)
+{
+    for(int i = 0; i< windowsLineArr.size(); i++){
+        if (w == windowsLineArr[i])
+        {
+            windowsLineArr.remove(i);
+            break;
+        }
+    }
 }
 
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
+    {
         delete windowsArr[i];
+    }
     windowsArr.clear();
+
+    for(int i = 0; i < windowsLineArr.size(); ++i)
+    {
+        delete windowsLineArr[i];
+    }
+    windowsLineArr.clear();
+
 }
 
 void GLWidget::paintGL()
@@ -451,14 +516,16 @@ void GLWidget::paintGL()
     matrix.setToIdentity();
 
     matrix.translate(dx, dy, -14.0f);
-   // matrix.translate(-centerCubeX, -centerCubeY , -centerCubeZ ); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
-    // matrix.translate(0.2, 0.2, 0);
+    //matrix.translate(-kT + centerCubeX, -1 + centerCubeZ,-1 + centerCubeY); //для вращения вокруг центра параллелепипеда даже при его измененных размерах
+    //matrix.translate(2,1,1);
     matrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     matrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     matrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
 
-    //matrix.translate(centerCubeX, centerCubeY, centerCubeZ); //возвращаем обратно
     matrix.scale(nSca,nSca,nSca);
+
+    //matrix.translate(kT - centerCubeX, 1 - centerCubeZ,1 - centerCubeY);
+    matrix.translate(kT - centerCubeX, 1 - centerCubeZ,1 - centerCubeY); //возвращаем обратно
     program->setUniformValue("matrix", projection * matrix);
 
     program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
@@ -500,24 +567,46 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+
+    if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
+    {
+        pContextMenu->removeAction(pPlotAction);
+//        QList<QAction*> allAct1 = pContextMenu->actions();
+//        if (!allAct1.contains(pDeletePlotsAction))
+//            pContextMenu->menuAction()->setVisible(false);
+    }
+    else
+    {
+        if (event->button() == Qt::LeftButton)
+            emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
+        pContextMenu->addAction(pPlotAction);
+//        QList<QAction*> allAct2 = pContextMenu->actions();
+//        if (!allAct2.contains(pSetFinishAction))
+//            pContextMenu->addAction(pSetStartAction);
+//        else
+//            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
+    }
+    if (windowsArr.isEmpty() && windowsLineArr.isEmpty() )
+        pContextMenu->removeAction(pDeletePlotsAction);
+    else
+        pContextMenu->addAction(pDeletePlotsAction);
+
 }
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
-    pPlotAction = new QAction("Спектр",this);
-    pDeletePlotsAction = new QAction("Закрыть окна спектров",this);
-    pSetStartAction = new QAction("Начало",this);
-    pSetFinishAction = new QAction("Конец",this);
+    pContextMenu->setStyleSheet("border: 0px solid black;");
+    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
+    pPlotLineAction = new QAction("Спектральный срез", this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
-    pContextMenu->addAction(pSetStartAction);
+    pContextMenu->addAction(pPlotLineAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-
-    connect(pSetStartAction,SIGNAL(triggered()),SLOT(startIsClicked()));
-    connect(pSetFinishAction,SIGNAL(triggered()),SLOT(finishIsClicked()));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -593,9 +682,15 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     m_dataZf = (objy / dChan) + (float)(CHNLS-1) / 2.0f;
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
+    {
         qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+    }
     else
+    {
         qDebug() <<"no spctr"<<endl;
+        strForLbl = "";
+    }
 
 }
 
@@ -607,9 +702,24 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton)
         rotateBy(8 * dy, 8 * dx, 0);
     lastPos = event->pos();
+    globalPos = event->globalPos();
     evalDataCordsFromMouse(event->x(),event->y());
     qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
+
+
+    //emit labelHelpLine()
+    //emit flagsToolTip(globalPos,"help");//тест
+//    QToolTip::showText(event->globalPos(),strForLbl,
+//                           this, rect() );
+
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 && linePlotterIsActive) // если клик не на кубе - удаляем экшены из меню
+    {
+        //QToolTip::showText(QPoint(event->globalPos().x(), event->globalPos().y() + 15),strForLineHelp,this, rect() );
+
+    }
 }
+
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -620,7 +730,6 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 {
     if ((event->delta())>0) scale_plus(); else if ((event->delta())<0) scale_minus();
 }
-
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key())
@@ -643,18 +752,14 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         dx = 0;
         dy = 0;
         break;
-
     }
     update();
 }
-
 void GLWidget::contextMenuEvent(QContextMenuEvent *event)
 {
     pContextMenu->exec(event->globalPos());
 
 }
-
-
 
 void GLWidget::scale_plus() // приблизить сцену
 {
@@ -667,7 +772,6 @@ void GLWidget::scale_minus() // отдалить сцену
     nSca = nSca/1.1;
     update();
 }
-
 void GLWidget::makeTextures()
 {
     int nCHNLS = Ch2 - Ch1 + 1;
@@ -695,7 +799,6 @@ void GLWidget::makeTextures()
     textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
 
 }
-
 
 void GLWidget::makeObject()
 {

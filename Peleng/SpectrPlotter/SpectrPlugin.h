@@ -17,6 +17,7 @@ public:
 
 private:
     void Execute(HyperCube* cube, IAttributes* attr);
+
 };
 
 #endif

@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = HDF5FormatLib
 TEMPLATE = lib
+DLLDESTDIR = ../../Debug/MainApp/debug
 
 DEFINES += HDF5FORMATLIB_LIBRARY
 

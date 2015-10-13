@@ -1,5 +1,6 @@
 #include "SpectrPlugin.h"
 
+#include <QSharedPointer>
 #include "PlotterWindow.h"
 #include "PluginAttributes/SpectrPluginAttributes.h"
 
@@ -15,7 +16,7 @@ SpectrPlugin::~SpectrPlugin()
 
 void SpectrPlugin::Execute(HyperCube* cube, IAttributes* attr)
 {
-    PlotterWindow *w = new PlotterWindow();
+    QSharedPointer<PlotterWindow> w(new PlotterWindow);
     w->show();
     w->plotSpectr(cube,((SpectrPluginAttributes*)attr)->GetX(),((SpectrPluginAttributes*)attr)->GetY());
 }

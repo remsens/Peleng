@@ -5,4 +5,12 @@
         <file>icons/Data Sheet-50.png</file>
         <file>icons/Heat Map-50.png</file>
     </qresource>
+    <qresource prefix="/logo">
+        <file>icons/PelengIcon.png</file>
+    </qresource>
+    <qresource prefix="/pluginsIcons">
+        <file>icons/2D.png</file>
+        <file>icons/LinePlotter.png</file>
+        <file>icons/Spectr.png</file>
+    </qresource>
 </RCC>
