@@ -45,19 +45,21 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
+#include "../Library/PluginAttributes/ContextMenu/IContextMenu.h"
 
 using namespace std;
 
 int cmp(const void *a, const void *b);
 
 
-GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
+GLWidget::GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent)
     : QOpenGLWidget(parent),
       clearColor(Qt::black),
       xRot(0),
       yRot(0),
       zRot(0),
       program(0)
+
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -86,6 +88,9 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
+
+    attr = dynamic_cast<Cube3DPluginAttributes*>(Attribute);
+
 }
 
 GLWidget::~GLWidget()
@@ -100,6 +105,7 @@ GLWidget::~GLWidget()
     delete pContextMenu;
     delete pPlotAction;
     delete pDeletePlotsAction;
+    delete this->pHistPlotAction;
     delete program;
     delete pWidgLine;
     deleteSpectrWindows();
@@ -491,6 +497,11 @@ void GLWidget::DeleteLineWindow(LinePlotterWindow *w)
     }
 }
 
+void GLWidget::executeHistogram()
+{
+
+}
+
 void GLWidget::deleteSpectrWindows()
 {
     for(int i = 0; i < windowsArr.size(); ++i)
@@ -595,18 +606,29 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
+
     pContextMenu->setStyleSheet("border: 0px solid black;");
-    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
-    pContextMenu->addAction(pPlotAction);
-    pContextMenu->addAction(pDeletePlotsAction);
-    pContextMenu->addAction(pPlotLineAction);
+    QMap<QString, QString> PluginList= attr->GetListOfAvaliablePlugins();
+    //MenuArr.at(0).
+
+        pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+        pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
+        pPlotLineAction = new QAction("Спектральный срез", this);
+        pHistPlotAction = new QAction("Гистограмма", this);
+        pContextMenu->addAction(pPlotAction);
+        pContextMenu->addAction(pDeletePlotsAction);
+        pContextMenu->addAction(pPlotLineAction);
+        pContextMenu->addAction(pHistPlotAction);
+
+
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
+    connect(pHistPlotAction,SIGNAL(triggered()),SLOT(executeHistogram()));
+
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)

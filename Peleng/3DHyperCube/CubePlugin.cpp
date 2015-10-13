@@ -30,7 +30,7 @@ void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
     labelSplash->show();
     MainWindow* mw = new MainWindow();
     QCoreApplication::processEvents();
-    mw->processData(cube);// передаем в качестве параметра указатель на объект HyperCube
+    mw->processData(cube,attr);// передаем в качестве параметра указатель на объект HyperCube
     mw->resize(1024,768);
     labelSplash->hide();
     mw->show();

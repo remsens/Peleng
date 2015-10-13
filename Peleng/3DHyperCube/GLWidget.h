@@ -51,6 +51,7 @@
 #include "../SpectrPlotter/PlotterWindow.h"
 //#include "PlotterAlongLine.h"
 #include "../LinePlotter/LinePlotterWindow.h"
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -60,7 +61,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit GLWidget(HyperCube* ptrCube, QWidget *parent = 0);
+    explicit GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
@@ -83,6 +84,7 @@ public slots:
     void DeleteLineWindow(LinePlotterWindow* lw);
 private slots:
 
+    void executeHistogram();
     void prepareToPlotSpectr();
     void startIsClicked();//нажато "Начало" из контекстного меню
     void finishIsClicked();
@@ -134,7 +136,9 @@ private:
     QAction* pDeletePlotsAction;
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
+    QAction* pHistPlotAction;
     QAction* pPlotLineAction;
+
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;
@@ -185,6 +189,7 @@ private:
     QString strForLbl;
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
+    Cube3DPluginAttributes *attr;
 };
 
 #endif

@@ -179,21 +179,30 @@ void MainWindow::LoadFile()
         cube = FilePlugin->getCube();
 
        // IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        PureContextMenu ctxMenu;
+        //PureContextMenu ctxMenu;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
       /*  IAttributes* attr = new SpectrPluginAttributes(400, 200);
         IAttributes* attrCube = new Cube3DPluginAttributes();*/
+=======
+       IAttributes* attrCube = new Cube3DPluginAttributes(m_pluginsControl->GetPelengPlugins());
 
-        cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+        //cube = m_pluginsControl->GetReadPlugins().first()->getCube();
+>>>>>>> origin/Hist
 
+
+<<<<<<< HEAD
 =======
         IAttributes* attrCube = new Cube3DPluginAttributes(ctxMenu.GetContextMenuPlugin(m_pluginsControl->GetPelengPlugins()));
 >>>>>>> origin/master
+=======
+>>>>>>> origin/Hist
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
             //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
+<<<<<<< HEAD
 <<<<<<< HEAD
             m_pluginsControl->GetPelengPlugins().value("Hist UI")->Execute(cube);
 =======
@@ -201,6 +210,12 @@ void MainWindow::LoadFile()
             m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
             m_pelengPlugins->Execute(cube, attrCube);
 >>>>>>> origin/master
+=======
+
+            PelengPluginLoader pelengLoader;
+            m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
+            m_pelengPlugins->Execute(cube, attrCube);
+>>>>>>> origin/Hist
         }
 
     }

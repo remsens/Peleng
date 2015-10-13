@@ -10,7 +10,7 @@ SelectedLine::SelectedLine(QCustomPlot *parentPlot) : QCPItemLine(parentPlot), i
     pen->setWidth(10);
 
     this->setPen(*pen);
-    this->connect(this,SIGNAL(selectionChanged(bool)),SLOT(testSlot(bool)));
+    //this->connect(this,SIGNAL(selectionChanged(bool)),this,SLOT(testSlot(bool)));
 
 
     //qDebug() << parentPlot->xAxis->range();
@@ -18,15 +18,25 @@ SelectedLine::SelectedLine(QCustomPlot *parentPlot) : QCPItemLine(parentPlot), i
 
 void SelectedLine::selectEvent(QMouseEvent *event, bool additive, const QVariant &details, bool *selectionStateChanged)
 {
-    qDebug() << "Button pressed";
+
+    qDebug() << event;
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+    qDebug() << this->parentPlot()->xAxis->pixelToCoord(mouseEvent->pos().x()) << this->parentPlot()->yAxis->pixelToCoord(mouseEvent->pos().y());
 }
 
-void SelectedLine::testSlot(bool test)
+void SelectedLine::deselectEvent(bool *selectionStateChanged)
+{
+    qDebug() << selectionStateChanged;
+}
+
+
+
+/*void SelectedLine::testSlot(bool test)
 {
     qDebug() << "Button pressed2";
 }
 
-/*void SelectedLine::mousePressEvent(QMouseEvent *event)
+void SelectedLine::mousePressEvent(QMouseEvent *event)
 {
     isSelected = true;
     qDebug() << "Button pressed";

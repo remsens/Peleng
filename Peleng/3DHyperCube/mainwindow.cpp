@@ -24,10 +24,10 @@ void MainWindow::closeEvent(QCloseEvent *)
     //ui->widgetHyperCube->deleteSpectrWindows();
 }
 
-void MainWindow::processData(HyperCube *ptrCube)
+void MainWindow::processData(HyperCube *ptrCube,IAttributes* attr)
 {
     qDebug() << "Зашли в process data";
-    ui->setupUi(ptrCube,this);
+    ui->setupUi(ptrCube,attr,this);
 
     int chnls = ptrCube->GetCountofChannels();
     int rows = ptrCube->GetLines();
