@@ -8,13 +8,13 @@
 class Cube3DPluginAttributes: public IAttributes
 {
 public:
-    Cube3DPluginAttributes(QList<ContextMenu> contextMenuList);
+    Cube3DPluginAttributes(QMap<QString, QString> pluginList);
     virtual ~Cube3DPluginAttributes();
 
-    QList<ContextMenu> GetListOfAvaliablePlugins() const;
+    QMap<QString, QString> GetListOfAvaliablePlugins() const;
 
 private:
-    QList<ContextMenu> m_contextMenuList;
+    QMap<QString, QString> m_contextPluginList;
 };
 
 #endif // CUBE3DPLUGINATTRIBUTES_H

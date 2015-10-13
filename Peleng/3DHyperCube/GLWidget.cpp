@@ -608,8 +608,8 @@ void GLWidget::createMenus()
     pContextMenu = new QMenu();
 
     pContextMenu->setStyleSheet("border: 0px solid black;");
-    QList<ContexMenu> MenuArr= attr->GetListOfAvaliablePlugins();
-    for (int i = 0; i < MenuArr.size(); i++) {
+    QMap<QString, QString> PluginList= attr->GetListOfAvaliablePlugins();
+    //MenuArr.at(0).
 
         pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
         pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
@@ -619,7 +619,7 @@ void GLWidget::createMenus()
         pContextMenu->addAction(pDeletePlotsAction);
         pContextMenu->addAction(pPlotLineAction);
         pContextMenu->addAction(pHistPlotAction);
-    }
+
 
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));

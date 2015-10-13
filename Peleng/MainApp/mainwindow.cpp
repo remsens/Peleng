@@ -179,9 +179,9 @@ void MainWindow::LoadFile()
         cube = FilePlugin->getCube();
 
        // IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        PureContextMenu ctxMenu;
+        //PureContextMenu ctxMenu;
 
-        IAttributes* attrCube = new Cube3DPluginAttributes(ctxMenu.GetContextMenuPlugin(m_pluginsControl->GetPelengPlugins()));
+       IAttributes* attrCube = new Cube3DPluginAttributes(m_pluginsControl->GetPelengPlugins());
 
         //cube = m_pluginsControl->GetReadPlugins().first()->getCube();
 
