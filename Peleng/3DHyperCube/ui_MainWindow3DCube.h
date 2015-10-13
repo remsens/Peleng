@@ -25,7 +25,10 @@
 #include <QtWidgets/QWidget>
 #include "GLWidget.h"
 #include "../Library/HyperCube.h"
-#include "../Library/PluginAttributes/IAttributes.h"
+
+
+#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+
 
 QT_BEGIN_NAMESPACE
 
@@ -60,7 +63,9 @@ public:
     QMenu *menu;
     QStatusBar *statusbar;
 
+
     void setupUi(HyperCube *ptrCube,  IAttributes* attr, QMainWindow *MainWindow)
+
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));

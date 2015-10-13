@@ -52,7 +52,10 @@ using namespace std;
 int cmp(const void *a, const void *b);
 
 
+
 GLWidget::GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent)
+
+
     : QOpenGLWidget(parent),
       clearColor(Qt::black),
       xRot(0),

@@ -61,6 +61,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
+
     explicit GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent = 0);
     ~GLWidget();
 
