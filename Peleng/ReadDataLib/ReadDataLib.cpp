@@ -2,10 +2,10 @@
 #include "Context.h"
 #include "FilesOperation.h"
 
-READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
+READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx,  HyperCube& cube) {
     try
     {
-        ctx = new Context();
+        ctx = new Context(cube);
     }
     catch (const std::exception&)
     {

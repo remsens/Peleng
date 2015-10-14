@@ -6,12 +6,12 @@
 //#include "Util.h"
 std::string Context::MakeDefaultErrorDescription()
 {
-    return "Внутренняя ошибка";
+    return "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
 }
 
 std::string Context::MakeCreateErrorDescription()
 {
-    return "Контекст не создан";
+    return "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
 }
 
 const u::uint32 Context::SuccessErrorCode = 0;

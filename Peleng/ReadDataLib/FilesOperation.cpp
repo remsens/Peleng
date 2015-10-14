@@ -5,33 +5,23 @@
 #include "../Library/GenericExc.h"
 #include <QString>
 
-FilesOperation::FilesOperation() {
+FilesOperation::FilesOperation()
+{
 	m_break = false;
     m_buffer = 0;
-    m_hyperCube = 0;
 }
 
 FilesOperation::~FilesOperation() {
-    if (m_hyperCube != 0)
-    {
-        for (int i = 0; i < m_bands; i++) {
-            delete [] m_buffer[i];
-        }
-        delete [] m_buffer;
-    }
-    if (m_hyperCube != 0)
-    {
-        delete m_hyperCube;
-    }
+
 }
 
-u::logic FilesOperation::LoadFile(std::string headerName) {
+u::logic FilesOperation::LoadFile(std::string headerName, HyperCube &cube) {
 	try {
-		ParseHeaderFile(headerName);
+        ParseHeaderFile(headerName, cube);
 		SetFileName(headerName);
 		m_sizeBlock = m_lines*m_samples*GetNumberOfBytesFromData(m_dataType);
-		OpenDataFile(m_fileName);
-		CreateHyperCube();
+        OpenDataFile(m_fileName, cube);
+        //CreateHyperCube();
 		return true;
 	} catch (...) {
 		return false;

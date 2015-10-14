@@ -19,7 +19,7 @@ public:
 	
 	//! �����������
 	//! @param headerFileName - ��� �����-���������
-	Context();
+    Context();
 
 	//! ����������
 	virtual ~Context();

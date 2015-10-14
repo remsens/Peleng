@@ -4,6 +4,7 @@
 #include "Types.h"
 
 #include <QList>
+#include <QVector>
 
 struct InfoData {
 	u::uint32 bands;
@@ -16,8 +17,12 @@ struct InfoData {
 
 class HyperCube {
 public:
-	HyperCube(u::ptr* data, u::uint32 sizeCube, InfoData& infoData);
+    HyperCube();
 	~HyperCube();
+
+    void SetInfoData(const InfoData& infoData); // Задать вектор и его емкость
+    void SetDataBuffer(u::uint32 channel, u::cptr* data, u::uint32 size, u::uint32 iteratorBefore);
+    void DestroyCube();
 
     u::uint32 GetCountofChannels();
     QList<double> GetListOfChannels();
@@ -28,7 +33,7 @@ public:
 	u::uint8 GetBytesInElements();
     u::uint8 GetBytesFormat();
 	u::uint32 GetSizeCube() const; // в байтах
-    u::ptr* GetDataCube() const;
+    QVector<QVector<u::int8> >* GetDataCube();
 	
 	u::uint32 GetSizeSpectrum();
 	void GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data);
@@ -37,11 +42,12 @@ public:
 	void GetDataChannel(u::uint32 channel, u::ptr data);
 
 
-
 private:
-	u::ptr* m_dataCube;
+    // хз как делать в шаблонах
+    // как с ним потом работать
+    QVector<QVector<u::int8> > m_vectorCube; //[bands][samples*lines]
 	u::uint32 m_sizeCube;
-	InfoData m_infoData;    
+    InfoData m_infoData;
 };
 
 #endif

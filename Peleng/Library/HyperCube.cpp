@@ -6,11 +6,9 @@
 #include <stdlib.h>
 #include "GenericExc.h"
 
-HyperCube::HyperCube(u::ptr* data, u::uint32 sizeCube, InfoData& infoData)
-	: m_dataCube(data)
-	, m_sizeCube(sizeCube) 
-	, m_infoData(infoData)
+HyperCube::HyperCube()
 {
+
 }
 
 HyperCube::~HyperCube()
@@ -20,6 +18,28 @@ HyperCube::~HyperCube()
 
 u::uint8 HyperCube::GetBytesFormat() {
     return m_infoData.bytesFormat;
+}
+
+// Уточнить, нужно ли через new создавать
+void HyperCube::SetInfoData(const InfoData& infoData) // Задать вектор и его емкость
+{
+    m_infoData = infoData;
+    m_vectorCube.reserve(m_infoData.bands);
+    for (u::uint32 i = 0; i < m_infoData.bands; i++) {
+        m_vectorCube[i].reserve(m_infoData.lines*m_infoData.samples);
+    }
+}
+
+void HyperCube::SetDataBuffer(u::uint32 channel, u::cptr* data, u::uint32 size, u::uint32 iteratorBefore) {
+    memcpy(m_vectorCube[channel].data() + iteratorBefore, data, size);
+}
+
+void HyperCube::DestroyCube() {
+    for (u::uint32 i = 0; i < m_infoData.bands; i++)
+    {
+        m_vectorCube[i].clear();
+    }
+    m_vectorCube.clear();
 }
 
 u::uint32 HyperCube::GetCountofChannels()
@@ -52,9 +72,9 @@ u::uint32 HyperCube::GetSizeCube() const
 	return m_sizeCube;
 }
 
-u::ptr *HyperCube::GetDataCube() const
+QVector<QVector<u::int8> >* HyperCube::GetDataCube()
 {
-    return m_dataCube;
+    return &m_vectorCube;
 }
 
 u::uint32 HyperCube::GetSizeSpectrum()
@@ -73,7 +93,7 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data)
 	u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
 	try {
         for (u::uint32 i = 0; i < m_infoData.bands; i++) {
-			memcpy((u::int8*)data + i*m_infoData.bytesType, (u::int8*)m_dataCube[i] + shift, m_infoData.bytesType);
+            memcpy((u::int8*)data + i*m_infoData.bytesType, m_vectorCube.at(i).data() + shift, m_infoData.bytesType);
 		}
 	} catch(...) {
         throw GenericExc("Неверно выделен размер под блок данных", -1);
@@ -91,7 +111,7 @@ void HyperCube::GetDataChannel(u::uint32 channel, u::ptr data) {
         throw GenericExc("Неверно введен канал", -1);
 	}
 	try {
-		memcpy(data, m_dataCube[channel], GetSizeChannel());
+        memcpy(data, m_vectorCube.at(channel).data(), GetSizeChannel());
 	} catch (...) {
         throw GenericExc("Неверно выделен размер под блок данных", -1);
 	}
