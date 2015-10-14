@@ -20,22 +20,18 @@ public:
     ~AvirisReadPlugin();
 
 private:
-    u::ptr m_ctx;
-    QLibrary* m_lib;
-    HyperCube* m_hyperCube;
-    GenericExc* m_exception;
-    void LoadFile(QString FileName);
+    void ReadCubeFromFile(QString& fileName, HyperCube* cube);
     int getProgress();
     QString getFormatDescription();
-    HyperCube* getCube();
-    GenericExc* GetException();
+    GenericExc* GetLastError();
     void DeleteData();
-
     void ExceptionLibrary();
     void MakeException(QString errMessage, u::uint32 errCode);
-    // FileReadInterface interface
-public:
     void cancel();
+
+private:
+    u::ptr m_ctx;
+    GenericExc* m_exception;
 
 };
 

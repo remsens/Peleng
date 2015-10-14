@@ -81,10 +81,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
+      ui->setupUi(this);
+      setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
 
-    cube = 0;
+      m_cube = new HyperCube();
 
       m_pluginsControl = new PluginsControl();
       m_pluginsControl->LoadNamesPlugins();
@@ -132,11 +132,9 @@ void MainWindow::LoadFile()
         //TODO
         ReadPluginLoader readPlugin;
         FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().firstKey());
-        if (FilePlugin == 0)
+        if (FilePlugin != 0)
         {
-
-        }
-        QString FileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+            QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
                                                      "",
                                                     FilePlugin->getFormatDescription());
 
@@ -156,10 +154,9 @@ void MainWindow::LoadFile()
             QObject::connect(&dialog, SIGNAL(canceled()), &futureWatcher, SLOT(cancel()));
             QObject::connect(this, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
 
-            //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
 
             // TODO
-            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::LoadFile, FileName);
+            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::ReadCubeFromFile, FileName, m_cube);
 
             // Start the computation.
             futureWatcher.setFuture(future);
@@ -174,49 +171,20 @@ void MainWindow::LoadFile()
 
             timer.stop();
 
+        }
 
-        // TODO
-        cube = FilePlugin->getCube();
-
-       // IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        //PureContextMenu ctxMenu;
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-      /*  IAttributes* attr = new SpectrPluginAttributes(400, 200);
-        IAttributes* attrCube = new Cube3DPluginAttributes();*/
-=======
-       IAttributes* attrCube = new Cube3DPluginAttributes(m_pluginsControl->GetPelengPlugins());
-
-        //cube = m_pluginsControl->GetReadPlugins().first()->getCube();
->>>>>>> origin/Hist
-
-
-<<<<<<< HEAD
-=======
-        IAttributes* attrCube = new Cube3DPluginAttributes(ctxMenu.GetContextMenuPlugin(m_pluginsControl->GetPelengPlugins()));
->>>>>>> origin/master
-=======
->>>>>>> origin/Hist
+        FilePlugin->DeleteData();
+        
+        IAttributes* attrCube = new Cube3DPluginAttributes(m_pluginsControl->GetPelengPlugins());
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
-            //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
-<<<<<<< HEAD
-<<<<<<< HEAD
-            m_pluginsControl->GetPelengPlugins().value("Hist UI")->Execute(cube);
-=======
-            PelengPluginLoader pelengLoader;
-            m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
-            m_pelengPlugins->Execute(cube, attrCube);
->>>>>>> origin/master
-=======
+
 
             PelengPluginLoader pelengLoader;
             m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
             m_pelengPlugins->Execute(cube, attrCube);
->>>>>>> origin/Hist
-        }
+
 
     }
    //m_pluginsControl->GetReadPlugins().first()->

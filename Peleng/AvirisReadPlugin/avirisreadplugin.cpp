@@ -4,7 +4,6 @@
 
 void AvirisReadPlugin::ExceptionLibrary()
 {
-
     ReadData::Error err = ReadDataLib_GetLastError(m_ctx);
     MakeException(QObject::tr(err.message), err.code);
 }
@@ -17,7 +16,7 @@ void AvirisReadPlugin::MakeException(QString errMessage, u::uint32 errCode)
     m_exception = new GenericExc(errMessage, errCode);
 }
 
-GenericExc* AvirisReadPlugin::GetException()
+GenericExc* AvirisReadPlugin::GetLastError()
 {
     return m_exception;
 }
@@ -43,14 +42,13 @@ AvirisReadPlugin::~AvirisReadPlugin()
     delete m_exception;
 }
 
-void AvirisReadPlugin::LoadFile(QString fileName)
+void AvirisReadPlugin::ReadCubeFromFile(QString& fileName, HyperCube* cube)
 {
-    u::logic res = ReadDataLib_LoadFile(m_ctx, fileName.toStdString().c_str());
+    u::logic res = ReadDataLib_ReadCubeFromFile(m_ctx, fileName.toStdString().c_str(), cube);
     if (!res)
     {
         ExceptionLibrary();
     }
-    m_hyperCube = (HyperCube*)ReadDataLib_CreateHyperCube(m_ctx);
 }
 
 int AvirisReadPlugin::getProgress()
@@ -63,10 +61,6 @@ QString AvirisReadPlugin::getFormatDescription()
     return "Формат заголовков AVIRIS(*.hdr)";
 }
 
-HyperCube *AvirisReadPlugin::getCube()
-{
-    return  m_hyperCube;
-}
 
 void AvirisReadPlugin::cancel()
 {

@@ -15,7 +15,7 @@ FilesOperation::~FilesOperation() {
 
 }
 
-u::logic FilesOperation::ReadCubeFromFile(std::string headerName, HyperCube &cube) {
+u::logic FilesOperation::ReadCubeFromFile(std::string headerName, HyperCube *cube) {
 	try {
         ParseHeaderFile(headerName);
 		SetFileName(headerName);
@@ -62,7 +62,7 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 	return size;
 }
 
-u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube& cube) {
+u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube) {
     InfoData infoData;
     infoData.bands = m_bands;
     infoData.bytesFormat = m_dataType;
@@ -70,7 +70,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube& cube
     infoData.lines = m_lines;
     infoData.listChannels = m_listChannel;
     infoData.samples = m_samples;
-    cube.SetInfoData(infoData);
+    cube->SetInfoData(infoData);
 
 	u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
@@ -97,7 +97,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube& cube
 						u::uint32 k = 0;
 						while (k < m_bands*sizeEl)
 						{
-                            cube.SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
+                            cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
                             k += sizeEl;
 						}
 					}
@@ -121,7 +121,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube& cube
 			u::uint32 k = 0;
 			while (k < m_bands*sizeEl)
 			{
-                cube.SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
+                cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
 				k += sizeEl;
 			}
 		}

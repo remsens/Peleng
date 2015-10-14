@@ -14,7 +14,7 @@ READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
     return (ctx != 0);
 }
 
-READDATALIB_API_EXPORT u::logic ReadDataLib_ReadCubeFromFile(u::ptr& ctx, u::cstr headerFileName, HyperCube& cube) {
+READDATALIB_API_EXPORT u::logic ReadDataLib_ReadCubeFromFile(u::ptr& ctx, u::cstr headerFileName, HyperCube* cube) {
     if (ctx != 0)
     {
         Context& rctx = *(Context*)ctx;
