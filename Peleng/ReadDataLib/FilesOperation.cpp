@@ -8,36 +8,23 @@
 FilesOperation::FilesOperation()
 {
 	m_break = false;
-    m_buffer = 0;
+
 }
 
 FilesOperation::~FilesOperation() {
 
 }
 
-u::logic FilesOperation::LoadFile(std::string headerName, HyperCube &cube) {
+u::logic FilesOperation::ReadCubeFromFile(std::string headerName, HyperCube &cube) {
 	try {
-        ParseHeaderFile(headerName, cube);
+        ParseHeaderFile(headerName);
 		SetFileName(headerName);
 		m_sizeBlock = m_lines*m_samples*GetNumberOfBytesFromData(m_dataType);
-        OpenDataFile(m_fileName, cube);
-        //CreateHyperCube();
-		return true;
+        return CreateCube(m_fileName, cube);
 	} catch (...) {
 		return false;
 	}
 
-}
-
-HyperCube* FilesOperation::CreateHyperCube() {
-	InfoData infoStruct;
-	infoStruct.bands = m_bands;
-	infoStruct.bytesType = GetNumberOfBytesFromData(m_dataType);
-	infoStruct.lines = m_lines;
-	infoStruct.samples = m_samples;
-    infoStruct.listChannels = m_listChannel;
-    infoStruct.bytesFormat = m_dataType;
-	return m_hyperCube = new HyperCube(reinterpret_cast<u::ptr*>(m_buffer), GetFileSize(m_fileName), infoStruct);
 }
 
 double FilesOperation::GetProgress() const {
@@ -63,7 +50,7 @@ void FilesOperation::SetFileName(const std::string headerName) {
 u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
     std::ifstream file(fileName.c_str(), std::ios_base::binary);
 	if (file == NULL) {
-        throw GenericExc("Невозможно открыть файл данных");
+        throw GenericExc("РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»-Р·Р°РіРѕР»РѕРІРѕРє");
 		return false;
 	}
 	int size = 0;
@@ -75,15 +62,16 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 	return size;
 }
 
-u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
-	try {
-        m_buffer = new u::int8*[m_bands];
-		for (int i = 0; i < m_bands; i++) {
-            m_buffer[i] = new u::int8[m_samples*m_lines*GetNumberOfBytesFromData(m_dataType)];
-		}
-	} catch (...) {
-        throw GenericExc("Невозможно выделить память");
-	}
+u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube& cube) {
+    InfoData infoData;
+    infoData.bands = m_bands;
+    infoData.bytesFormat = m_dataType;
+    infoData.bytesType = GetNumberOfBytesFromData(m_dataType);
+    infoData.lines = m_lines;
+    infoData.listChannels = m_listChannel;
+    infoData.samples = m_samples;
+    cube.SetInfoData(infoData);
+
 	u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
 	u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
@@ -92,10 +80,10 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	FILE* pfile;
 	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
 	{
-        throw GenericExc("Невозможно открыть файл данных");
+        throw GenericExc("РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РґР°РЅРЅС‹С…");
 		return false;
 	}
-	for (int i = 0; i < bcnt; i++) 
+    for (u::uint8 i = 0; i < bcnt; i++)
 	{
 		if (!m_break) 
 		{
@@ -109,7 +97,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 						u::uint32 k = 0;
 						while (k < m_bands*sizeEl)
 						{
-                            memcpy(m_buffer[k/sizeEl] + (i*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k), sizeEl);
+                            cube.SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
                             k += sizeEl;
 						}
 					}
@@ -117,7 +105,7 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 					m_progress = (double)((double)i/bcnt)*100;
 				} catch (...) 
 				{
-                    throw GenericExc("Ошибка чтения файла данных");
+                    throw GenericExc("РћС€РёР±РєР° С‡С‚РµРЅРёСЏ РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°");
 					return false;
 				}
 			}
@@ -129,11 +117,11 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	if (ost != 0) {
 		u::uint8* tempbuf = new u::uint8[ost];
 		fread(tempbuf, sizeof(char), ost, pfile);
-		for (int j = 0; j < ost/(m_bands*sizeEl); j++) {
+        for (u::uint32 j = 0; j < ost/(m_bands*sizeEl); j++) {
 			u::uint32 k = 0;
 			while (k < m_bands*sizeEl)
 			{
-                memcpy(m_buffer[k/sizeEl] + (bcnt*1024*sizeEl + j*sizeEl), tempbuf + (j*m_bands*sizeEl+k), sizeEl);
+                cube.SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
 				k += sizeEl;
 			}
 		}
@@ -142,10 +130,6 @@ u::logic FilesOperation::OpenDataFile(const std::string& fileName) {
 	}
 	fclose(pfile);
 	return true;
-}
-
-std::list<double> FilesOperation::GetListChannels() {
-	return m_listChannel;
 }
 
 u::uint32 FilesOperation::GetNumberOfBytesFromData(u::int32 format) {
@@ -176,7 +160,7 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 	pFile = fopen (headername.c_str() , "r");
 	if (pFile == NULL) 
 	{
-        throw GenericExc("Невозможно открыть файл заголовок");
+        throw GenericExc("РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» Р·Р°РіРѕР»РѕРІРѕРє");
 	}
 	else
 	{
@@ -192,7 +176,7 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 					fscanf (pFile, "%s", strOut);
 					if (strcmp(strOut, str[i][j]) == 0) 
 					{
-						for (int k = 0; k < m_bands; k++)
+                        for (u::uint32 k = 0; k < m_bands; k++)
 						{
 							for (;;) 
 							{
@@ -228,7 +212,7 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 								m_listChannel.push_back(value);
 							} catch (...)
 							{
-                                throw GenericExc("Неверный формат данных");
+                                throw GenericExc("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°РЅРЅС‹С…");
 							}
 						}
 					}
@@ -288,7 +272,7 @@ u::uint32 FilesOperation::ConvertStrtoInt(const char* data) {
         return str.toInt();
     } catch (...)
 	{
-        throw GenericExc("Неверный формат данных");
+        throw GenericExc("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ РґР°РЅРЅС‹С…");
 	}
 }
 

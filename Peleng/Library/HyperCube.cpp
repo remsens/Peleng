@@ -30,7 +30,7 @@ void HyperCube::SetInfoData(const InfoData& infoData) // Задать вектор и его емк
     }
 }
 
-void HyperCube::SetDataBuffer(u::uint32 channel, u::cptr* data, u::uint32 size, u::uint32 iteratorBefore) {
+void HyperCube::SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore) {
     memcpy(m_vectorCube[channel].data() + iteratorBefore, data, size);
 }
 

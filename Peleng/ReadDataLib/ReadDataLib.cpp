@@ -2,10 +2,10 @@
 #include "Context.h"
 #include "FilesOperation.h"
 
-READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx,  HyperCube& cube) {
+READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
     try
     {
-        ctx = new Context(cube);
+        ctx = new Context();
     }
     catch (const std::exception&)
     {
@@ -14,12 +14,12 @@ READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx,  HyperCube
     return (ctx != 0);
 }
 
-READDATALIB_API_EXPORT u::logic ReadDataLib_LoadFile(u::ptr& ctx, u::cstr headerFileName) {
+READDATALIB_API_EXPORT u::logic ReadDataLib_ReadCubeFromFile(u::ptr& ctx, u::cstr headerFileName, HyperCube& cube) {
     if (ctx != 0)
     {
         Context& rctx = *(Context*)ctx;
         rctx.ClearError();
-        return rctx.GetFilesOperObject()->LoadFile(headerFileName);
+        return rctx.GetFilesOperObject()->ReadCubeFromFile(headerFileName, cube);
     }
     else
     {
@@ -31,16 +31,6 @@ READDATALIB_API_EXPORT void ReadDataLib_DestroyContex(u::ptr ctx) {
     if (ctx != 0)
     {
         delete (Context*)ctx;
-    }
-}
-
-READDATALIB_API_EXPORT HyperCube* ReadDataLib_CreateHyperCube(u::ptr ctx) {
-    if (ctx == 0) {
-        return NULL;
-    } else {
-        Context& rctx = *(Context*)ctx;
-        rctx.ClearError();
-        return rctx.GetFilesOperObject()->CreateHyperCube();
     }
 }
 

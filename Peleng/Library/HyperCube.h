@@ -21,7 +21,7 @@ public:
 	~HyperCube();
 
     void SetInfoData(const InfoData& infoData); // Задать вектор и его емкость
-    void SetDataBuffer(u::uint32 channel, u::cptr* data, u::uint32 size, u::uint32 iteratorBefore);
+    void SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore);
     void DestroyCube();
 
     u::uint32 GetCountofChannels();

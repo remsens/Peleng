@@ -21,7 +21,7 @@ public:
 	//! Функция загрузки файла-заголовка
 	//! @param headerName - путь к файлу
 	//! @return - результат выполнения программы
-    u::logic LoadFile(std::string headerName, HyperCube& cube);
+    u::logic ReadCubeFromFile(std::string headerName, HyperCube& cube);
 
 	//! Функция получения состояния прогресса
 	//! @return - прогресс
@@ -34,7 +34,7 @@ public:
 private:
 	//! Функция, которая парсит файл-заголовок
 	//! @param headername - имя файла заголовка
-    void ParseHeaderFile(std::string headername, HyperCube& cube);
+    void ParseHeaderFile(std::string headername);
 	
 	//! Функция, которая устанавливает данные
 	//! @param parametr_id - id-номер переменной
@@ -51,7 +51,7 @@ private:
 
 	u::uint32 ConvertStrtoInt(const char* data);
 	u::uint32 GetFileSize(const std::string& fileName);
-    u::logic OpenDataFile(const std::string& fileName, HyperCube& cube);
+    u::logic CreateCube(const std::string& fileName, HyperCube& cube);
 
 private:
 	u::uint32 m_sizeBlock;
@@ -66,6 +66,7 @@ private:
 	u::uint32 m_dataType;
 	u::uint32 m_interleave;
 	u::uint32 m_byteorder;
+    bool m_break;
    // u::int8** m_buffer;
 
 
