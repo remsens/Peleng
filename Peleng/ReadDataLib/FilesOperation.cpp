@@ -4,6 +4,7 @@
 #include <fstream>
 #include "../Library/GenericExc.h"
 #include <QString>
+#include <QDebug>
 
 FilesOperation::FilesOperation()
 {
@@ -75,7 +76,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 	u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
 	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
 	u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
-	u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
+    u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
 	m_progress = 0;
 	FILE* pfile;
 	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
@@ -83,7 +84,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
         throw GenericExc("Невозможно открыть файл данных");
 		return false;
 	}
-    for (u::uint8 i = 0; i < bcnt; i++)
+    for (u::uint32 i = 0; i < bcnt; i++)
 	{
 		if (!m_break) 
 		{
@@ -105,12 +106,14 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 					m_progress = (double)((double)i/bcnt)*100;
 				} catch (...) 
 				{
+                    qDebug() << "exc";
                     throw GenericExc("Ошибка чтения данных из файла");
 					return false;
 				}
 			}
 		} else 
         {
+            qDebug() << "break";
             break;
 		}
 	}

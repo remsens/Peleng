@@ -25,8 +25,10 @@ void HyperCube::SetInfoData(const InfoData& infoData) // Задать вектор и его емк
 {
     m_infoData = infoData;
     m_vectorCube.reserve(m_infoData.bands);
-    for (u::uint32 i = 0; i < m_infoData.bands; i++) {
-        m_vectorCube[i].reserve(m_infoData.lines*m_infoData.samples);
+    m_vectorCube.resize(m_infoData.bands);
+    for (u::uint32 i = 0; i < m_infoData.bands; i++) {        
+        m_vectorCube[i].reserve(m_infoData.lines*m_infoData.samples*m_infoData.bytesFormat);
+        m_vectorCube[i].resize(m_infoData.lines*m_infoData.samples*m_infoData.bytesType);
     }
 }
 

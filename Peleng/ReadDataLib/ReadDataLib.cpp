@@ -1,7 +1,7 @@
 #include "ReadDataLib.h"
 #include "Context.h"
 #include "FilesOperation.h"
-
+#include "QDebug"
 READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx) {
     try
     {
@@ -48,6 +48,7 @@ READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx) {
         Context& rctx = *(Context*)ctx;
         rctx.ClearError();
         double progress = rctx.GetFilesOperObject()->GetProgress();
+
         return progress;
     } else
     {
