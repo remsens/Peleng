@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QtWidgets>
 #include "../Library/HyperCube.h"
-#include "../Library/PluginAttributes/IAttributes.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,7 +18,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void processData(HyperCube* ptrCube, IAttributes *attr);
+    void processData(HyperCube* ptrCube);
 
 
 public slots:

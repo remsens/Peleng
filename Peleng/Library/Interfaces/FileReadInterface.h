@@ -17,6 +17,7 @@ public:
     virtual void cancel()=0;
     virtual void DeleteData() = 0;
     virtual GenericExc* GetLastError() = 0;
+
 };
 #define FileReadInteface_iid "by.nomrec.FileReadInterface"
 Q_DECLARE_INTERFACE(FileReadInterface, FileReadInteface_iid)

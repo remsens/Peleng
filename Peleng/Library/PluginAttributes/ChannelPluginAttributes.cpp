@@ -1,8 +1,7 @@
 #include "ChannelPluginAttributes.h"
 
-ChannelPluginAttributes::ChannelPluginAttributes(u::uint32 channel, QList<ContextMenu> contextMenuList)
+ChannelPluginAttributes::ChannelPluginAttributes(u::uint32 channel)
     : m_channel(channel)
-    , m_contextMenuList(contextMenuList)
 {
 
 }
@@ -17,7 +16,7 @@ u::uint32 ChannelPluginAttributes::GetChannel() const
     return m_channel;
 }
 
-QList<ContextMenu> ChannelPluginAttributes::GetListOfAvaliablePlugins() const
+/*QList<QString> ChannelPluginAttributes::GetListOfAvaliablePlugins() const
  {
-     return m_contextMenuList;
- }
+     return m_listPlugins;
+ }*/

@@ -1,5 +1,6 @@
 #include "PlotterWindow.h"
 #include "ui_PlotterWindow.h"
+
 #include <QtAlgorithms>
 #include <../Library/GenericExc.h>
 

@@ -22,15 +22,25 @@ void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
     QSurfaceFormat::setDefaultFormat(format);
     qDebug() << "Зашли в плагин";
 
-    QPixmap*pix = new QPixmap(":/Splash/iconsCube/the_gentlemanly_escort_cube.png");
+    QPixmap*pixtemp = new QPixmap(":/Splash/iconsCube/cube9.png");
+    QPixmap* pix = new QPixmap(pixtemp->scaledToHeight(800));
+    //QMovie *movie = new QMovie(":/Splash/iconsCube/add-loading-screen.gif");
     QLabel* labelSplash = new QLabel();
+
     labelSplash->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     labelSplash->setPixmap(*pix);
-    labelSplash->setProperty("windowOpacity",0.7);
+    labelSplash->setProperty("windowOpacity",0.8);
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    int x = (screenGeometry.width()-pix->width()) / 2;
+    int y = (screenGeometry.height()-pix->height()) / 2;
+    labelSplash->move(x,y);
+    //labelSplash->setMovie(movie);
+   // movie->start();
     labelSplash->show();
+
     MainWindow* mw = new MainWindow();
     QCoreApplication::processEvents();
-    mw->processData(cube,attr);// передаем в качестве параметра указатель на объект HyperCube
+    mw->processData(cube);// передаем в качестве параметра указатель на объект HyperCube
     mw->resize(1024,768);
     labelSplash->hide();
     mw->show();

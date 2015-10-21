@@ -45,24 +45,21 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-#include "../Library/PluginAttributes/ContextMenu/IContextMenu.h"
+#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
+#include "../HistPlotter/histplugin.h"
 
 using namespace std;
 
 int cmp(const void *a, const void *b);
 
 
-
-GLWidget::GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent)
-
-
+GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     : QOpenGLWidget(parent),
       clearColor(Qt::black),
       xRot(0),
       yRot(0),
       zRot(0),
       program(0)
-
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -91,9 +88,9 @@ GLWidget::GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
-
-    attr = dynamic_cast<Cube3DPluginAttributes*>(Attribute);
-
+   /* IAttributes* attr = new ChannelPluginAttributes(100);
+    HistPlugin* pl = new HistPlugin(100, this);
+    pl->Execute(m_pHyperCube, attr);*/
 }
 
 GLWidget::~GLWidget()
@@ -108,9 +105,7 @@ GLWidget::~GLWidget()
     delete pContextMenu;
     delete pPlotAction;
     delete pDeletePlotsAction;
-    delete this->pHistPlotAction;
     delete program;
-    delete pWidgLine;
     deleteSpectrWindows();
     doneCurrent();
 }
@@ -451,6 +446,16 @@ void GLWidget::createLinePlotterSlot()
     this->setToolTip(strForLineHelp);
 }
 
+void GLWidget::run2DCube() // где нибудь тут добавить InitChanel
+{
+    window2DCube = new Main2DWindow();
+    window2DCube->setHyperCube(m_pHyperCube);
+    //windowPlotter->activateWindow(); //если понадобится "поднять" окно
+    window2DCube->fillChanList();
+    window2DCube->setInitChanel(m_dataZ);
+    window2DCube->show();
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
@@ -500,25 +505,16 @@ void GLWidget::DeleteLineWindow(LinePlotterWindow *w)
     }
 }
 
-void GLWidget::executeHistogram()
-{
-
-}
-
 void GLWidget::deleteSpectrWindows()
 {
-    for(int i = 0; i < windowsArr.size(); ++i)
+    while(windowsArr.size()>0)
     {
-        delete windowsArr[i];
+        windowsArr[0]->close();
     }
-    windowsArr.clear();
-
-    for(int i = 0; i < windowsLineArr.size(); ++i)
+    while(windowsLineArr.size()>0)
     {
-        delete windowsLineArr[i];
+        windowsLineArr[0]->close();
     }
-    windowsLineArr.clear();
-
 }
 
 void GLWidget::paintGL()
@@ -585,6 +581,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
     {
         pContextMenu->removeAction(pPlotAction);
+        pContextMenu->removeAction(p2DCubeAction);
 //        QList<QAction*> allAct1 = pContextMenu->actions();
 //        if (!allAct1.contains(pDeletePlotsAction))
 //            pContextMenu->menuAction()->setVisible(false);
@@ -594,6 +591,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         if (event->button() == Qt::LeftButton)
             emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
         pContextMenu->addAction(pPlotAction);
+        pContextMenu->addAction(p2DCubeAction);
 //        QList<QAction*> allAct2 = pContextMenu->actions();
 //        if (!allAct2.contains(pSetFinishAction))
 //            pContextMenu->addAction(pSetStartAction);
@@ -609,28 +607,21 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
-
     pContextMenu->setStyleSheet("border: 0px solid black;");
-    QMap<QString, QString> PluginList= attr->GetListOfAvaliablePlugins();
-    //MenuArr.at(0).
-
-        pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-        pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-        pPlotLineAction = new QAction("Спектральный срез", this);
-        pHistPlotAction = new QAction("Гистограмма", this);
-        pContextMenu->addAction(pPlotAction);
-        pContextMenu->addAction(pDeletePlotsAction);
-        pContextMenu->addAction(pPlotLineAction);
-        pContextMenu->addAction(pHistPlotAction);
-
-
+    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
+    pPlotLineAction = new QAction("Спектральный срез", this);
+    p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
+    pContextMenu->addAction(pPlotAction);
+    pContextMenu->addAction(pDeletePlotsAction);
+    pContextMenu->addAction(pPlotLineAction);
+    pContextMenu->addAction(p2DCubeAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
-    connect(pHistPlotAction,SIGNAL(triggered()),SLOT(executeHistogram()));
-
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+    connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
 
 }
 
@@ -738,11 +729,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 //    QToolTip::showText(event->globalPos(),strForLbl,
 //                           this, rect() );
 
-    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 && linePlotterIsActive) // если клик не на кубе - удаляем экшены из меню
-    {
-        //QToolTip::showText(QPoint(event->globalPos().x(), event->globalPos().y() + 15),strForLineHelp,this, rect() );
+//    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 && linePlotterIsActive)
+//    {
+//        //QToolTip::showText(QPoint(event->globalPos().x(), event->globalPos().y() + 15),strForLineHelp,this, rect() );
 
-    }
+//    }
 }
 
 
@@ -1057,7 +1048,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     int min;
     int max;
     qint16 *dataTemp = new qint16[ROWS*COLS];
-    for (int i=0; i<10; ++i)
+    for (int i=0; i<10; ++i)           //!!! 10
     {
         for (int j = 0; j<ROWS*COLS; ++j)
         {
@@ -1070,6 +1061,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             minCMap = min;
         if (max > maxCMap )
             maxCMap = max;
+        qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
     }
     delete[] dataTemp;
 }

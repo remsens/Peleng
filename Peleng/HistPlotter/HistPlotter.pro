@@ -21,7 +21,7 @@ SOURCES +=\
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     histplugin.cpp \
-    selectedline.cpp
+    ../Library/PluginAttributes/ChannelPluginAttributes.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -29,7 +29,8 @@ HEADERS  += \
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
     histplugin.h \
-    selectedline.h
+    ../Library/PluginAttributes/ChannelPluginAttributes.h \
+    ../Library/Utils/typeconvertor.h
 
 FORMS    +=
 

@@ -2,8 +2,8 @@
 #define PLOTTERWINDOW_H
 
 #include <QMainWindow>
-#include "../../Library/QCustomPlot.h"
-#include "../../Library/HyperCube.h"
+#include "../Library/QCustomPlot.h"
+#include "../Library/HyperCube.h"
 
 namespace Ui {
 class PlotterWindow;

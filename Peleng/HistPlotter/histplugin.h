@@ -4,16 +4,19 @@
 #include <QObject>
 #include "../Library/Interfaces/PelengPluginsInterface.h"
 #include "../Library/QCustomPlot.h"
-#include "selectedline.h"
+#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
 
-class HistPlugin : public QObject, public  PelengPluginsInterface
+//#include "selectedline.h"
+
+class HistPlugin : public QObject//, public  PelengPluginsInterface
 {
-    Q_OBJECT
+   /* Q_OBJECT
     Q_PLUGIN_METADATA(IID "by.remsens.hyperview.hist" FILE "HistPlugin.json")
-    Q_INTERFACES(PelengPluginsInterface)
+    Q_INTERFACES(PelengPluginsInterface)*/
 
 public:
-    explicit HistPlugin(QObject *parent = 0);
+    HistPlugin(int HistCount =100, QObject *parent = 0);
+    ~HistPlugin();
 
 signals:
     void replot();
@@ -22,6 +25,10 @@ signals:
 public slots:
     void plotLine(QCPAbstractPlottable* object,QMouseEvent* event);
     void mouseClick(QMouseEvent*event);
+    void setHistCount(int HistCount)
+    {
+        HIST_COUNT= HistCount;
+    }
 
 
 
@@ -31,10 +38,13 @@ public:
 
 private:
     void ModifyCube(int start, int end);
+    int HIST_COUNT;
+
 
     HyperCube *cube;
+    ChannelPluginAttributes *attr;
 
-    SelectedLine *line;
+    //SelectedLine *line;
     QCustomPlot *customPlot;
 };
 

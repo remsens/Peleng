@@ -33,8 +33,8 @@ public:
 	u::uint8 GetBytesInElements();
     u::uint8 GetBytesFormat();
 	u::uint32 GetSizeCube() const; // в байтах
-    QVector<QVector<u::int8> >* GetDataCube();
-	
+    //QVector<QVector<u::int8> >* GetDataCube();
+    u::ptr* GetDataCube() const;
 	u::uint32 GetSizeSpectrum();
 	void GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data);
 
@@ -45,7 +45,8 @@ public:
 private:
     // хз как делать в шаблонах
     // как с ним потом работать
-    QVector<QVector<u::int8> > m_vectorCube; //[bands][samples*lines]
+   // QVector<QVector<u::int8> > m_vectorCube; //[bands][samples*lines]
+    u::int8** m_dataCube;
 	u::uint32 m_sizeCube;
     InfoData m_infoData;
 };

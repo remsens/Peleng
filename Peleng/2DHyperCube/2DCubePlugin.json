@@ -1,0 +1,6 @@
+{
+    "Type" : "PelengFormat",
+    "Name" : "2DCube UI",
+    "Description" : " 2D View of HyperCube",
+    "Extinsion" : "*.hdr"
+}

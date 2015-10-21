@@ -51,7 +51,7 @@
 #include "../SpectrPlotter/PlotterWindow.h"
 //#include "PlotterAlongLine.h"
 #include "../LinePlotter/LinePlotterWindow.h"
-#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../2DHyperCube/Main2DWindow.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -61,8 +61,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-
-    explicit GLWidget(HyperCube* ptrCube, IAttributes *Attribute, QWidget *parent = 0);
+    explicit GLWidget(HyperCube* ptrCube, QWidget *parent = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
@@ -85,12 +84,11 @@ public slots:
     void DeleteLineWindow(LinePlotterWindow* lw);
 private slots:
 
-    void executeHistogram();
     void prepareToPlotSpectr();
     void startIsClicked();//нажато "Начало" из контекстного меню
     void finishIsClicked();
     void createLinePlotterSlot();
-
+    void run2DCube();
 
 signals:
     void clicked();
@@ -137,9 +135,8 @@ private:
     QAction* pDeletePlotsAction;
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
-    QAction* pHistPlotAction;
     QAction* pPlotLineAction;
-
+    QAction* p2DCubeAction;
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;
@@ -183,14 +180,14 @@ private:
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     PlotterWindow* windowPlotter;
-    LinePlotterWindow *pWidgLine = 0;
+    LinePlotterWindow *pWidgLine;
+    Main2DWindow* window2DCube;
     bool firstWindowPlotter;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
     QString strForLbl;
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
-    Cube3DPluginAttributes *attr;
 };
 
 #endif

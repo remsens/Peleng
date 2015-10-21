@@ -5,8 +5,8 @@
 
 LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
 {
-    setupUI();
     setAttribute(Qt::WA_DeleteOnClose, true);
+    setupUI();
     setWindowIcon(QIcon(":/IconsLine/iconsLine/PlotterLogo.ico"));
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
@@ -19,7 +19,7 @@ LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
 
 LinePlotterWindow::~LinePlotterWindow()
 {
-
+    delete centralWidget;
 }
 
 void LinePlotterWindow::closeEvent(QCloseEvent *) {

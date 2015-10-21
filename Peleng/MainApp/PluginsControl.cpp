@@ -16,12 +16,12 @@ PluginsControl::~PluginsControl()
 
 }
 
-QMap<QString, QString> PluginsControl::GetReadPlugins() const
+QList<QString> PluginsControl::GetReadPlugins() const
 {
     return m_readPluginsNames;
 }
 
-QMap<QString, QString> PluginsControl::GetPelengPlugins() const
+QList<QString> PluginsControl::GetPelengPlugins() const
 {
     return m_pelengPluginsNames;
 }
@@ -47,11 +47,35 @@ void PluginsControl::LoadNamesPlugins()
         QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
         if (MetaData["Type"].toString().contains("FileFormat"))
         {
-            m_readPluginsNames.insert(MetaData["Name"].toString(), MetaData["Description"].toString());
-
+            m_readPluginsNames.append(MetaData["Name"].toString());
+           /* try {
+                //QObject *plugin = pluginLoader.instance();
+                if (plugin)
+                {
+                    m_readPlugins.insert(MetaData["Name"].toString(), qobject_cast<FileReadInterface *>(plugin));
+                }
+            }
+            catch (...)
+            {
+                // TODO
+                // надо подумать, нужна тут обработка ошибок или нет
+                qDebug() << pluginLoader.errorString();
+            }*/
         } else if (MetaData["Type"].toString().contains("PelengFormat"))
         {
-            m_pelengPluginsNames.insert(MetaData["Name"].toString(), MetaData["Description"].toString());
+            m_pelengPluginsNames.append(MetaData["Name"].toString());
+            /*try {
+                QObject *plugin = pluginLoader.instance();
+                if (plugin)
+                {
+                    m_pelengPlugins.insert(MetaData["Name"].toString(), qobject_cast<PelengPluginsInterface *>(plugin));
+                }
+            }
+            catch (...)
+            {
+                // TODO
+                qDebug() << pluginLoader.errorString();
+            }*/
         }
     }
     qDebug() << "FilePlugins" << m_readPluginsNames.size();

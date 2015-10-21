@@ -34,6 +34,7 @@ QObject* PluginLoader::GetPluginObject(const QString &pluginName)
         if (!fileName.endsWith(".dll")) continue;
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QJsonObject MetaData =  pluginLoader.metaData()["MetaData"].toObject();
+        qDebug() << MetaData["Name"].toString();
         if (MetaData["Name"].toString().compare(pluginName) == 0)
         {
             try {

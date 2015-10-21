@@ -24,10 +24,7 @@ SOURCES += main.cpp\
     PluginsControl.cpp \
     ../Library/PluginLoader.cpp \
     ../Library/ReadPluginLoader.cpp \
-    ../Library/PelengPluginLoader.cpp \
-    ../Library/PluginAttributes/ContextMenu/BaseContextMenu.cpp \
-    ../Library/PluginAttributes/ContextMenu/ContextMenu3D.cpp \
-    ../Library/PluginAttributes/ContextMenu/PureContextMenu.cpp
+    ../Library/PelengPluginLoader.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/QCustomPlot.h \
@@ -44,11 +41,7 @@ HEADERS  += mainwindow.h \
     ../Library/Interfaces/PelengPluginsInterface.h \
     ../Library/PluginLoader.h \
     ../Library/ReadPluginLoader.h \
-    ../Library/PelengPluginLoader.h \
-    ../Library/PluginAttributes/ContextMenu/IContextMenu.h \
-    ../Library/PluginAttributes/ContextMenu/BaseContextMenu.h \
-    ../Library/PluginAttributes/ContextMenu/ContextMenu3D.h \
-    ../Library/PluginAttributes/ContextMenu/PureContextMenu.h
+    ../Library/PelengPluginLoader.h
 
 
 

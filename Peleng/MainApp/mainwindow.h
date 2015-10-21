@@ -47,7 +47,7 @@ private:
     QList <FileReadInterface*> FileFormatPluginList;
     FileReadInterface* FilePlugin;
     PelengPluginsInterface* m_pelengPlugins;
-    HyperCube* m_cube;
+    HyperCube* cube;
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;
 

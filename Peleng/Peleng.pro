@@ -3,7 +3,5 @@ TEMPLATE = subdirs
 
 # список каталогов проектов
 
-
-SUBDIRS = HDF5FormatLib HistPlotter ReadDataLib AvirisReadPlugin MainApp  3DHyperCube SpectrPlotter \
-    LinePlotter
-
+SUBDIRS = HDF5FormatLib ReadDataLib AvirisReadPlugin MainApp 2DHyperCube SpectrPlotter \
+    LinePlotter HistPlotter 3DHyperCube\

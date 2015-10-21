@@ -16,10 +16,12 @@
 #include "../Library/PluginAttributes/SpectrPluginAttributes.h"
 #include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/PluginAttributes/LinePluginAttributes.h"
-#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
+#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
+
+/*#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"*/
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/PelengPluginLoader.h"
-#include "../Library/PluginAttributes/ContextMenu/PureContextMenu.h"
+
 
 class TableModel : public QAbstractTableModel {
 private:
@@ -81,10 +83,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-      ui->setupUi(this);
-      setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
+    ui->setupUi(this);
+    setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
 
-      m_cube = new HyperCube();
+      cube = new HyperCube();
 
       m_pluginsControl = new PluginsControl();
       m_pluginsControl->LoadNamesPlugins();
@@ -131,7 +133,7 @@ void MainWindow::LoadFile()
         //m_pluginsControl->GetReadPlugins().first()->DeleteData();
         //TODO
         ReadPluginLoader readPlugin;
-        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().firstKey());
+        FilePlugin = readPlugin.LoadPlugin(m_pluginsControl->GetReadPlugins().at(0));
         if (FilePlugin != 0)
         {
             QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
@@ -154,9 +156,12 @@ void MainWindow::LoadFile()
             QObject::connect(&dialog, SIGNAL(canceled()), &futureWatcher, SLOT(cancel()));
             QObject::connect(this, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
 
+            //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
 
             // TODO
-            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::ReadCubeFromFile, FileName, m_cube);
+
+            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::ReadCubeFromFile, FileName, cube);
+
 
             // Start the computation.
             futureWatcher.setFuture(future);
@@ -170,24 +175,23 @@ void MainWindow::LoadFile()
 
 
             timer.stop();
-
         }
 
-        FilePlugin->DeleteData();
-        
-        IAttributes* attrCube = new Cube3DPluginAttributes(m_pluginsControl->GetPelengPlugins());
+        // TODO
+            FilePlugin->DeleteData();
+
+        IAttributes* attrCube = new Cube3DPluginAttributes();
+
 
         if (m_pluginsControl->GetPelengPlugins().size() > 0)
         {
-
-
+            //m_pluginsControl->GetPelengPlugins().value("Spectr UI")->Execute(cube, attr);
             PelengPluginLoader pelengLoader;
             m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
             m_pelengPlugins->Execute(cube, attrCube);
-
+        }
 
     }
-   //m_pluginsControl->GetReadPlugins().first()->
 }
 
 

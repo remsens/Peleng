@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/IconsLine">
         <file>iconsLine/PlotterLogo.ico</file>
+        <file>iconsLine/finish_flag.png</file>
+        <file>iconsLine/start_flag.png</file>
     </qresource>
 </RCC>
