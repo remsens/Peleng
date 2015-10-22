@@ -6,49 +6,99 @@
 #include <QList>
 #include <QVector>
 
+//! Структура метаданных для гипекуба
 struct InfoData {
-	u::uint32 bands;
-	u::uint32 lines;
-	u::uint32 samples;
-	u::uint8 bytesType;
-    u::uint8 bytesFormat; // 1 - int8, 2 - int 16, 3 - int32, 4 - float, 5 - double, 9 -2*double, 12 - uint16
-    std::list<double> listChannels;
+    u::uint32 bands; //!< количество каналов
+    u::uint32 lines; //!< количество линий
+    u::uint32 samples; //!< количество столбцов
+    u::uint8 bytesType; //!< количество байт в одном элементе (возможно рудимент)
+
+     // 1 - int8, 2 - int 16, 3 - int32, 4 - float, 5 - double, 9 -2*double, 12 - uint16
+    u::uint8 bytesFormat; //!< формат данных, согласно aviris (активно в плагинах не используется, лучше придумать свои)
+    std::list<double> listChannels; //!<  список длин волн, соответствующих каждому каналу
 };
 
+//! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
 class HyperCube {
-public:
-    HyperCube();
-	~HyperCube();
 
-    void SetInfoData(const InfoData& infoData); // Задать вектор и его емкость
-    void SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore);
+public:
+    //! Конструктор
+    HyperCube();
+    //! Деструктор
+    virtual ~HyperCube();
+
+    //! Функция установки метаданных в гиперкуб. Также происходит выделение памяти под данные
+    //! @param infoData - метаданные гиперкуба
+    void SetInfoData(const InfoData& infoData);
+
+    //! Функция записи данных.
+    //! @param channel - номер канала, в который неоходимо записать данные
+    //! @param data - указатель на буффер данных
+    //! @param size - размер данных в байтах, который неоходимо записать
+    //! @param iteratorBefore - используется при записи в цикле, смещение в байтах для канала, на которые нужно сместиться перед записью данных
+    void SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore = 0);
+
+    //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
 
+    //! Функция получения числа каналов
+    //! @return - число каналов гиперкуба
     u::uint32 GetCountofChannels();
+
+    //! Функция получения списка длин волн, соответствующие каждому каналу
+    //! @return - список длин волн
     QList<double> GetListOfChannels();
+
+    //! Функция получения количества линий (строк)
+    //! @return - количество линий (строк)
 	u::uint32 GetLines();
 	
+    //! Функция получения количества столбцов
+    //! @return - количество столбцов
 	u::uint32 GetColumns();
 	
+    //! Функция получения количества байт в одном элементе (возможно рудимент)
+    //! @return - количество байт в одном элементе
 	u::uint8 GetBytesInElements();
+
+    //! Функция получения формата данных, согласно aviris (возможно лучше придумать свои, в дальнейшем для выделения типа данных это будет необходимо)
+    //! @return - формат данных
     u::uint8 GetBytesFormat();
-	u::uint32 GetSizeCube() const; // в байтах
+
+    //! Функция получения размера гиперкуба в байтах
+    //! @return - размер гиперкуба в байтах
+    u::uint32 GetSizeCube() const;
+
     //QVector<QVector<u::int8> >* GetDataCube();
+    //! Функция получения данных гиперкуба
+    //! @return указатель на данные гиперкуба (двумерный массив, который можно привести к любому типу)
     u::ptr* GetDataCube() const;
-	u::uint32 GetSizeSpectrum();
+
+    //! Функция получения размера данных спектра одной точки в байтах
+    //! //! @return - размер данных спектра в байтах
+    u::uint32 GetSizeSpectrum();
+
+    //! Функция получения данных спектра одной точки
+    //! @param x - координата по строкам
+    //! @param y - координата по столбцам
+    //! @param data - указатель на массив данных, куда будет записан спектр ( под него уже должна быть выделена память!)
 	void GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data);
 
+    //! Функция получения размера данных одного канала в байтах
+    //! @return - размер данных канала в байтах
 	u::uint32 GetSizeChannel();
+
+    //! Функция получения данных одного канала
+    //! @param channel - номер канала
+    //! @param data - указатель на массив данных, куда будут записаны данные одного канала ( под него уже должна быть выделена память!)
 	void GetDataChannel(u::uint32 channel, u::ptr data);
 
 
 private:
-    // хз как делать в шаблонах
-    // как с ним потом работать
    // QVector<QVector<u::int8> > m_vectorCube; //[bands][samples*lines]
-    u::int8** m_dataCube;
-	u::uint32 m_sizeCube;
-    InfoData m_infoData;
+    u::int8** m_dataCube; //!< двумерный массив данных гиперкуба
+    u::uint32 m_sizeCube; //!< размер куба
+    InfoData m_infoData; //!< метаданные куба
 };
 
 #endif

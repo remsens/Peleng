@@ -29,6 +29,7 @@ void HyperCube::SetInfoData(const InfoData& infoData) // Задать векто
     {
         m_dataCube[i] = new u::int8[m_infoData.lines*m_infoData.samples*m_infoData.bytesFormat];
     }
+    m_sizeCube = m_infoData.bands*m_infoData.lines*m_infoData.samples*m_infoData.bytesType;
     /*m_vectorCube.reserve(m_infoData.bands);
     m_vectorCube.resize(m_infoData.bands);
     for (u::uint32 i = 0; i < m_infoData.bands; i++) {        
