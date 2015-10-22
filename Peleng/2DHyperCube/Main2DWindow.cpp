@@ -7,10 +7,10 @@
 
 int cmp2(const void *a, const void *b);
 
-Main2DWindow::Main2DWindow(QWidget *parent) :
+Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Main2DWindow),
-    m_initChanel(0),
+    m_initChanel(chan),
     m_dataX(0), m_dataY(0),
     firstWindowPlotter(true)
 {
@@ -26,12 +26,22 @@ Main2DWindow::Main2DWindow(QWidget *parent) :
 
     setInitCustomplotSettings();
     createMenus();
+    setHyperCube(pHyperCube);
+    fillChanList();
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(prepareToPlotSpectr())); //сделать как в GLwidget
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan()));
+
     //connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(colorMapClicked(QCPAbstractPlottable*,QMouseEvent*)));
     //connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
+
+    ui->listWidget->setCurrentRow(m_initChanel);
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int))); //раскомментить
+    ui->listWidget->item(m_initChanel)->setSelected(true);
+    ui->listWidget->setFocus();
+    ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+    drawHeatMap(m_initChanel);
+
 }
 
 Main2DWindow::~Main2DWindow()
@@ -45,7 +55,7 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
-    drawHeatMap(initChanel);
+    drawHeatMap(m_initChanel);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
@@ -81,7 +91,7 @@ void Main2DWindow::setInitCustomplotSettings()
 }
 void Main2DWindow::fillChanList()
 {
-    QList<double> list = m_pCube->GetListOfChannels();//getListOfChannel();
+    QList<double> list = m_pCube->GetListOfChannels();
     int num = 0;
     foreach(double i , list) {
         ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
@@ -102,19 +112,19 @@ void Main2DWindow::drawHeatMap(int chan)
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->rescaleDataRange(true);
     int minCMap, maxCMap;
-    findMinMaxforColorMap(minCMap, maxCMap);
+    findMinMaxforColorMap(chan,minCMap, maxCMap);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     ui->customPlot->rescaleAxes();
     ui->customPlot->replot();
+    qDebug()<<"chan: "<<chan;
     delete dat;
 }
-void Main2DWindow::findMinMaxforColorMap(int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
+void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
     minCMap =  32767;
     maxCMap = -32767;
     qint16 *dataTemp = new qint16[rows*cols];
-    int chan = ui->listWidget->currentRow();
     for (int j = 0; j<rows*cols; ++j)
         dataTemp[j]=data[chan][j];
     QElapsedTimer timer3;
@@ -138,9 +148,9 @@ int cmp2(const void *a, const void *b)
         return 0;
 }
 
-void Main2DWindow::updateViewchan()
+void Main2DWindow::updateViewchan(int chan)
 {
-    drawHeatMap( ui->listWidget->currentRow());
+    drawHeatMap( chan);
     qDebug() << "Replot heatmap";
 }
 

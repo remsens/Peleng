@@ -19,7 +19,7 @@ class Main2DWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Main2DWindow(QWidget *parent = 0);
+    explicit Main2DWindow(HyperCube *pHyperCube, int chan, QWidget *parent = 0);
     ~Main2DWindow();
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
@@ -27,7 +27,7 @@ public:
     void setInitCustomplotSettings();
 public slots:
     void drawHeatMap(int chan);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
-    void updateViewchan();
+    void updateViewchan(int chan);
 signals:
     void signalCurrentDataXYZ(uint,uint,uint);
 private slots:
@@ -44,7 +44,7 @@ private slots:
 
     void contextMenuRequest(QPoint point);
 private:
-    void findMinMaxforColorMap(int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
+    void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
 
     Ui::Main2DWindow *ui;

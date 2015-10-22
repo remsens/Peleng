@@ -16,8 +16,7 @@ Hyper2dPlugin::~Hyper2dPlugin()
 
 void Hyper2dPlugin::Execute(HyperCube *cube, IAttributes *attr)
 {
-    QSharedPointer<Main2DWindow> w(new Main2DWindow);
-    w->setInitChanel(((Cube2DPluginAttributes*)attr)->getInitChanel());
+    QSharedPointer<Main2DWindow> w(new Main2DWindow(cube,((Cube2DPluginAttributes*)attr)->getInitChanel()));
     w->show();
 }
 

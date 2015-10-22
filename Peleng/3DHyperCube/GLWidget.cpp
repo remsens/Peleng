@@ -446,13 +446,9 @@ void GLWidget::createLinePlotterSlot()
     this->setToolTip(strForLineHelp);
 }
 
-void GLWidget::run2DCube() // где нибудь тут добавить InitChanel
+void GLWidget::run2DCube()
 {
-    window2DCube = new Main2DWindow();
-    window2DCube->setHyperCube(m_pHyperCube);
-    //windowPlotter->activateWindow(); //если понадобится "поднять" окно
-    window2DCube->fillChanList();
-    window2DCube->setInitChanel(m_dataZ);
+    window2DCube = new Main2DWindow(m_pHyperCube,m_dataZ);
     window2DCube->show();
 }
 
