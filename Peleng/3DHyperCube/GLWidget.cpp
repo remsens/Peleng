@@ -606,7 +606,7 @@ void GLWidget::createMenus()
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
     pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
+    pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
@@ -993,7 +993,6 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
     customPlot.replot();
     QPixmap pixmap = customPlot.toPixmap(ROWS,COLS);
     QImage Q_image = pixmap.toImage();
-
     return Q_image;
 }
 

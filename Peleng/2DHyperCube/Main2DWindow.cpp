@@ -12,10 +12,13 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     ui(new Ui::Main2DWindow),
     m_initChanel(chan),
     m_dataX(0), m_dataY(0),
-    firstWindowPlotter(true)
+    firstWindowPlotter(true),
+    m_interplolate(false)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     ui->setupUi(this);
+    pStatusBarLabel = new QLabel(this);
+    ui->statusbar->addWidget(pStatusBarLabel);
     this->setWindowIcon(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"));//!!! почему-то можно поставить иконку только из qrc файла проекта 3Dcube (наверное, надо заинклудить qrc 2d куба в 3d проект)
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
@@ -28,11 +31,11 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     createMenus();
     setHyperCube(pHyperCube);
     fillChanList();
+    connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(prepareToPlotSpectr())); //сделать как в GLwidget
-
     //connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(colorMapClicked(QCPAbstractPlottable*,QMouseEvent*)));
-    //connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
 
     ui->listWidget->setCurrentRow(m_initChanel);
@@ -110,6 +113,7 @@ void Main2DWindow::drawHeatMap(int chan)
     }
     ui->customPlot->rescaleAxes();
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
+    colorMap->setInterpolate(m_interplolate);
     colorMap->rescaleDataRange(true);
     int minCMap, maxCMap;
     findMinMaxforColorMap(chan,minCMap, maxCMap);
@@ -164,7 +168,22 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
     if (y >= 0 && y < cols)
         m_dataY = y;
     int chan = ui->listWidget->currentRow();
-    qDebug()<<"X:"<<m_dataX<<" Y:"<<m_dataY <<" яркость:"<<data[chan][m_dataX * cols + m_dataY];
+    //qDebug()<<"X:"<<m_dataX<<" Y:"<<m_dataY <<" яркость:"<<data[chan][m_dataX * cols + m_dataY];
+    emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
+}
+
+void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
+{
+    int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
+    int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
+    int chan = ui->listWidget->currentRow();
+    if (x >= 0 && x < rows && y >= 0 && y < cols)
+    {
+        qint16 bright = data[chan][x * cols + y];
+        pStatusBarLabel->setText("X: " + QString().setNum(x) + "    Y: " + QString().setNum(y) + "    Значение:" + QString().setNum(bright));
+    }
+    else
+        pStatusBarLabel->setText("");
 }
 
 void Main2DWindow::createMenus()
@@ -173,11 +192,11 @@ void Main2DWindow::createMenus()
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
     pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
+    pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction("Гистограмма",this);
     pContextMenu->addAction(pPlotAction);
     //pContextMenu->addAction(pDeletePlotsAction);
-   // pContextMenu->addAction(pPlotLineAction);
+    pContextMenu->addAction(pPlotLineAction);
     pContextMenu->addAction(pPlotHistAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
@@ -212,36 +231,38 @@ void Main2DWindow::createLinePlotterSlot()
 {
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
-    setCursor(QCursor(QPixmap(":/IconsLine/iconsLine/start_flag.png"),10,29));
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     //emit flagsToolTip(globalPos,"выберите начальную точку");
-    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
+
 }
-void Main2DWindow::startIsClicked()
+void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {
     linePlotterIsActive = true;
-    m_x1 = m_dataX;
-    m_y1 = m_dataY;
+    m_x1 = dataX;
+    m_y1 = dataY;
     m_z1 = ui->listWidget->currentRow();
     //emit flagsToolTip(globalPos,"выберите конечную точку");
     QString strForLineHelp = "выберите конечную точку";
     this->setToolTip(strForLineHelp);
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
-    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
+    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
 }
-void Main2DWindow::finishIsClicked()
+void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
 {
     linePlotterIsActive = false;
-    m_x2 = m_dataX;
-    m_y2 = m_dataY;
-    m_z2 = ui->listWidget->currentRow();
+    m_x2 = dataX;
+    m_y2 = dataY;
+    m_z2 = m_z1; //ui->listWidget->currentRow();
     QString strForLineHelp = "";
     setCursor(Qt::ArrowCursor);
-    //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+    //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2); //так было в 3d кубе
+    plotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
     this->setToolTip(strForLineHelp);
     //emit flagsToolTip(globalPos,"");
 }
