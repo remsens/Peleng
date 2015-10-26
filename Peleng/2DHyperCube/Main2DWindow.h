@@ -24,10 +24,12 @@ public:
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
     void fillChanList();
+    void fillChanLimits();
     void setInitCustomplotSettings();
 public slots:
     void drawHeatMap(int chan);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
     void updateViewchan(int chan);
+    void contrastImage(int left,int right);
 signals:
     void signalCurrentDataXY(uint,uint);
 private slots:
@@ -53,7 +55,7 @@ private:
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
-    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
+    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на лайнплоттер окна и их удаления
     PlotterWindow *windowPlotter;
     LinePlotterWindow *pWidgLine;
     QLabel *pStatusBarLabel;
@@ -63,10 +65,11 @@ private:
     u::uint32 m_initChanel;
     QCPColorMap *colorMap;
     qint16 **data;
-    int rows, cols;
+    int rows, cols, chnls;
     int m_dataX, m_dataY;
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     bool m_interplolate;
+    int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
 
 };
 

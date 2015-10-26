@@ -53,7 +53,8 @@ void HistPlugin::mouseClick(QMouseEvent *event)
         QBrush brush(QColor(127,127,127,127));
         rect->setBrush(brush);
         customPlot->addItem(rect);
-        ModifyCube(((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x);
+        //ModifyCube(((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x);
+        emit bordersSelected(((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x);
     }
 
 }

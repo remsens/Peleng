@@ -18,7 +18,7 @@ public:
 
 signals:
     void replot();
-
+    void bordersSelected(int,int);
 
 public slots:
     void plotLine(QCPAbstractPlottable* object,QMouseEvent* event);

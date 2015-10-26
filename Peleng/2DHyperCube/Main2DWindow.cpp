@@ -31,6 +31,7 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     createMenus();
     setHyperCube(pHyperCube);
     fillChanList();
+
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(prepareToPlotSpectr())); //сделать как в GLwidget
@@ -66,6 +67,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     m_pCube = ptrCube;
     rows = m_pCube->GetLines();
     cols = m_pCube->GetColumns();
+    chnls = m_pCube->GetCountofChannels();
     data = (qint16**)ptrCube->GetDataCube();
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
@@ -99,6 +101,20 @@ void Main2DWindow::fillChanList()
     foreach(double i , list) {
         ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
         num++;
+    }
+
+}
+
+void Main2DWindow::fillChanLimits()
+{
+    ChnlLimits = new int*[chnls];
+    for (int i = 0; i < chnls; ++i)
+        ChnlLimits[i] = new int[2];
+
+    for (int i = 0; i < chnls; ++i)
+    {
+        ChnlLimits[i][0] = 0;
+        ChnlLimits[i][1] = 0;
     }
 }
 
@@ -156,6 +172,11 @@ void Main2DWindow::updateViewchan(int chan)
 {
     drawHeatMap( chan);
     qDebug() << "Replot heatmap";
+}
+
+void Main2DWindow::contrastImage(int left, int right)//left,right -  левая и правая граница гистограммы каналла. Т.е. 2 значения яркостей в data
+{
+    qDebug()<<"slot contrast "<<left<<" "<<right;
 }
 
 
@@ -290,6 +311,7 @@ void Main2DWindow::prepareToHist()
     IAttributes* attrCh = new ChannelPluginAttributes(channel);
     HistPlugin *hist = new HistPlugin(100, this);
     hist->Execute(m_pCube,attrCh);
+    connect(hist,SIGNAL(bordersSelected(int,int)),SLOT(contrastImage(int,int)));
     connect(hist,SIGNAL(replot()),SLOT(updateViewchan()));
 }
 
