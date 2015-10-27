@@ -24,10 +24,11 @@ public:
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
     void fillChanList();
-    void fillChanLimits();
+    //! Функция выделения памяти и инициализации нулями массива ChnlLimits
+    void initArrChanLimits();
     void setInitCustomplotSettings();
 public slots:
-    void drawHeatMap(int chan);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
+    void drawHeatMap(int chan, int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
     void updateViewchan(int chan);
     void contrastImage(int left,int right);
 signals:

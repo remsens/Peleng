@@ -30,6 +30,7 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     setInitCustomplotSettings();
     createMenus();
     setHyperCube(pHyperCube);
+    initArrChanLimits();
     fillChanList();
 
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
@@ -44,7 +45,11 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
-    drawHeatMap(m_initChanel);
+
+    //проверить
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
 
 }
 
@@ -59,7 +64,10 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
-    drawHeatMap(m_initChanel);
+    //или update
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
@@ -93,6 +101,9 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->addPlottable(colorMap);
     ui->customPlot->setInteraction(QCP::iRangeDrag , true);
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
+    colorMap->setGradient(QCPColorGradient::gpGrayscale);
+    colorMap->rescaleDataRange(true);
+
 }
 void Main2DWindow::fillChanList()
 {
@@ -105,7 +116,7 @@ void Main2DWindow::fillChanList()
 
 }
 
-void Main2DWindow::fillChanLimits()
+void Main2DWindow::initArrChanLimits()
 {
     ChnlLimits = new int*[chnls];
     for (int i = 0; i < chnls; ++i)
@@ -118,7 +129,7 @@ void Main2DWindow::fillChanLimits()
     }
 }
 
-void Main2DWindow::drawHeatMap(int chan)
+void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 {
     qint16 *dat =  new qint16[rows * cols];
     m_pCube->GetDataChannel(chan,dat);
@@ -128,15 +139,9 @@ void Main2DWindow::drawHeatMap(int chan)
         }
     }
     ui->customPlot->rescaleAxes();
-    colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->setInterpolate(m_interplolate);
-    colorMap->rescaleDataRange(true);
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(chan,minCMap, maxCMap);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-    ui->customPlot->rescaleAxes();
     ui->customPlot->replot();
-    qDebug()<<"chan: "<<chan;
     delete dat;
 }
 void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
@@ -170,12 +175,25 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    drawHeatMap( chan);
-    qDebug() << "Replot heatmap";
+    if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 )
+    {
+        int minCMap, maxCMap;
+        findMinMaxforColorMap(chan,minCMap, maxCMap);
+        ChnlLimits[chan][0] = minCMap;
+        ChnlLimits[chan][1] = maxCMap;
+    }
+
+    drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
 }
 
 void Main2DWindow::contrastImage(int left, int right)//left,right -  левая и правая граница гистограммы каналла. Т.е. 2 значения яркостей в data
 {
+    int chan = ui->listWidget->currentRow();
+    if (left > right)
+        std::swap(left,right);
+    ChnlLimits[chan][0] = left;
+    ChnlLimits[chan][1] = right;
+    updateViewchan(chan);
     qDebug()<<"slot contrast "<<left<<" "<<right;
 }
 
