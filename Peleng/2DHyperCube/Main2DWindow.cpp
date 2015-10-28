@@ -141,6 +141,7 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
     ui->customPlot->rescaleAxes();
     colorMap->setInterpolate(m_interplolate);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
+
     ui->customPlot->replot();
     delete dat;
 }
@@ -197,6 +198,21 @@ void Main2DWindow::contrastImage(int left, int right)//left,right -  левая 
     qDebug()<<"slot contrast "<<left<<" "<<right;
 }
 
+void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
+{
+    ui->customPlot->clearGraphs(); //удаляем предыдущий график
+    ui->customPlot->addGraph();
+    ui->customPlot->graph()->setData(x, y);
+    ui->customPlot->graph()->setLineStyle(QCPGraph::lsNone);
+    QCPScatterStyle myScatter;
+    myScatter.setShape(QCPScatterStyle::ssCircle);
+    myScatter.setPen(QPen(Qt::red));
+    myScatter.setBrush(Qt::yellow);
+    //myScatter.setSize(5);
+    ui->customPlot->graph()->setScatterStyle(myScatter);
+    ui->customPlot->replot();
+}
+
 
 void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
 {
@@ -206,9 +222,20 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
         m_dataX = x;
     if (y >= 0 && y < cols)
         m_dataY = y;
-    int chan = ui->listWidget->currentRow();
-    //qDebug()<<"X:"<<m_dataX<<" Y:"<<m_dataY <<" яркость:"<<data[chan][m_dataX * cols + m_dataY];
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
+
+
+
+    //тест отбражения точек, потом удалить
+    int n = 100;
+    QVector<double> xP(n), yP(n);
+    for (int i=0; i<n; ++i)
+    {
+      xP[i] = rand()%rows;
+      yP[i] = rand()%cols;
+    }
+    plotPointsOn2D(xP,yP);
+
 }
 
 void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
