@@ -10,10 +10,12 @@ int cmp2(const void *a, const void *b);
 Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Main2DWindow),
+    firstWindowPlotter(true),
+    linePlotterIsActive(false),
     m_initChanel(chan),
     m_dataX(0), m_dataY(0),
-    firstWindowPlotter(true),
     m_interplolate(false)
+
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     ui->setupUi(this);

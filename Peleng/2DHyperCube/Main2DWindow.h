@@ -31,6 +31,10 @@ public slots:
     void drawHeatMap(int chan, int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
     void updateViewchan(int chan);
     void contrastImage(int left,int right);
+    //! Слот для отображения (выделения цветом) точек на 2D
+    //! @param x - вектор с координатами Х точек
+    //! @param y - вектор с координатами У точек
+    void plotPointsOn2D(QVector<double> x,  QVector<double> y);
 signals:
     void signalCurrentDataXY(uint,uint);
 private slots:
@@ -61,7 +65,7 @@ private:
     LinePlotterWindow *pWidgLine;
     QLabel *pStatusBarLabel;
     bool firstWindowPlotter;
-    bool linePlotterIsActive = false;
+    bool linePlotterIsActive;
     HyperCube* m_pCube;
     u::uint32 m_initChanel;
     QCPColorMap *colorMap;
