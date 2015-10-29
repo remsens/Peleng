@@ -49,6 +49,11 @@ private:
 	//! @param format - формат данных, полученных из файла-заголовка
 	u::uint32 GetNumberOfBytesFromData(u::int32 format);
 
+    //! Функция пересчета номера типа AVIRIS в наш тип
+    //! @param format - формат данных, полученных из файла-заголовка
+    u::uint32 PelengTypeFromAvirisType(u::int32 format);
+
+
 	u::uint32 ConvertStrtoInt(const char* data);
 	u::uint32 GetFileSize(const std::string& fileName);
     u::logic CreateCube(const std::string& fileName, HyperCube* cube);

@@ -30,7 +30,7 @@ signals:
 private:
     void closeEvent(QCloseEvent *);
 
-private slots:
+public slots:
     void on_actionHold_toggled(bool value);
 
 private:

@@ -61,6 +61,19 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Опции</string>
+    </property>
+    <widget class="QMenu" name="subMenuImage">
+     <property name="title">
+      <string>Изображение</string>
+     </property>
+     <addaction name="actionInterpolation"/>
+    </widget>
+    <addaction name="subMenuImage"/>
+   </widget>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -73,6 +86,14 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <action name="actionInterpolation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Интерполяция</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

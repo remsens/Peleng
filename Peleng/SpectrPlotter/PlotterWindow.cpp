@@ -2,7 +2,8 @@
 #include "ui_PlotterWindow.h"
 
 #include <QtAlgorithms>
-#include <../Library/GenericExc.h>
+#include "../Library/GenericExc.h"
+#include <QDebug>
 
 PlotterWindow::PlotterWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -33,12 +34,12 @@ PlotterWindow::~PlotterWindow()
 }
 
 void PlotterWindow::closeEvent(QCloseEvent *) {
-    emit closePlotterWindow(this);
+   // emit closePlotterWindow(this);
 }
 
 void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
 {
-
+    qDebug() << "plot spectr";
     quint16 Chnls = ptrCube->GetCountofChannels();
     qint16* pSpectrValues = new qint16[Chnls];
     try{    //если можем получить точку гиперкуба

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "../Library/QCustomPlot.h"
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
+//#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
 #include "../Library/HyperCube.h"
 
 //#include "selectedline.h"
@@ -18,7 +18,7 @@ public:
 
 signals:
     void replot();
-
+    void bordersSelected(int,int);
 
 public slots:
     void plotLine(QCPAbstractPlottable* object,QMouseEvent* event);

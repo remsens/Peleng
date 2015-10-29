@@ -1,6 +1,6 @@
 {
-    "Type" : "PelengFormat",
+    "Type" : "ProcessingFormat",
     "Name" : "Hist UI",
-    "Description" : "Histogramm"
-
+    "Description" : "Histogramm",
+    "Extinsion" : "*.hdr"
 }

@@ -29,12 +29,6 @@ unix {
 DISTFILES += \
     AvirisReadPlugin.json
 
-INCLUDEPATH += $$PWD/ReadDataAviris
-DEPENDPATH += $$PWD/ReadDataAviris
-
-INCLUDEPATH += $$PWD/../MainApp/
-DEPENDPATH += $$PWD/../MainApp/
-
 INCLUDEPATH += $$PWD/../Library
 DEPENDPATH += $$PWD/../Library
 

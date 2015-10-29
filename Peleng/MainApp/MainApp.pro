@@ -14,34 +14,25 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ../Library/QCustomPlot.cpp \
     ../Library/GenericExc.cpp \
     ../Library/HyperCube.cpp \
-    ../Library/PluginAttributes/SpectrPluginAttributes.cpp \
-    ../Library/PluginAttributes/Cube3DPluginAttributes.cpp \
-    ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
-    ../Library/PluginAttributes/LinePluginAttributes.cpp \
     PluginsControl.cpp \
     ../Library/PluginLoader.cpp \
     ../Library/ReadPluginLoader.cpp \
-    ../Library/PelengPluginLoader.cpp
+    ../Library/ProcessingPluginLoader.cpp \
+    ../Library/Attributes/Attributes.cpp
 
 HEADERS  += mainwindow.h \
-    ../Library/QCustomPlot.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
     ../Library/HyperCube.h \
     PluginsControl.h \
-    ../Library/PluginAttributes/IAttributes.h \
-    ../Library/PluginAttributes/SpectrPluginAttributes.h \
-    ../Library/PluginAttributes/Cube3DPluginAttributes.h \
-    ../Library/PluginAttributes/ChannelPluginAttributes.h \
-    ../Library/PluginAttributes/LinePluginAttributes.h \
     ../Library/Interfaces/FileReadInterface.h \
-    ../Library/Interfaces/PelengPluginsInterface.h \
     ../Library/PluginLoader.h \
     ../Library/ReadPluginLoader.h \
-    ../Library/PelengPluginLoader.h
+    ../Library/ProcessingPluginLoader.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/Attributes/Attributes.h
 
 
 

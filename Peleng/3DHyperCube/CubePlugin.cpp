@@ -6,17 +6,17 @@
 #include "../LinePlotter/LinePlotterWindow.h"
 CubePlugin::CubePlugin(QObject *parent)
 {
-
+   // m_w = new MainWindow();
 }
 
 CubePlugin::~CubePlugin()
 {
-
+    //delete m_w;
 }
 
-void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
+void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
 {
-
+    // в данном плагине список точек нам не нужен. Но для общего интерфейса мы их передаем
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
@@ -38,12 +38,12 @@ void CubePlugin::Execute(HyperCube* cube, IAttributes* attr)
    // movie->start();
     labelSplash->show();
 
-    MainWindow* mw = new MainWindow();
     QCoreApplication::processEvents();
-    mw->processData(cube);// передаем в качестве параметра указатель на объект HyperCube
-    mw->resize(1024,768);
+    m_w = new MainWindow();
+    m_w->processData(cube, attr);// передаем в качестве параметра указатель на объект HyperCube
+    m_w->resize(1024,768);
     labelSplash->hide();
-    mw->show();
+    m_w->show();
     delete labelSplash;
     delete pix;
 

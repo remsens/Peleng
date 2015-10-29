@@ -26,7 +26,7 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     LinePlotterWindow.cpp \
     LinePlugin.cpp \
-    ../Library/PluginAttributes/LinePluginAttributes.cpp
+    ../Library/Attributes/Attributes.cpp
 
 HEADERS +=\
     ../Library/GenericExc.h \
@@ -34,8 +34,10 @@ HEADERS +=\
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
     LinePlotterWindow.h \
-    ../Library/Interfaces/PelengPluginsInterface.h \
-    LinePlugin.h
+    LinePlugin.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/Attributes/Attributes.h
+
 INCLUDEPATH += $$PWD/../Library\
                $$PWD/../3DHyperCube
 DEPENDPATH += $$PWD/../Library\

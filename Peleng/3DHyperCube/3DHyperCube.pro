@@ -15,8 +15,7 @@ unix {
 
 HEADERS       = \
     CubePlugin.h \
-    ../Library/Interfaces/PelengPluginsInterface.h \
-    ../Library/PluginAttributes/Cube3DPluginAttributes.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/HyperCube.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
@@ -24,29 +23,18 @@ HEADERS       = \
     mainwindow.h \
     ui_MainWindow3DCube.h \
     ../Library/QCustomPlot.h \
-    ../SpectrPlotter/PlotterWindow.h \
-    ../LinePlotter/LinePlotterWindow.h \
-    ../2DHyperCube/Main2DWindow.h \
-    #PlotterAlongLine.h
-    ../Library/PluginAttributes/ChannelPluginAttributes.h \
-    #../HistPlotter/histplugin.h
-    ../2DHyperCube/hist/histplugin.h
+    ../Library/Attributes/Attributes.h
+
 
 SOURCES       = \
     CubePlugin.cpp \
-    ../Library/PluginAttributes/Cube3DPluginAttributes.cpp \
     ../Library/HyperCube.cpp \
     ../Library/GenericExc.cpp \
     GLWidget.cpp \
     mainwindow.cpp \
     ../Library/QCustomPlot.cpp \
-    ../SpectrPlotter/PlotterWindow.cpp \
-    ../LinePlotter/LinePlotterWindow.cpp \
-    ../2DHyperCube/Main2DWindow.cpp \
-    ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
-    #../HistPlotter/histplugin.cpp
-    #PlotterAlongLine.cpp
-    ../2DHyperCube/hist/histplugin.cpp
+    ../Library/Attributes/Attributes.cpp
+
 
 
 DISTFILES += \

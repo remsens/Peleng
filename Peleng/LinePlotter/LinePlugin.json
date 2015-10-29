@@ -1,5 +1,5 @@
 {
-    "Type" : "PelengFormat",
+    "Type" : "ProcessingFormat",
     "Name" : "Line Plotter UI",
     "Description" : "Plot brightness along line"
 }

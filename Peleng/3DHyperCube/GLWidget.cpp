@@ -1,43 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of Digia Plc and its Subsidiary(-ies) nor the names
-**     of its contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "GLWidget.h"
 #include <QtWidgets>
 #include <QOpenGLShaderProgram>
@@ -45,21 +5,21 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
-#include "../HistPlotter/histplugin.h"
+
 
 using namespace std;
 
 int cmp(const void *a, const void *b);
 
 
-GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
-    : QOpenGLWidget(parent),
-      clearColor(Qt::black),
-      xRot(0),
-      yRot(0),
-      zRot(0),
-      program(0)
+GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
+    : QOpenGLWidget(parent)
+    , clearColor(Qt::black)
+    , xRot(0)
+    , yRot(0)
+    , zRot(0)
+    , program(0)
+    , m_attributes(attr)
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -88,14 +48,11 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
-   /* IAttributes* attr = new ChannelPluginAttributes(100);
-    HistPlugin* pl = new HistPlugin(100, this);
-    pl->Execute(m_pHyperCube, attr);*/
 }
 
 GLWidget::~GLWidget()
 {
-    qDebug() << "delete GLwidget";
+
     makeCurrent();
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
@@ -104,10 +61,11 @@ GLWidget::~GLWidget()
     SidesDestructor();
     delete pContextMenu;
     delete pPlotAction;
-    delete pDeletePlotsAction;
+    //delete pDeletePlotsAction;
     delete program;
-    deleteSpectrWindows();
+   // deleteSpectrWindows();
     doneCurrent();
+    qDebug() << "delete GLwidget";
 }
 void GLWidget::initializeGL()
 {
@@ -448,70 +406,53 @@ void GLWidget::createLinePlotterSlot()
 
 void GLWidget::run2DCube()
 {
-    window2DCube = new Main2DWindow(m_pHyperCube,m_dataZ);
-    window2DCube->show();
+    /*window2DCube = new Main2DWindow();
+    window2DCube->setHyperCube(m_pHyperCube);
+    //windowPlotter->activateWindow(); //если понадобится "поднять" окно
+    window2DCube->fillChanList();
+    window2DCube->setInitChanel(m_dataZ);
+    window2DCube->show();*/
+    m_attributes->ClearList();
+    m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
+    m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
-    if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
-    {                                                             // иначе - графики строятся в том же окне (объекте)
-        windowPlotter = new PlotterWindow();
-        QObject::connect(windowPlotter, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(DeleteSpectrWindow(PlotterWindow*)));
-        windowsArr.append(windowPlotter);
-        firstWindowPlotter = false;
-    }
-
-    windowPlotter->plotSpectr(m_pHyperCube,x,y);
-    windowPlotter->activateWindow();
-    windowPlotter->show();
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x, y, z);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
 
 }
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    pWidgLine = new LinePlotterWindow();
+   /* ProcessingPluginLoader spectrLoad;
+    ProcessingPluginsInterface* spectrInterf = spectrLoad.LoadPlugin("Line Plotter UI");
+    QList<Point>* pointList;
+    Point p1, p2;
+    p1.x = x1; p1.y = y1; p1.z = z1;
+    p2.x = x2; p2.y = y2; p2.z = z2;
+    pointList->append(p1);
+    pointList->append(p2);
+    if (spectrInterf)
+    {
+        //spectrInterf->Execute(m_pHyperCube, pointList);
+    }*/
+    /*pWidgLine = new LinePlotterWindow();
     QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
     windowsLineArr.append(pWidgLine);
     pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
     pWidgLine->activateWindow();
-    pWidgLine->show();
+    pWidgLine->show();*/
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x1, y1, z1);
+    m_attributes->SetPoint(x2, y2, z2);
+    m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pHyperCube, m_attributes);
 }
 
-void GLWidget::DeleteSpectrWindow(PlotterWindow* w)
-{
 
-    for(int i = 0; i< windowsArr.size(); i++){
-        if (w == windowsArr[i])
-        {
-            windowsArr.remove(i);
-            break;
-        }
-    }
-}
 
-void GLWidget::DeleteLineWindow(LinePlotterWindow *w)
-{
-    for(int i = 0; i< windowsLineArr.size(); i++){
-        if (w == windowsLineArr[i])
-        {
-            windowsLineArr.remove(i);
-            break;
-        }
-    }
-}
-
-void GLWidget::deleteSpectrWindows()
-{
-    while(windowsArr.size()>0)
-    {
-        windowsArr[0]->close();
-    }
-    while(windowsLineArr.size()>0)
-    {
-        windowsLineArr[0]->close();
-    }
-}
 
 void GLWidget::paintGL()
 {
@@ -594,26 +535,28 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 //        else
 //            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
     }
-    if (windowsArr.isEmpty() && windowsLineArr.isEmpty() )
+    /*if (windowsArr.isEmpty() && windowsLineArr.isEmpty() )
         pContextMenu->removeAction(pDeletePlotsAction);
     else
-        pContextMenu->addAction(pDeletePlotsAction);
+        pContextMenu->addAction(pDeletePlotsAction);*/
 
 }
 void GLWidget::createMenus()
 {
+
+    // Проверка
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
+   // pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     pContextMenu->addAction(pPlotAction);
-    pContextMenu->addAction(pDeletePlotsAction);
+    //pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pPlotLineAction);
     pContextMenu->addAction(p2DCubeAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
+    //connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
@@ -993,7 +936,6 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
     customPlot.replot();
     QPixmap pixmap = customPlot.toPixmap(ROWS,COLS);
     QImage Q_image = pixmap.toImage();
-
     return Q_image;
 }
 

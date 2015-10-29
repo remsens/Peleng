@@ -1,21 +1,22 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
-#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
-#include "../Library/PelengPluginLoader.h"
-#include "hist/histplugin.h"
 
 int cmp2(const void *a, const void *b);
 
-Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::Main2DWindow),
-    m_initChanel(chan),
-    m_dataX(0), m_dataY(0),
-    firstWindowPlotter(true)
+Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::Main2DWindow)
+    , m_initChanel(0)
+    , m_dataX(0)
+    , m_dataY(0)
+    , firstWindowPlotter(true)
+     ,m_pCube(cube)
+    , m_attributes(attr)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     ui->setupUi(this);
+    pStatusBarLabel = new QLabel(this);
+    ui->statusbar->addWidget(pStatusBarLabel);
     this->setWindowIcon(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"));//!!! почему-то можно поставить иконку только из qrc файла проекта 3Dcube (наверное, надо заинклудить qrc 2d куба в 3d проект)
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
@@ -26,13 +27,18 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
 
     setInitCustomplotSettings();
     createMenus();
-    setHyperCube(pHyperCube);
+    setHyperCube(m_pCube);
+    initArrChanLimits();
     fillChanList();
+    if (m_attributes->GetPointsList().size())
+    {
+        setInitChanel(m_attributes->GetPointsList().at(0).z);
+    }
+    connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(prepareToPlotSpectr())); //сделать как в GLwidget
-
     //connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(colorMapClicked(QCPAbstractPlottable*,QMouseEvent*)));
-    //connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
 
     ui->listWidget->setCurrentRow(m_initChanel);
@@ -40,7 +46,11 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
-    drawHeatMap(m_initChanel);
+
+    //проверить
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
 
 }
 
@@ -55,7 +65,10 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
-    drawHeatMap(m_initChanel);
+    //или update
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
@@ -63,6 +76,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     m_pCube = ptrCube;
     rows = m_pCube->GetLines();
     cols = m_pCube->GetColumns();
+    chnls = m_pCube->GetCountofChannels();
     data = (qint16**)ptrCube->GetDataCube();
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
@@ -88,6 +102,9 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->addPlottable(colorMap);
     ui->customPlot->setInteraction(QCP::iRangeDrag , true);
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
+    colorMap->setGradient(QCPColorGradient::gpGrayscale);
+    colorMap->rescaleDataRange(true);
+
 }
 void Main2DWindow::fillChanList()
 {
@@ -97,9 +114,23 @@ void Main2DWindow::fillChanList()
         ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
         num++;
     }
+
 }
 
-void Main2DWindow::drawHeatMap(int chan)
+void Main2DWindow::initArrChanLimits()
+{
+    ChnlLimits = new int*[chnls];
+    for (int i = 0; i < chnls; ++i)
+        ChnlLimits[i] = new int[2];
+
+    for (int i = 0; i < chnls; ++i)
+    {
+        ChnlLimits[i][0] = 0;
+        ChnlLimits[i][1] = 0;
+    }
+}
+
+void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 {
     qint16 *dat =  new qint16[rows * cols];
     m_pCube->GetDataChannel(chan,dat);
@@ -109,14 +140,10 @@ void Main2DWindow::drawHeatMap(int chan)
         }
     }
     ui->customPlot->rescaleAxes();
-    colorMap->setGradient(QCPColorGradient::gpGrayscale);
-    colorMap->rescaleDataRange(true);
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(chan,minCMap, maxCMap);
+    colorMap->setInterpolate(m_interplolate);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-    ui->customPlot->rescaleAxes();
+
     ui->customPlot->replot();
-    qDebug()<<"chan: "<<chan;
     delete dat;
 }
 void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
@@ -150,8 +177,41 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    drawHeatMap( chan);
-    qDebug() << "Replot heatmap";
+    if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 )
+    {
+        int minCMap, maxCMap;
+        findMinMaxforColorMap(chan,minCMap, maxCMap);
+        ChnlLimits[chan][0] = minCMap;
+        ChnlLimits[chan][1] = maxCMap;
+    }
+
+    drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+}
+
+void Main2DWindow::contrastImage(int left, int right)//left,right -  левая и правая граница гистограммы каналла. Т.е. 2 значения яркостей в data
+{
+    int chan = ui->listWidget->currentRow();
+    if (left > right)
+        std::swap(left,right);
+    ChnlLimits[chan][0] = left;
+    ChnlLimits[chan][1] = right;
+    updateViewchan(chan);
+    qDebug()<<"slot contrast "<<left<<" "<<right;
+}
+
+void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
+{
+    ui->customPlot->clearGraphs(); //удаляем предыдущий график
+    ui->customPlot->addGraph();
+    ui->customPlot->graph()->setData(x, y);
+    ui->customPlot->graph()->setLineStyle(QCPGraph::lsNone);
+    QCPScatterStyle myScatter;
+    myScatter.setShape(QCPScatterStyle::ssCircle);
+    myScatter.setPen(QPen(Qt::red));
+    myScatter.setBrush(Qt::yellow);
+    //myScatter.setSize(5);
+    ui->customPlot->graph()->setScatterStyle(myScatter);
+    ui->customPlot->replot();
 }
 
 
@@ -163,8 +223,34 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
         m_dataX = x;
     if (y >= 0 && y < cols)
         m_dataY = y;
+    emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
+
+
+
+    //тест отбражения точек, потом удалить
+    int n = 100;
+    QVector<double> xP(n), yP(n);
+    for (int i=0; i<n; ++i)
+    {
+      xP[i] = rand()%rows;
+      yP[i] = rand()%cols;
+    }
+    plotPointsOn2D(xP,yP);
+
+}
+
+void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
+{
+    int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
+    int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
     int chan = ui->listWidget->currentRow();
-    qDebug()<<"X:"<<m_dataX<<" Y:"<<m_dataY <<" яркость:"<<data[chan][m_dataX * cols + m_dataY];
+    if (x >= 0 && x < rows && y >= 0 && y < cols)
+    {
+        qint16 bright = data[chan][x * cols + y];
+        pStatusBarLabel->setText("X: " + QString().setNum(x) + "    Y: " + QString().setNum(y) + "    Значение:" + QString().setNum(bright));
+    }
+    else
+        pStatusBarLabel->setText("");
 }
 
 void Main2DWindow::createMenus()
@@ -172,17 +258,15 @@ void Main2DWindow::createMenus()
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
+
+    pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction("Гистограмма",this);
     pContextMenu->addAction(pPlotAction);
     //pContextMenu->addAction(pDeletePlotsAction);
-   // pContextMenu->addAction(pPlotLineAction);
+    pContextMenu->addAction(pPlotLineAction);
     pContextMenu->addAction(pPlotHistAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
-//    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
-//    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
 
@@ -190,18 +274,9 @@ void Main2DWindow::createMenus()
 }
 void Main2DWindow::plotSpectr(uint x, uint y)
 {
-    if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
-    {                                                             // иначе - графики строятся в том же окне (объекте)
-        windowPlotter = new PlotterWindow();
-        QObject::connect(windowPlotter, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(DeleteSpectrWindow(PlotterWindow*)));
-        windowsArr.append(windowPlotter);
-        firstWindowPlotter = false;
-    }
-
-    windowPlotter->plotSpectr(m_pCube,x,y);
-    windowPlotter->activateWindow();
-    windowPlotter->show();
-
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x, y, 0);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::prepareToPlotSpectr()
@@ -212,64 +287,54 @@ void Main2DWindow::createLinePlotterSlot()
 {
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
-    setCursor(QCursor(QPixmap(":/IconsLine/iconsLine/start_flag.png"),10,29));
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     //emit flagsToolTip(globalPos,"выберите начальную точку");
-    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
+    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
+
 }
-void Main2DWindow::startIsClicked()
+void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {
     linePlotterIsActive = true;
-    m_x1 = m_dataX;
-    m_y1 = m_dataY;
+    m_x1 = dataX;
+    m_y1 = dataY;
     m_z1 = ui->listWidget->currentRow();
     //emit flagsToolTip(globalPos,"выберите конечную точку");
     QString strForLineHelp = "выберите конечную точку";
     this->setToolTip(strForLineHelp);
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
-    connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
+    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
 }
-void Main2DWindow::finishIsClicked()
+void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
 {
     linePlotterIsActive = false;
-    m_x2 = m_dataX;
-    m_y2 = m_dataY;
-    m_z2 = ui->listWidget->currentRow();
+    m_x2 = dataX;
+    m_y2 = dataY;
+    m_z2 = m_z1; //ui->listWidget->currentRow();
     QString strForLineHelp = "";
     setCursor(Qt::ArrowCursor);
-    //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
-    disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
+    //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2); //так было в 3d кубе
+    plotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
     this->setToolTip(strForLineHelp);
     //emit flagsToolTip(globalPos,"");
 }
 void Main2DWindow::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    pWidgLine = new LinePlotterWindow();
-    QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
-    windowsLineArr.append(pWidgLine);
-    pWidgLine->plotSpectrLine(m_pCube,x1,x2,y1,y2,z1,z2);
-    pWidgLine->activateWindow();
-    pWidgLine->show();
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x1, y1, z1);
+    m_attributes->SetPoint(x2, y2, z2);
+    m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::prepareToHist()
 {
-   /* PelengPluginLoader pelengLoade
-    * r;
-    PelengPluginsInterface* m_pelengPlugins = pelengLoader.LoadPlugin("Hist UI");
-    IAttributes* attrCh = new ChannelPluginAttributes(3);
-     m_pelengPlugins->Execute(m_pCube, attrCh);*/
-
-    //QList<QString> m;
-    //IAttributes* attrCh = new Cube3DPluginAttributes();
-    u::uint32 channel = ui->listWidget->currentRow();
-    IAttributes* attrCh = new ChannelPluginAttributes(channel);
-    HistPlugin *hist = new HistPlugin(100, this);
-    hist->Execute(m_pCube,attrCh);
-    connect(hist,SIGNAL(replot()),SLOT(updateViewchan()));
+    m_attributes->ClearList();
+    m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
+    m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::contextMenuRequest(QPoint point)
