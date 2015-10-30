@@ -503,8 +503,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
         {
             pContextMenu->addAction(pPlotAction);
-            connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-            connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+            //connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+           // connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
         }
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
         {
