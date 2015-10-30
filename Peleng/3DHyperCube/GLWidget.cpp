@@ -509,7 +509,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
         {
             pContextMenu->addAction(p2DCubeAction);
-            connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+            //connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
         }
 
     }
