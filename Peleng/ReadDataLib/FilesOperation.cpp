@@ -138,16 +138,17 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 u::uint32 FilesOperation::GetNumberOfBytesFromData(u::int32 format) {
 	switch (format) 
 	{
-        case 1: return 1;
-        case 2: return 2;
-        case 22: return 2;
-        case 3: return 4;
-        case 33: return 4;
-        case 4: return 8;
-        case 44: return 8;
-        case 5: return 4;
-        case 6: return 8;
-        case 7: return 16;
+        case type_int8:
+        case type_uint8:   return 1;
+        case type_int16:
+        case type_uint16:  return 2;
+        case type_int32:
+        case type_uint32:  return 4;
+        case type_int64:
+        case type_uint64:
+        case type_double:  return 8;
+        case type_float:   return 4;
+        case type_2double: return 16;
         default: return 0;
     }
 }

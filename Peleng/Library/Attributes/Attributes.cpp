@@ -28,6 +28,16 @@ Attributes::~Attributes()
 
 }
 
+void Attributes::SetModeLib(bool value)
+{
+    m_addSpectr = value;
+}
+
+bool Attributes::GetModeLib() const
+{
+    return m_addSpectr;
+}
+
 void Attributes::SetPointsList(const Point& point)
 {
     m_pointsList.append(point);

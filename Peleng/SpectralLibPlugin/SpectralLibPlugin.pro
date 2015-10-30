@@ -19,7 +19,21 @@ DISTFILES += \
 
 HEADERS += \
     SpectralLibPlugin.h \
-    ../Library/Interfaces/ProcessingPluginInterface.h
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/HyperCube.h \
+    CreateSpectr.h \
+    ../Library/Attributes/Attributes.h \
+    AddSpectr.h \
+    ../Library/GenericExc.h \
+    ../Library/Types.h
 
 SOURCES += \
-    SpectralLibPlugin.cpp
+    SpectralLibPlugin.cpp \
+    CreateSpectr.cpp \
+    ../Library/HyperCube.cpp \
+    ../Library/Attributes/Attributes.cpp \
+    AddSpectr.cpp \
+    ../Library/GenericExc.cpp
+
+FORMS += \
+    CreateSpectr.ui

@@ -25,6 +25,9 @@ public:
     void ClearList();
     void SetAvailablePlugins(const QMap<QString, ProcessingPluginsInterface*> availablePlugins);
 
+    void SetModeLib(bool value);
+    bool GetModeLib() const;
+
     const QList<Point>& GetPointsList() const;
     const QMap<QString, ProcessingPluginsInterface*>& GetAvailablePlugins() const;
 
@@ -39,6 +42,8 @@ private:
 private:
     QList<Point> m_pointsList;
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
+
+    bool m_addSpectr; //! 0 - создать новый, 1 - выгрузить из библиотеки
 };
 
 #endif // ATTRIBUTES_H
