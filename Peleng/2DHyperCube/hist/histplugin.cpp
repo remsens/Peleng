@@ -74,7 +74,6 @@ void HistPlugin::Execute(HyperCube *cube, IAttributes *attr)
 
     customPlot->addPlottable(bars);
     customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
-
     int CHANNEL = this->attr->GetChannel();
 
 

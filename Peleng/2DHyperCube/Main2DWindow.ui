@@ -38,9 +38,53 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,10000000">
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QSlider" name="SliderContrastMin">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSlider" name="SliderContrastMax">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="LeftVal">
+           <property name="minimumSize">
+            <size>
+             <width>25</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="rightVal">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QCustomPlot" name="customPlot" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>11</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="contextMenuPolicy">
           <enum>Qt::CustomContextMenu</enum>
          </property>
@@ -104,5 +148,38 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>SliderContrastMin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LeftVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>198</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SliderContrastMax</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>rightVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>250</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>198</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

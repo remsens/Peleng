@@ -30,6 +30,12 @@ public:
 public slots:
     void drawHeatMap(int chan, int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
     void updateViewchan(int chan);
+    //! Слот, принимающий сигнал об изменении мин. значения для построения colorMap
+    //! param left - значение ползунка слайдера
+    void leftBorderContrast(int left);
+    //! Слот, принимающий сигнал об изменении макс. значения для построения colorMap
+    //! param right - значение ползунка слайдера
+    void rightBorderContrast(int right);
     void contrastImage(int left,int right);
     //! Слот для отображения (выделения цветом) точек на 2D
     //! @param x - вектор с координатами Х точек
@@ -49,9 +55,13 @@ private slots:
     void createLinePlotterSlot();
     void prepareToHist();
     void contextMenuRequest(QPoint point);
+    //! Слот для установки слайдеров при переключении канала
+    //! @param chan - текущий канал
+    void setInitSliders(int chan);
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
+
 
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
@@ -75,7 +85,7 @@ private:
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
-
+    bool flagSlidersEnabledForSlots;
 };
 
 #endif // MAIN2DWINDOW_H

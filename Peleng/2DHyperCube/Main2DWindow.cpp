@@ -14,7 +14,8 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     linePlotterIsActive(false),
     m_initChanel(chan),
     m_dataX(0), m_dataY(0),
-    m_interplolate(false)
+    m_interplolate(false),
+    flagSlidersEnabledForSlots(false)
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -28,6 +29,7 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
+
 
     setInitCustomplotSettings();
     createMenus();
@@ -43,15 +45,15 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
 
     ui->listWidget->setCurrentRow(m_initChanel);
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int))); //раскомментить
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
+    connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
+    connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+    emit  ui->listWidget->currentRowChanged(m_initChanel);
 
-    //проверить
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
-    drawHeatMap(m_initChanel,minCMap, maxCMap);
 
 }
 
@@ -68,7 +70,7 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
     int minCMap, maxCMap;
-    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap,0.04, 0.98);
     drawHeatMap(m_initChanel,minCMap, maxCMap);
 }
 
@@ -133,6 +135,8 @@ void Main2DWindow::initArrChanLimits()
 
 void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 {
+    QElapsedTimer timer;
+    timer.start();
     qint16 *dat =  new qint16[rows * cols];
     m_pCube->GetDataChannel(chan,dat);
     for (int x=0; x < rows; ++x) {
@@ -143,9 +147,9 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
     ui->customPlot->rescaleAxes();
     colorMap->setInterpolate(m_interplolate);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-
     ui->customPlot->replot();
     delete dat;
+    qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
 }
 void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
@@ -181,12 +185,34 @@ void Main2DWindow::updateViewchan(int chan)
     if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 )
     {
         int minCMap, maxCMap;
-        findMinMaxforColorMap(chan,minCMap, maxCMap);
+        findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
         ChnlLimits[chan][0] = minCMap;
         ChnlLimits[chan][1] = maxCMap;
     }
 
     drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+}
+
+void Main2DWindow::leftBorderContrast(int left)
+{
+    if (flagSlidersEnabledForSlots)
+    {
+        int chan = ui->listWidget->currentRow();
+        ChnlLimits[chan][0] = left;
+        drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+        qDebug()<<"leftBorderContrast chan:"<<chan;
+    }
+}
+
+void Main2DWindow::rightBorderContrast(int right)
+{
+    if (flagSlidersEnabledForSlots)
+    {
+        int chan = ui->listWidget->currentRow();
+        ChnlLimits[chan][1] = right;
+        drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+        qDebug()<<"rightBorderContrast chan:"<<chan;
+    }
 }
 
 void Main2DWindow::contrastImage(int left, int right)//left,right -  левая и правая граница гистограммы каналла. Т.е. 2 значения яркостей в data
@@ -197,6 +223,10 @@ void Main2DWindow::contrastImage(int left, int right)//left,right -  левая 
     ChnlLimits[chan][0] = left;
     ChnlLimits[chan][1] = right;
     updateViewchan(chan);
+    flagSlidersEnabledForSlots = false;
+    ui->SliderContrastMin->setValue(ChnlLimits[chan][0]);
+    ui->SliderContrastMax->setValue(ChnlLimits[chan][1]);
+    flagSlidersEnabledForSlots = true;
     qDebug()<<"slot contrast "<<left<<" "<<right;
 }
 
@@ -270,10 +300,39 @@ void Main2DWindow::createMenus()
     connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
 //    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
 //    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
 
 
+}
+
+void Main2DWindow::setInitSliders(int chan)
+{
+    flagSlidersEnabledForSlots = false;
+    int min =  32767;
+    int max = -32767;
+    qint16 *dataTemp = new qint16[rows*cols];
+    for (int j = 0; j<rows*cols; ++j)
+        dataTemp[j]=data[chan][j];
+    QElapsedTimer timer3;
+    timer3.start();
+    for (int i = 0; i < rows*cols; ++i)
+    {
+       if(dataTemp[i] < min)
+           min = dataTemp[i];
+       if(dataTemp[i] > max)
+           max = dataTemp[i];
+    }
+    qDebug()<<"нахождение мин макс"<<timer3.elapsed()<< " мс";
+
+    ui->SliderContrastMin->setMinimum(min);
+    ui->SliderContrastMin->setMaximum(max);
+    ui->SliderContrastMin->setValue(ChnlLimits[chan][0]);
+    ui->SliderContrastMax->setMinimum(min);
+    ui->SliderContrastMax->setMaximum(max);
+    ui->SliderContrastMax->setValue(ChnlLimits[chan][1]);
+    delete[] dataTemp;
+    flagSlidersEnabledForSlots = true;
 }
 void Main2DWindow::plotSpectr(uint x, uint y)
 {
@@ -359,7 +418,7 @@ void Main2DWindow::prepareToHist()
     HistPlugin *hist = new HistPlugin(100, this);
     hist->Execute(m_pCube,attrCh);
     connect(hist,SIGNAL(bordersSelected(int,int)),SLOT(contrastImage(int,int)));
-    connect(hist,SIGNAL(replot()),SLOT(updateViewchan()));
+
 }
 
 void Main2DWindow::contextMenuRequest(QPoint point)
