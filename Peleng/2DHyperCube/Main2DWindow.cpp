@@ -261,15 +261,24 @@ void Main2DWindow::createMenus()
 
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction("Гистограмма",this);
-    pContextMenu->addAction(pPlotAction);
-    //pContextMenu->addAction(pDeletePlotsAction);
-    pContextMenu->addAction(pPlotLineAction);
-    pContextMenu->addAction(pPlotHistAction);
-    connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-    connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
-    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
-    connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
 
+    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+    {
+        pContextMenu->addAction(pPlotAction);
+        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Hist UI"))
+    {
+        pContextMenu->addAction(pPlotHistAction);
+        connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
+    {
+        pContextMenu->addAction(pPlotLineAction);
+        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    }
 
 }
 void Main2DWindow::plotSpectr(uint x, uint y)

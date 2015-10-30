@@ -406,12 +406,6 @@ void GLWidget::createLinePlotterSlot()
 
 void GLWidget::run2DCube()
 {
-    /*window2DCube = new Main2DWindow();
-    window2DCube->setHyperCube(m_pHyperCube);
-    //windowPlotter->activateWindow(); //если понадобится "поднять" окно
-    window2DCube->fillChanList();
-    window2DCube->setInitChanel(m_dataZ);
-    window2DCube->show();*/
     m_attributes->ClearList();
     m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
     m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
@@ -427,24 +421,6 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-   /* ProcessingPluginLoader spectrLoad;
-    ProcessingPluginsInterface* spectrInterf = spectrLoad.LoadPlugin("Line Plotter UI");
-    QList<Point>* pointList;
-    Point p1, p2;
-    p1.x = x1; p1.y = y1; p1.z = z1;
-    p2.x = x2; p2.y = y2; p2.z = z2;
-    pointList->append(p1);
-    pointList->append(p2);
-    if (spectrInterf)
-    {
-        //spectrInterf->Execute(m_pHyperCube, pointList);
-    }*/
-    /*pWidgLine = new LinePlotterWindow();
-    QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
-    windowsLineArr.append(pWidgLine);
-    pWidgLine->plotSpectrLine(m_pHyperCube,x1,x2,y1,y2,z1,z2);
-    pWidgLine->activateWindow();
-    pWidgLine->show();*/
     m_attributes->ClearList();
     m_attributes->SetPoint(x1, y1, z1);
     m_attributes->SetPoint(x2, y2, z2);
@@ -519,6 +495,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     {
         pContextMenu->removeAction(pPlotAction);
         pContextMenu->removeAction(p2DCubeAction);
+
 //        QList<QAction*> allAct1 = pContextMenu->actions();
 //        if (!allAct1.contains(pDeletePlotsAction))
 //            pContextMenu->menuAction()->setVisible(false);
@@ -527,8 +504,17 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     {
         if (event->button() == Qt::LeftButton)
             emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
-        pContextMenu->addAction(pPlotAction);
-        pContextMenu->addAction(p2DCubeAction);
+        if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+        {
+            pContextMenu->addAction(pPlotAction);
+            connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+            connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+        }
+        if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
+        {
+            pContextMenu->addAction(p2DCubeAction);
+            connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+        }
 //        QList<QAction*> allAct2 = pContextMenu->actions();
 //        if (!allAct2.contains(pSetFinishAction))
 //            pContextMenu->addAction(pSetStartAction);
@@ -551,17 +537,23 @@ void GLWidget::createMenus()
    // pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
-    pContextMenu->addAction(pPlotAction);
-    //pContextMenu->addAction(pDeletePlotsAction);
-    pContextMenu->addAction(pPlotLineAction);
-    pContextMenu->addAction(p2DCubeAction);
-    connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-    //connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
-    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
-    connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-    connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
-
+    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+    {
+        pContextMenu->addAction(pPlotAction);
+        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
+    {
+        pContextMenu->addAction(p2DCubeAction);
+        connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
+    {
+        pContextMenu->addAction(pPlotLineAction);
+        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    }
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
