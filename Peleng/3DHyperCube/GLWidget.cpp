@@ -495,10 +495,6 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     {
         pContextMenu->removeAction(pPlotAction);
         pContextMenu->removeAction(p2DCubeAction);
-
-//        QList<QAction*> allAct1 = pContextMenu->actions();
-//        if (!allAct1.contains(pDeletePlotsAction))
-//            pContextMenu->menuAction()->setVisible(false);
     }
     else
     {
@@ -515,26 +511,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
             pContextMenu->addAction(p2DCubeAction);
             connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
         }
-//        QList<QAction*> allAct2 = pContextMenu->actions();
-//        if (!allAct2.contains(pSetFinishAction))
-//            pContextMenu->addAction(pSetStartAction);
-//        else
-//            pContextMenu->insertAction(pSetFinishAction,pPlotAction);
-    }
-    /*if (windowsArr.isEmpty() && windowsLineArr.isEmpty() )
-        pContextMenu->removeAction(pDeletePlotsAction);
-    else
-        pContextMenu->addAction(pDeletePlotsAction);*/
 
+    }
 }
 void GLWidget::createMenus()
 {
 
-    // Проверка
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-   // pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))

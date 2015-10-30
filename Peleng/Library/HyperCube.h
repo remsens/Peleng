@@ -13,11 +13,22 @@ struct InfoData {
     u::uint32 samples; //!< количество столбцов
     u::uint8 bytesType; //!< количество байт в одном элементе (возможно рудимент)
 
-     // 1 - int8, 2 - int 16, 3 - int32, 4 - float, 5 - double, 9 -2*double, 12 - uint16; 1 - qint8, 11 - quint8, 2 - qint16, 22 - quint16, 4 - qint32,  44 - quint32, 5 - qint64, 55 -quint64, 6 - float, 7 - double
-
-
     u::uint8 formatType; //!< формат данных, согласно Лине
     std::list<double> listChannels; //!<  список длин волн, соответствующих каждому каналу
+};
+
+enum TYPES {
+    type_int8,
+    type_uint8,
+    type_int16,
+    type_uint16,
+    type_int32,
+    type_uint32,
+    type_int64,
+    type_uint64,
+    type_float,
+    type_double,
+    type_2double
 };
 
 //! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
@@ -109,6 +120,7 @@ public:
     //! @param channel - номер канала
     //! @param data - вектор, куда будут записаны данные одного канала ( под него уже должна быть выделена память!)
     void GetDataChannel(u::uint32 channel, QVector<double>& data);
+
 
 
 private:

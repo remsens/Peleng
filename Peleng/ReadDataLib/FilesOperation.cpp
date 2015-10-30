@@ -152,17 +152,17 @@ u::uint32 FilesOperation::GetNumberOfBytesFromData(u::int32 format) {
     }
 }
 
-u::uint32 FilesOperation::PelengTypeFromAvirisType(u::int32 format)
+u::uint32 FilesOperation::TypeFromAvirisType(u::int32 format)
 {
     switch (format)
     {
-        case 1: return 1;
-        case 2: return 2;
-        case 3: return 3;
-        case 4: return 5;
-        case 5: return 6;
-        case 9: return 7;
-        case 12: return 22;
+        case 1: return type_int8;
+        case 2: return type_int16;
+        case 3: return type_int32;
+        case 4: return type_float;
+        case 5: return type_double;
+        case 9: return type_2double;
+        case 12: return type_uint16;
         default: return 0;
     }
 }
@@ -307,7 +307,7 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 		case 1: m_lines = ConvertStrtoInt(data); break;
 		case 2: m_bands = ConvertStrtoInt(data); break;
 		case 3: m_headerOffset = ConvertStrtoInt(data); break;
-        case 4: m_dataType = PelengTypeFromAvirisType(ConvertStrtoInt(data)); break;
+        case 4: m_dataType = TypeFromAvirisType(ConvertStrtoInt(data)); break;
 		case 5: 
 			{
 				if (strcmp(data, "bsq") == 0)

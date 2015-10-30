@@ -55,16 +55,16 @@ void HistPlotter::mouseClick(QMouseEvent *event)
         rect->setBrush(brush);
         customPlot->addItem(rect);
         switch (m_cube->GetFormatType()) {
-            case 1: ModifyCube<qint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 11: ModifyCube<quint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 2: ModifyCube<qint16>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 22: ModifyCube<quint16>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 3: ModifyCube<qint32>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 33: ModifyCube<quint32>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 4: ModifyCube<qint64>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 44: ModifyCube<quint64>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 5: ModifyCube<float>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
-            case 6: ModifyCube<double>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_int8: ModifyCube<qint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_uint8: ModifyCube<quint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_int16: ModifyCube<qint16>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_uint16: ModifyCube<quint16>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_int32: ModifyCube<qint32>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_uint32: ModifyCube<quint32>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_int64: ModifyCube<qint64>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_uint64: ModifyCube<quint64>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_float: ModifyCube<float>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
+            case type_double: ModifyCube<double>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
             default: ModifyCube<qint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
         }
         emit this->replot();

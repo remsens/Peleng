@@ -1,7 +1,9 @@
 #ifndef TYPECONVERTOR_H
 #define TYPECONVERTOR_H
 
-inline void LongLongFromCharArray(const char* data, int formatType, qint64 &value) {
+#include "../Library/Types.h"
+
+inline void LongLongFromCharArray(const u::int8* data, u::int32 formatType, qint64 &value) {
     union {
         qint64 *eightByte;
         qint32 *fourByte;
@@ -23,7 +25,7 @@ inline void LongLongFromCharArray(const char* data, int formatType, qint64 &valu
 }
 
 
-inline void ULongLongFromCharArray(const char* data, int formatType, quint64 &value) {
+inline void ULongLongFromCharArray(const u::int8* data, int formatType, quint64 &value) {
 
     union {
         quint64 *eightUByte;

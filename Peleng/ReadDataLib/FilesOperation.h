@@ -51,7 +51,7 @@ private:
 
     //! Функция пересчета номера типа AVIRIS в наш тип
     //! @param format - формат данных, полученных из файла-заголовка
-    u::uint32 PelengTypeFromAvirisType(u::int32 format);
+    u::uint32 TypeFromAvirisType(u::int32 format);
 
 
 	u::uint32 ConvertStrtoInt(const char* data);

@@ -19,12 +19,12 @@ namespace ReadData
     struct Error
     {
         u::uint32 code; //!< код ошибки
-        u::cstr message; //!< текст ошибки
+        const char* message; //!< текст ошибки
     };
 }
 
 READDATALIB_API_EXPORT u::logic ReadDataLib_CreateContex(u::ptr& ctx);
-READDATALIB_API_EXPORT u::logic ReadDataLib_ReadCubeFromFile(u::ptr& ctx, u::cstr headerFileName, HyperCube* cube);
+READDATALIB_API_EXPORT u::logic ReadDataLib_ReadCubeFromFile(u::ptr& ctx, const char* headerFileName, HyperCube* cube);
 READDATALIB_API_EXPORT void ReadDataLib_DestroyContex(u::ptr ctx);
 READDATALIB_API_EXPORT ReadData::Error ReadDataLib_GetLastError(u::ptr ctx);
 READDATALIB_API_EXPORT double ReadDataLib_GetProgress(u::ptr ctx);

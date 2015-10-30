@@ -260,7 +260,7 @@ void Main2DWindow::createMenus()
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
 
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
-    pPlotHistAction = new QAction("Гистограмма",this);
+    pPlotHistAction = new QAction(QIcon("qrc:/icons2Dcube/icons/Heat Map-50.png"),"Гистограмма",this);
 
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
     {

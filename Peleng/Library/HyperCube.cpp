@@ -137,14 +137,22 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, QVector<double> &data
     u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
 
     try {
-        if (m_infoData.formatType<10) {
+        if (m_infoData.formatType == type_int8  ||
+            m_infoData.formatType == type_int16 ||
+            m_infoData.formatType == type_int32 ||
+            m_infoData.formatType == type_int64 ||
+            m_infoData.formatType == type_float ||
+            m_infoData.formatType == type_double ||
+            m_infoData.formatType == type_2double)
+        {
             qint64 value;
             for (u::uint32 i = 0; i < m_infoData.bands; i++) {
                 LongLongFromCharArray(m_dataCube[i] + shift,m_infoData.formatType,value);
                 data.append(value);
 
             }
-        }else {
+        } else
+        {
             quint64 value;
             for (u::uint32 i = 0; i < m_infoData.bands; i++) {
                 ULongLongFromCharArray(m_dataCube[i] + shift,m_infoData.formatType,value);
@@ -182,14 +190,22 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
         throw GenericExc("Неверно введен канал", -1);
     }
     try {
-        if (m_infoData.formatType<10){
+        if (    m_infoData.formatType == type_int8  ||
+                m_infoData.formatType == type_int16 ||
+                m_infoData.formatType == type_int32 ||
+                m_infoData.formatType == type_int64 ||
+                m_infoData.formatType == type_float ||
+                m_infoData.formatType == type_double ||
+                m_infoData.formatType == type_2double)
+        {
             qint64 value;
             for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
                 LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,m_infoData.formatType,value);
                 data.append(value);
             }
 
-        } else {
+        } else
+        {
             quint64 value;
             for (u::uint32 i =0; i < GetSizeChannel(); i++) {
                 ULongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,m_infoData.formatType,value);
