@@ -259,14 +259,14 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
 
 
     //тест отбражения точек, потом удалить
-    int n = 100;
-    QVector<double> xP(n), yP(n);
-    for (int i=0; i<n; ++i)
-    {
-      xP[i] = rand()%rows;
-      yP[i] = rand()%cols;
-    }
-    plotPointsOn2D(xP,yP);
+//    int n = 100;
+//    QVector<double> xP(n), yP(n);
+//    for (int i=0; i<n; ++i)
+//    {
+//      xP[i] = rand()%rows;
+//      yP[i] = rand()%cols;
+//    }
+//    plotPointsOn2D(xP,yP);
 
 }
 
@@ -300,10 +300,7 @@ void Main2DWindow::createMenus()
     connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
 //    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
 //    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-
-
 }
 
 void Main2DWindow::setInitSliders(int chan)
