@@ -46,6 +46,7 @@ private:
     int autoTickCountY;
     HyperCube* m_cube;
     Attributes* m_attributes;
+    QAction* m_actionSave;
 
 };
 

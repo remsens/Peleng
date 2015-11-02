@@ -452,7 +452,6 @@
      <string>Опции</string>
     </property>
     <addaction name="actionHold"/>
-    <addaction name="actionSave"/>
    </widget>
    <addaction name="menuSpectrum"/>
   </widget>

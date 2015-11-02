@@ -27,11 +27,18 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
-    QObject::connect(ui->actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
+    m_actionSave = 0;
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        m_actionSave = new QAction("Сохранить в библиотеку", this);
+        ui->menuSpectrum->addAction(m_actionSave);
+        QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
+    }
 }
 
 PlotterWindow::~PlotterWindow()
 {
+    delete m_actionSave;
     delete ui;
 }
 
