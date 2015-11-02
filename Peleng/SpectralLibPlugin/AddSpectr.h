@@ -14,6 +14,7 @@ public:
     AddSpectr(HyperCube* cube, Attributes* attr);
     virtual ~AddSpectr();
 
+    void ReadLibrarySpectrAster();
 private:
     HyperCube* m_cube;
     Attributes* m_attributes;
