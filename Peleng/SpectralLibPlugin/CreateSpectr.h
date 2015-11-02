@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
+
 namespace Ui {
 class CreateSpectr;
 }
@@ -15,6 +16,9 @@ class CreateSpectr : public QWidget
 public:
     explicit CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     virtual ~CreateSpectr();
+
+public slots:
+    void SaveSpectr();
 
 private:
     Ui::CreateSpectr *m_ui;
