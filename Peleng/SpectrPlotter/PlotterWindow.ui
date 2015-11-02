@@ -452,6 +452,7 @@
      <string>Опции</string>
     </property>
     <addaction name="actionHold"/>
+    <addaction name="actionSave"/>
    </widget>
    <addaction name="menuSpectrum"/>
   </widget>
@@ -465,6 +466,16 @@
    </property>
    <property name="text">
     <string>На один график</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Сохранить в библиотеку</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Сохранить</string>
    </property>
   </action>
  </widget>

@@ -29,7 +29,7 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
     }
     if (!plot)
     {
-         PlotterWindow* plotterWindow = new PlotterWindow();
+         PlotterWindow* plotterWindow = new PlotterWindow(cube, attr);
          plotterWindow->plotSpectr(cube,  attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
          m_windowList.append(plotterWindow);
     }
