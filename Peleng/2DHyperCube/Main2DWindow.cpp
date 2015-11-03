@@ -182,7 +182,7 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 )
+    if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 ) //мб переделать, что если после findMinMaxforColorMap minCMap = 0
     {
         int minCMap, maxCMap;
         findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
@@ -259,14 +259,14 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
 
 
     //тест отбражения точек, потом удалить
-//    int n = 100;
-//    QVector<double> xP(n), yP(n);
-//    for (int i=0; i<n; ++i)
-//    {
-//      xP[i] = rand()%rows;
-//      yP[i] = rand()%cols;
-//    }
-//    plotPointsOn2D(xP,yP);
+    int n = 100;
+    QVector<double> xP(n), yP(n);
+    for (int i=0; i<n; ++i)
+    {
+      xP[i] = rand()%rows;
+      yP[i] = rand()%cols;
+    }
+    plotPointsOn2D(xP,yP);
 
 }
 

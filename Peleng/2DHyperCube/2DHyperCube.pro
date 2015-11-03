@@ -33,6 +33,7 @@ SOURCES += \
     ../LinePlotter/LinePlotterWindow.cpp \
     ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
     hist/histplugin.cpp \
+    Polygon.cpp
 
 
 HEADERS += \
@@ -48,6 +49,7 @@ HEADERS += \
     ../LinePlotter/LinePlotterWindow.h \
     ../Library/PluginAttributes/ChannelPluginAttributes.h \
     hist/histplugin.h \
+    Polygon.h
 
 
 
