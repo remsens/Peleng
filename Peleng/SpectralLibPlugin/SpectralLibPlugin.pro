@@ -23,17 +23,18 @@ HEADERS += \
     ../Library/HyperCube.h \
     CreateSpectr.h \
     ../Library/Attributes/Attributes.h \
-    AddSpectr.h \
     ../Library/GenericExc.h \
-    ../Library/Types.h
+    ../Library/Types.h \
+    AddSpectr.h
 
 SOURCES += \
     SpectralLibPlugin.cpp \
     CreateSpectr.cpp \
     ../Library/HyperCube.cpp \
     ../Library/Attributes/Attributes.cpp \
-    AddSpectr.cpp \
-    ../Library/GenericExc.cpp
+    ../Library/GenericExc.cpp \
+    AddSpectr.cpp
 
 FORMS += \
-    CreateSpectr.ui
+    CreateSpectr.ui \
+    AddSpectr.ui

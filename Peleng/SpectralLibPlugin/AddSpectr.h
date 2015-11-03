@@ -1,23 +1,31 @@
 #ifndef ADDSPECTR_H
 #define ADDSPECTR_H
 
-#include <QObject>
 #include <QWidget>
-
 #include "../Library/Attributes/Attributes.h"
-#include "../Library/Interfaces/ProcessingPluginInterface.h"
+#include "../Library/HyperCube.h"
 
-class AddSpectr
+namespace Ui {
+class AddSpectr;
+}
+
+class AddSpectr : public QWidget
 {
+    Q_OBJECT
 
 public:
-    AddSpectr(HyperCube* cube, Attributes* attr);
+    explicit AddSpectr(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     virtual ~AddSpectr();
 
-    void ReadLibrarySpectrAster();
+private slots:
+    void OnPushButtonImportClicked();
+
 private:
+    void ParseFile(QStringList& possibleTitles, QString& filePath);
+private:
+    Ui::AddSpectr *m_ui;
     HyperCube* m_cube;
-    Attributes* m_attributes;
+    Attributes* m_attr;
 };
 
 #endif // ADDSPECTR_H
