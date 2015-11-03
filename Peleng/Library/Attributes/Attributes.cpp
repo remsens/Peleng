@@ -40,23 +40,27 @@ bool Attributes::GetModeLib() const
 
 void Attributes::SetXUnit(double xUnit)
 {
-    m_XUnits.append(xUnit);
+    m_XUnits.push_back(xUnit);
 }
 
 void Attributes::SetYUnit(double yUnit)
 {
-    m_YUnits.append(yUnit);
+    m_YUnits.push_back(yUnit);
 }
 
 void Attributes::ClearUnitsLists()
 {
     m_XUnits.clear();
     m_YUnits.clear();
+    m_descriptionSpectr.clear();
 }
 
-void Attributes::SetDescriptionIten(const QString& keyTitle, const QString& value)
+void Attributes::SetDescriptionItem(const QString& keyTitle, const QString& value)
 {
-    m_descriptionSpectr.insert(keyTitle, value);
+    DescriptionSpectr ds;
+    ds.title = keyTitle;
+    ds.description = value;
+    m_descriptionSpectr.append(ds);
 }
 
 const QVector<double>& Attributes::GetXUnits() const
@@ -69,7 +73,7 @@ const QVector<double>& Attributes::GetYUnits() const
     return m_YUnits;
 }
 
-const QMap<QString, QString>& Attributes::GetSpectrumDescription() const
+const QList<Attributes::DescriptionSpectr> &Attributes::GetSpectrumDescription() const
 {
     return m_descriptionSpectr;
 }

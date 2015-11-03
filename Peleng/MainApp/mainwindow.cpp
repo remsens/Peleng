@@ -45,61 +45,61 @@ void MainWindow::LoadFile()
 {
 
     // TODO
-    if (m_pluginsControl->GetReadingPlugins().size()>0) {
+//    if (m_pluginsControl->GetReadingPlugins().size()>0) {
 
-        //Если это не первый вызов, но нужно почистить данные
-        //m_pluginsControl->GetReadPlugins().first()->DeleteData();
-        //TODO
-        FilePlugin = m_pluginsControl->GetReadingPlugins().value("AVIRIS Loader");
-        if (FilePlugin != 0)
-        {
-            QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
-                                                     "",
-                                                    FilePlugin->getFormatDescription());
-
-
-          // Create a progress dialog.
-            QProgressDialog dialog;
-
-            dialog.setLabelText(QString("Загрузка данных из файла"));
-
-            // Create a QFutureWatcher and connect signals and slots.
-            QFutureWatcher<void> futureWatcher;
-            QTimer timer;
-            connect(&timer, SIGNAL(timeout()), this, SLOT(updateProgress()));
-            timer.start(1000);
-            QObject::connect(&futureWatcher, SIGNAL(finished()), &dialog, SLOT(reset()));
-            QObject::connect(&dialog, SIGNAL(canceled()), SLOT(cancelOperation()));
-            QObject::connect(&dialog, SIGNAL(canceled()), &futureWatcher, SLOT(cancel()));
-            QObject::connect(this, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
-
-            //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
-
-            // TODO
-
-            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::ReadCubeFromFile, FileName, cube);
+//        //Если это не первый вызов, но нужно почистить данные
+//        //m_pluginsControl->GetReadPlugins().first()->DeleteData();
+//        //TODO
+//        FilePlugin = m_pluginsControl->GetReadingPlugins().value("AVIRIS Loader");
+//        if (FilePlugin != 0)
+//        {
+//            QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
+//                                                     "",
+//                                                    FilePlugin->getFormatDescription());
 
 
-            // Start the computation.
-            futureWatcher.setFuture(future);
+//          // Create a progress dialog.
+//            QProgressDialog dialog;
 
-            // Display the dialog and start the event loop.
-            dialog.exec();
+//            dialog.setLabelText(QString("Загрузка данных из файла"));
 
-            futureWatcher.waitForFinished();
-            dialog.setValue(100);
-            dialog.hide();
+//            // Create a QFutureWatcher and connect signals and slots.
+//            QFutureWatcher<void> futureWatcher;
+//            QTimer timer;
+//            connect(&timer, SIGNAL(timeout()), this, SLOT(updateProgress()));
+//            timer.start(1000);
+//            QObject::connect(&futureWatcher, SIGNAL(finished()), &dialog, SLOT(reset()));
+//            QObject::connect(&dialog, SIGNAL(canceled()), SLOT(cancelOperation()));
+//            QObject::connect(&dialog, SIGNAL(canceled()), &futureWatcher, SLOT(cancel()));
+//            QObject::connect(this, SIGNAL(progressValueChanged(int)), &dialog, SLOT(setValue(int)));
+
+//            //extern void FileFormatPluginList[0]->getDataFromChannel(channel,(qint8*)data);
+
+//            // TODO
+
+//            QFuture<void> future = QtConcurrent::run(FilePlugin, &FileReadInterface::ReadCubeFromFile, FileName, cube);
 
 
-            timer.stop();
-        } else
-        {
-            qDebug() << "Плагин AVIRIS Loader не подключен";
-            return;
-        }
+//            // Start the computation.
+//            futureWatcher.setFuture(future);
 
-        // TODO
-            FilePlugin->DeleteData();
+//            // Display the dialog and start the event loop.
+//            dialog.exec();
+
+//            futureWatcher.waitForFinished();
+//            dialog.setValue(100);
+//            dialog.hide();
+
+
+//            timer.stop();
+//        } else
+//        {
+//            qDebug() << "Плагин AVIRIS Loader не подключен";
+//            return;
+//        }
+
+//        // TODO
+//            FilePlugin->DeleteData();
 
 
 
@@ -113,7 +113,7 @@ void MainWindow::LoadFile()
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 
-    }
+    //}
 }
 
 

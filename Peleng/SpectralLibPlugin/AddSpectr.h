@@ -2,6 +2,8 @@
 #define ADDSPECTR_H
 
 #include <QWidget>
+#include <QTextStream>
+#include <QFile>
 #include "../Library/Attributes/Attributes.h"
 #include "../Library/HyperCube.h"
 
@@ -21,11 +23,12 @@ private slots:
     void OnPushButtonImportClicked();
 
 private:
-    void ParseFile(QStringList& possibleTitles, QString& filePath);
+    void ParseFile(QStringList &possibleTitles, QFile &fileIn);
 private:
     Ui::AddSpectr *m_ui;
     HyperCube* m_cube;
     Attributes* m_attr;
+    QTextStream* m_inStream;
 };
 
 #endif // ADDSPECTR_H

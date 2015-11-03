@@ -32,11 +32,16 @@ public:
     void SetXUnit(double xUnit);
     void SetYUnit(double yUnit);
     void ClearUnitsLists();
-    void SetDescriptionIten(const QString& keyTitle, const QString& value);
+    struct DescriptionSpectr
+    {
+        QString title;
+        QString description;
+    };
+    void SetDescriptionItem(const QString& keyTitle, const QString& value);
 
     const QVector<double>& GetXUnits() const;
     const QVector<double>& GetYUnits() const;
-    const QMap<QString, QString>& GetSpectrumDescription() const;
+    const QList<Attributes::DescriptionSpectr>& GetSpectrumDescription() const;
     // общее
     const QList<Point>& GetPointsList() const;
     const QMap<QString, ProcessingPluginsInterface*>& GetAvailablePlugins() const;
@@ -56,7 +61,7 @@ private:
     bool m_addSpectr; //! 0 - создать новый, 1 - выгрузить из библиотеки
     QVector<double> m_XUnits;
     QVector<double> m_YUnits;
-    QMap<QString, QString> m_descriptionSpectr;
+    QList<DescriptionSpectr> m_descriptionSpectr;
 };
 
 #endif // ATTRIBUTES_H
