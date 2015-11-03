@@ -93,18 +93,19 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         {
             QString line = m_inStream->readLine();
             if (line.compare("\r\n") == 0 || line.compare("") == 0 || line.compare(" ") == 0 || line.compare("\n") == 0){
+                if (flagEndDescription)
+                {
+                   // Закидываем последний
+                   m_attr->SetDescriptionItem(title, description);
+                   item.clear();
+                   title.clear();
+                   description.clear();
+                   startData = true;
+                   flagEndDescription = false;
+                }
                 continue;
             }
-            if (flagEndDescription)
-            {
-               // Закидываем последний
-               m_attr->SetDescriptionItem(title, description);
-               item.clear();
-               title.clear();
-               description.clear();
-               startData = true;
-               flagEndDescription = false;
-            }
+
             if (!startData)
             {
                 bool contains = false;
@@ -138,7 +139,7 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                 }
                 if (!contains)
                 {
-                    description.append(line);
+                    description.append(" ").append(line);
                 }
             } else {
                 item = line.split("\t");
