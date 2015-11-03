@@ -28,30 +28,6 @@ Attributes::~Attributes()
 
 }
 
-
-void Attributes::SetModeLib(bool value)
-{
-    m_addSpectr = value;
-}
-
-bool Attributes::GetModeLib() const
-{
-    return m_addSpectr;
-}
-
-const QVector<double>& Attributes::GetXUnits() const
-{
-    return m_XUnits;
-}
-const QVector<double>& Attributes::GetYUnits() const
-{
-    return m_YUnits;
-}
-const QMap<QString, QString>& Attributes::GetDescriptionSpectr() const
-{
-    return m_descriptionSpectr;
-}
-
 void Attributes::SetPointsList(const Point& point)
 {
     m_pointsList.append(point);
