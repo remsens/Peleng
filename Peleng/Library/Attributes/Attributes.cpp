@@ -38,6 +38,42 @@ bool Attributes::GetModeLib() const
     return m_addSpectr;
 }
 
+void Attributes::SetXUnit(double xUnit)
+{
+    m_XUnits.append(xUnit);
+}
+
+void Attributes::SetYUnit(double yUnit)
+{
+    m_YUnits.append(yUnit);
+}
+
+void Attributes::ClearUnitsLists()
+{
+    m_XUnits.clear();
+    m_YUnits.clear();
+}
+
+void Attributes::SetDescriptionIten(const QString& keyTitle, const QString& value)
+{
+    m_descriptionSpectr.insert(keyTitle, value);
+}
+
+const QVector<double>& Attributes::GetXUnits() const
+{
+    return m_XUnits;
+}
+
+const QVector<double>& Attributes::GetYUnits() const
+{
+    return m_YUnits;
+}
+
+const QMap<QString, QString>& Attributes::GetSpectrumDescription() const
+{
+    return m_descriptionSpectr;
+}
+
 void Attributes::SetPointsList(const Point& point)
 {
     m_pointsList.append(point);

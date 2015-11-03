@@ -23,6 +23,6 @@ void SpectralLibPlugin::Execute(HyperCube *cube, Attributes *attr)
     } else
     {
         AddSpectr* addSpectr = new AddSpectr(cube, attr);
-
+        addSpectr->show();
     }
 }
