@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Сохранение спектра</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/pic/icons/CreateSpectr.png</normaloff>:/pic/icons/CreateSpectr.png</iconset>
+  </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
@@ -332,6 +336,10 @@
         <property name="text">
          <string>Сохранить</string>
         </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/pic/icons/export.png</normaloff>:/pic/icons/export.png</iconset>
+        </property>
        </widget>
       </item>
      </layout>
@@ -352,6 +360,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -38,3 +38,6 @@ SOURCES += \
 FORMS += \
     CreateSpectr.ui \
     AddSpectr.ui
+
+RESOURCES += \
+    resources.qrc

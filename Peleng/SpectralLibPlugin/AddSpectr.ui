@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Импорт спектра</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/pic/icons/addSpectr.png</normaloff>:/pic/icons/addSpectr.png</iconset>
+  </property>
   <widget class="QLabel" name="label_task">
    <property name="geometry">
     <rect>
@@ -83,9 +87,9 @@
   <widget class="QPushButton" name="pushButton_import">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>130</x>
      <y>250</y>
-     <width>121</width>
+     <width>141</width>
      <height>41</height>
     </rect>
    </property>
@@ -97,8 +101,14 @@
    <property name="text">
     <string>Импортировать</string>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/pic/icons/import.png</normaloff>:/pic/icons/import.png</iconset>
+   </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/pic">
+        <file>icons/addSpectr.png</file>
+        <file>icons/CreateSpectr.png</file>
+        <file>icons/export.png</file>
+        <file>icons/import.png</file>
+    </qresource>
+</RCC>
