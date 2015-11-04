@@ -28,6 +28,56 @@ Attributes::~Attributes()
 
 }
 
+void Attributes::SetModeLib(bool value)
+{
+    m_addSpectr = value;
+}
+
+bool Attributes::GetModeLib() const
+{
+    return m_addSpectr;
+}
+
+void Attributes::SetXUnit(double xUnit)
+{
+    m_XUnits.push_back(xUnit);
+}
+
+void Attributes::SetYUnit(double yUnit)
+{
+    m_YUnits.push_back(yUnit);
+}
+
+void Attributes::ClearUnitsLists()
+{
+    m_XUnits.clear();
+    m_YUnits.clear();
+    m_descriptionSpectr.clear();
+}
+
+void Attributes::SetDescriptionItem(const QString& keyTitle, const QString& value)
+{
+    DescriptionSpectr ds;
+    ds.title = keyTitle;
+    ds.description = value;
+    m_descriptionSpectr.append(ds);
+}
+
+const QVector<double>& Attributes::GetXUnits() const
+{
+    return m_XUnits;
+}
+
+const QVector<double>& Attributes::GetYUnits() const
+{
+    return m_YUnits;
+}
+
+const QList<Attributes::DescriptionSpectr> &Attributes::GetSpectrumDescription() const
+{
+    return m_descriptionSpectr;
+}
+
 void Attributes::SetPointsList(const Point& point)
 {
     m_pointsList.append(point);

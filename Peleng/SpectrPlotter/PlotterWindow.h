@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
+#include "../Library/Attributes/Attributes.h"
 
 namespace Ui {
 class PlotterWindow;
@@ -15,7 +16,7 @@ class PlotterWindow : public QMainWindow
 
 
 public:
-    explicit PlotterWindow(QWidget *parent = 0);
+    explicit PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     ~PlotterWindow();
 
     void plotSpectr(HyperCube* ptrCube, uint dataX, uint dataY );
@@ -32,6 +33,7 @@ private:
 
 public slots:
     void on_actionHold_toggled(bool value);
+    void on_actionSave_toggled();
 
 private:
     bool m_hold;
@@ -42,6 +44,9 @@ private:
     QSize initSize;
     int autoTickCountX;
     int autoTickCountY;
+    HyperCube* m_cube;
+    Attributes* m_attributes;
+    QAction* m_actionSave;
 
 };
 

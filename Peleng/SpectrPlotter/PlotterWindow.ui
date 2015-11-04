@@ -467,6 +467,16 @@
     <string>На один график</string>
    </property>
   </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Сохранить в библиотеку</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

@@ -5,11 +5,13 @@
 #include "../Library/GenericExc.h"
 #include <QDebug>
 
-PlotterWindow::PlotterWindow(QWidget *parent)
+PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::PlotterWindow)
     , minY(70000)
     , maxY(-10000)
+    , m_cube(cube)
+    , m_attributes(attr)
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -19,17 +21,24 @@ PlotterWindow::PlotterWindow(QWidget *parent)
     m_hold = false;
     initSize = size();
 
-    qDebug()<<"init size"<<initSize;
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
+    m_actionSave = 0;
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        m_actionSave = new QAction("Сохранить в библиотеку", this);
+        ui->menuSpectrum->addAction(m_actionSave);
+        QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
+    }
 }
 
 PlotterWindow::~PlotterWindow()
 {
+    delete m_actionSave;
     delete ui;
 }
 
@@ -121,4 +130,9 @@ void PlotterWindow::on_actionHold_toggled(bool value)
     m_hold = value;
 }
 
+void PlotterWindow::on_actionSave_toggled()
+{
+    m_attributes->SetModeLib(0);
+    m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
+}
 
