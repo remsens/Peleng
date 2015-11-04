@@ -250,23 +250,33 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
 {
     int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
     int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
-    if (x >= 0 && x < rows)
+    if(x<0)
+        m_dataX = 0;
+    else if(x>rows)
+        m_dataX = rows-1;
+    else
         m_dataX = x;
-    if (y >= 0 && y < cols)
+
+    if(y<0)
+        m_dataY = 0;
+    else if(y>cols)
+        m_dataY = cols-1;
+    else
         m_dataY = y;
+
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
+    qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
 
 
-
-    //тест отбражения точек, потом удалить
-    int n = 100;
-    QVector<double> xP(n), yP(n);
-    for (int i=0; i<n; ++i)
-    {
-      xP[i] = rand()%rows;
-      yP[i] = rand()%cols;
-    }
-    plotPointsOn2D(xP,yP);
+//    //тест отбражения точек, потом удалить
+//    int n = 100;
+//    QVector<double> xP(n), yP(n);
+//    for (int i=0; i<n; ++i)
+//    {
+//      xP[i] = rand()%rows;
+//      yP[i] = rand()%cols;
+//    }
+//    plotPointsOn2D(xP,yP);
 
 }
 
@@ -361,6 +371,20 @@ void Main2DWindow::createLinePlotterSlot()
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
 
+}
+
+void Main2DWindow::CreatePolygonSlot()
+{
+    QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
+    this->setToolTip(strForLineHelp);
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    polygonPoints.clear();
+}
+
+void Main2DWindow::addPolygonPoint(uint x,uinty)
+{
+    polygonPoints.append(QPoint(x,y));
 }
 void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {
