@@ -43,9 +43,9 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
 
     connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(plottableDoubleClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QCPAbstractPlottable* , QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
     //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(mousePressOnColorMap(QCPAbstractPlottable*,QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
@@ -248,7 +248,7 @@ void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
 }
 
 
-void Main2DWindow::mousePressOnColorMap(QCPAbstractPlottable * it, QMouseEvent *e)
+void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 {
     if(flagDoubleClicked)
     {
@@ -277,11 +277,14 @@ void Main2DWindow::mousePressOnColorMap(QCPAbstractPlottable * it, QMouseEvent *
 
 }
 
-void Main2DWindow::mouseDblClickOnColorMap(QCPAbstractPlottable * it, QMouseEvent *e)
+void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
 {
+    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     flagPolygonIsCreated = true;
     flagDoubleClicked = true;
     setCursor(QCursor(Qt::ArrowCursor));
+    this->setToolTip("");
+    drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
     qDebug()<<"2x clicked";
 
 }
@@ -321,9 +324,10 @@ void Main2DWindow::createMenus()
 void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
 {
     QCPItemLine *line = new QCPItemLine(ui->customPlot);
-    line->start->setCoords(x1,y1);
-    line->end->setCoords(x2,y2);
-    ui->customPlot->addItem(line);
+    line->start->setCoords(x2,y2);
+    line->end->setCoords(x1,y1);
+    line->setPen(QPen(Qt::red));
+//    ui->customPlot->addItem(line);
 }
 
 void Main2DWindow::setInitSliders(int chan)
@@ -403,13 +407,15 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
 {
     if (!flagPolygonIsCreated)
     {
-        if (polygonArr.last().size() > 1)
+        if (polygonArr.last().size() > 0)
             drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
         polygonArr.last().append(QPoint(x,y));
 
     }
     else
     {
+        //Сюда вроде бы и не заходит почему-то никогда
+        this->setToolTip("");
         disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     }
 

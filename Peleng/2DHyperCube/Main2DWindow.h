@@ -54,8 +54,8 @@ signals:
     void signalCurrentDataXY(uint,uint);
 
 private slots:
-    void mousePressOnColorMap(QCPAbstractPlottable*it, QMouseEvent* e);
-    void mouseDblClickOnColorMap(QCPAbstractPlottable *it, QMouseEvent* e);
+    void mousePressOnColorMap( QMouseEvent* e);
+    void mouseDblClickOnColorMap( QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
     void toggledActionInterpolation(bool flag){m_interplolate = flag;}
     void plotSpectr(uint x, uint y);
