@@ -13,6 +13,7 @@ AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     , m_attr(attr)
 {
     m_ui->setupUi(this);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     QObject::connect(m_ui->pushButton_import, SIGNAL(clicked()), this, SLOT(OnPushButtonImportClicked()));
 }
 
