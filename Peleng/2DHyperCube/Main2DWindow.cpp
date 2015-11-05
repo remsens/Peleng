@@ -15,7 +15,9 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     m_initChanel(chan),
     m_dataX(0), m_dataY(0),
     m_interplolate(false),
-    flagSlidersEnabledForSlots(false)
+    flagSlidersEnabledForSlots(false),
+    flagPolygonIsCreated(false),
+    flagDoubleClicked(false)
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -39,11 +41,11 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
 
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
-    //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(prepareToPlotSpectr())); //сделать как в GLwidget
-    //connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(colorMapClicked(QCPAbstractPlottable*,QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
 
+    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(plottableDoubleClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QCPAbstractPlottable* , QMouseEvent*)));
+    //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),SLOT(mousePressOnColorMap(QCPAbstractPlottable*,QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
@@ -246,8 +248,13 @@ void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
 }
 
 
-void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
+void Main2DWindow::mousePressOnColorMap(QCPAbstractPlottable * it, QMouseEvent *e)
 {
+    if(flagDoubleClicked)
+    {
+        flagDoubleClicked  = false;
+        return;
+    }
     int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
     int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
     if(x<0)
@@ -268,15 +275,14 @@ void Main2DWindow::mousePressOnColorMap( QMouseEvent *e)
     qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
 
 
-//    //тест отбражения точек, потом удалить
-//    int n = 100;
-//    QVector<double> xP(n), yP(n);
-//    for (int i=0; i<n; ++i)
-//    {
-//      xP[i] = rand()%rows;
-//      yP[i] = rand()%cols;
-//    }
-//    plotPointsOn2D(xP,yP);
+}
+
+void Main2DWindow::mouseDblClickOnColorMap(QCPAbstractPlottable * it, QMouseEvent *e)
+{
+    flagPolygonIsCreated = true;
+    flagDoubleClicked = true;
+    setCursor(QCursor(Qt::ArrowCursor));
+    qDebug()<<"2x clicked";
 
 }
 
@@ -299,18 +305,25 @@ void Main2DWindow::createMenus()
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction("Гистограмма",this);
+    pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
     pContextMenu->addAction(pPlotAction);
-    //pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pPlotLineAction);
     pContextMenu->addAction(pPlotHistAction);
+    pContextMenu->addAction(pSelectAreaAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
-//    connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
-//    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+    connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));
+}
+
+void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
+{
+    QCPItemLine *line = new QCPItemLine(ui->customPlot);
+    line->start->setCoords(x1,y1);
+    line->end->setCoords(x2,y2);
+    ui->customPlot->addItem(line);
 }
 
 void Main2DWindow::setInitSliders(int chan)
@@ -373,18 +386,34 @@ void Main2DWindow::createLinePlotterSlot()
 
 }
 
-void Main2DWindow::CreatePolygonSlot()
+void Main2DWindow::createPolygonSlot()
 {
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     this->setToolTip(strForLineHelp);
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));   
+    QPolygon polygon;
+    polygonArr.append(polygon);
+    flagPolygonIsCreated = false;
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-    polygonPoints.clear();
+    //polygonPoints.clear();
+
 }
 
-void Main2DWindow::addPolygonPoint(uint x,uinty)
+void Main2DWindow::addPolygonPoint(uint x,uint y)
 {
-    polygonPoints.append(QPoint(x,y));
+    if (!flagPolygonIsCreated)
+    {
+        if (polygonArr.last().size() > 1)
+            drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
+        polygonArr.last().append(QPoint(x,y));
+
+    }
+    else
+    {
+        disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    }
+
+
 }
 void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {

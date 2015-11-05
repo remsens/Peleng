@@ -52,8 +52,10 @@ public slots:
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
 signals:
     void signalCurrentDataXY(uint,uint);
+
 private slots:
-    void mousePressOnColorMap(QMouseEvent* e);
+    void mousePressOnColorMap(QCPAbstractPlottable*it, QMouseEvent* e);
+    void mouseDblClickOnColorMap(QCPAbstractPlottable *it, QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
     void toggledActionInterpolation(bool flag){m_interplolate = flag;}
     void plotSpectr(uint x, uint y);
@@ -62,6 +64,8 @@ private slots:
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
     void createLinePlotterSlot();
+    void createPolygonSlot();
+    void addPolygonPoint(uint x,uint y);
     void prepareToHist();
     void contextMenuRequest(QPoint point);
     //! Слот для установки слайдеров при переключении канала
@@ -70,6 +74,7 @@ private slots:
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
+    void drawLine(uint x1, uint y1, uint x2, uint y2);
 
 
     Ui::Main2DWindow *ui;
@@ -78,6 +83,7 @@ private:
     QAction *pDeletePlotsAction;
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
+    QAction *pSelectAreaAction;
     QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
     QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на лайнплоттер окна и их удаления
     PlotterWindow *windowPlotter;
@@ -95,6 +101,9 @@ private:
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
     bool flagSlidersEnabledForSlots;
+    QVector<QPolygon> polygonArr;
+    bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (ставится в true после двойного щелчка на colormap)
+    bool flagDoubleClicked;
 };
 
 #endif // MAIN2DWINDOW_H
