@@ -4,6 +4,7 @@
 #include <QtAlgorithms>
 #include "../Library/GenericExc.h"
 #include <QDebug>
+#include <QMessageBox>
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QMainWindow(parent)
@@ -34,6 +35,11 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
         ui->menuSpectrum->addAction(m_actionSave);
         QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
     }
+    if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
+    {
+        ui->menuSpectrum->removeAction(ui->actionHold);
+        //ui->actionHold->destroyed();
+    }
 }
 
 PlotterWindow::~PlotterWindow()
@@ -46,22 +52,30 @@ void PlotterWindow::closeEvent(QCloseEvent *) {
    // emit closePlotterWindow(this);
 }
 
-void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
+void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
-    qDebug() << "plot spectr";
-    quint16 Chnls = ptrCube->GetCountofChannels();
-    qint16* pSpectrValues = new qint16[Chnls];
-    try{    //если можем получить точку гиперкуба
-        ptrCube->GetSpectrumPoint(dataX, dataY,pSpectrValues); // записали в pSpectrValues из гиперкуба
-        QList<double> Wawes;
-        Wawes = ptrCube->GetListOfChannels();
-        QVector<double> xArr(Chnls), yArr(Chnls);
-        for (quint16 i = 0; i < Chnls; ++i )
+    QString err;
+    try
+    {    //если можем получить точку гиперкуба
+        QVector<double> xArr, yArr;
+        if (m_attributes->GetExternalSpectrFlag())
         {
-           xArr[i] = Wawes[i];
-           yArr[i] = pSpectrValues[i];
+            xArr = m_attributes->GetXUnits();
+            yArr = m_attributes->GetYUnits();
+        } else
+        {
+            quint16 Chnls = m_cube->GetCountofChannels();
+            qint16* pSpectrValues = new qint16[Chnls];
+            m_cube->GetSpectrumPoint(dataX, dataY,pSpectrValues); // записали в pSpectrValues из гиперкуба
+            QList<double> Wawes;
+            Wawes.append(m_cube->GetListOfChannels());
+            for (quint16 i = 0; i < Chnls; ++i )
+            {
+               xArr.push_back(Wawes[i]);
+               yArr.push_back(pSpectrValues[i]);
+            }
+            delete [] pSpectrValues;
         }
-
         QVector<double> sortedYArr;
         sortedYArr = yArr;
         qSort(sortedYArr);
@@ -71,10 +85,16 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
             maxY = sortedYArr.last();
 
         QString grafName;
-        grafName.append("X:");
-        grafName.append(QString::number(dataX));
-        grafName.append(" Y:");
-        grafName.append(QString::number(dataY));
+        if (m_attributes->GetExternalSpectrFlag())
+        {
+            grafName.append(m_attributes->GetSpectrumDescription().at(0).title).append(m_attributes->GetSpectrumDescription().at(0).description);
+        } else
+        {
+            grafName.append("X:");
+            grafName.append(QString::number(dataX));
+            grafName.append(" Y:");
+            grafName.append(QString::number(dataY));
+        }
         m_customPlot->setInteraction(QCP::iRangeDrag , true);
         m_customPlot->setInteraction(QCP::iRangeZoom  , true);
 
@@ -99,18 +119,49 @@ void PlotterWindow::plotSpectr(HyperCube *ptrCube, uint dataX, uint dataY)
         m_customPlot->graph()->setData(xArr,yArr);
         m_customPlot->xAxis->setRange(xArr.first(),xArr.last());
         m_customPlot->yAxis->setRange(minY,maxY);
-        m_customPlot->xAxis->setLabel("Длина волны, нм");
-        m_customPlot->yAxis->setLabel("Яркость");
-
+        if (m_attributes->GetExternalSpectrFlag())
+        {
+            switch (m_attributes->GetFormatExternalSpectr())
+            {
+                case 1: {
+                    // aster
+                    for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
+                    {
+                        if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
+                        {
+                            m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                        } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
+                        {
+                            m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                        }
+                    }
+                    break;
+                }
+                default: {
+                   m_customPlot->xAxis->setLabel("Длина волны, нм");
+                   m_customPlot->yAxis->setLabel("Яркость");
+                   break;
+                }
+            }
+        } else
+        {
+            m_customPlot->xAxis->setLabel("Длина волны, нм");
+            m_customPlot->yAxis->setLabel("Яркость");
+        }
         m_customPlot->replot();
         autoTickCountX = m_customPlot->xAxis->autoTickCount();
         autoTickCountY = m_customPlot->yAxis->autoTickCount();
     } catch(const GenericExc& exc)
     {
-        m_customPlot->replot();
+        //m_customPlot->replot();
+        err = exc.GetWhat();
     } catch(...)
     {
-        m_customPlot->replot();
+       err = tr("Неизвестная ошибка");
+    }
+    if (!err.isEmpty())
+    {
+        QMessageBox::critical(this, "Ошибка", err);
     }
 }
 

@@ -61,6 +61,7 @@ GLWidget::~GLWidget()
     SidesDestructor();
     delete pContextMenu;
     delete pPlotAction;
+    delete pAddSpectrAction;
     //delete pDeletePlotsAction;
     delete program;
    // deleteSpectrWindows();
@@ -415,6 +416,7 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     m_attributes->ClearList();
     m_attributes->SetPoint(x, y, z);
+    m_attributes->SetExternalSpectrFlag(false);
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
 
 }
@@ -514,14 +516,22 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
     }
 }
+
+void GLWidget::addSpectr()
+{
+    m_attributes->SetModeLib(1);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pHyperCube , m_attributes);
+}
+
 void GLWidget::createMenus()
 {
-
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
+    pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
     {
         pContextMenu->addAction(pPlotAction);
@@ -538,6 +548,11 @@ void GLWidget::createMenus()
         pContextMenu->addAction(pPlotLineAction);
         connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
         connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        pContextMenu->addAction(pAddSpectrAction);
+        connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
     }
 }
 

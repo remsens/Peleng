@@ -42,6 +42,12 @@ public:
     const QVector<double>& GetXUnits() const;
     const QVector<double>& GetYUnits() const;
     const QList<Attributes::DescriptionSpectr>& GetSpectrumDescription() const;
+
+    //SpectrPlotter
+    void SetExternalSpectrFlag(bool externalSpectr);
+    bool GetExternalSpectrFlag() const;
+    void SetExternalSpectrFormat(int format);
+    int  GetFormatExternalSpectr() const;
     // общее
     const QList<Point>& GetPointsList() const;
     const QMap<QString, ProcessingPluginsInterface*>& GetAvailablePlugins() const;
@@ -62,6 +68,9 @@ private:
     QVector<double> m_XUnits;
     QVector<double> m_YUnits;
     QList<DescriptionSpectr> m_descriptionSpectr;
+
+    bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
+    int m_formatExternalSpectr; // 0 - peleng; 1 - aster
 };
 
 #endif // ATTRIBUTES_H

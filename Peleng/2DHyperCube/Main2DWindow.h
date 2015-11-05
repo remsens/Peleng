@@ -46,6 +46,7 @@ private slots:
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
     void createLinePlotterSlot();
     void prepareToHist();
+    void addSpectr();
     void contextMenuRequest(QPoint point);
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
@@ -57,6 +58,7 @@ private:
    // QAction *pDeletePlotsAction;
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
+    QAction* pAddSpectr;
     bool firstWindowPlotter;
     bool linePlotterIsActive;
     HyperCube* m_pCube;
