@@ -49,7 +49,7 @@ PlotterWindow::~PlotterWindow()
 }
 
 void PlotterWindow::closeEvent(QCloseEvent *) {
-   // emit closePlotterWindow(this);
+    emit closePlotterWindow(this);
 }
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)

@@ -18,7 +18,8 @@ public:
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);
-
+public slots:
+    void OnClose(PlotterWindow *plotterWindow);
 private:
     QList<PlotterWindow*> m_windowList;
     //PlotterWindow* m_plotterWindow;

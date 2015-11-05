@@ -2,6 +2,7 @@
 #include <qDebug>
 
 #include <QList>
+
 SpectrPlugin::SpectrPlugin(QObject* parent)
     :QObject(parent)
 {
@@ -13,6 +14,16 @@ SpectrPlugin::~SpectrPlugin()
    m_windowList.clear();
 }
 
+void SpectrPlugin::OnClose(PlotterWindow* plotterWindow)
+{
+    for (int i = 0; i < m_windowList.size(); i++)
+    {
+        if (m_windowList.at(i) == plotterWindow)
+        {
+            m_windowList.removeAt(i);
+        }
+    }
+}
 void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
 {
     bool plot = false;
@@ -41,6 +52,7 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
     if (!plot)
     {
         PlotterWindow* plotterWindow = new PlotterWindow(cube, attr);
+        QObject::connect(plotterWindow, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(OnClose(PlotterWindow*)));
          if (attr->GetExternalSpectrFlag())
          {
              // передавать, отображать подписи осей, или нет
