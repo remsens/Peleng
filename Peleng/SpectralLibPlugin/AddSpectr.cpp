@@ -13,6 +13,7 @@ AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     , m_attr(attr)
 {
     m_ui->setupUi(this);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     QObject::connect(m_ui->pushButton_import, SIGNAL(clicked()), this, SLOT(OnPushButtonImportClicked()));
 }
 
@@ -47,6 +48,7 @@ void AddSpectr::OnPushButtonImportClicked()
         possibleTitles.append("Last X Value:");
         possibleTitles.append("Number of X Values:");
         possibleTitles.append("Additional Information:");
+        m_attr->SetExternalSpectrFormat(1);
 
     } else if (m_ui->radioButton_owner->isChecked())
     {
@@ -61,6 +63,7 @@ void AddSpectr::OnPushButtonImportClicked()
         possibleTitles.append("Первый столбец:");
         possibleTitles.append("Второй столбец:");
         possibleTitles.append("Дополнительная информация:");
+        m_attr->SetExternalSpectrFormat(0);
 
     }
     QString filePath = QFileDialog::getOpenFileName(this);
@@ -197,6 +200,11 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
     toMessageBox.append("Y Units size: ");
     toMessageBox.append(QString::number(m_attr->GetYUnits().size()));
     QMessageBox::information(this, "Информация о загруженном спектре", toMessageBox);
+    if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
+    {
+        m_attr->SetExternalSpectrFlag(true);
+        m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
+    }
     } catch (const GenericExc& exc)
     {
         err = exc.GetWhat();

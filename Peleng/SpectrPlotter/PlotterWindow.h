@@ -17,9 +17,9 @@ class PlotterWindow : public QMainWindow
 
 public:
     explicit PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
-    ~PlotterWindow();
+    virtual ~PlotterWindow();
 
-    void plotSpectr(HyperCube* ptrCube, uint dataX, uint dataY );
+    void plotSpectr(uint dataX = 0, uint dataY = 0 );
     bool getIsHold(){return m_hold;}
 
     void chooseStep();

@@ -77,9 +77,7 @@ public slots:
     void sliderY2ValueChanged(int value);
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
-   // void deleteSpectrWindows();
-    //void DeleteSpectrWindow(PlotterWindow* pl);
-    //void DeleteLineWindow(LinePlotterWindow* lw);
+    void addSpectr();
 private slots:
 
     void prepareToPlotSpectr();
@@ -136,6 +134,7 @@ private:
     QAction* pSetFinishAction;
     QAction* pPlotLineAction;
     QAction* p2DCubeAction;
+    QAction* pAddSpectrAction;
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;

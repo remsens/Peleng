@@ -19,6 +19,7 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
     QObject::connect(m_ui->pushButton_save, SIGNAL(clicked()), this, SLOT(SaveSpectr()));
+    // если файл extern. то можно заполнить поля
 }
 
 CreateSpectr::~CreateSpectr()
@@ -29,9 +30,17 @@ CreateSpectr::~CreateSpectr()
 void CreateSpectr::SaveSpectr()
 {
     // получили вектор данных для записи
-    QVector<double> data;
-    m_cube->GetSpectrumPoint(m_attributes->GetPointsList().at(0).x, m_attributes->GetPointsList().at(0).y, data);
-    QList<double> listWaves = m_cube->GetListOfChannels();
+    QVector<double> data; QList<double> listWaves;
+    if (m_attributes->GetExternalSpectrFlag())
+    {
+        listWaves = m_attributes->GetXUnits().toList();
+        data = m_attributes->GetYUnits();
+    } else
+    {
+        m_cube->GetSpectrumPoint(m_attributes->GetPointsList().at(0).x, m_attributes->GetPointsList().at(0).y, data);
+        listWaves = m_cube->GetListOfChannels();
+    }
+
     // проверяем, все ли поля заполнены (не нужно, можно оставлять пустыми).
     QString filePathBase = "";
     if (!m_ui->lineEdit_name->text().isEmpty())

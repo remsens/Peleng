@@ -8,5 +8,6 @@
         <file>iconsCube/start_flag.png</file>
         <file>iconsCube/PlotterLogo.ico</file>
         <file>iconsCube/Heat Map-50.png</file>
+        <file>iconsCube/CreateSpectr.png</file>
     </qresource>
 </RCC>

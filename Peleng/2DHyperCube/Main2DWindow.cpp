@@ -261,7 +261,7 @@ void Main2DWindow::createMenus()
 
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction(QIcon("qrc:/icons2Dcube/icons/Heat Map-50.png"),"Гистограмма",this);
-
+    pAddSpectr = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"),"Загрузить спектр",this);
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
     {
         pContextMenu->addAction(pPlotAction);
@@ -279,13 +279,26 @@ void Main2DWindow::createMenus()
         connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
         connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     }
-
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        pContextMenu->addAction(pAddSpectr);
+        connect(pAddSpectr,SIGNAL(triggered()),SLOT(addSpectr()));
+    }
 }
+
 void Main2DWindow::plotSpectr(uint x, uint y)
 {
     m_attributes->ClearList();
     m_attributes->SetPoint(x, y, 0);
+    m_attributes->SetExternalSpectrFlag(false);
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
+}
+
+void Main2DWindow::addSpectr()
+{
+    m_attributes->SetModeLib(1);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pCube , m_attributes);
 }
 
 void Main2DWindow::prepareToPlotSpectr()

@@ -109,3 +109,23 @@ const QMap<QString, ProcessingPluginsInterface *> &Attributes::GetAvailablePlugi
 {
     return m_availablePlugins;
 }
+
+void Attributes::SetExternalSpectrFlag(bool externalSpectr)
+{
+    m_externalSpectr = externalSpectr;
+}
+
+bool Attributes::GetExternalSpectrFlag() const
+{
+    return m_externalSpectr;
+}
+
+int  Attributes::GetFormatExternalSpectr() const
+{
+    return m_formatExternalSpectr;
+}
+
+void Attributes::SetExternalSpectrFormat(int format)
+{
+    m_formatExternalSpectr = format;
+}
