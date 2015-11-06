@@ -285,29 +285,32 @@ void Main2DWindow::finishPolygonCreation()
     setCursor(QCursor(Qt::ArrowCursor));
     this->setToolTip("");
     drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
-
+    QImage im = maskFromPolygons(polygonArr);
+    QLabel *label = new QLabel();
+    label->setPixmap(QPixmap::fromImage(im.mirrored(false,true).scaled(900,300)));
+    label->show();
 }
 
-QBitmap Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
+QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
 {
-    //QBitmap bitMap(rows,cols);
-
             // из image в pixmap QPixmap::fromImage()
+    QElapsedTimer timer;
+    timer.start();
     QImage mask(rows,cols,QImage::Format_Mono);
-    mask.fill();
+    mask.fill(0);
     for(int i = 0; i < rows; ++i)
+    {
         for(int j = 0; j < cols; ++j)
         {
             foreach(QPolygon polygon, polygonArr)
             {
                 if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
                     mask.setPixel(i,j,1);
-                else
-                    mask.setPixel(i,j,0);
             }
         }
-
-
+    }
+    qDebug()<<"create bit picture"<<timer.elapsed();
+    return mask;
 }
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
 {

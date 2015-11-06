@@ -85,8 +85,8 @@ private:
     void finishPolygonCreation();
     //! функция,создающая маску для канала по полигону
     //! @param polygonArr - вектор полигонов, по которым создается маска
-    //! @return - битовая маска
-    QBitmap maskFromPolygons(QVector<QPolygon> polygonArr);
+    //! @return - битовое изображение
+    QImage maskFromPolygons(QVector<QPolygon> polygonArr);
 
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
