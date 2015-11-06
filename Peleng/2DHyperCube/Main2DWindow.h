@@ -27,6 +27,7 @@ public:
     //! Функция выделения памяти и инициализации нулями массива ChnlLimits
     void initArrChanLimits();
     void setInitCustomplotSettings();
+
 public slots:
     //! Слот отрисовки данных канала гиперкуба
     //! @param chan - номер канала
@@ -74,8 +75,14 @@ private slots:
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
+    //! функция добавления линии на customPlot
+    //! @param x1 - Х начала линии
+    //! @param x2 - У начала линии
+    //! @param y1 - Х конца линии
+    //! @param y1 - У конца линии
     void drawLine(uint x1, uint y1, uint x2, uint y2);
-
+    //! функция, обрабатывающая двойной клик во время создания полигона
+    void PolygonDblClick();
 
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
