@@ -81,8 +81,12 @@ private:
     //! @param y1 - Х конца линии
     //! @param y1 - У конца линии
     void drawLine(uint x1, uint y1, uint x2, uint y2);
-    //! функция, обрабатывающая двойной клик во время создания полигона
-    void PolygonDblClick();
+    //! функция,завершающая создание полигона
+    void finishPolygonCreation();
+    //! функция,создающая маску для канала по полигону
+    //! @param polygonArr - вектор полигонов, по которым создается маска
+    //! @return - битовая маска
+    QBitmap maskFromPolygons(QVector<QPolygon> polygonArr);
 
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
@@ -109,7 +113,7 @@ private:
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
     bool flagSlidersEnabledForSlots;
     QVector<QPolygon> polygonArr;
-    bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (ставится в true после двойного щелчка на colormap)
+    bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (т.е. полигон не в процессе построения)
     bool flagDoubleClicked;
 };
 

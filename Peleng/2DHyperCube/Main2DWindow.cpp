@@ -16,7 +16,7 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     m_dataX(0), m_dataY(0),
     m_interplolate(false),
     flagSlidersEnabledForSlots(false),
-    flagPolygonIsCreated(false),
+    flagPolygonIsCreated(true),
     flagDoubleClicked(false)
 
 {
@@ -277,7 +277,7 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
 }
 
-void Main2DWindow::PolygonDblClick()
+void Main2DWindow::finishPolygonCreation()
 {
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     flagPolygonIsCreated = true;
@@ -285,11 +285,34 @@ void Main2DWindow::PolygonDblClick()
     setCursor(QCursor(Qt::ArrowCursor));
     this->setToolTip("");
     drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
+
 }
 
+QBitmap Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
+{
+    //QBitmap bitMap(rows,cols);
+
+            // из image в pixmap QPixmap::fromImage()
+    QImage mask(rows,cols,QImage::Format_Mono);
+    mask.fill();
+    for(int i = 0; i < rows; ++i)
+        for(int j = 0; j < cols; ++j)
+        {
+            foreach(QPolygon polygon, polygonArr)
+            {
+                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                    mask.setPixel(i,j,1);
+                else
+                    mask.setPixel(i,j,0);
+            }
+        }
+
+
+}
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
 {
-    PolygonDblClick();
+    if (!flagPolygonIsCreated)
+        finishPolygonCreation();
     qDebug()<<"2x clicked";
 
 }
@@ -421,6 +444,7 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
         //Сюда вроде бы и не заходит почему-то никогда
         this->setToolTip("");
         disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+        qDebug()<<"func addPolygonPoint block Else";
     }
 
 
