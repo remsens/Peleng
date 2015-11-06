@@ -47,6 +47,9 @@ private:
     HyperCube* m_cube;
     Attributes* m_attributes;
     QAction* m_actionSave;
+    QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
+    QVector<double> m_xArr;
+    QVector<double> m_yArr;
 
 };
 

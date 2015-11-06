@@ -20,6 +20,58 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, true);
     QObject::connect(m_ui->pushButton_save, SIGNAL(clicked()), this, SLOT(SaveSpectr()));
     // если файл extern. то можно заполнить поля
+    if (m_attributes->GetExternalSpectrFlag())
+    {
+        for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
+        {
+            // через case нельзя, т.к. нужно сравнивать без учета регистра
+            if (m_attributes->GetSpectrumDescription().at(i).title.compare("Название:", Qt::CaseInsensitive) == 0 ||
+                m_attributes->GetSpectrumDescription().at(i).title.compare("Name:", Qt::CaseInsensitive) == 0    )
+            {
+                m_ui->lineEdit_name->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Тип:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Type:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_type->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Класс:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Class:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_class->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Подкласс:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Subclass:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_subclass->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Владелец:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Qwner:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_owner->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Происхождение:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Origin:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_origin->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Описание:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Description:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_description->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Измеряемая величина:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Measurement:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_measurements->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Первый столбец:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("First column:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_firstColumn->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Второй столбец:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Second column:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_secondColumn->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Дополнительная информация:", Qt::CaseInsensitive) == 0 ||
+                       m_attributes->GetSpectrumDescription().at(i).title.compare("Additional information:", Qt::CaseInsensitive) == 0)
+            {
+                m_ui->lineEdit_addInfo->setText(m_attributes->GetSpectrumDescription().at(i).description);
+            }
+        }
+    }
 }
 
 CreateSpectr::~CreateSpectr()
@@ -31,16 +83,8 @@ void CreateSpectr::SaveSpectr()
 {
     // получили вектор данных для записи
     QVector<double> data; QList<double> listWaves;
-    if (m_attributes->GetExternalSpectrFlag())
-    {
-        listWaves = m_attributes->GetXUnits().toList();
-        data = m_attributes->GetYUnits();
-    } else
-    {
-        m_cube->GetSpectrumPoint(m_attributes->GetPointsList().at(0).x, m_attributes->GetPointsList().at(0).y, data);
-        listWaves = m_cube->GetListOfChannels();
-    }
-
+    listWaves = m_attributes->GetXUnits().toList();
+    data = m_attributes->GetYUnits();
     // проверяем, все ли поля заполнены (не нужно, можно оставлять пустыми).
     QString filePathBase = "";
     if (!m_ui->lineEdit_name->text().isEmpty())

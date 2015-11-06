@@ -31,6 +31,8 @@ public:
     bool GetModeLib() const;
     void SetXUnit(double xUnit);
     void SetYUnit(double yUnit);
+    void SetXUnit(QVector<double>& xUnits);
+    void SetYUnit(QVector<double>& yUnits);
     void ClearUnitsLists();
     struct DescriptionSpectr
     {
@@ -38,7 +40,7 @@ public:
         QString description;
     };
     void SetDescriptionItem(const QString& keyTitle, const QString& value);
-
+    void SetDescriptionSpectr(QList<DescriptionSpectr>& ds);
     const QVector<double>& GetXUnits() const;
     const QVector<double>& GetYUnits() const;
     const QList<Attributes::DescriptionSpectr>& GetSpectrumDescription() const;

@@ -59,7 +59,7 @@ void AddSpectr::OnPushButtonImportClicked()
         possibleTitles.append("Владелец:");
         possibleTitles.append("Происхождение:");
         possibleTitles.append("Описание:");
-        possibleTitles.append("Измерения:");
+        possibleTitles.append("Измеряемая величина:");
         possibleTitles.append("Первый столбец:");
         possibleTitles.append("Второй столбец:");
         possibleTitles.append("Дополнительная информация:");
@@ -92,6 +92,8 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         // Поэтому смотрим по последнему элементу в possibleTitles;
         bool flagEndDescription = false;
         bool startData = false;
+        // костыль, чтобы отличать класс от подкласса
+       // bool classTitle = false;
         while (!m_inStream->atEnd())
         {
             QString line = m_inStream->readLine();
@@ -116,6 +118,11 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                 {
                     if (line.contains(possibleTitles.at(i), Qt::CaseInsensitive))
                     {
+                        if (line.at(0) != possibleTitles.at(i)[0])
+                        {
+                            i++;
+
+                        }
                         // закинуть предыдущие и начать новые
                        if (i == possibleTitles.size()-1)
                        {
