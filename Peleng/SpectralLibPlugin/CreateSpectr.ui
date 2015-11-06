@@ -212,7 +212,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Измерения</string>
+      <string>Измеряемая величина</string>
      </property>
     </widget>
    </item>

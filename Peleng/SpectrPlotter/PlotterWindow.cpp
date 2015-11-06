@@ -40,6 +40,10 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
         ui->menuSpectrum->removeAction(ui->actionHold);
         //ui->actionHold->destroyed();
     }
+    if (m_attributes->GetExternalSpectrFlag())
+    {
+        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
+    }
 }
 
 PlotterWindow::~PlotterWindow()
@@ -57,11 +61,10 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
     QString err;
     try
     {    //если можем получить точку гиперкуба
-        QVector<double> xArr, yArr;
         if (m_attributes->GetExternalSpectrFlag())
         {
-            xArr = m_attributes->GetXUnits();
-            yArr = m_attributes->GetYUnits();
+            m_xArr = m_attributes->GetXUnits();
+            m_yArr = m_attributes->GetYUnits();
         } else
         {
             quint16 Chnls = m_cube->GetCountofChannels();
@@ -71,13 +74,13 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             Wawes.append(m_cube->GetListOfChannels());
             for (quint16 i = 0; i < Chnls; ++i )
             {
-               xArr.push_back(Wawes[i]);
-               yArr.push_back(pSpectrValues[i]);
+               m_xArr.push_back(Wawes[i]);
+               m_yArr.push_back(pSpectrValues[i]);
             }
             delete [] pSpectrValues;
         }
         QVector<double> sortedYArr;
-        sortedYArr = yArr;
+        sortedYArr = m_yArr;
         qSort(sortedYArr);
         if (sortedYArr.first() < minY )
             minY = sortedYArr.first();
@@ -116,8 +119,8 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
            m_customPlot->graph()->setPen(QPen(color));
         }
         m_customPlot->graph()->setName(grafName);
-        m_customPlot->graph()->setData(xArr,yArr);
-        m_customPlot->xAxis->setRange(xArr.first(),xArr.last());
+        m_customPlot->graph()->setData(m_xArr, m_yArr);
+        m_customPlot->xAxis->setRange(m_xArr.first(),m_xArr.last());
         m_customPlot->yAxis->setRange(minY,maxY);
         if (m_attributes->GetExternalSpectrFlag())
         {
@@ -184,6 +187,10 @@ void PlotterWindow::on_actionHold_toggled(bool value)
 void PlotterWindow::on_actionSave_toggled()
 {
     m_attributes->SetModeLib(0);
+    m_attributes->ClearList();
+    m_attributes->SetXUnit(m_xArr);
+    m_attributes->SetYUnit(m_yArr);
+    m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
 }
 

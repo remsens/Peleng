@@ -48,6 +48,18 @@ void Attributes::SetYUnit(double yUnit)
     m_YUnits.push_back(yUnit);
 }
 
+void Attributes::SetXUnit(QVector<double>& xUnits)
+{
+    m_XUnits.clear();
+    m_XUnits.append(xUnits);
+}
+
+void Attributes::SetYUnit(QVector<double>& yUnits)
+{
+    m_YUnits.clear();
+    m_YUnits.append(yUnits);
+}
+
 void Attributes::ClearUnitsLists()
 {
     m_XUnits.clear();
@@ -60,6 +72,12 @@ void Attributes::SetDescriptionItem(const QString& keyTitle, const QString& valu
     DescriptionSpectr ds;
     ds.title = keyTitle;
     ds.description = value;
+    m_descriptionSpectr.append(ds);
+}
+
+void Attributes::SetDescriptionSpectr(QList<DescriptionSpectr>& ds)
+{
+    m_descriptionSpectr.clear();
     m_descriptionSpectr.append(ds);
 }
 
