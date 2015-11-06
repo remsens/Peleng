@@ -277,7 +277,7 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
 }
 
-void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
+void Main2DWindow::PolygonDblClick()
 {
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     flagPolygonIsCreated = true;
@@ -285,6 +285,11 @@ void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
     setCursor(QCursor(Qt::ArrowCursor));
     this->setToolTip("");
     drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
+}
+
+void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
+{
+    PolygonDblClick();
     qDebug()<<"2x clicked";
 
 }
@@ -324,10 +329,10 @@ void Main2DWindow::createMenus()
 void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
 {
     QCPItemLine *line = new QCPItemLine(ui->customPlot);
-    line->start->setCoords(x2,y2);
-    line->end->setCoords(x1,y1);
+    line->start->setCoords(x1,y1);
+    line->end->setCoords(x2,y2);
     line->setPen(QPen(Qt::red));
-//    ui->customPlot->addItem(line);
+    ui->customPlot->addItem(line);
 }
 
 void Main2DWindow::setInitSliders(int chan)
@@ -399,7 +404,6 @@ void Main2DWindow::createPolygonSlot()
     polygonArr.append(polygon);
     flagPolygonIsCreated = false;
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-    //polygonPoints.clear();
 
 }
 
