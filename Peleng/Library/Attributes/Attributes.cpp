@@ -147,3 +147,13 @@ void Attributes::SetExternalSpectrFormat(int format)
 {
     m_formatExternalSpectr = format;
 }
+
+void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
+{
+    m_noiseAlg = alg;
+}
+
+NoiseAlgorithm Attributes::GetNoiseAlg() const
+{
+    return m_noiseAlg;
+}

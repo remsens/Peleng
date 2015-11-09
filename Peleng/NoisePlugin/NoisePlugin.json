@@ -1,0 +1,5 @@
+{
+    "Type" : "ProcessingFormat",
+    "Name" : "Noise Remover",
+    "Description" : "Remove noises from images"
+}

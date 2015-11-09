@@ -12,6 +12,9 @@
 class Attributes;
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
 
+enum NoiseAlgorithm {
+    Median2D, Median1D
+};
 
 class Attributes
 {
@@ -50,10 +53,15 @@ public:
     bool GetExternalSpectrFlag() const;
     void SetExternalSpectrFormat(int format);
     int  GetFormatExternalSpectr() const;
+
     // общее
     const QList<Point>& GetPointsList() const;
     const QMap<QString, ProcessingPluginsInterface*>& GetAvailablePlugins() const;
 
+    // шумы
+
+    void SetNoiseAlg(NoiseAlgorithm alg);
+    NoiseAlgorithm GetNoiseAlg() const;
 private:
     Attributes();
     Attributes(const Attributes&);
@@ -73,6 +81,8 @@ private:
 
     bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
     int m_formatExternalSpectr; // 0 - peleng; 1 - aster
+
+    NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
 };
 
 #endif // ATTRIBUTES_H
