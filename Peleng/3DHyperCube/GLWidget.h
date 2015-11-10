@@ -86,6 +86,7 @@ private:
     void makeSidesImages(int chanNum);
     void SidesDestructor();
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
+    void findAbsoluteMinMax();
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
     void createMenus();
@@ -138,7 +139,7 @@ private:
     int Ch1, Ch2, R1, R2, C1, C2; // хранят value слайдеров
     int prevChN, prevRowsN ;
     int minCMap,maxCMap;
-
+    int absMin,absMax;
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data

@@ -435,20 +435,10 @@ void Main2DWindow::createPolygonSlot()
 
 void Main2DWindow::addPolygonPoint(uint x,uint y)
 {
-    if (!flagPolygonIsCreated)
-    {
-        if (polygonArr.last().size() > 0)
-            drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
-        polygonArr.last().append(QPoint(x,y));
-
-    }
-    else
-    {
-        //Сюда вроде бы и не заходит почему-то никогда
-        this->setToolTip("");
-        disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-        qDebug()<<"func addPolygonPoint block Else";
-    }
+    //раньше была проверка на flagPolygonIsCreated, но уже не надо
+    if (polygonArr.last().size() > 0)
+        drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
+    polygonArr.last().append(QPoint(x,y));
 
 
 }

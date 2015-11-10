@@ -7,6 +7,7 @@ ContrastWindow::ContrastWindow(int initMin, int initMax, QWidget *parent) :
     ui(new Ui::ContrastWindow)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/IconsCube/iconsCube/contrast.png"));
     MIN = initMin;
     MAX = initMax;
 

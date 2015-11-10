@@ -39,6 +39,7 @@ GLWidget::GLWidget(HyperCube* ptrCube,QWidget *parent)
     Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
     prevChN = CHNLS, prevRowsN = ROWS;
     findMinMaxforColorMap(0.02,0.95);
+    findAbsoluteMinMax();
     createCubeSides();
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
@@ -414,7 +415,7 @@ void GLWidget::run2DCube()
 
 void GLWidget::contrast()
 {
-     ContrastWindow *contrastTool = new ContrastWindow(minCMap,maxCMap);//надо где-то найти настоящий мин/макс, т.к. эти - не абсолютны
+     ContrastWindow *contrastTool = new ContrastWindow(absMin,absMax);//надо где-то найти настоящий мин/макс, т.к. эти - не абсолютны
      contrastTool->show();
      connect(contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
 }
@@ -460,7 +461,6 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
     windowPlotter->plotSpectr(m_pHyperCube,x,y);
     windowPlotter->activateWindow();
     windowPlotter->show();
-
 }
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
@@ -603,7 +603,7 @@ void GLWidget::createMenus()
     pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
-    pContrastAction = new QAction("Контрастирование",this);
+    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pPlotLineAction);
@@ -1057,6 +1057,27 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
         qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
     }
     delete[] dataTemp;
+}
+
+void GLWidget::findAbsoluteMinMax()
+{
+    int min =  32767;
+    int max = -32767;
+    QElapsedTimer timer3;
+    timer3.start();
+    for (int i = 0; i < CHNLS; ++i)
+    {
+        for (int j = 0; j < ROWS*COLS; ++j)
+        {
+            if(data[i][j] < min)
+                min = data[i][j];
+            if (data[i][j] > max)
+                max = data[i][j];
+        }
+    }
+    absMin = min;
+    absMax = max;
+    qDebug()<<"find abslolute min max in data: "<<timer3.elapsed();
 }
 
 int cmp(const void *a, const void *b)
