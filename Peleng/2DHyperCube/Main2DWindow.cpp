@@ -130,8 +130,8 @@ void Main2DWindow::initArrChanLimits()
 
     for (int i = 0; i < chnls; ++i)
     {
-        ChnlLimits[i][0] = 0;
-        ChnlLimits[i][1] = 0;
+        ChnlLimits[i][0] = -32767;
+        ChnlLimits[i][1] = -32767;
     }
 }
 
@@ -184,7 +184,7 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    if(ChnlLimits[chan][0] == 0 || ChnlLimits[chan][1] == 0 ) //мб переделать, что если после findMinMaxforColorMap minCMap = 0
+    if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 ) //мб переделать, что если после findMinMaxforColorMap minCMap = 0
     {
         int minCMap, maxCMap;
         findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
@@ -309,7 +309,22 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
             }
         }
     }
+
     qDebug()<<"create bit picture"<<timer.elapsed();
+
+    //тест
+    QBitmap bitmap(QPixmap::fromImage(mask)); //битмэп из пиксмэпа(а он из qimage)
+    QPixmap qPixmap(bitmap);
+    qPixmap.setMask(bitmap);
+    QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
+    pixItem->setPixmap(qPixmap);
+
+
+    pixItem->setScaled(true);
+    ui->customPlot->addItem(pixItem);
+    pixItem->topLeft->setCoords(0,0);
+    pixItem->bottomRight->setCoords(600,200);
+    //конец теста
     return mask;
 }
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)

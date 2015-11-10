@@ -36,7 +36,6 @@ void ContrastWindow::minChngdSlot(int val)
         emit minMaxChanged(MIN,MAX);
     else
         emit minMaxChanged(MAX,MIN);
-     qDebug()<<val;
 }
 
 void ContrastWindow::maxChngdSlot(int val)
