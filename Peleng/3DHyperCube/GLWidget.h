@@ -50,6 +50,8 @@ private slots:
     void finishIsClicked();
     void createLinePlotterSlot();
     void run2DCube();
+    void contrast();
+    void repaintWithContrast(int min, int max);
 
 signals:
     void clicked();
@@ -85,7 +87,7 @@ private:
     void SidesDestructor();
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
     QImage from2Dmass2QImage(qint16 *data);
-    QImage from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,bool gray = false);
+    QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
     void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
@@ -98,6 +100,7 @@ private:
     QAction* pSetFinishAction;
     QAction* pPlotLineAction;
     QAction* p2DCubeAction;
+    QAction* pContrastAction;
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;

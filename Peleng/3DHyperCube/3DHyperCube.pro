@@ -30,7 +30,8 @@ HEADERS       = \
     #PlotterAlongLine.h
     ../Library/PluginAttributes/ChannelPluginAttributes.h \
     #../HistPlotter/histplugin.h
-    ../2DHyperCube/hist/histplugin.h
+    ../2DHyperCube/hist/histplugin.h \
+    ContrastWindow.h
 
 SOURCES       = \
     CubePlugin.cpp \
@@ -46,7 +47,8 @@ SOURCES       = \
     ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
     #../HistPlotter/histplugin.cpp
     #PlotterAlongLine.cpp
-    ../2DHyperCube/hist/histplugin.cpp
+    ../2DHyperCube/hist/histplugin.cpp \
+    ContrastWindow.cpp
 
 
 DISTFILES += \
@@ -55,7 +57,8 @@ DISTFILES += \
 FORMS += \
     mainwindow.ui \
     ../SpectrPlotter/PlotterWindow.ui \
-    ../2DHyperCube/Main2DWindow.ui
+    ../2DHyperCube/Main2DWindow.ui \
+    ContrastWindow.ui
 
 
 SUBDIRS += \

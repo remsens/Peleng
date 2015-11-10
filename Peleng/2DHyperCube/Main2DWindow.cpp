@@ -44,7 +44,6 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
 
     connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
-    //connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
@@ -87,6 +86,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
     QSize mainSize = this->size();
     this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
+
 //    ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
 //    ui->customPlot->resize(CPlotSize.width() ,CPlotSize.width() * cols / rows);
 }

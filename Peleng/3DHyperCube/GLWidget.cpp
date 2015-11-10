@@ -7,7 +7,7 @@
 #include <QDebug>
 #include "../Library/PluginAttributes/ChannelPluginAttributes.h"
 #include "../HistPlotter/histplugin.h"
-
+#include "ContrastWindow.h"
 using namespace std;
 
 int cmp(const void *a, const void *b);
@@ -412,6 +412,41 @@ void GLWidget::run2DCube()
     window2DCube->show();
 }
 
+void GLWidget::contrast()
+{
+     ContrastWindow *contrastTool = new ContrastWindow(minCMap,maxCMap);//надо где-то найти настоящий мин/макс, т.к. эти - не абсолютны
+     contrastTool->show();
+     connect(contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+}
+
+void GLWidget::repaintWithContrast(int min, int max)
+{
+    int nCHNLS = Ch2 - Ch1 + 1;
+    int nROWS = R2 - R1 + 1;
+    int nCOLS = C2 - C1 + 1;
+    QTransform rtt270;
+    QTransform rtt90;
+    QTransform rtt180;
+    rtt270.rotate(270);
+    rtt90.rotate(90);
+    rtt180.rotate(180);
+
+
+    makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
+    textures[0]->destroy();
+    textures[2]->destroy();
+    textures[3]->destroy();
+    textures[5]->destroy();
+
+
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,min,max).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,min,max).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,min,max).transformed(rtt270));
+    update();
+
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
@@ -568,16 +603,19 @@ void GLWidget::createMenus()
     pDeletePlotsAction = new QAction(QIcon(":/IconsCube/iconsCube/close.ico"),"Закрыть окна спектров",this);
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
+    pContrastAction = new QAction("Контрастирование",this);
     pContextMenu->addAction(pPlotAction);
     pContextMenu->addAction(pDeletePlotsAction);
     pContextMenu->addAction(pPlotLineAction);
     pContextMenu->addAction(p2DCubeAction);
+    pContextMenu->addAction(pContrastAction);
     connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
     connect(pDeletePlotsAction,SIGNAL(triggered()),SLOT(deleteSpectrWindows()));
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
     connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
 
 }
 
@@ -763,12 +801,12 @@ void GLWidget::makeTextures()
     }
 
 
-    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
-    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
-    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
-    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //
-    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270)); //наполовину видная грань
-    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //пустая грань
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270));
 
 }
 
@@ -957,7 +995,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
 }
 
 //передаем, например  sidesDataCH_CO[0]
-QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
+QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
     QCustomPlot customPlot;
@@ -986,7 +1024,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
     else
         colorMap->setGradient(QCPColorGradient::gpSpectrum);
     colorMap->rescaleDataRange(true);
-    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
+    colorMap->setDataRange(QCPRange(minContrast,maxContrast));
     customPlot.rescaleAxes();
     customPlot.replot();
     QPixmap pixmap = customPlot.toPixmap(dim1,dim2);
