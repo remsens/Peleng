@@ -106,7 +106,7 @@ void MainWindow::LoadFile()
         if (m_pluginsControl->GetProcessingPlugins().size() > 0)
         {
 
-            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
+            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Rgb Image UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
             m_pelengPlugin->Execute(cube, Attributes::I());
         }

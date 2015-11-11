@@ -7,6 +7,7 @@
 #include "GenericExc.h"
 #include "Utils/typeconvertor.h"
 
+
 HyperCube::HyperCube()
 {
 

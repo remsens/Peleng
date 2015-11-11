@@ -1,0 +1,6 @@
+{
+    "Type" : "ProcessingFormat",
+    "Name" : "Rgb Image UI",
+    "Description" : "Rgb Image",
+    "Extinsion" : "*.hdr"
+}
