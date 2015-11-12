@@ -157,3 +157,13 @@ NoiseAlgorithm Attributes::GetNoiseAlg() const
 {
     return m_noiseAlg;
 }
+
+void Attributes::SetMaskPixelsCount(const u::uint32 pixelsNumber)
+{
+    m_maskPixelsCount = pixelsNumber;
+}
+
+u::uint32 Attributes::GetMaskPixelsCount() const
+{
+    return m_maskPixelsCount;
+}

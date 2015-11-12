@@ -34,6 +34,7 @@ private:
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
+    void on_actionNoise_toggled();
 
 private:
     bool m_hold;
@@ -47,6 +48,7 @@ private:
     HyperCube* m_cube;
     Attributes* m_attributes;
     QAction* m_actionSave;
+    QAction* m_actionNoise;
     QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
     QVector<double> m_xArr;
     QVector<double> m_yArr;

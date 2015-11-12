@@ -106,10 +106,11 @@ void MainWindow::LoadFile()
         if (m_pluginsControl->GetProcessingPlugins().size() > 0)
         {
 
-            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
-           // m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("SpectralLib UI");
+            //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
+            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
-           // Attributes::I()->SetModeLib(1);
+            Attributes::I()->SetExternalSpectrFlag(false);
+            Attributes::I()->SetPoint(100, 100, 100);
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

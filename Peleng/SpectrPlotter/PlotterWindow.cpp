@@ -29,11 +29,18 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
     m_actionSave = 0;
+    m_actionNoise = 0;
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         m_actionSave = new QAction("Сохранить в библиотеку", this);
         ui->menuSpectrum->addAction(m_actionSave);
         QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+    {
+        m_actionNoise = new QAction("Применить фильтр", this);
+        ui->menuSpectrum->addAction(m_actionNoise);
+        QObject::connect(m_actionNoise, SIGNAL(triggered(bool)), this, SLOT(on_actionNoise_toggled()));
     }
     if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
     {
@@ -49,11 +56,22 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
 PlotterWindow::~PlotterWindow()
 {
     delete m_actionSave;
+    delete m_actionNoise;
     delete ui;
 }
 
 void PlotterWindow::closeEvent(QCloseEvent *) {
     emit closePlotterWindow(this);
+}
+
+void PlotterWindow::on_actionNoise_toggled()
+{
+    m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetMaskPixelsCount(5);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->SetXUnit(m_xArr);
+    m_attributes->SetYUnit(m_yArr);
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
 }
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)

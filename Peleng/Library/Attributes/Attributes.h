@@ -62,6 +62,9 @@ public:
 
     void SetNoiseAlg(NoiseAlgorithm alg);
     NoiseAlgorithm GetNoiseAlg() const;
+
+    void SetMaskPixelsCount(const u::uint32 pixelsNumber);
+    u::uint32 GetMaskPixelsCount() const;
 private:
     Attributes();
     Attributes(const Attributes&);
@@ -83,6 +86,7 @@ private:
     int m_formatExternalSpectr; // 0 - peleng; 1 - aster
 
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
+    int m_maskPixelsCount;
 };
 
 #endif // ATTRIBUTES_H

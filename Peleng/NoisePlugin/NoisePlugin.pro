@@ -21,7 +21,8 @@ SOURCES += \
     ../Library/GenericExc.cpp \
     ../Library/HyperCube.cpp \
     ../Library/Attributes/Attributes.cpp \
-    AlgFactory.cpp
+    AlgFactory.cpp \
+    Median1DAlg.cpp
 
 
 HEADERS += \
