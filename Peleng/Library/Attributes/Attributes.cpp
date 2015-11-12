@@ -51,13 +51,17 @@ void Attributes::SetYUnit(double yUnit)
 void Attributes::SetXUnit(QVector<double>& xUnits)
 {
     m_XUnits.clear();
-    m_XUnits.append(xUnits);
+    //m_XUnits.append(xUnits);
+    foreach(double x,xUnits)
+        m_XUnits.append(x);
 }
 
 void Attributes::SetYUnit(QVector<double>& yUnits)
 {
     m_YUnits.clear();
-    m_YUnits.append(yUnits);
+    //m_YUnits.append(yUnits);
+    foreach(double y,yUnits)
+        m_YUnits.append(y);
 }
 
 void Attributes::ClearUnitsLists()

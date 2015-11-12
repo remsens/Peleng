@@ -40,6 +40,10 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     {
         m_actionNoise = new QAction("Применить фильтр", this);
         ui->menuSpectrum->addAction(m_actionNoise);
+        QMenu* sub = new QMenu();
+        sub->addAction(m_actionNoise);
+        ui->menuSpectrum->addMenu(sub);
+
         QObject::connect(m_actionNoise, SIGNAL(triggered(bool)), this, SLOT(on_actionNoise_toggled()));
     }
     if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
