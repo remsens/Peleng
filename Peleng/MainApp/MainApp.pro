@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     PluginsControl.cpp \
     ../Library/PluginLoader.cpp \
     ../Library/ReadPluginLoader.cpp \
-    ../Library/PelengPluginLoader.cpp
+    ../Library/PelengPluginLoader.cpp \
+    ../Library/PluginAttributes/Cube2DPluginAttributes.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/QCustomPlot.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     ../Library/Interfaces/PelengPluginsInterface.h \
     ../Library/PluginLoader.h \
     ../Library/ReadPluginLoader.h \
-    ../Library/PelengPluginLoader.h
+    ../Library/PelengPluginLoader.h \
+    ../Library/PluginAttributes/Cube2DPluginAttributes.h
 
 
 

@@ -17,7 +17,7 @@
 #include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
 #include "../Library/PluginAttributes/LinePluginAttributes.h"
 #include "../Library/PluginAttributes/ChannelPluginAttributes.h"
-
+#include "../Library/PluginAttributes/Cube2DPluginAttributes.h"
 /*#include"../Library/PluginAttributes/Cube3DPluginAttributes.h"*/
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/PelengPluginLoader.h"
@@ -189,6 +189,11 @@ void MainWindow::LoadFile()
             PelengPluginLoader pelengLoader;
             m_pelengPlugins = pelengLoader.LoadPlugin("3DCube UI");
             m_pelengPlugins->Execute(cube, attrCube);
+
+//            IAttributes* attrCube2D = new Cube2DPluginAttributes();
+//            m_pelengPlugins = pelengLoader.LoadPlugin("2DCube UI");
+//            m_pelengPlugins->Execute(cube, attrCube2D);
+
         }
 
     }

@@ -39,6 +39,8 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     initArrChanLimits();
     fillChanList();
 
+
+
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
 
@@ -56,11 +58,25 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
 
+
+
+    QSize mainSize = this->size();
+    this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
+
+    ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
+    ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
 }
 
 Main2DWindow::~Main2DWindow()
 {
     delete ui;
+}
+
+void Main2DWindow::resizeEvent(QResizeEvent *e)
+{
+    ui->customPlot->setMinimumWidth(1);
+    ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
+
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -84,11 +100,14 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     data = (qint16**)ptrCube->GetDataCube();
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-    QSize mainSize = this->size();
-    this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
 
-//    ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-//    ui->customPlot->resize(CPlotSize.width() ,CPlotSize.width() * cols / rows);
+
+
+//    ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+//    ui->customPlot->setMinimumSize( this->size().width()*0.75 ,this->size().width()*0.75 * cols / rows );
+    //QSize mainSize = this->size();
+    //this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
+//    resizeEvent(QResizeEvent(this->size(),this->size()));
 }
 
 void Main2DWindow::setInitCustomplotSettings()
@@ -337,7 +356,7 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
     pixItem->setScaled(true);
     ui->customPlot->addItem(pixItem);
     pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(rows,cols);
+    pixItem->bottomRight->setCoords(rows-1,cols-1);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(ui->customPlot->axisRect());
 //    QPixmap customPix = ui->customPlot->toPixmap(rows,cols);

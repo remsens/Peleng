@@ -18,9 +18,11 @@ class Main2DWindow : public QMainWindow
 {
     Q_OBJECT
 
+
 public:
     explicit Main2DWindow(HyperCube *pHyperCube, int chan, QWidget *parent = 0);
     ~Main2DWindow();
+    void resizeEvent(QResizeEvent *e);
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
     void fillChanList();
