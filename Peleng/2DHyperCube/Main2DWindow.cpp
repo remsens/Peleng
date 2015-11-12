@@ -304,30 +304,27 @@ void Main2DWindow::finishPolygonCreation()
     setCursor(QCursor(Qt::ArrowCursor));
     this->setToolTip("");
     drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
-    QImage im = maskFromPolygons(polygonArr);
-    QLabel *label = new QLabel();
-    label->setPixmap(QPixmap::fromImage(im.mirrored(false,true).scaled(900,300)));
-    label->show();
+
+    QImage mask = maskFromPolygons(polygonArr);
+    QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
+    QPixmap alphaImage(QPixmap::fromImage(mask));
+    pixItem->setPixmap(alphaImage);
+    ui->customPlot->addLayer("polygon");
+    ui->customPlot->setCurrentLayer("polygon");
+    pixItem->setScaled(true);
+    ui->customPlot->addItem(pixItem);
+    pixItem->topLeft->setCoords(0,0);
+    pixItem->bottomRight->setCoords(rows-1,cols-1);
+    pixItem->setClipToAxisRect(true);
+    pixItem->setClipAxisRect(ui->customPlot->axisRect());
 }
 
 QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
 {
-            // из image в pixmap QPixmap::fromImage()
+
     QElapsedTimer timer;
     timer.start();
-//    QImage mask(rows,cols,QImage::Format_Mono);
-//    mask.fill(0);
-//    for(int i = 0; i < rows; ++i)
-//    {
-//        for(int j = 0; j < cols; ++j)
-//        {
-//            foreach(QPolygon polygon, polygonArr)
-//            {
-//                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
-//                    mask.setPixel(i,j,1);
-//            }
-//        }
-//    }
+
     QImage mask(rows,cols,QImage::Format_ARGB32);
     mask.fill(qRgba(0, 0, 0, 0));
     for(int i = 0; i < rows; ++i)
@@ -341,32 +338,7 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
             }
         }
     }
-
     qDebug()<<"create bit picture"<<timer.elapsed();
-    mask.mirrored(false,true);
-    //тест
-//    QBitmap bitmap(QPixmap::fromImage(mask)); //битмэп из пиксмэпа(а он из qimage)
-//    QPixmap qPixmap(bitmap);
-//    qPixmap.setMask(bitmap);
-    QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
-    QPixmap alphaImage(QPixmap::fromImage(mask));
-    pixItem->setPixmap(alphaImage);
-    ui->customPlot->addLayer("polygon");
-    ui->customPlot->setCurrentLayer("polygon");
-    pixItem->setScaled(true);
-    ui->customPlot->addItem(pixItem);
-    pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(rows-1,cols-1);
-    pixItem->setClipToAxisRect(true);
-    pixItem->setClipAxisRect(ui->customPlot->axisRect());
-//    QPixmap customPix = ui->customPlot->toPixmap(rows,cols);
-//    QCPItemPixmap *pixItemCustom = new QCPItemPixmap(ui->customPlot);
-//        pixItemCustom->setPixmap(customPix);
-//        pixItemCustom->setScaled(true);
-//        ui->customPlot->addItem(pixItem);
-//        pixItemCustom->topLeft->setCoords(0,0);
-//        pixItemCustom->bottomRight->setCoords(rows,cols);
-    //конец теста
     return mask;
 }
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
