@@ -28,12 +28,11 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     Main2DWindow.cpp \
-    ../Library/PluginAttributes/Cube2DPluginAttributes.cpp \
-    ../SpectrPlotter/PlotterWindow.cpp \
-    ../LinePlotter/LinePlotterWindow.cpp \
-    ../Library/PluginAttributes/ChannelPluginAttributes.cpp \
-    hist/histplugin.cpp \
+
     Polygon.cpp
+
+
+    ../Library/Attributes/Attributes.cpp
 
 
 HEADERS += \
@@ -42,21 +41,18 @@ HEADERS += \
     ../Library/HyperCube.h \
      ../Library/QCustomPlot.h\
     ../Library/Types.h \
-    ../Library/Interfaces/PelengPluginsInterface.h \
     Main2DWindow.h \
-    ../Library/PluginAttributes/Cube2DPluginAttributes.h \
-    ../SpectrPlotter/PlotterWindow.h \
-    ../LinePlotter/LinePlotterWindow.h \
-    ../Library/PluginAttributes/ChannelPluginAttributes.h \
-    hist/histplugin.h \
+
+
     Polygon.h
 
 
 
+    ../Library/Attributes/Attributes.h
+
+
 FORMS += \
     Main2DWindow.ui \
-    ../SpectrPlotter/PlotterWindow.ui
 
 RESOURCES += \
     icons2Dcube.qrc \
-    ../LinePlotter/iconslineplotter.qrc

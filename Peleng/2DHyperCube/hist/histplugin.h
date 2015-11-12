@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "../Library/QCustomPlot.h"
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
+//#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
 #include "../Library/HyperCube.h"
 
 //#include "selectedline.h"

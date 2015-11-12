@@ -3,7 +3,9 @@
 
 
 
-LinePlotterWindow::LinePlotterWindow(QWidget *parent) : QMainWindow(parent)
+LinePlotterWindow::LinePlotterWindow(Attributes* attr, QWidget *parent)
+    : QMainWindow(parent)
+    , m_attributes(attr)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     setupUI();

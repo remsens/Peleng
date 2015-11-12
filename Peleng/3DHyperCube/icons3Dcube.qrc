@@ -10,5 +10,7 @@
         <file>iconsCube/Heat Map-50.png</file>
         <file>iconsCube/polygon.png</file>
         <file>iconsCube/contrast.png</file>
+        <file>iconsCube/CreateSpectr.png</file>
+
     </qresource>
 </RCC>

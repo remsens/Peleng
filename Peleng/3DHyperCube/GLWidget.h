@@ -9,10 +9,8 @@
 #include <QSharedPointer>
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
-#include "../SpectrPlotter/PlotterWindow.h"
-//#include "PlotterAlongLine.h"
-#include "../LinePlotter/LinePlotterWindow.h"
-#include "../2DHyperCube/Main2DWindow.h"
+#include "../Library/Interfaces/ProcessingPluginInterface.h"
+
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -22,7 +20,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit GLWidget(HyperCube* ptrCube, QWidget *parent = 0);
+    explicit GLWidget(HyperCube* ptrCube, Attributes* attr, QWidget *parent = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
@@ -40,9 +38,7 @@ public slots:
     void sliderY2ValueChanged(int value);
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
-    void deleteSpectrWindows();
-    void DeleteSpectrWindow(PlotterWindow* pl);
-    void DeleteLineWindow(LinePlotterWindow* lw);
+    void addSpectr();
 private slots:
 
     void prepareToPlotSpectr();
@@ -96,12 +92,17 @@ private:
 
     QMenu* pContextMenu;
     QAction* pPlotAction;
-    QAction* pDeletePlotsAction;
+    //QAction* pDeletePlotsAction;
+    Attributes* m_attributes;
     QAction* pSetStartAction;
     QAction* pSetFinishAction;
     QAction* pPlotLineAction;
     QAction* p2DCubeAction;
+
     QAction* pContrastAction;
+
+    QAction* pAddSpectrAction;
+
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;
@@ -144,15 +145,14 @@ private:
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
-    PlotterWindow* windowPlotter;
-    LinePlotterWindow *pWidgLine;
-    Main2DWindow* window2DCube;
+
     bool firstWindowPlotter;
-    QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
-    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на плоттер окна и их удаления
+
     QString strForLbl;
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
+
+
 };
 
 #endif

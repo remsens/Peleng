@@ -27,17 +27,18 @@ SOURCES +=\
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     SpectrPlugin.cpp \
-    ../Library/PluginAttributes/SpectrPluginAttributes.cpp \
-    PlotterWindow.cpp
+    PlotterWindow.cpp \
+    ../Library/Attributes/Attributes.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
     ../Library/HyperCube.h \
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
-    ../Library/Interfaces/PelengPluginsInterface.h \
     SpectrPlugin.h \
-    PlotterWindow.h
+    PlotterWindow.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/Attributes/Attributes.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library

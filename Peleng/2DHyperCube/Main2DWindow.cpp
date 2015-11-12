@@ -1,13 +1,10 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
-#include "../Library/PluginAttributes/Cube3DPluginAttributes.h"
-#include "../Library/PelengPluginLoader.h"
-#include "hist/histplugin.h"
 
 int cmp2(const void *a, const void *b);
 
-Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
+<<<<<<< HEAD
+Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Main2DWindow),
     firstWindowPlotter(true),
@@ -18,6 +15,9 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     flagSlidersEnabledForSlots(false),
     flagPolygonIsCreated(true),
     flagDoubleClicked(false)
+         ,m_pCube(cube)
+    , m_attributes(attr)
+
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -35,7 +35,8 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
 
     setInitCustomplotSettings();
     createMenus();
-    setHyperCube(pHyperCube);
+
+    setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
 
@@ -46,6 +47,13 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
 
     connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
     connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
+
+
+    if (m_attributes->GetPointsList().size())
+    {
+        setInitChanel(m_attributes->GetPointsList().at(0).z);
+    }
+ 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
@@ -55,7 +63,15 @@ Main2DWindow::Main2DWindow(HyperCube *pHyperCube,int chan,QWidget *parent) :
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+
     emit  ui->listWidget->currentRowChanged(m_initChanel);
+
+
+
+    //проверить
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
 
 
 
@@ -87,7 +103,9 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
     int minCMap, maxCMap;
+
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap,0.04, 0.98);
+
     drawHeatMap(m_initChanel,minCMap, maxCMap);
 }
 
@@ -139,7 +157,10 @@ void Main2DWindow::fillChanList()
         num++;
     }
 
+
 }
+
+
 
 void Main2DWindow::initArrChanLimits()
 {
@@ -149,8 +170,8 @@ void Main2DWindow::initArrChanLimits()
 
     for (int i = 0; i < chnls; ++i)
     {
-        ChnlLimits[i][0] = -32767;
-        ChnlLimits[i][1] = -32767;
+        ChnlLimits[i][0] = 0;
+        ChnlLimits[i][1] = 0;
     }
 }
 
@@ -172,6 +193,14 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
     delete dat;
     qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
 }
+
+
+
+    ui->customPlot->replot();
+    delete dat;
+    qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
+}
+
 void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
@@ -207,12 +236,16 @@ void Main2DWindow::updateViewchan(int chan)
     {
         int minCMap, maxCMap;
         findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
+
         ChnlLimits[chan][0] = minCMap;
         ChnlLimits[chan][1] = maxCMap;
     }
 
     drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+
 }
+
+
 
 void Main2DWindow::leftBorderContrast(int left)
 {
@@ -292,8 +325,6 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
     qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
-
-
 }
 
 void Main2DWindow::finishPolygonCreation()
@@ -368,16 +399,34 @@ void Main2DWindow::createMenus()
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
-    pPlotHistAction = new QAction("Гистограмма",this);
+    pPlotHistAction = new QAction(QIcon("qrc:/icons2Dcube/icons/Heat Map-50.png"),"Гистограмма",this);
+    pAddSpectr = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"),"Загрузить спектр",this);
+    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+    {
+        pContextMenu->addAction(pPlotAction);
+        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Hist UI"))
+    {
+        pContextMenu->addAction(pPlotHistAction);
+        connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
+    {
+        pContextMenu->addAction(pPlotLineAction);
+        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        pContextMenu->addAction(pAddSpectr);
+        connect(pAddSpectr,SIGNAL(triggered()),SLOT(addSpectr()));
+    }
     pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
-    pContextMenu->addAction(pPlotAction);
-    pContextMenu->addAction(pPlotLineAction);
-    pContextMenu->addAction(pPlotHistAction);
-    pContextMenu->addAction(pSelectAreaAction);
-    connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-    connect(pPlotHistAction,SIGNAL(triggered()),SLOT(prepareToHist()));
-    connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+	pContextMenu->addAction(pSelectAreaAction);
     connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));
 }
 
@@ -418,20 +467,20 @@ void Main2DWindow::setInitSliders(int chan)
     delete[] dataTemp;
     flagSlidersEnabledForSlots = true;
 }
+
 void Main2DWindow::plotSpectr(uint x, uint y)
 {
-    if (firstWindowPlotter || windowPlotter->getIsHold() == false)// если не стоит чекбокс Hold, то создается новый объект,
-    {                                                             // иначе - графики строятся в том же окне (объекте)
-        windowPlotter = new PlotterWindow();
-        QObject::connect(windowPlotter, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(DeleteSpectrWindow(PlotterWindow*)));
-        windowsArr.append(windowPlotter);
-        firstWindowPlotter = false;
-    }
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x, y, 0);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
+}
 
-    windowPlotter->plotSpectr(m_pCube,x,y);
-    windowPlotter->activateWindow();
-    windowPlotter->show();
-
+void Main2DWindow::addSpectr()
+{
+    m_attributes->SetModeLib(1);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pCube , m_attributes);
 }
 
 void Main2DWindow::prepareToPlotSpectr()
@@ -447,6 +496,7 @@ void Main2DWindow::createLinePlotterSlot()
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
+
 
 }
 
@@ -471,6 +521,7 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
 
 
 }
+
 void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {
     linePlotterIsActive = true;
@@ -501,29 +552,18 @@ void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
 }
 void Main2DWindow::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    pWidgLine = new LinePlotterWindow();
-    QObject::connect(pWidgLine, SIGNAL(closeLinePlotterWindow(LinePlotterWindow*)), this, SLOT(DeleteLineWindow(LinePlotterWindow*)));
-    windowsLineArr.append(pWidgLine);
-    pWidgLine->plotSpectrLine(m_pCube,x1,x2,y1,y2,z1,z2);
-    pWidgLine->activateWindow();
-    pWidgLine->show();
+    m_attributes->ClearList();
+    m_attributes->SetPoint(x1, y1, z1);
+    m_attributes->SetPoint(x2, y2, z2);
+    m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::prepareToHist()
 {
-   /* PelengPluginLoader pelengLoade
-    * r;
-    PelengPluginsInterface* m_pelengPlugins = pelengLoader.LoadPlugin("Hist UI");
-    IAttributes* attrCh = new ChannelPluginAttributes(3);
-     m_pelengPlugins->Execute(m_pCube, attrCh);*/
 
-    //QList<QString> m;
-    //IAttributes* attrCh = new Cube3DPluginAttributes();
-    u::uint32 channel = ui->listWidget->currentRow();
-    IAttributes* attrCh = new ChannelPluginAttributes(channel);
-    HistPlugin *hist = new HistPlugin(100, this);
-    hist->Execute(m_pCube,attrCh);
-    connect(hist,SIGNAL(bordersSelected(int,int)),SLOT(contrastImage(int,int)));
+    m_attributes->ClearList();
+    m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
+    m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
 
 }
 

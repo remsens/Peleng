@@ -1,9 +1,8 @@
 #include "LinePlugin.h"
-#include <QSharedPointer>
 #include "LinePlotterWindow.h"
-#include "../Library/PluginAttributes/LinePluginAttributes.h"
 
 LinePlugin::LinePlugin(QObject* parent)
+    : QObject(parent)
 {
 
 }
@@ -12,13 +11,18 @@ LinePlugin::~LinePlugin()
 {
 
 }
-void LinePlugin::Execute(HyperCube* cube, IAttributes* attr)
-{
-    QSharedPointer<LinePlotterWindow> w(new LinePlotterWindow);
-    w->show();
-    w->plotSpectrLine(cube,((LinePluginAttributes*)attr)->GetX1(),((LinePluginAttributes*)attr)->GetX2(),
-                           ((LinePluginAttributes*)attr)->GetY1(),((LinePluginAttributes*)attr)->GetY2(),
-                           ((LinePluginAttributes*)attr)->GetZ1(),((LinePluginAttributes*)attr)->GetZ2()
-                      );
+
+void LinePlugin::Execute(HyperCube* cube, Attributes* attr)
+{    
+    LinePlotterWindow* linePlotter = new LinePlotterWindow(attr);
+
+    if (attr->GetPointsList().size() >= 2)
+    {
+        linePlotter->plotSpectrLine(cube, attr->GetPointsList().at(0).x, attr->GetPointsList().at(1).x,
+                                          attr->GetPointsList().at(0).y, attr->GetPointsList().at(1).y,
+                                          attr->GetPointsList().at(0).z, attr->GetPointsList().at(1).z);
+    }
+    linePlotter->activateWindow();
+    linePlotter->show();
 }
 

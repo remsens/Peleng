@@ -9,10 +9,10 @@
 #include "HyperCube.h"
 #include "PluginsControl.h"
 #include "../Library/ReadPluginLoader.h"
-#include "../Library/PelengPluginLoader.h"
+#include "../Library/ProcessingPluginLoader.h"
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -32,21 +32,13 @@ signals:
 
 private slots:
     void updateProgress();
-    void tabClose(int index);
-    void updateTable();
     void cancelOperation();
-    void createPlot();
 
-    void on_ChannelListWidget_itemClicked(QListWidgetItem *item);
 
 private:
-    bool loadFilePlugin();
-
     Ui::MainWindow *ui;
-
-    QList <FileReadInterface*> FileFormatPluginList;
     FileReadInterface* FilePlugin;
-    PelengPluginsInterface* m_pelengPlugins;
+    ProcessingPluginsInterface* m_pelengPlugin;
     HyperCube* cube;
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;

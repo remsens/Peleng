@@ -66,7 +66,7 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube) {
     InfoData infoData;
     infoData.bands = m_bands;
-    infoData.bytesFormat = m_dataType;
+    infoData.formatType = m_dataType;
     infoData.bytesType = GetNumberOfBytesFromData(m_dataType);
     infoData.lines = m_lines;
     infoData.listChannels = m_listChannel;
@@ -138,12 +138,34 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 u::uint32 FilesOperation::GetNumberOfBytesFromData(u::int32 format) {
 	switch (format) 
 	{
-	case 1: return 1;
-	case 2: return 2;
-	case 3:
-	case 12: return 4;
-	default: return 0;
-	}
+        case type_int8:
+        case type_uint8:   return 1;
+        case type_int16:
+        case type_uint16:  return 2;
+        case type_int32:
+        case type_uint32:  return 4;
+        case type_int64:
+        case type_uint64:
+        case type_double:  return 8;
+        case type_float:   return 4;
+        case type_2double: return 16;
+        default: return 0;
+    }
+}
+
+u::uint32 FilesOperation::TypeFromAvirisType(u::int32 format)
+{
+    switch (format)
+    {
+        case 1: return type_int8;
+        case 2: return type_int16;
+        case 3: return type_int32;
+        case 4: return type_float;
+        case 5: return type_double;
+        case 9: return type_2double;
+        case 12: return type_uint16;
+        default: return 0;
+    }
 }
 
 void FilesOperation::ParseHeaderFile(std::string headername)
@@ -286,7 +308,7 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 		case 1: m_lines = ConvertStrtoInt(data); break;
 		case 2: m_bands = ConvertStrtoInt(data); break;
 		case 3: m_headerOffset = ConvertStrtoInt(data); break;
-        case 4: m_dataType = ConvertStrtoInt(data); break;
+        case 4: m_dataType = TypeFromAvirisType(ConvertStrtoInt(data)); break;
 		case 5: 
 			{
 				if (strcmp(data, "bsq") == 0)

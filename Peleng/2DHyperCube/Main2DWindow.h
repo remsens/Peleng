@@ -5,9 +5,7 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Types.h"
-#include "../LinePlotter/LinePlotterWindow.h"
-#include "../SpectrPlotter/PlotterWindow.h"
-
+#include "../Library/Attributes/Attributes.h"
 
 
 namespace Ui {
@@ -20,7 +18,7 @@ class Main2DWindow : public QMainWindow
 
 
 public:
-    explicit Main2DWindow(HyperCube *pHyperCube, int chan, QWidget *parent = 0);
+    explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     ~Main2DWindow();
     void resizeEvent(QResizeEvent *e);
     void setInitChanel(u::uint32 initChanel);
@@ -67,9 +65,13 @@ private slots:
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
     void createLinePlotterSlot();
+
     void createPolygonSlot();
     void addPolygonPoint(uint x,uint y);
     void prepareToHist();
+
+    void addSpectr();
+
     void contextMenuRequest(QPoint point);
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
@@ -93,15 +95,16 @@ private:
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
     QAction *pPlotAction;
-    QAction *pDeletePlotsAction;
+   // QAction *pDeletePlotsAction;
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
+
     QAction *pSelectAreaAction;
-    QVector<PlotterWindow*> windowsArr; //для хранения указателей на плоттер окна и их удаления
-    QVector<LinePlotterWindow*> windowsLineArr; //для хранения указателей на лайнплоттер окна и их удаления
-    PlotterWindow *windowPlotter;
-    LinePlotterWindow *pWidgLine;
+
     QLabel *pStatusBarLabel;
+
+    QAction* pAddSpectr;
+
     bool firstWindowPlotter;
     bool linePlotterIsActive;
     HyperCube* m_pCube;
@@ -111,6 +114,8 @@ private:
     int rows, cols, chnls;
     int m_dataX, m_dataY;
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
+
+    Attributes* m_attributes;
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
     bool flagSlidersEnabledForSlots;

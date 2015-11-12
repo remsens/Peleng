@@ -14,14 +14,13 @@ TEMPLATE = lib
 
 DEFINES += HISTPLUGIN_LIBRARY
 
-
-
 SOURCES +=\
     ../Library/GenericExc.cpp \
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     histplugin.cpp \
-    ../Library/PluginAttributes/ChannelPluginAttributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    histplotter.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -29,10 +28,11 @@ HEADERS  += \
     ../Library/QCustomPlot.h \
     ../Library/Types.h \
     histplugin.h \
-    ../Library/PluginAttributes/ChannelPluginAttributes.h \
-    ../Library/Utils/typeconvertor.h
-
-FORMS    +=
+    ../Library/Utils/typeconvertor.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/Attributes/Attributes.h \
+    templatehistplot.h \
+    histplotter.h
 
 DISTFILES += \
     HistPlugin.json
