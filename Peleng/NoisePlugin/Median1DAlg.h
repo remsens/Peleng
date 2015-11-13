@@ -56,7 +56,7 @@ public:
         BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFormat(0);
-        BaseNoiseAlg<T>::m_attributes->SetDescriptionItem("Устранение шумов", "Медианный фильтр");
+        BaseNoiseAlg<T>::m_attributes->SetDescriptionItem("Устранение шумов", " Медианный фильтр");
         BaseNoiseAlg<T>::m_attributes->SetXUnit(XUnits);
         BaseNoiseAlg<T>::m_attributes->SetYUnit(spectrMas);
         BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
