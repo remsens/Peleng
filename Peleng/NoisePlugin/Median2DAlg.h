@@ -20,6 +20,7 @@ public:
     virtual void Execute()
     {
         // реализация
+    T* dataChannel = new T[BaseNoiseAlg<T>::m_cube->GetSizeChannel()];
 
     }
 };

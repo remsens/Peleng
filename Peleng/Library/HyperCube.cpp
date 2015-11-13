@@ -102,7 +102,7 @@ u::ptr* HyperCube::GetDataCube() const {
 
 u::uint32 HyperCube::GetSizeSpectrum()
 {
-	return m_infoData.bands*m_infoData.bytesType;
+    return m_infoData.bands;
 }
 
 void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data)
@@ -168,7 +168,7 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, QVector<double> &data
 
 u::uint32 HyperCube::GetSizeChannel()
 {
-	return m_infoData.lines*m_infoData.samples*m_infoData.bytesType;
+    return m_infoData.lines*m_infoData.samples;
 }
 
 void HyperCube::GetDataChannel(u::uint32 channel, u::ptr data) {
@@ -177,7 +177,7 @@ void HyperCube::GetDataChannel(u::uint32 channel, u::ptr data) {
 	}
 	try {
         //memcpy(data, m_vectorCube.at(channel).data(), GetSizeChannel());
-         memcpy(data, m_dataCube[channel], GetSizeChannel());
+         memcpy(data, m_dataCube[channel], GetSizeChannel()*m_infoData.bytesType);
 	} catch (...) {
         throw GenericExc("Неверно выделен размер под блок данных", -1);
     }
