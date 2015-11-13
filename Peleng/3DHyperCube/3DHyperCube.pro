@@ -1,6 +1,11 @@
 TARGET = 3DCubePlugin
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
+debug{
+    DLLDESTDIR = ../../Debug/MainApp/debug
+}
+release{
+    DLLDESTDIR = ../../Release/MainApp/release
+}
 QT           += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -23,7 +28,7 @@ HEADERS       = \
     mainwindow.h \
     ui_MainWindow3DCube.h \
     ../Library/QCustomPlot.h \
-    ContrastWindow.h
+    ContrastWindow.h \
     ../Library/Attributes/Attributes.h
 
 
@@ -34,8 +39,9 @@ SOURCES       = \
     GLWidget.cpp \
     mainwindow.cpp \
     ../Library/QCustomPlot.cpp \
-    ContrastWindow.cpp
+    ContrastWindow.cpp \
     ../Library/Attributes/Attributes.cpp
+
 
 
 DISTFILES += \

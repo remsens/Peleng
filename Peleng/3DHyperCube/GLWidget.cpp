@@ -5,7 +5,7 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-#include "../Library/PluginAttributes/ChannelPluginAttributes.h"
+
 #include "../HistPlotter/histplugin.h"
 #include "ContrastWindow.h"
 

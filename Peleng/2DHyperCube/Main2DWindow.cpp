@@ -3,13 +3,13 @@
 
 int cmp2(const void *a, const void *b);
 
-<<<<<<< HEAD
+
 Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Main2DWindow),
     firstWindowPlotter(true),
     linePlotterIsActive(false),
-    m_initChanel(chan),
+
     m_dataX(0), m_dataY(0),
     m_interplolate(false),
     flagSlidersEnabledForSlots(false),
@@ -21,6 +21,12 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
+    if( m_attributes->GetPointsList().size() > 0)
+
+        m_initChanel = m_attributes->GetPointsList().at(0).z;
+    else
+        m_initChanel = 0;
+
     ui->setupUi(this);
     pStatusBarLabel = new QLabel(this);
     ui->statusbar->addWidget(pStatusBarLabel);
@@ -41,19 +47,15 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     fillChanList();
 
 
-
-    connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
-    connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
-
-    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
-
-
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
     }
- 
+    connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
+    connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
+    connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
+
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
@@ -66,21 +68,12 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
-
-
-    //проверить
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
-    drawHeatMap(m_initChanel,minCMap, maxCMap);
-
-
-
-
     QSize mainSize = this->size();
     this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
 
     ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
     ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+
 }
 
 Main2DWindow::~Main2DWindow()
@@ -118,7 +111,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     data = (qint16**)ptrCube->GetDataCube();
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-
+    chnls = 100;
 
 
 //    ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
@@ -170,8 +163,8 @@ void Main2DWindow::initArrChanLimits()
 
     for (int i = 0; i < chnls; ++i)
     {
-        ChnlLimits[i][0] = 0;
-        ChnlLimits[i][1] = 0;
+        ChnlLimits[i][0] = -32767;
+        ChnlLimits[i][1] = -32767;
     }
 }
 
@@ -196,10 +189,7 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 
 
 
-    ui->customPlot->replot();
-    delete dat;
-    qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
-}
+
 
 void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
@@ -407,7 +397,7 @@ void Main2DWindow::createMenus()
     {
         pContextMenu->addAction(pPlotAction);
         connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+        //connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     }
     if (m_attributes->GetAvailablePlugins().contains("Hist UI"))
     {
@@ -418,7 +408,7 @@ void Main2DWindow::createMenus()
     {
         pContextMenu->addAction(pPlotLineAction);
         connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+        //connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {

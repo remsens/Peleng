@@ -10,7 +10,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = LinePlotter
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
+debug{
+    DLLDESTDIR = ../../Debug/MainApp/debug
+}
+release{
+    DLLDESTDIR = ../../Release/MainApp/release
+}
 
 DEFINES += LINEPLOTTER_LIBRARY
 
