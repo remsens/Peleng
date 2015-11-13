@@ -6,6 +6,8 @@
 #include <GL/glu.h>
 #include <QDebug>
 
+#include "../HistPlotter/histplugin.h"
+#include "ContrastWindow.h"
 
 using namespace std;
 
@@ -39,6 +41,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
     prevChN = CHNLS, prevRowsN = ROWS;
     findMinMaxforColorMap(0.02,0.95);
+    findAbsoluteMinMax();
     createCubeSides();
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
@@ -412,12 +415,49 @@ void GLWidget::run2DCube()
     m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
 }
 
+void GLWidget::contrast()
+{
+     ContrastWindow *contrastTool = new ContrastWindow(absMin,absMax);//надо где-то найти настоящий мин/макс, т.к. эти - не абсолютны
+     contrastTool->show();
+     connect(contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+}
+
+void GLWidget::repaintWithContrast(int min, int max)
+{
+    int nCHNLS = Ch2 - Ch1 + 1;
+    int nROWS = R2 - R1 + 1;
+    int nCOLS = C2 - C1 + 1;
+    QTransform rtt270;
+    QTransform rtt90;
+    QTransform rtt180;
+    rtt270.rotate(270);
+    rtt90.rotate(90);
+    rtt180.rotate(180);
+
+
+    makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
+    textures[0]->destroy();
+    textures[2]->destroy();
+    textures[3]->destroy();
+    textures[5]->destroy();
+
+
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,min,max).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,min,max).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,min,max).transformed(rtt270));
+    update();
+
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
+
     m_attributes->ClearList();
     m_attributes->SetPoint(x, y, z);
     m_attributes->SetExternalSpectrFlag(false);
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
+
 
 }
 
@@ -529,6 +569,7 @@ void GLWidget::createMenus()
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
@@ -554,6 +595,10 @@ void GLWidget::createMenus()
         pContextMenu->addAction(pAddSpectrAction);
         connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
     }
+    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
+    pContextMenu->addAction(pContrastAction);
+    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
+
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -738,12 +783,12 @@ void GLWidget::makeTextures()
     }
 
 
-    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
-    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
-    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
-    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //
-    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270)); //наполовину видная грань
-    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //пустая грань
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270));
 
 }
 
@@ -932,7 +977,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
 }
 
 //передаем, например  sidesDataCH_CO[0]
-QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
+QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
     QCustomPlot customPlot;
@@ -961,7 +1006,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
     else
         colorMap->setGradient(QCPColorGradient::gpSpectrum);
     colorMap->rescaleDataRange(true);
-    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
+    colorMap->setDataRange(QCPRange(minContrast,maxContrast));
     customPlot.rescaleAxes();
     customPlot.replot();
     QPixmap pixmap = customPlot.toPixmap(dim1,dim2);
@@ -994,6 +1039,27 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
         qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
     }
     delete[] dataTemp;
+}
+
+void GLWidget::findAbsoluteMinMax()
+{
+    int min =  32767;
+    int max = -32767;
+    QElapsedTimer timer3;
+    timer3.start();
+    for (int i = 0; i < CHNLS; ++i)
+    {
+        for (int j = 0; j < ROWS*COLS; ++j)
+        {
+            if(data[i][j] < min)
+                min = data[i][j];
+            if (data[i][j] > max)
+                max = data[i][j];
+        }
+    }
+    absMin = min;
+    absMax = max;
+    qDebug()<<"find abslolute min max in data: "<<timer3.elapsed();
 }
 
 int cmp(const void *a, const void *b)

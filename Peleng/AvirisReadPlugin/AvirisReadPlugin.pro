@@ -8,8 +8,12 @@ QT       -= gui
 
 TARGET = AvirisReadPlugin
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
-
+debug{
+    DLLDESTDIR = ../../Debug/MainApp/debug
+}
+release{
+    DLLDESTDIR = ../../Release/MainApp/release
+}
 CONFIG += plugin
 
 DEFINES += AVIRISREADPLUGIN_LIBRARY

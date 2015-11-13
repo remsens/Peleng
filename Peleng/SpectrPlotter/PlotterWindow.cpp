@@ -48,6 +48,8 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
 
 PlotterWindow::~PlotterWindow()
 {
+    m_xArr.clear();
+    m_yArr.clear();
     delete m_actionSave;
     delete ui;
 }
@@ -61,6 +63,8 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
     QString err;
     try
     {    //если можем получить точку гиперкуба
+        m_xArr.clear();
+        m_yArr.clear();
         if (m_attributes->GetExternalSpectrFlag())
         {
             m_xArr = m_attributes->GetXUnits();

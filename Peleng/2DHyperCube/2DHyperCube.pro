@@ -10,8 +10,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 2DHyperCube
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
-
+debug{
+    DLLDESTDIR = ../../Debug/MainApp/debug
+}
+release{
+     DLLDESTDIR = ../../Release/MainApp/release
+}
 DEFINES += TWODHYPERCUBE_LIBRARY
 CONFIG += plugin
 unix {
@@ -30,6 +34,12 @@ SOURCES += \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp
 
+    Polygon.cpp
+
+
+    ../Library/Attributes/Attributes.cpp
+
+
 HEADERS += \
     Hyper2dPlugin.h \
     ../Library/GenericExc.h \
@@ -38,6 +48,14 @@ HEADERS += \
     ../Library/Types.h \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h
+
+
+    Polygon.h
+
+
+
+    ../Library/Attributes/Attributes.h
+
 
 FORMS += \
     Main2DWindow.ui \
