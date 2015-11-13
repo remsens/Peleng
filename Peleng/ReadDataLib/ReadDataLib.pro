@@ -8,14 +8,12 @@ QT       -= gui
 
 TARGET = ReadDataLib
 TEMPLATE = lib
-debug{
-    DLLDESTDIR += ../../Debug/AvirisReadPlugin
-    DLLDESTDIR += ../../Debug/MainApp/debug
-}
-release{
-    DLLDESTDIR += ../../Release/AvirisReadPlugin
-    DLLDESTDIR += ../../Release/MainApp/release
-}
+Debug:    DLLDESTDIR += ../../Debug/AvirisReadPlugin
+Debug:    DLLDESTDIR += ../../Debug/MainApp/debug
+
+Release:    DLLDESTDIR += ../../Release/AvirisReadPlugin
+Release:    DLLDESTDIR += ../../Release/MainApp/release
+
 DEFINES += READDATALIB_LIBRARY
 
 SOURCES += ReadDataLib.cpp \
