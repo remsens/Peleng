@@ -85,7 +85,6 @@ void PlotterWindow::NoiseAlgExecute()
     bool oldHold = m_hold;
     m_hold = true;
     m_attributes->SetNoiseAlg(Median1D);
-    m_attributes->SetExternalSpectrFlag(false);
     m_attributes->SetXUnit(m_xArr);
     m_attributes->SetYUnit(m_yArr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
@@ -241,7 +240,7 @@ void PlotterWindow::on_actionHold_toggled(bool value)
 void PlotterWindow::on_actionSave_toggled()
 {
     m_attributes->SetModeLib(0);
-    m_attributes->ClearList();
+    m_attributes->ClearUnitsLists();
     m_attributes->SetXUnit(m_xArr);
     m_attributes->SetYUnit(m_yArr);
     m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);

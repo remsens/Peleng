@@ -7,7 +7,6 @@
 #include "../Library/Types.h"
 #include "Utils.h"
 
-int cmp(const void *a, const void *b);
 
 template <typename T>
 class Median1DAlg : public BaseNoiseAlg<T>
@@ -22,8 +21,6 @@ public:
     {
 
     }
-
-
 
 public:
     virtual void Execute()
