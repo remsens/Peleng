@@ -111,7 +111,6 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     data = (qint16**)ptrCube->GetDataCube();
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-    chnls = 100;
 
 
 //    ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
