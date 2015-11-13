@@ -22,7 +22,8 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/Attributes/Attributes.cpp \
     AlgFactory.cpp \
-    Median1DAlg.cpp
+    Median1DAlg.cpp \
+    Utils.cpp
 
 
 HEADERS += \
@@ -36,6 +37,7 @@ HEADERS += \
     BaseNoiseAlg.h \
     Median2DAlg.h \
     Median1DAlg.h \
-    AlgFactory.h
+    AlgFactory.h \
+    Utils.h
 
 
