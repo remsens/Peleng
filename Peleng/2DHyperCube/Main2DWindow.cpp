@@ -196,8 +196,9 @@ void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,fl
     minCMap =  32767;
     maxCMap = -32767;
     qint16 *dataTemp = new qint16[rows*cols];
-    for (int j = 0; j<rows*cols; ++j)
-        dataTemp[j]=data[chan][j];
+//    for (int j = 0; j<rows*cols; ++j)
+//        dataTemp[j]=data[chan][j];
+    m_pCube->GetDataChannel(chan, dataTemp);
     QElapsedTimer timer3;
     timer3.start();
     qsort(dataTemp,cols*rows,sizeof(qint16),cmp2);
