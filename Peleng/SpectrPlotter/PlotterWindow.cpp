@@ -60,6 +60,7 @@ void PlotterWindow::closeEvent(QCloseEvent *) {
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
+    initSize = size();
     QString err;
     try
     {    //если можем получить точку гиперкуба
