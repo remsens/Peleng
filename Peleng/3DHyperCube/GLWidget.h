@@ -78,6 +78,12 @@ public slots:
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void addSpectr();
+    void OnActionMedian1D_3Triggered();
+    void OnActionMedian1D_5Triggered();
+    void OnActionMedian1D_7Triggered();
+    void OnActionMedian2D_3Triggered();
+    void OnActionMedian2D_5Triggered();
+    void OnActionMedian2D_7Triggered();
 private slots:
 
     void prepareToPlotSpectr();
@@ -125,7 +131,9 @@ private:
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
+    void Noise();
 
+private:
     QMenu* pContextMenu;
     QAction* pPlotAction;
     //QAction* pDeletePlotsAction;
@@ -135,6 +143,17 @@ private:
     QAction* pPlotLineAction;
     QAction* p2DCubeAction;
     QAction* pAddSpectrAction;
+    // actions and menus для фильтров
+    QMenu* m_menuFilters;
+    QMenu* m_menuMedian1DFilters;
+    QMenu* m_menuMedian2DFilters;
+    QAction* m_actionMedian1D_3;
+    QAction* m_actionMedian1D_5;
+    QAction* m_actionMedian1D_7;
+    QAction* m_actionMedian2D_3;
+    QAction* m_actionMedian2D_5;
+    QAction* m_actionMedian2D_7;
+
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;

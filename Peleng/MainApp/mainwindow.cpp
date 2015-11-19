@@ -99,7 +99,7 @@ void MainWindow::LoadFile()
         }
 
         // TODO
-            FilePlugin->DeleteData();
+        FilePlugin->DeleteData();
 
 
 
@@ -107,10 +107,13 @@ void MainWindow::LoadFile()
         {
 
             m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
+            //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Noise Remover");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
             //Attributes::I()->SetExternalSpectrFlag(false);
             //Attributes::I()->SetPoint(100, 100, 100);
+//            Attributes::I()->SetMaskPixelsCount(3);
+//            Attributes::I()->SetNoiseAlg(Median2D);
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

@@ -171,3 +171,13 @@ u::uint32 Attributes::GetMaskPixelsCount() const
 {
     return m_maskPixelsCount;
 }
+
+void Attributes::SetApplyToAllCube(bool apply)
+{
+    m_applyToAllCube = apply;
+}
+
+bool Attributes::GetApplyToAllCube() const
+{
+    return m_applyToAllCube;
+}

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/NoiseRemover">
+        <file>icons/NoiseRemover.png</file>
+    </qresource>
+</RCC>

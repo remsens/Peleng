@@ -62,9 +62,17 @@ GLWidget::~GLWidget()
     delete pContextMenu;
     delete pPlotAction;
     delete pAddSpectrAction;
-    //delete pDeletePlotsAction;
     delete program;
-   // deleteSpectrWindows();
+    delete m_menuFilters;
+    delete m_menuMedian1DFilters;
+    delete m_menuMedian2DFilters;
+    delete m_actionMedian1D_3;
+    delete m_actionMedian1D_5;
+    delete m_actionMedian1D_7;
+    delete m_actionMedian2D_3;
+    delete m_actionMedian2D_5;
+    delete m_actionMedian2D_7;
+
     doneCurrent();
     qDebug() << "delete GLwidget";
 }
@@ -200,8 +208,6 @@ void GLWidget::sliderCh2ValueChanged(int value)// скольжение по ка
     coords[3][3][1] = newVal;
     coords[5][2][1] = newVal;
     coords[5][3][1] = newVal;
-
-
 
     if (FLAGisInit){
         makeObject();
@@ -505,13 +511,10 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
         {
             pContextMenu->addAction(pPlotAction);
-            //connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-           // connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
         }
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
         {
             pContextMenu->addAction(p2DCubeAction);
-            //connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
         }
 
     }
@@ -524,6 +527,55 @@ void GLWidget::addSpectr()
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pHyperCube , m_attributes);
 }
 
+void GLWidget::Noise()
+{
+    m_attributes->SetApplyToAllCube(true);
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
+}
+
+void GLWidget::OnActionMedian1D_3Triggered()
+{
+
+    m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetMaskPixelsCount(3);
+    Noise();
+}
+
+void GLWidget::OnActionMedian1D_5Triggered()
+{
+    m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetMaskPixelsCount(5);
+    Noise();
+}
+
+void GLWidget::OnActionMedian1D_7Triggered()
+{
+    m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetMaskPixelsCount(7);
+    Noise();
+}
+
+void GLWidget::OnActionMedian2D_3Triggered()
+{
+    m_attributes->SetNoiseAlg(Median2D);
+    m_attributes->SetMaskPixelsCount(3);
+    Noise();
+}
+
+void GLWidget::OnActionMedian2D_5Triggered()
+{
+    m_attributes->SetNoiseAlg(Median2D);
+    m_attributes->SetMaskPixelsCount(5);
+    Noise();
+}
+
+void GLWidget::OnActionMedian2D_7Triggered()
+{
+    m_attributes->SetNoiseAlg(Median2D);
+    m_attributes->SetMaskPixelsCount(7);
+    Noise();
+}
+
 void GLWidget::createMenus()
 {
     pContextMenu = new QMenu();
@@ -532,6 +584,26 @@ void GLWidget::createMenus()
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
+    m_menuMedian1DFilters = new QMenu();
+    m_menuMedian1DFilters->setStyleSheet("border: 0px solid black;");
+    m_menuMedian1DFilters->setTitle("Медианный фильтр по спектрам");
+    m_menuMedian2DFilters = new QMenu();
+    m_menuMedian2DFilters->setStyleSheet("border: 0px solid black;");
+    m_menuMedian2DFilters->setTitle("Медианный фильт по каналам");
+
+    m_menuFilters = new QMenu();
+    m_menuFilters->setStyleSheet("border: 0px solid black;");
+    m_menuFilters->setTitle("Фильтры");
+    m_menuFilters->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
+
+    m_actionMedian1D_3 = new QAction ("3x3", this);
+    m_actionMedian1D_5 = new QAction ("5x5", this);
+    m_actionMedian1D_7 = new QAction ("7x7", this);
+
+    m_actionMedian2D_3 = new QAction ("3x3", this);
+    m_actionMedian2D_5 = new QAction ("5x5", this);
+    m_actionMedian2D_7 = new QAction ("7x7", this);
+
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
     {
         pContextMenu->addAction(pPlotAction);
@@ -553,6 +625,24 @@ void GLWidget::createMenus()
     {
         pContextMenu->addAction(pAddSpectrAction);
         connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+    {
+        m_menuMedian1DFilters->addAction(m_actionMedian1D_3);
+        m_menuMedian1DFilters->addAction(m_actionMedian1D_5);
+        m_menuMedian1DFilters->addAction(m_actionMedian1D_7);
+        m_menuMedian2DFilters->addAction(m_actionMedian2D_3);
+        m_menuMedian2DFilters->addAction(m_actionMedian2D_5);
+        m_menuMedian2DFilters->addAction(m_actionMedian2D_7);
+        m_menuFilters->addMenu(m_menuMedian1DFilters);
+        m_menuFilters->addMenu(m_menuMedian2DFilters);
+        pContextMenu->addMenu(m_menuFilters);
+        connect(m_actionMedian1D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_3Triggered()));
+        connect(m_actionMedian1D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_5Triggered()));
+        connect(m_actionMedian1D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_7Triggered()));
+        connect(m_actionMedian2D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_3Triggered()));
+        connect(m_actionMedian2D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_5Triggered()));
+        connect(m_actionMedian2D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_7Triggered()));
     }
 }
 

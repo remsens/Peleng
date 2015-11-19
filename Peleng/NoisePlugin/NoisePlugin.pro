@@ -23,7 +23,8 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     AlgFactory.cpp \
     Median1DAlg.cpp \
-    Utils.cpp
+    Utils.cpp \
+    ../Library/QCustomPlot.cpp
 
 
 HEADERS += \
@@ -38,6 +39,10 @@ HEADERS += \
     Median2DAlg.h \
     Median1DAlg.h \
     AlgFactory.h \
-    Utils.h
+    Utils.h \
+    ../Library/QCustomPlot.h
+
+RESOURCES += \
+    resources.qrc
 
 

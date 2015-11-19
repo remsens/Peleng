@@ -62,6 +62,8 @@ public:
 
     void SetNoiseAlg(NoiseAlgorithm alg);
     NoiseAlgorithm GetNoiseAlg() const;
+    void SetApplyToAllCube(bool apply);
+    bool GetApplyToAllCube() const;
 
     void SetMaskPixelsCount(const u::uint32 pixelsNumber);
     u::uint32 GetMaskPixelsCount() const;
@@ -87,6 +89,7 @@ private:
 
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
     int m_maskPixelsCount;
+    bool m_applyToAllCube;
 };
 
 #endif // ATTRIBUTES_H

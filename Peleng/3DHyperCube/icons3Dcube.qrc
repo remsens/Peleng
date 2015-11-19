@@ -9,5 +9,6 @@
         <file>iconsCube/PlotterLogo.ico</file>
         <file>iconsCube/Heat Map-50.png</file>
         <file>iconsCube/CreateSpectr.png</file>
+        <file>iconsCube/NoiseRemover.png</file>
     </qresource>
 </RCC>
