@@ -110,6 +110,8 @@ void MainWindow::LoadFile()
            // m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("SpectralLib UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
            // Attributes::I()->SetModeLib(1);
+            cube->ResizeCube(51,223,1922,2447,193,791);
+           // cube->ResizeCube(0,224,0,,0,700);
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

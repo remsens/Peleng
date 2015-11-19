@@ -69,11 +69,14 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
     QSize mainSize = this->size();
-    this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
+    if(cols > rows)
+        this->resize(mainSize.width(), mainSize.width() * rows / cols);
+    else
+         this->resize(mainSize.width(), mainSize.width() * cols / rows);
 
     ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
     ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-
+loadMaskFromFile();// потом удалить отсюда!!!
 }
 
 Main2DWindow::~Main2DWindow()
@@ -196,8 +199,7 @@ void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,fl
     minCMap =  32767;
     maxCMap = -32767;
     qint16 *dataTemp = new qint16[rows*cols];
-//    for (int j = 0; j<rows*cols; ++j)
-//        dataTemp[j]=data[chan][j];
+
     m_pCube->GetDataChannel(chan, dataTemp);
     QElapsedTimer timer3;
     timer3.start();
@@ -338,6 +340,8 @@ void Main2DWindow::finishPolygonCreation()
     pixItem->bottomRight->setCoords(rows-1,cols-1);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(ui->customPlot->axisRect());
+
+
 }
 
 QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
@@ -359,7 +363,50 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
             }
         }
     }
-    qDebug()<<"create bit picture"<<timer.elapsed();
+    qDebug()<<"create ARGB32 picture"<<timer.elapsed();
+
+    // -------------------------------Тест, начало
+    QPixmap pixMap(rows,cols);
+    pixMap.fill(Qt::green);
+    QBitmap bitMap(rows,cols);
+    bitMap.fill(Qt::color0); //прозрачный
+
+
+//    QByteArray arr;
+//    QBuffer buffer(&arr);
+//    buffer.open(QIODevice::WriteOnly);
+//    QDataStream in(&buffer);
+//    bitMap.save(&buffer,);
+
+    QByteArray byteArr(rows*cols,0x00);
+    //QBitArray bit;
+    for(int i = 0; i < rows; ++i)
+    {
+        for(int j = 0; j < cols; ++j)
+        {
+            foreach(QPolygon polygon, polygonArr)
+            {
+                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                {
+                    byteArr[i*cols+j] = 0x01;
+                }
+            }
+        }
+    }
+
+    QFile file("D:/selected.area");
+    if(file.open(QIODevice::WriteOnly))
+    {   file.write(byteArr);
+        file.close();
+    }
+    QImage im(rows,cols,QImage::Format_Indexed8);
+    if(!im.loadFromData(byteArr))
+        qDebug()<<"error load image";
+    if(!im.save("D://image.png"))
+        qDebug()<<"error save image";
+
+    //--------------------------------- Тест, конец
+
     return mask;
 }
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
@@ -508,6 +555,48 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
     if (polygonArr.last().size() > 0)
         drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
     polygonArr.last().append(QPoint(x,y));
+
+
+}
+
+void Main2DWindow::loadMaskFromFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.area");
+    QFile file(fileName);
+    QByteArray byteArr;
+    if(file.open(QIODevice::ReadOnly))
+    {
+        byteArr = file.readAll(); // добавить в Try catch
+        file.close();
+        // Идет копипаст, todo
+        QImage mask(rows,cols,QImage::Format_ARGB32);
+        mask.fill(qRgba(0, 0, 0, 0));
+        QElapsedTimer timer;
+        timer.start();
+        for(int i = 0; i < rows; ++i)
+        {
+            for(int j = 0; j < cols; ++j)
+            {
+                if(byteArr[i*cols+j] == 0x01)
+                     mask.setPixel(i,j,qRgba(0, 0, 255, 150));
+            }
+        }
+        qDebug()<<"create image from byte array: "<<timer.elapsed();
+
+        QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
+        QPixmap alphaImage(QPixmap::fromImage(mask));
+        pixItem->setPixmap(alphaImage);
+        ui->customPlot->addLayer("polygon");
+        ui->customPlot->setCurrentLayer("polygon");
+        pixItem->setScaled(true);
+        ui->customPlot->addItem(pixItem);
+        pixItem->topLeft->setCoords(0,0);
+        pixItem->bottomRight->setCoords(rows-1,cols-1);
+        pixItem->setClipToAxisRect(true);
+        pixItem->setClipAxisRect(ui->customPlot->axisRect());
+    }
+    else
+        qDebug()<<fileName<<" isn't opened";
 
 
 }

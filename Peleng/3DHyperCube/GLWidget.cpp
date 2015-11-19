@@ -7,7 +7,7 @@
 #include <QDebug>
 
 #include "../HistPlotter/histplugin.h"
-#include "ContrastWindow.h"
+
 
 using namespace std;
 
@@ -22,6 +22,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , zRot(0)
     , program(0)
     , m_attributes(attr)
+    , m_contrastTool(NULL)
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -30,14 +31,27 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     loadData(ptrCube);
     m_pHyperCube = ptrCube;
     kT = float(ROWS)/float(COLS);
-    for(int i=0;i<6;++i)
+    float coordsTemp[6][4][3] = {
+                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
+                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
+                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
+                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
+                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
+                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
+                            };
+    for(int i=0;i<6;++i) //или memcpy
         for(int j=0;j<4;++j)
-        {
-            if (coords[i][j][0] == 1)
-                coords[i][j][0] = kT;
-            else
-                coords[i][j][0] = -kT;
-        }
+            for(int k=0;k<3;++k)
+                coords[i][j][k] = coordsTemp[i][j][k];
+
+//    for(int i=0;i<6;++i)
+//        for(int j=0;j<4;++j)
+//        {
+//            if (coords[i][j][0] == 1)
+//                coords[i][j][0] = kT;
+//            else
+//                coords[i][j][0] = -kT;
+//        }
     Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
     prevChN = CHNLS, prevRowsN = ROWS;
     findMinMaxforColorMap(0.02,0.95);
@@ -140,6 +154,12 @@ void GLWidget::setClearColor(const QColor &color)
 {
     clearColor = color;
     update();
+}
+
+void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
+{
+    m_pHyperCube->ResizeCube(Ch1,Ch2,R1,R2,C1,C2);
+
 }
 
 
@@ -417,9 +437,14 @@ void GLWidget::run2DCube()
 
 void GLWidget::contrast()
 {
-     ContrastWindow *contrastTool = new ContrastWindow(absMin,absMax);//надо где-то найти настоящий мин/макс, т.к. эти - не абсолютны
-     contrastTool->show();
-     connect(contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+    if(m_contrastTool == NULL)
+    {
+        m_contrastTool = new ContrastWindow(absMin,absMax);
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+    }
+    m_contrastTool->show();
+    m_contrastTool->raise();
+    m_contrastTool->showNormal();// если окно было свернуто
 }
 
 void GLWidget::repaintWithContrast(int min, int max)
@@ -1025,10 +1050,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     qint16 *dataTemp = new qint16[ROWS*COLS];
     for (int i=0; i<10; ++i)           //!!! 10
     {
-        for (int j = 0; j<ROWS*COLS; ++j)
-        {
-            dataTemp[j]=data[i][j];
-        }
+        m_pHyperCube->GetDataChannel(i,dataTemp);
         qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];

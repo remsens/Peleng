@@ -68,8 +68,8 @@ private slots:
 
     void createPolygonSlot();
     void addPolygonPoint(uint x,uint y);
+    void loadMaskFromFile();
     void prepareToHist();
-
     void addSpectr();
 
     void contextMenuRequest(QPoint point);
