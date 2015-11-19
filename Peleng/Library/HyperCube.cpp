@@ -221,9 +221,9 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
 void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
     InfoData newInfoData;
-    newInfoData.bands = Ch2 - Ch1;
-    newInfoData.lines = R2 - R1;
-    newInfoData.samples = C2 - C1;
+    newInfoData.bands = Ch2 - Ch1+1;
+    newInfoData.lines = R2 - R1+1;
+    newInfoData.samples = C2 - C1+1;
     newInfoData.bytesType = m_infoData.bytesType;
     newInfoData.formatType = m_infoData.formatType;
     QList<double> oldWawes = this->GetListOfChannels();//=QList::fromStdList(m_infoData.listChannels) ;

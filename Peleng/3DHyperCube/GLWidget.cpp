@@ -159,7 +159,30 @@ void GLWidget::setClearColor(const QColor &color)
 void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
     m_pHyperCube->ResizeCube(Ch1,Ch2,R1,R2,C1,C2);
+    loadData(m_pHyperCube);
+    float oldKT = kT;
+    kT = float(ROWS)/float(COLS);
+    for(int i=0;i<6;++i)
+        for(int j=0;j<4;++j)
+        {
+            if (coords[i][j][0] == oldKT)
+                coords[i][j][0] = kT;
+            else
+                coords[i][j][0] = -kT;
+        }
 
+    //Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
+    this->Ch1 = 0; this->Ch2 = Ch2-Ch1; this->R1 = 0; this->R2 = R2-R1; this->C1 = 0; this->C2 = C2-C1;
+    prevChN = CHNLS, prevRowsN = ROWS;
+    findMinMaxforColorMap(0.02,0.95);
+    findAbsoluteMinMax();
+
+    makeObject();
+    createCubeSides();
+    fillCubeSides();
+    makeTextures();
+    paintGL();
+    update();
 }
 
 
@@ -768,6 +791,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Space:
         dx = 0;
         dy = 0;
+            resizeAndRedraw(50,200,1900,2400,190,790);// !!убрать, это тест
         break;
     }
     update();
