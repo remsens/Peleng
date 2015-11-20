@@ -14,6 +14,11 @@ CubePlugin::~CubePlugin()
     //delete m_w;
 }
 
+QObject* CubePlugin::GetObjectPointer()
+{
+    return this;
+}
+
 void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
 {
     // в данном плагине список точек нам не нужен. Но для общего интерфейса мы их передаем

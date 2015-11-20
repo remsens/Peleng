@@ -17,7 +17,7 @@ public:
 
 public:
     void Execute(HyperCube *cube, Attributes* attr = 0);
-
+    QObject* GetObjectPointer();
 };
 
 #endif // HISTPLUGIN_H

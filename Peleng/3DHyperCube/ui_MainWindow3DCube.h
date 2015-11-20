@@ -58,6 +58,7 @@ public:
     QMenuBar *menubar;
     QMenu *menu;
     QStatusBar *statusbar;
+    QPushButton* pushButtonUpdate;
 
     void setupUi(HyperCube *ptrCube, Attributes* attr, QMainWindow *MainWindow)
     {
@@ -133,6 +134,11 @@ public:
 
         label = new QLabel(centralwidget);
         label->setObjectName(QStringLiteral("label"));
+        pushButtonUpdate = new QPushButton(centralwidget);
+        pushButtonUpdate->setObjectName(QStringLiteral("pushButtonUpdate"));
+
+        gridLayout_2->addWidget(pushButtonUpdate, 3, 5,1,1);
+
         QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Preferred);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
@@ -254,6 +260,7 @@ public:
         QObject::connect(horizontalScrollBar_X2, SIGNAL(valueChanged(int)), label_6, SLOT(setNum(int)));
         QObject::connect(horizontalScrollBar_Y1, SIGNAL(valueChanged(int)), label_21, SLOT(setNum(int)));
         QObject::connect(horizontalScrollBar_Y2, SIGNAL(valueChanged(int)), label_9, SLOT(setNum(int)));
+        QObject::connect(pushButtonUpdate, SIGNAL(clicked()), widgetHyperCube, SLOT(updateCube()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

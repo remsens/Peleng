@@ -16,6 +16,7 @@ public:
     virtual ~CubePlugin();
 private:
     void Execute(HyperCube* cube, Attributes* attr);
+    QObject* GetObjectPointer();
 
 private:
     MainWindow* m_w;

@@ -25,25 +25,20 @@ public:
     }
 
 public:
-    virtual void Execute()
+    virtual bool Execute()
     {
 
         if (BaseNoiseAlg<T>::m_attributes->GetApplyToAllCube())
         {
-            ToCube();
+            return ToCube();
         } else
         {
             ToSpectrWindow();
+            return false;
         }
     }
-public slots:
- void updateProgress()
- {
 
- }
 
-signals:
-    void setProgress();
 private:
     void ToSpectrWindow()
     {
@@ -82,7 +77,7 @@ private:
         BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
     }
 
-    void ToCube()
+    bool ToCube()
     {
 //        QPixmap pixmap(":/NoiseRemover/icons/NoiseRemover.png");
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
@@ -120,8 +115,6 @@ private:
         T** dataCube = (T**)BaseNoiseAlg<T>::m_cube->GetDataCube();
         progressBar->setValue(0);
         QApplication::processEvents();
-        QElapsedTimer timer;
-        timer.start();
         for (u::uint32 lines = 0; lines < linesCube; lines++)
         {
              for (u::uint32 col = 0; col <columnsCube; col++)
@@ -130,7 +123,7 @@ private:
                  {
                      delete progressBar;
                      //From HDF
-                     return;
+                     return false;
                  }
                  for (u::uint32 i = 0; i < size - maskPixels+1; i++)
                  {
@@ -140,7 +133,7 @@ private:
                          mask[j] = dataCube[i+j][lines*columnsCube+col]; // формируем маску
                      }
                      qsort(mask, maskPixels, sizeof(T), Utils::Compare<T>);
-                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(i+maskPixels/2, mask + maskPixels/2, sizeof(T), lines*columnsCube+col);
+                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(i+maskPixels/2, mask + maskPixels/2, sizeof(T), (lines*columnsCube+col)*sizeof(T));
                  }
                  double a = lines*columnsCube + col;
                  double b = a/maxValueBar*100;
@@ -155,9 +148,9 @@ private:
              progressBar->setValue(100);
              QApplication::processEvents();
              progressBar->hide();
-             //delete progressBar;
+             delete progressBar;
          }
-
+        return true;
      }
 };
 

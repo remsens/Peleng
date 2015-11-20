@@ -76,6 +76,23 @@ GLWidget::~GLWidget()
     doneCurrent();
     qDebug() << "delete GLwidget";
 }
+
+void GLWidget::updateCube()
+{
+    loadData(m_pHyperCube);
+    findMinMaxforColorMap(0.02,0.95);
+    createCubeSides();
+    fillCubeSides();
+    //setFocusPolicy(Qt::StrongFocus);
+    memset(textures, 0, sizeof(textures));
+    makeTextures();
+    //rotateBy(200,400,0);
+    //rotateBy(-2560,712,0);
+    //createMenus();
+    //setMouseTracking(true);
+    //firstWindowPlotter = true;
+}
+
 void GLWidget::initializeGL()
 {
     FLAGisInit = true;
@@ -120,7 +137,10 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
-
+    QPushButton* pushButtonUpdate = new QPushButton(this);
+    pushButtonUpdate->setGeometry(0, 0, 20, 20);
+    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
+    pushButtonUpdate->show();
 
 }
 QSize GLWidget::minimumSizeHint() const
@@ -527,9 +547,22 @@ void GLWidget::addSpectr()
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pHyperCube , m_attributes);
 }
 
+void GLWidget::needToUpdate(bool needToUpdate)
+{
+    if (needToUpdate)
+    {
+
+    } else {
+
+    }
+    pContextMenu->setEnabled(true);
+}
+
 void GLWidget::Noise()
 {
     m_attributes->SetApplyToAllCube(true);
+    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
 }
 

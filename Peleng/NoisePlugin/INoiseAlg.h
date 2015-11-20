@@ -2,14 +2,14 @@
 #define INOISEALG
 
 template <typename T>
-class INoiseAlg
+class INoiseAlg : public QObject
 {
 public:
     virtual ~INoiseAlg()
     {
 
     }
-    virtual void Execute() = 0;
+    virtual bool Execute() = 0;
 };
 
 #endif // INOISEALG

@@ -42,8 +42,6 @@ DISTFILES += \
 
 FORMS += \
     mainwindow.ui \
-    ../SpectrPlotter/PlotterWindow.ui \
-    ../2DHyperCube/Main2DWindow.ui
 
 
 SUBDIRS += \

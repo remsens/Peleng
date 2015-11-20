@@ -14,6 +14,11 @@ SpectrPlugin::~SpectrPlugin()
    m_windowList.clear();
 }
 
+QObject* SpectrPlugin::GetObjectPointer()
+{
+    return this;
+}
+
 void SpectrPlugin::OnClose(PlotterWindow* plotterWindow)
 {
     for (int i = 0; i < m_windowList.size(); i++)

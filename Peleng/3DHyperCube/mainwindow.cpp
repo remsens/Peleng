@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow3DCube.h"
+//#include "ui_mainwindow.h"
 #include <QDebug>
 
 

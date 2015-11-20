@@ -8,7 +8,6 @@
 template <typename T>
 class BaseNoiseAlg: public INoiseAlg<T>
 {
-
 public:
     BaseNoiseAlg(HyperCube* cube, Attributes* attr)
         : m_cube(cube)

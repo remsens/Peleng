@@ -29,29 +29,17 @@ public:
         m_listCustomPlot.clear();
     }
 
-    virtual void Execute()
+    virtual bool Execute()
     {
 
-//        QPixmap pixmap(":/NoiseRemover/icons/NoiseRemover.png");
-//        if (BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()%2 == 0)
-//        {
-//            // ошибка, нужно нечетное число
-//            QMessageBox* box = new QMessageBox();
-//            box->setIconPixmap(pixmap);
-//            box->setInformativeText(QObject::tr("Ошибка"));
-//            box->setStandardButtons(QMessageBox::Ok);
-//            box->setButtonText(QMessageBox::Ok, QObject::tr("Ок"));
-//            box->setText("Неверно выбрано окно пикселей");
-//            box->exec();
-//            delete box;
-//            return;
-//        }
         if (BaseNoiseAlg<T>::m_attributes->GetApplyToAllCube())
         {
-            ToCube();
+            return ToCube();
+
         } else
         {
             ToWindow();
+            return false;
         }
 
     }
@@ -107,14 +95,14 @@ public:
         m_listCustomPlot.append(customPlot);
     }
 
-    void ToCube()
+    bool ToCube()
     {
         // предварительная оценка времени:
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
         u::uint32 channels = BaseNoiseAlg<T>::m_cube->GetCountofChannels();
         QProgressDialog* progressBar = new QProgressDialog();
         progressBar->setMinimum(0);
-        progressBar->setMaximum(99);
+        progressBar->setMaximum(100);
         progressBar->setCancelButtonText("Отмена");
         progressBar->show();
         progressBar->setWindowIcon(icon);
@@ -129,11 +117,8 @@ public:
         u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
         progressBar->setValue(0);
         QApplication::processEvents();
-        QElapsedTimer timer;
-        timer.start();
         for (u::uint32 ch  = 0; ch < channels; ch++)
         {
-
              for (u::uint32 i = 0; i < lines - (pixlWindow + 1)/2+1; i++)
              {
                  for (u::uint32 j = 0; j < columns - (pixlWindow + 1)/2+1; j++)
@@ -145,13 +130,13 @@ public:
                               //progressBar->setValue(100);
                               delete progressBar;
                               //From HDF
-                              return;
+                              return false;
                           }
                          memcpy(arrWindow + k*pixlWindow, dataCube[ch] +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
                      }
                      qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Utils::Compare<T>);
 
-                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow + (pixlWindow + 1)/2), sizeof(T), ((i+1) * (columns) + j +(pixlWindow + 1)/2));
+                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow + pixlWindow/2), sizeof(T), ((i+1) * (columns) + j +(pixlWindow)/2)*sizeof(T));
                   }
               }
              double a = (double)((double)ch/channels);
@@ -163,9 +148,13 @@ public:
         {
             progressBar->setValue(100);
             QApplication::processEvents();
+            progressBar->hide();
+            delete progressBar;
         }
-        delete progressBar;
+
+        //delete progressBar;
         delete [] arrWindow;
+        return true;
     }
 
 

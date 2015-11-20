@@ -18,6 +18,7 @@ public:
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);
+    QObject* GetObjectPointer();
 public slots:
     void OnClose(PlotterWindow *plotterWindow);
 private:

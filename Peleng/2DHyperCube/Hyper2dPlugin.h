@@ -15,6 +15,7 @@ public:
     virtual ~Hyper2dPlugin();
 private:
     void Execute(HyperCube* cube, Attributes* attr);
+    QObject* GetObjectPointer();
 };
 
 #endif // HYPER2DPLUGIN_H

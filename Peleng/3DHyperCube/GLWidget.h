@@ -91,7 +91,8 @@ private slots:
     void finishIsClicked();
     void createLinePlotterSlot();
     void run2DCube();
-
+    void updateCube();
+    void needToUpdate(bool needToUpdate);
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
