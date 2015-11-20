@@ -21,6 +21,7 @@ public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     ~Main2DWindow();
     void resizeEvent(QResizeEvent *e);
+
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
     void fillChanList();

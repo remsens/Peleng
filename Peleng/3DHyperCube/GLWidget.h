@@ -58,7 +58,7 @@ signals:
     void drawLabel(int, int, QString);
     void signalCurrentDataXYZ(uint,uint,uint);
     void flagsToolTip(QPoint, QString);
-    //void labelHelpLine(QString);
+    void redrawSliders();
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;

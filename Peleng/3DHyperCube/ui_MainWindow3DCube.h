@@ -32,6 +32,7 @@ class Ui_MainWindow
 {
 public:
     QAction *actionBrightCheck;
+    QAction *actionResizeCube;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_5;
     QVBoxLayout *verticalLayout;
@@ -72,6 +73,7 @@ public:
         actionBrightCheck = new QAction(MainWindow);
         actionBrightCheck->setObjectName(QStringLiteral("action"));
         actionBrightCheck->setCheckable(true);
+        actionResizeCube = new QAction("Изменить размер куба",MainWindow);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayout_5 = new QVBoxLayout(centralwidget);
@@ -113,9 +115,9 @@ public:
         horizontalScrollBar_X2 = new QScrollBar(centralwidget);
         horizontalScrollBar_X2->setObjectName(QStringLiteral("horizontalScrollBar_X2"));
         horizontalScrollBar_X2->setLayoutDirection(Qt::LeftToRight);
-        horizontalScrollBar_X2->setValue(0);
+        //horizontalScrollBar_X2->setValue(0);
         horizontalScrollBar_X2->setOrientation(Qt::Horizontal);
-        horizontalScrollBar_X2->setInvertedControls(true);
+        //horizontalScrollBar_X2->setInvertedControls(true);
 
         gridLayout_2->addWidget(horizontalScrollBar_X2, 1, 5, 1, 1);
 
@@ -240,7 +242,7 @@ public:
 
         menubar->addAction(menu->menuAction());
         menu->addAction(actionBrightCheck);
-
+        menu->addAction(actionResizeCube);
         retranslateUi(MainWindow);
         QObject::connect(horizontalScrollBar_Ch1, SIGNAL(valueChanged(int)), widgetHyperCube, SLOT(sliderCh1ValueChanged(int)));
         QObject::connect(horizontalScrollBar_Ch2, SIGNAL(valueChanged(int)), widgetHyperCube, SLOT(sliderCh2ValueChanged(int)));

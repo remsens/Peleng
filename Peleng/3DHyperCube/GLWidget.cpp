@@ -183,6 +183,7 @@ void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::ui
     makeTextures();
     paintGL();
     update();
+    emit redrawSliders();
 }
 
 
@@ -791,7 +792,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Space:
         dx = 0;
         dy = 0;
-            resizeAndRedraw(50,200,1900,2400,190,790);// !!убрать, это тест
         break;
     }
     update();

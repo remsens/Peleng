@@ -290,17 +290,8 @@
   <customwidget>
    <class>GLWidget</class>
    <extends>QWidget</extends>
-   <header>glwidget.h</header>
+   <header>GLWidget.h</header>
    <container>1</container>
-   <slots>
-    <slot>slider1ValueChanged(int)</slot>
-    <slot>sliderCh1ValueChanged(int)</slot>
-    <slot>sliderCh2ValueChanged(int)</slot>
-    <slot>sliderX1ValueChanged(int)</slot>
-    <slot>sliderX2ValueChanged(int)</slot>
-    <slot>sliderY1ValueChanged(int)</slot>
-    <slot>sliderY2ValueChanged(int)</slot>
-   </slots>
   </customwidget>
  </customwidgets>
  <resources/>

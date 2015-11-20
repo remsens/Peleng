@@ -68,15 +68,15 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
-    QSize mainSize = this->size();
-    if(cols > rows)
-        this->resize(mainSize.width(), mainSize.width() * rows / cols);
-    else
-         this->resize(mainSize.width(), mainSize.width() * cols / rows);
+//    QSize mainSize = this->size();
+//    if(cols > rows) //rows/cols<1
+//        this->resize(mainSize.width() * rows/cols , mainSize.height());
+//    else
+//        this->resize(mainSize.width(), mainSize.width() * rows / cols);
+    //ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
+    //ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+//loadMaskFromFile();// потом удалить отсюда!!!
 
-    ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
-    ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-loadMaskFromFile();// потом удалить отсюда!!!
 }
 
 Main2DWindow::~Main2DWindow()
@@ -86,9 +86,20 @@ Main2DWindow::~Main2DWindow()
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
-    ui->customPlot->setMinimumWidth(1);
-    ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
-
+   // ui->customPlot->setMinimumWidth(1);
+   // ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
+   // ui->customPlot->setFixedWidth(ui->customPlot->height()*  rows/cols);
+    //ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    QSize framesize =  ui->frameCustomPlot->size();
+    double RowsToCols = (double)rows / (double)cols;
+    if(RowsToCols > 1)
+    {
+        ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
+    }
+        else
+    {
+        ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+    }
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -399,11 +410,6 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
     {   file.write(byteArr);
         file.close();
     }
-    QImage im(rows,cols,QImage::Format_Indexed8);
-    if(!im.loadFromData(byteArr))
-        qDebug()<<"error load image";
-    if(!im.save("D://image.png"))
-        qDebug()<<"error save image";
 
     //--------------------------------- Тест, конец
 

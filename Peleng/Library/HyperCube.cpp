@@ -232,7 +232,7 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
            newInfoData.listChannels.push_back(oldWawes.at(Ch1 + i));
     }
  // потестить и сравнить с циклом выше
-/*    std::list<double>::iterator range_begin = m_infoData.listChannels.begin();
+ /*   std::list<double>::iterator range_begin = m_infoData.listChannels.begin();
     std::list<double>::iterator range_end = m_infoData.listChannels.begin();
     std::advance(range_end,Ch1-1);
     newInfoData.listChannels.erase(range_begin, range_end);
