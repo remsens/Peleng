@@ -5,7 +5,7 @@
 #include <QtWidgets>
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
-
+#include "GLWidget.h"
 namespace Ui {
 class MainWindow;
 }
@@ -35,6 +35,7 @@ private:
     void setSlidersSettings();
 
     Ui::MainWindow *ui;
+    GLWidget *widgetHyperCube;
     HyperCube* hyperCube;
     QLabel* pBrLabel;
 };
