@@ -68,6 +68,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
+    ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
 //    QSize mainSize = this->size();
 //    if(cols > rows) //rows/cols<1
 //        this->resize(mainSize.width() * rows/cols , mainSize.height());
