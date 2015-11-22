@@ -134,6 +134,7 @@ private:
     int Ch1, Ch2, R1, R2, C1, C2; // хранят value слайдеров
     int prevChN, prevRowsN ;
     int minCMap,maxCMap;
+    int minCMapSides,maxCMapSides;
     int absMin,absMax;
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data

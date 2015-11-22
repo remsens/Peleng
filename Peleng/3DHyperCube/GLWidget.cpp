@@ -60,7 +60,6 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
-    //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
@@ -496,6 +495,8 @@ void GLWidget::repaintWithContrast(int min, int max)
     textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
     textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,min,max).transformed(rtt270));
     update();
+    minCMapSides = min; // чтобы при последующих перерисовках использовались новые, вручную установленные,  значения
+    maxCMapSides = max;
 
 }
 
@@ -832,12 +833,12 @@ void GLWidget::makeTextures()
     }
 
 
-    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
-    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //напротив темной грани
-    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //пустая грань
-    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270).mirrored(true,false)); //
-    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMap,maxCMap).transformed(rtt270)); //наполовину видная грань
-    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMap,maxCMap).transformed(rtt270));
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// верхняя грань с фото
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //нижняя грань с фото
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270));
 
 }
 
@@ -1084,6 +1085,8 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             maxCMap = max;
         qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
     }
+    minCMapSides = minCMap;
+    maxCMapSides = maxCMap;
     delete[] dataTemp;
 }
 
