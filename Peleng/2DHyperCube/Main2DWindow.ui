@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>867</width>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,7 +199,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>867</width>
      <height>21</height>
     </rect>
    </property>
@@ -214,6 +214,7 @@
      <addaction name="actionInterpolation"/>
     </widget>
     <addaction name="subMenuImage"/>
+    <addaction name="polygonTool"/>
    </widget>
    <addaction name="menuOptions"/>
   </widget>
@@ -234,6 +235,11 @@
    </property>
    <property name="text">
     <string>Интерполяция</string>
+   </property>
+  </action>
+  <action name="polygonTool">
+   <property name="text">
+    <string>Выделение области</string>
    </property>
   </action>
  </widget>

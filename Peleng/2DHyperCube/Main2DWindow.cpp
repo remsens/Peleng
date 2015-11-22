@@ -5,17 +5,17 @@ int cmp2(const void *a, const void *b);
 
 
 Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::Main2DWindow),
-    firstWindowPlotter(true),
-    linePlotterIsActive(false),
-
-    m_dataX(0), m_dataY(0),
-    m_interplolate(false),
-    flagSlidersEnabledForSlots(false),
-    flagPolygonIsCreated(true),
-    flagDoubleClicked(false)
-         ,m_pCube(cube)
+    QMainWindow(parent)
+    , ui(new Ui::Main2DWindow)
+    , firstWindowPlotter(true)
+    , linePlotterIsActive(false)
+    , m_dataX(0)
+    , m_dataY(0)
+    , m_interplolate(false)
+    , flagSlidersEnabledForSlots(false)
+    , flagPolygonIsCreated(true)
+    , flagDoubleClicked(false)
+    , m_pCube(cube)
     , m_attributes(attr)
 
 
@@ -45,7 +45,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
-
+    polyMngr = new PolygonManager(this);
 
     if (m_attributes->GetPointsList().size())
     {
@@ -62,6 +62,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
     connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
     connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
+    connect(ui->polygonTool,SIGNAL(triggered()),SLOT(polygonTool()));
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
@@ -69,7 +70,9 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
     ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
-//    QSize mainSize = this->size();
+
+
+    //    QSize mainSize = this->size();
 //    if(cols > rows) //rows/cols<1
 //        this->resize(mainSize.width() * rows/cols , mainSize.height());
 //    else
@@ -510,6 +513,11 @@ void Main2DWindow::setInitSliders(int chan)
     ui->SliderContrastMax->setValue(ChnlLimits[chan][1]);
     delete[] dataTemp;
     flagSlidersEnabledForSlots = true;
+}
+
+void Main2DWindow::polygonTool()
+{
+    polyMngr->show();
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)

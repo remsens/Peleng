@@ -31,11 +31,7 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
-    PolygonsManager.cpp
-
-    Polygon.cpp
-
-
+    PolygonManager.cpp
     ../Library/Attributes/Attributes.cpp
 
 
@@ -47,19 +43,13 @@ HEADERS += \
     ../Library/Types.h \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
-    PolygonsManager.h
-
-
-    Polygon.h
-
-
-
+    PolygonManager.h
     ../Library/Attributes/Attributes.h
 
 
 FORMS += \
     Main2DWindow.ui \
-    PolygonsManager.ui
+    PolygonManager.ui
 
 RESOURCES += \
     icons2Dcube.qrc \
