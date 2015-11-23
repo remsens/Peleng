@@ -22,7 +22,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , m_attributes(attr)
 {
     qDebug() << "enter to GL";
-    setAttribute(Qt::WA_DeleteOnClose, true);
+    setAttribute(Qt::WA_DeleteOnClose, false);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -48,6 +48,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
+    m_needToUpdate = false;
 }
 
 GLWidget::~GLWidget()
@@ -59,6 +60,8 @@ GLWidget::~GLWidget()
         delete textures[i];
 
     SidesDestructor();
+    disconnect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    disconnect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     delete pContextMenu;
     delete pPlotAction;
     delete pAddSpectrAction;
@@ -440,19 +443,40 @@ void GLWidget::run2DCube()
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
-    m_attributes->ClearList();
-    m_attributes->SetPoint(x, y, z);
-    m_attributes->SetExternalSpectrFlag(false);
-    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
-
+    if (!m_needToUpdate)
+    {
+        m_attributes->ClearList();
+        m_attributes->SetPoint(x, y, z);
+        m_attributes->SetExternalSpectrFlag(false);
+        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
+    }
 }
 
 void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    m_attributes->ClearList();
-    m_attributes->SetPoint(x1, y1, z1);
-    m_attributes->SetPoint(x2, y2, z2);
-    m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pHyperCube, m_attributes);
+    if (!m_needToUpdate)
+    {
+        m_attributes->ClearList();
+        m_attributes->SetPoint(x1, y1, z1);
+        m_attributes->SetPoint(x2, y2, z2);
+        m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pHyperCube, m_attributes);
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
+    }
 }
 
 
@@ -551,9 +575,8 @@ void GLWidget::needToUpdate(bool needToUpdate)
 {
     if (needToUpdate)
     {
-
-    } else {
-
+        // кнопка
+        m_needToUpdate = true;
     }
     pContextMenu->setEnabled(true);
 }

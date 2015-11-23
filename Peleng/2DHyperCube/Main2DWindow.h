@@ -34,6 +34,9 @@ public slots:
     //! @param y - вектор с координатами У точек
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
     void closeEvent(QCloseEvent *);
+    void needToUpdate(bool res);
+    void updateData();
+    void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
     void CloseWindow(Main2DWindow* window);
@@ -46,15 +49,21 @@ private slots:
     void startIsClicked(uint dataX, uint dataY);//нажато "Начало" из контекстного меню
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
+
     void createLinePlotterSlot();
     void prepareToHist();
     void addSpectr();
     void contextMenuRequest(QPoint point);
 
+    void OnActionMedian3Triggered();
+    void OnActionMedian5Triggered();
+    void OnActionMedian7Triggered();
+
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
-
+    void Noise();
+private:
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
     QAction *pPlotAction;
@@ -62,6 +71,11 @@ private:
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
     QAction* pAddSpectr;
+    QMenu* m_filters;
+    QMenu* m_medianFilter;
+    QAction* m_actionMedian3;
+    QAction* m_actionMedian5;
+    QAction* m_actionMedian7;
     bool firstWindowPlotter;
     bool linePlotterIsActive;
     HyperCube* m_pCube;
@@ -76,7 +90,7 @@ private:
     Attributes* m_attributes;
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
-
+    bool m_needToUpdate;
 };
 
 #endif // MAIN2DWINDOW_H

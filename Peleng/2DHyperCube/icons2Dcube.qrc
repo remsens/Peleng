@@ -2,4 +2,7 @@
     <qresource prefix="/icons2Dcube">
         <file>icons/Heat Map-50.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>icons/NoiseRemover.png</file>
+    </qresource>
 </RCC>

@@ -203,6 +203,7 @@ private:
     QString strForLbl;
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
+    bool m_needToUpdate;
 
 
 };

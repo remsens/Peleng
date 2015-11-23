@@ -85,6 +85,7 @@ void PlotterWindow::NoiseAlgExecute()
     bool oldHold = m_hold;
     m_hold = true;
     m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetApplyToAllCube(false);
     m_attributes->SetXUnit(m_xArr);
     m_attributes->SetYUnit(m_yArr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
@@ -111,6 +112,8 @@ void PlotterWindow::ActionNoise7Toggled()
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
+    m_xArr.clear();
+    m_yArr.clear();
     QString err;
     try
     {    //если можем получить точку гиперкуба
