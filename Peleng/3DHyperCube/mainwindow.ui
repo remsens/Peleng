@@ -22,10 +22,16 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout"/>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="GLWidget" name="widgetHyperCube" native="true">
+        <zorder>pushButton</zorder>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,1,1,1,100,100">
+     <layout class="QGridLayout" name="gridLayout_2" columnstretch="1,0,0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
@@ -35,16 +41,16 @@
       <property name="horizontalSpacing">
        <number>6</number>
       </property>
-      <item row="2" column="5">
-       <widget class="QScrollBar" name="horizontalScrollBar_Y2">
+      <item row="2" column="4">
+       <widget class="QScrollBar" name="horizontalScrollBar_Y1">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
-      <item row="0" column="5">
-       <widget class="QScrollBar" name="horizontalScrollBar_Ch2">
-        <property name="layoutDirection">
+      <item row="0" column="3">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
@@ -57,15 +63,15 @@
          </size>
         </property>
         <property name="text">
-         <enum>Qt::LeftToRight</enum>
+         <string>0</string>
         </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
-       <widget class="QScrollBar" name="horizontalScrollBar_Ch1">
+      <item row="1" column="4">
+       <widget class="QScrollBar" name="horizontalScrollBar_X1">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -151,10 +157,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>:</string>
+      <item row="2" column="5">
+       <widget class="QScrollBar" name="horizontalScrollBar_Y2">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -222,8 +228,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_20">
+      <item row="2" column="1" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="label_21">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -244,8 +250,8 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="label_21">
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_19">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -286,32 +292,124 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Опции</string>
-    </property>
-    <addaction name="actionBrightCheck"/>
-    <addaction name="actionResizeCube"/>
-   </widget>
-   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionBrightCheck">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Яркость под курсором</string>
-   </property>
-  </action>
-  <action name="actionResizeCube">
-   <property name="text">
-    <string>Изменить размер куба</string>
-   </property>
-  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GLWidget</class>
+   <extends>QWidget</extends>
+   <header>glwidget.h</header>
+   <container>1</container>
+   <slots>
+    <slot>slider1ValueChanged(int)</slot>
+    <slot>sliderCh1ValueChanged(int)</slot>
+    <slot>sliderCh2ValueChanged(int)</slot>
+    <slot>sliderX1ValueChanged(int)</slot>
+    <slot>sliderX2ValueChanged(int)</slot>
+    <slot>sliderY1ValueChanged(int)</slot>
+    <slot>sliderY2ValueChanged(int)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
+  <connection>
+   <sender>horizontalScrollBar_Ch1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderCh1ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>484</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_Ch2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderCh2ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>679</x>
+     <y>488</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>670</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_X1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderX1ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>580</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_X2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderX2ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>782</x>
+     <y>585</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>782</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_Y1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderY1ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>675</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalScrollBar_Y2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>widgetHyperCube</receiver>
+   <slot>sliderY2ValueChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>879</x>
+     <y>678</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>868</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
   <connection>
    <sender>horizontalScrollBar_Ch1</sender>
    <signal>valueChanged(int)</signal>

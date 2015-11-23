@@ -21,6 +21,7 @@ HEADERS       = \
     ../Library/GenericExc.h \
     GLWidget.h \
     mainwindow.h \
+    ui_MainWindow3DCube.h \
     ../Library/QCustomPlot.h \
     ../Library/Attributes/Attributes.h
 
