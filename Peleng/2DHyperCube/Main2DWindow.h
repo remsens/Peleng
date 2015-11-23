@@ -33,8 +33,10 @@ public slots:
     //! @param x - вектор с координатами Х точек
     //! @param y - вектор с координатами У точек
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
+    void closeEvent(QCloseEvent *);
 signals:
     void signalCurrentDataXY(uint,uint);
+    void CloseWindow(Main2DWindow* window);
 private slots:
     void mousePressOnColorMap(QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
@@ -48,6 +50,7 @@ private slots:
     void prepareToHist();
     void addSpectr();
     void contextMenuRequest(QPoint point);
+
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();

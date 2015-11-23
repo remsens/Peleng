@@ -59,6 +59,10 @@ Main2DWindow::~Main2DWindow()
     delete ui;
 }
 
+void Main2DWindow::closeEvent(QCloseEvent *) {
+    emit CloseWindow(this);
+}
+
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
 {
     m_initChanel = initChanel;
