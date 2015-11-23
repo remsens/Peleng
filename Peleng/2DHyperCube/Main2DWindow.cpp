@@ -349,12 +349,13 @@ void Main2DWindow::finishPolygonCreation()
     pixItem->setPixmap(alphaImage);
     ui->customPlot->addLayer("polygon");
     ui->customPlot->setCurrentLayer("polygon");
-    pixItem->setScaled(true);
+    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
     ui->customPlot->addItem(pixItem);
     pixItem->topLeft->setCoords(0,0);
     pixItem->bottomRight->setCoords(rows-1,cols-1);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(ui->customPlot->axisRect());
+    ui->customPlot->replot();
 
 
 }
@@ -484,6 +485,8 @@ void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
     line->end->setCoords(x2,y2);
     line->setPen(QPen(Qt::red));
     ui->customPlot->addItem(line);
+    ui->customPlot->replot();
+
 }
 
 void Main2DWindow::setInitSliders(int chan)
