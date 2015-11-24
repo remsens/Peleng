@@ -14,8 +14,9 @@ class Hyper2dPlugin : public QObject, public  ProcessingPluginsInterface
 public:
     explicit Hyper2dPlugin(QObject *parent = 0);
     virtual ~Hyper2dPlugin();
+
 public slots:
-    void OnClose(Main2DWindow* window2D);
+    void OnClose(Main2DWindow* window2D, bool longOperation);
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);

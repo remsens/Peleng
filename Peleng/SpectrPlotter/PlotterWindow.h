@@ -40,7 +40,8 @@ public slots:
 
 private:
     void NoiseAlgExecute();
-
+private slots:
+    void graphClicked(QCPAbstractPlottable*plottable);
 private:
     bool m_hold;
     Ui::PlotterWindow *ui;

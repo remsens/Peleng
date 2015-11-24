@@ -39,7 +39,7 @@ public slots:
     void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
-    void CloseWindow(Main2DWindow* window);
+    void CloseWindow(Main2DWindow* window, bool longOperation);
 private slots:
     void mousePressOnColorMap(QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
@@ -91,6 +91,7 @@ private:
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
     bool m_needToUpdate;
+    bool m_longOperation;
 };
 
 #endif // MAIN2DWINDOW_H

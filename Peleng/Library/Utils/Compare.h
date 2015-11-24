@@ -2,14 +2,14 @@
 #define UTILS_H
 
 
-class Utils
+class Compare
 {
 public:
-    Utils();
-    virtual ~Utils();
+    Compare();
+    virtual ~Compare();
 
     template<typename T>
-    static Compare(const void *a, const void *b)
+    static CompareVariables(const void *a, const void *b)
     {
         const T *pa = (const T*)a;
         const T *pb = (const T*)b;

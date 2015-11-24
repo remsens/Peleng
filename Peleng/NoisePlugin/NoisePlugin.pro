@@ -23,8 +23,9 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     AlgFactory.cpp \
     Median1DAlg.cpp \
-    Utils.cpp \
-    ../Library/QCustomPlot.cpp
+    ../Library/QCustomPlot.cpp \
+    ../Library/CustomPlotForPreview2D/Preview2D.cpp \
+    ../Library/Utils/Compare.cpp
 
 
 HEADERS += \
@@ -39,10 +40,14 @@ HEADERS += \
     Median2DAlg.h \
     Median1DAlg.h \
     AlgFactory.h \
-    Utils.h \
-    ../Library/QCustomPlot.h
+    ../Library/QCustomPlot.h \
+    ../Library/CustomPlotForPreview2D/Preview2D.h \
+    ../Library/Utils/Compare.h
 
 RESOURCES += \
     resources.qrc
+
+FORMS += \
+    ../Library/CustomPlotForPreview2D/Preview2D.ui
 
 

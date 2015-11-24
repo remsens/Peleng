@@ -15,7 +15,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent)
      ,m_pCube(cube)
     , m_attributes(attr)
 {
-    setAttribute(Qt::WA_DeleteOnClose, true);
+    setAttribute(Qt::WA_DeleteOnClose, false);
     ui->setupUi(this);
     pContextMenu = 0;
     pPlotAction = 0;
@@ -63,6 +63,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent)
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
     drawHeatMap(m_initChanel,minCMap, maxCMap);
     m_needToUpdate = false;
+    m_longOperation = false;
     connectionsOfPlugins();
 }
 
@@ -88,6 +89,9 @@ Main2DWindow::~Main2DWindow()
     delete ui;
 }
 
+void Main2DWindow::closeEvent(QCloseEvent *) {
+    emit CloseWindow(this, m_longOperation);
+}
 void Main2DWindow::updateData()
 {
     ui->listWidget->setCurrentRow(m_initChanel);
@@ -105,6 +109,7 @@ void Main2DWindow::connectionsOfPlugins()
 {
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
+    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
 }
 
@@ -112,6 +117,7 @@ void Main2DWindow::needToUpdate(bool res)
 {
     pContextMenu->setEnabled(true);
     ui->menubar->setEnabled(true);
+    ui->listWidget->setEnabled(true);
     if (res)
     {
         // кнопка
@@ -119,10 +125,6 @@ void Main2DWindow::needToUpdate(bool res)
         m_needToUpdate = true;
 
     }
-}
-
-void Main2DWindow::closeEvent(QCloseEvent *) {
-    emit CloseWindow(this);
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -369,7 +371,9 @@ void Main2DWindow::createMenus()
         m_medianFilter->addAction(m_actionMedian7);
         m_filters->addMenu(m_medianFilter);
         pContextMenu->addMenu(m_filters);
-
+        connect(m_actionMedian3, SIGNAL(triggered()), this, SLOT(OnActionMedian3Triggered()));
+        connect(m_actionMedian5, SIGNAL(triggered()), this, SLOT(OnActionMedian5Triggered()));
+        connect(m_actionMedian7, SIGNAL(triggered()), this, SLOT(OnActionMedian7Triggered()));
     }
 }
 
@@ -393,6 +397,8 @@ void Main2DWindow::OnActionMedian7Triggered()
 
 void Main2DWindow::Noise()
 {
+    m_attributes->ClearList();
+    m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetApplyToAllCube(false);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);

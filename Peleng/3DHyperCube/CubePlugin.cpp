@@ -6,12 +6,27 @@
 #include "../LinePlotter/LinePlotterWindow.h"
 CubePlugin::CubePlugin(QObject *parent)
 {
-   // m_w = new MainWindow();
 }
 
 CubePlugin::~CubePlugin()
 {
-    //delete m_w;
+    for (int i = 0; i < m_listWindows.size(); i++)
+    {
+        delete m_listWindows.at(i);
+        m_listWindows.removeAt(i);
+    }
+}
+
+void CubePlugin::OnClose(MainWindow* window, bool longOperation)
+{
+    for (int i = 0; i < m_listWindows.size(); i++)
+    {
+        if (m_listWindows.at(i) == window && !longOperation)
+        {
+            delete m_listWindows.at(i);
+            m_listWindows.removeAt(i);
+        }
+    }
 }
 
 QObject* CubePlugin::GetObjectPointer()
@@ -44,11 +59,12 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
     labelSplash->show();
 
     QCoreApplication::processEvents();
-    m_w = new MainWindow(cube, attr);
-    m_w->processData();// передаем в качестве параметра указатель на объект HyperCube
-    m_w->resize(1024,768);
+    MainWindow* w = new MainWindow(cube, attr);
+    m_listWindows.append(w);
+    w->processData();
+    w->resize(1024,768);
     labelSplash->hide();
-    m_w->show();
+    w->show();
     delete labelSplash;
     delete pix;
 

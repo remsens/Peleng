@@ -9,7 +9,8 @@
 #include <QApplication>
 #include "../Library/Types.h"
 #include "../Library/QCustomPlot.h"
-#include "Utils.h"
+#include "../Library/Utils/Compare.h"
+#include "../Library/CustomPlotForPreview2D/Preview2D.h"
 
 template <typename T>
 class Median2DAlg : public BaseNoiseAlg<T>
@@ -22,11 +23,11 @@ public:
     }
     virtual ~Median2DAlg()
     {
-        for (int i = 0; i < m_listCustomPlot.size(); i++)
+        /*for (int i = 0; i < m_listCustomPlot.size(); i++)
         {
             delete m_listCustomPlot.at(i);
         }
-        m_listCustomPlot.clear();
+        m_listCustomPlot.clear();*/
     }
 
     virtual bool Execute()
@@ -45,8 +46,11 @@ public:
     }
     void ToWindow()
     {
-        T* dataChannel = new T[BaseNoiseAlg<T>::m_cube->GetSizeChannel()];
-        BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, dataChannel);
+        double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()];
+        QVector<double> data;
+        BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, data);
+        memcpy(dataChannel, data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel());
+        data.clear();
         u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
         // фильтр
         u::uint32 pixlWindow = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
@@ -60,39 +64,13 @@ public:
                 {
                    memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
                 }
-                qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Utils::Compare<T>);
-                dataChannel[(i+1) * (columns) + j +(pixlWindow + 1)/2] = arrWindow [pixlWindow + (pixlWindow + 1)/2];
+                qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Compare::CompareVariables<T>);
+                dataChannel[(i+1) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow + pixlWindow/2];
             }
         }
-// отображение без шума
-        int minCMap =  32767;
-        int maxCMap = -32767;
-        T* dataTemp = new T[BaseNoiseAlg<T>::m_cube->GetSizeChannel()];
-        memcpy(dataTemp, dataChannel, BaseNoiseAlg<T>::m_cube->GetSizeChannel());
-        qsort(dataTemp, BaseNoiseAlg<T>::m_cube->GetSizeChannel(), sizeof(T), Utils::Compare<T>);
-        QCustomPlot* customPlot = new QCustomPlot();
-       // customPlot->set
-        QCPColorMap* colorMap = new QCPColorMap(customPlot->xAxis, customPlot->yAxis);
-        colorMap->data()->setSize(BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns());
-        colorMap->data()->setRange(QCPRange(0, BaseNoiseAlg<T>::m_cube->GetLines()-1), QCPRange(0, BaseNoiseAlg<T>::m_cube->GetColumns()-1));
-        customPlot->addPlottable(colorMap);
-        for (u::uint32 x = 0; x < BaseNoiseAlg<T>::m_cube->GetLines(); x++) {
-            for (u::uint32 y=0; y < BaseNoiseAlg<T>::m_cube->GetColumns(); y++) {
-                colorMap->data()->setCell(x, y, dataChannel[x * BaseNoiseAlg<T>::m_cube->GetColumns() + y] );
-            }
-        }
-        minCMap = dataTemp[int(BaseNoiseAlg<T>::m_cube->GetSizeChannel()*0.02)];
-        maxCMap = dataTemp[int(BaseNoiseAlg<T>::m_cube->GetSizeChannel()*0.98)];
-        customPlot->rescaleAxes();
-        delete [] dataTemp;
-        colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-        colorMap->setGradient(QCPColorGradient::gpGrayscale);
-        colorMap->setInterpolate(false);
-        customPlot->setInteraction(QCP::iRangeZoom,true);
-        customPlot->setInteraction(QCP::iRangeDrag,true);
-        customPlot->replot();
-        customPlot->show();
-        m_listCustomPlot.append(customPlot);
+        Preview2D* previewWindow = new Preview2D();
+        previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+        //delete [] dataChannel;
     }
 
     bool ToCube()
@@ -134,7 +112,7 @@ public:
                           }
                          memcpy(arrWindow + k*pixlWindow, dataCube[ch] +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
                      }
-                     qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Utils::Compare<T>);
+                     qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Compare::CompareVariables<T>);
 
                      BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow + pixlWindow/2), sizeof(T), ((i+1) * (columns) + j +(pixlWindow)/2)*sizeof(T));
                   }
@@ -158,8 +136,6 @@ public:
     }
 
 
-private:
-    QList<QCustomPlot*> m_listCustomPlot;
 };
 #endif // MEDIAN2DALG
 

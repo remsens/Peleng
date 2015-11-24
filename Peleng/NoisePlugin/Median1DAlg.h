@@ -7,7 +7,7 @@
 #include <QProgressDialog>
 #include <QApplication>
 #include "../Library/Types.h"
-#include "Utils.h"
+#include "../Library/Utils/Compare.h"
 #include <QDebug>
 
 template <typename T>
@@ -64,7 +64,7 @@ private:
             {
                 mask[j] = spectrMas[i+j]; // формируем маску
             }
-            qsort(mask, BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount(), sizeof(double), Utils::Compare<double>);
+            qsort(mask, BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount(), sizeof(double), Compare::CompareVariables<double>);
             spectrMas.data()[i+BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()/2] = mask[BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()/2];
         }
         BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
@@ -132,7 +132,7 @@ private:
                      {
                          mask[j] = dataCube[i+j][lines*columnsCube+col]; // формируем маску
                      }
-                     qsort(mask, maskPixels, sizeof(T), Utils::Compare<T>);
+                     qsort(mask, maskPixels, sizeof(T), Compare::CompareVariables<T>);
                      BaseNoiseAlg<T>::m_cube->SetDataBuffer(i+maskPixels/2, mask + maskPixels/2, sizeof(T), (lines*columnsCube+col)*sizeof(T));
                  }
                  double a = lines*columnsCube + col;

@@ -6,6 +6,7 @@
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
 #include "GLWidget.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -30,6 +31,7 @@ public slots:
    void connectionsOfPlugins();
    void setDisabledMenuBar(bool);
    void setEnabledMenuBar(bool);
+
 protected:
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
@@ -37,11 +39,13 @@ protected:
 private:
     void setSlidersSettings();
 
+private:
     Ui::MainWindow *ui;
     GLWidget *widgetHyperCube;
     HyperCube* hyperCube;
     QLabel* pBrLabel;
     Attributes* m_attr;
+
 };
 
 #endif // MAINWINDOW_H
