@@ -45,7 +45,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
-    polyMngr = new PolygonManager(this);
+    polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
 
     if (m_attributes->GetPointsList().size())
     {
@@ -347,8 +347,8 @@ void Main2DWindow::finishPolygonCreation()
     QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
     QPixmap alphaImage(QPixmap::fromImage(mask));
     pixItem->setPixmap(alphaImage);
-    ui->customPlot->addLayer("polygon");
-    ui->customPlot->setCurrentLayer("polygon");
+//    ui->customPlot->addLayer("polygon");
+//    ui->customPlot->setCurrentLayer("polygon");
     pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
     ui->customPlot->addItem(pixItem);
     pixItem->topLeft->setCoords(0,0);
@@ -368,6 +368,7 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
 
     QImage mask(rows,cols,QImage::Format_ARGB32);
     mask.fill(qRgba(0, 0, 0, 0));
+    QByteArray byteArr(rows*cols,0x00);
     for(int i = 0; i < rows; ++i)
     {
         for(int j = 0; j < cols; ++j)
@@ -375,40 +376,20 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
             foreach(QPolygon polygon, polygonArr)
             {
                 if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                 {
+                    byteArr[i*cols+j] = 0x01;
                     mask.setPixel(i,j,qRgba(255, 0, 0, 255));
+                }
             }
         }
     }
     qDebug()<<"create ARGB32 picture"<<timer.elapsed();
 
     // -------------------------------Тест, начало
-    QPixmap pixMap(rows,cols);
-    pixMap.fill(Qt::green);
+
     QBitmap bitMap(rows,cols);
     bitMap.fill(Qt::color0); //прозрачный
 
-
-//    QByteArray arr;
-//    QBuffer buffer(&arr);
-//    buffer.open(QIODevice::WriteOnly);
-//    QDataStream in(&buffer);
-//    bitMap.save(&buffer,);
-
-    QByteArray byteArr(rows*cols,0x00);
-    //QBitArray bit;
-    for(int i = 0; i < rows; ++i)
-    {
-        for(int j = 0; j < cols; ++j)
-        {
-            foreach(QPolygon polygon, polygonArr)
-            {
-                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
-                {
-                    byteArr[i*cols+j] = 0x01;
-                }
-            }
-        }
-    }
 
     QFile file("D:/selected.area");
     if(file.open(QIODevice::WriteOnly))
