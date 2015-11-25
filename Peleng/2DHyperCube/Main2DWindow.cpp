@@ -309,7 +309,7 @@ void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
 
 void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 {
-    if(flagDoubleClicked)
+    if(flagDoubleClicked) // потом брать этот флаг из мэнеджера. Флаг нужен, чтобы повторно не добавлялась одна и та же точка
     {
         flagDoubleClicked  = false;
         return;
