@@ -49,6 +49,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     setMouseTracking(true);
     firstWindowPlotter = true;
     m_needToUpdate = false;
+    cantDeleteVar = false;
 }
 
 GLWidget::~GLWidget()
@@ -78,6 +79,11 @@ GLWidget::~GLWidget()
 
     doneCurrent();
     qDebug() << "delete GLwidget";
+}
+
+bool GLWidget::cantDelete()
+{
+    return cantDeleteVar;
 }
 
 void GLWidget::updateCube()
@@ -583,10 +589,16 @@ void GLWidget::needToUpdate(bool needToUpdate)
 
 void GLWidget::Noise()
 {
+    cantDeleteVar = true;
     m_attributes->SetApplyToAllCube(true);
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
+    if (this->isHidden())
+    {
+        emit CanDelete();
+    }
+    cantDeleteVar = false;
 }
 
 void GLWidget::OnActionMedian1D_3Triggered()

@@ -19,7 +19,7 @@ private:
     QObject* GetObjectPointer();
 
 public slots:
-    void OnClose(MainWindow* window, bool longOperation);
+    void OnClose(MainWindow* window, bool cantDelete);
 
 private:
     QList<MainWindow*> m_listWindows;

@@ -19,19 +19,20 @@ Preview2D::~Preview2D()
     delete m_ui;
 }
 
-void Preview2D::Plot(const double* data, const int rows, const int cols, const int numberOfActiveChannel)
+void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
 {
-    setFixedHeight(rows);
-    setFixedWidth(cols);
+
     m_ui->widget2D->resize(rows, cols);
     setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
     int minCMap =  32767;
     int maxCMap = -32767;
-    double* dataTemp = new double[rows*cols];
-    memcpy(dataTemp, data, rows*cols);
-    qsort(dataTemp, rows*cols, sizeof(double), Compare::CompareVariables<double>);
+//    double* dataTemp = new double[size];
+//    memcpy(dataTemp, data, size);
+//    qsort(dataTemp, size, sizeof(double), Compare::CompareVariables<double>);
     QCPColorMap* colorMap = new QCPColorMap(m_ui->widget2D->xAxis, m_ui->widget2D->yAxis);
-    //colorMap->data()->setSize(rows, cols);
+    colorMap->setKeyAxis(m_ui->widget2D->xAxis);
+    colorMap->setValueAxis(m_ui->widget2D->yAxis);
+    colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
     m_ui->widget2D->addPlottable(colorMap);
     for (u::uint32 x = 0; x < rows; x++) {
@@ -39,9 +40,11 @@ void Preview2D::Plot(const double* data, const int rows, const int cols, const i
             colorMap->data()->setCell(x, y, data[x * cols + y] );
         }
     }
-    minCMap = dataTemp[int(rows*cols*0.02)];
-    maxCMap = dataTemp[int(rows*cols*0.98)];
+    qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
+    minCMap = data[int(rows*cols*0.02)];
+    maxCMap = data[int(rows*cols*0.98)];
     m_ui->widget2D->rescaleAxes();
+    colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->setInterpolate(false);
@@ -49,6 +52,6 @@ void Preview2D::Plot(const double* data, const int rows, const int cols, const i
     m_ui->widget2D->setInteraction(QCP::iRangeDrag,true);
     m_ui->widget2D->replot();
     this->show();
-    delete [] dataTemp;
+    //delete [] dataTemp;
 
 }

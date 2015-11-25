@@ -17,11 +17,11 @@ CubePlugin::~CubePlugin()
     }
 }
 
-void CubePlugin::OnClose(MainWindow* window, bool longOperation)
+void CubePlugin::OnClose(MainWindow* window, bool cantDelete)
 {
     for (int i = 0; i < m_listWindows.size(); i++)
     {
-        if (m_listWindows.at(i) == window && !longOperation)
+        if (m_listWindows.at(i) == window && !cantDelete)
         {
             delete m_listWindows.at(i);
             m_listWindows.removeAt(i);
@@ -60,6 +60,7 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
 
     QCoreApplication::processEvents();
     MainWindow* w = new MainWindow(cube, attr);
+    QObject::connect(w, SIGNAL(Close(MainWindow*,bool)), this, SLOT(OnClose(MainWindow*,bool)));
     m_listWindows.append(w);
     w->processData();
     w->resize(1024,768);

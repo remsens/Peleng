@@ -10,7 +10,6 @@ MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
     , m_attr(attr)
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
-     //setAttribute(Qt::WA_DeleteOnClose, true);
      setAttribute(Qt::WA_DeleteOnClose, false);
      QFont font;
      font.setPixelSize(16);
@@ -21,11 +20,12 @@ MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete widgetHyperCube;
     delete ui;
 }
 void MainWindow::closeEvent(QCloseEvent *)
 {
-
+    emit Close(this, widgetHyperCube->cantDelete());
 }
 
 void MainWindow::connectionsOfPlugins()
@@ -69,15 +69,20 @@ void MainWindow::setSlidersSettings()
     ui->horizontalScrollBar_Y2->setSliderPosition(cols-1);
 }
 
+void MainWindow::DeleteObjectWindow()
+{
+    emit Close(this, false);
+}
 void MainWindow::processData()
 {
     qDebug() << "Зашли в process data";
     ui->setupUi(this);
     widgetHyperCube = new GLWidget(hyperCube, m_attr, ui->centralwidget);
+
     widgetHyperCube->setObjectName(QStringLiteral("widgetHyperCube"));
     ui->verticalLayout->addWidget(widgetHyperCube);
     setSlidersSettings();
-
+    QObject::connect(widgetHyperCube, SIGNAL(CanDelete()), this, SLOT(DeleteObjectWindow()));
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
     QObject::connect(ui->actionResizeCube,SIGNAL(triggered()),this,SLOT(prepareToResizeCube()));
     QObject::connect(widgetHyperCube,SIGNAL(redrawSliders()),

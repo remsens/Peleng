@@ -46,10 +46,10 @@ public:
     }
     void ToWindow()
     {
-        double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()];
+        double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
         QVector<double> data;
         BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, data);
-        memcpy(dataChannel, data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel());
+        memcpy(dataChannel, data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double));
         data.clear();
         u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
         // фильтр
@@ -58,19 +58,20 @@ public:
         {
             for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns() - (pixlWindow + 1)/2; j++)
             {
-                T* arrWindow = new T [pixlWindow*pixlWindow];
+                double* arrWindow = new double [pixlWindow*pixlWindow];
 
                 for (u::uint32 k = 0; k < pixlWindow; k++)
                 {
-                   memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
+                   memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(double)*pixlWindow);
                 }
-                qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Compare::CompareVariables<T>);
+                qsort(arrWindow, pixlWindow*pixlWindow, sizeof(double), Compare::CompareVariables<double>);
                 dataChannel[(i+1) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow + pixlWindow/2];
+                delete [] arrWindow;
             }
         }
         Preview2D* previewWindow = new Preview2D();
         previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
-        //delete [] dataChannel;
+        delete [] dataChannel;
     }
 
     bool ToCube()

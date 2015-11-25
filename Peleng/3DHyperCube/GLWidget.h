@@ -60,13 +60,13 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit GLWidget(HyperCube* ptrCube, Attributes* attr, QWidget *parent = 0);
-    ~GLWidget();
+    virtual ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
     void rotateBy(int xAngle, int yAngle, int zAngle);
     void setClearColor(const QColor &color);
-
+    bool cantDelete();
 public slots:
 
     void sliderCh1ValueChanged(int value);
@@ -84,6 +84,7 @@ public slots:
     void OnActionMedian2D_3Triggered();
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
+
 private slots:
 
     void prepareToPlotSpectr();
@@ -101,6 +102,7 @@ signals:
     void drawLabel(int, int, QString);
     void signalCurrentDataXYZ(uint,uint,uint);
     void flagsToolTip(QPoint, QString);
+    void CanDelete();
     //void labelHelpLine(QString);
 
 protected:
@@ -204,6 +206,7 @@ private:
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
     bool m_needToUpdate;
+    bool cantDeleteVar;
 
 
 };
