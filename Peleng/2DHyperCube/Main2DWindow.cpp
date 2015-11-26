@@ -576,7 +576,7 @@ void Main2DWindow::loadMaskFromFile()
         {
             for(int j = 0; j < cols; ++j)
             {
-                if(byteArr[i*cols+j] == 0x01)
+                if(byteArr[i*cols+j] == (char)0x01) //проверить (char)
                      mask.setPixel(i,j,qRgba(0, 0, 255, 150));
             }
         }
