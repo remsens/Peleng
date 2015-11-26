@@ -153,3 +153,33 @@ void Attributes::SetExternalSpectrFormat(int format)
 {
     m_formatExternalSpectr = format;
 }
+
+void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
+{
+    m_noiseAlg = alg;
+}
+
+NoiseAlgorithm Attributes::GetNoiseAlg() const
+{
+    return m_noiseAlg;
+}
+
+void Attributes::SetMaskPixelsCount(const u::uint32 pixelsNumber)
+{
+    m_maskPixelsCount = pixelsNumber;
+}
+
+u::uint32 Attributes::GetMaskPixelsCount() const
+{
+    return m_maskPixelsCount;
+}
+
+void Attributes::SetApplyToAllCube(bool apply)
+{
+    m_applyToAllCube = apply;
+}
+
+bool Attributes::GetApplyToAllCube() const
+{
+    return m_applyToAllCube;
+}

@@ -21,13 +21,15 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit GLWidget(HyperCube* ptrCube, Attributes* attr, QWidget *parent = 0);
-    ~GLWidget();
+    virtual ~GLWidget();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
     void rotateBy(int xAngle, int yAngle, int zAngle);
     void setClearColor(const QColor &color);
+
     void resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2);
+    bool cantDelete();
 
 public slots:
 
@@ -40,6 +42,16 @@ public slots:
     void plotSpectr(uint x, uint y, uint z);
     void plotAlongLine(uint x1,uint x2,uint y1,uint y2,uint z1,uint z2);
     void addSpectr();
+    void OnActionMedian1D_3Triggered();
+    void OnActionMedian1D_5Triggered();
+    void OnActionMedian1D_7Triggered();
+    void OnActionMedian2D_3Triggered();
+    void OnActionMedian2D_5Triggered();
+    void OnActionMedian2D_7Triggered();
+
+protected:
+    void closeEvent(QCloseEvent *e);
+
 private slots:
 
     void prepareToPlotSpectr();
@@ -47,9 +59,11 @@ private slots:
     void finishIsClicked();
     void createLinePlotterSlot();
     void run2DCube();
+
     void contrast();
     void repaintWithContrast(int min, int max);
-
+    void updateCube();
+    void needToUpdate(bool needToUpdate);
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
@@ -58,7 +72,9 @@ signals:
     void drawLabel(int, int, QString);
     void signalCurrentDataXYZ(uint,uint,uint);
     void flagsToolTip(QPoint, QString);
+
     void redrawSliders();
+    void CanDelete();
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -90,7 +106,9 @@ private:
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
+    void Noise();
 
+private:
     QMenu* pContextMenu;
     QAction* pPlotAction;
     //QAction* pDeletePlotsAction;
@@ -103,6 +121,16 @@ private:
     QAction* pContrastAction;
 
     QAction* pAddSpectrAction;
+    // actions and menus для фильтров
+    QMenu* m_menuFilters;
+    QMenu* m_menuMedian1DFilters;
+    QMenu* m_menuMedian2DFilters;
+    QAction* m_actionMedian1D_3;
+    QAction* m_actionMedian1D_5;
+    QAction* m_actionMedian1D_7;
+    QAction* m_actionMedian2D_3;
+    QAction* m_actionMedian2D_5;
+    QAction* m_actionMedian2D_7;
 
     QColor clearColor;
     QPoint lastPos;
@@ -146,6 +174,8 @@ private:
     QString strForLbl;
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
+    bool m_needToUpdate;
+    bool cantDeleteVar;
 
     ContrastWindow *m_contrastTool;
 

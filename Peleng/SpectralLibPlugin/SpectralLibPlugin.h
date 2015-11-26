@@ -16,7 +16,7 @@ public:
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);
-
+    QObject* GetObjectPointer();
 };
 
 #endif // SPECTRALLIBPLUGIN_H

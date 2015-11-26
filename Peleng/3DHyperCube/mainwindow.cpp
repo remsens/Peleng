@@ -1,11 +1,13 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QMessageBox>
 
-
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
+    QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+    , hyperCube(cube)
+    , m_attr(attr)
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
      setAttribute(Qt::WA_DeleteOnClose, true);
@@ -13,15 +15,54 @@ MainWindow::MainWindow(QWidget *parent) :
      font.setPixelSize(16);
      font.setBold(true);
      QToolTip::setFont(font);
+     connectionsOfPlugins();
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    qDebug() << "delete MainWindow";
 }
-void MainWindow::closeEvent(QCloseEvent *)
-{
 
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    if (widgetHyperCube->cantDelete())
+    {
+        QMessageBox::information(this, "Закрытие окна", "Невозможно закрыть окно программы! \nДождитесь окончания обработки данных");
+        e->ignore();
+    } else
+    {
+        emit Close(this);
+    }
+}
+
+void MainWindow::connectionsOfPlugins()
+{
+    connect(m_attr->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), this, SLOT(setDisabledMenuBar(bool)));
+    connect(m_attr->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(setEnabledMenuBar(bool)));
+}
+
+void MainWindow::setDisabledMenuBar(bool )
+{
+    ui->menubar->setEnabled(false);
+    ui->horizontalScrollBar_Ch1->setEnabled(false);
+    ui->horizontalScrollBar_Ch2->setEnabled(false);
+    ui->horizontalScrollBar_X1->setEnabled(false);
+    ui->horizontalScrollBar_X2->setEnabled(false);
+    ui->horizontalScrollBar_Y1->setEnabled(false);
+    ui->horizontalScrollBar_Y2->setEnabled(false);
+}
+
+void MainWindow::setEnabledMenuBar(bool )
+{
+    ui->menubar->setEnabled(true);
+    ui->horizontalScrollBar_Ch1->setEnabled(true);
+    ui->horizontalScrollBar_Ch2->setEnabled(true);
+    ui->horizontalScrollBar_X1->setEnabled(true);
+    ui->horizontalScrollBar_X2->setEnabled(true);
+    ui->horizontalScrollBar_Y1->setEnabled(true);
+    ui->horizontalScrollBar_Y2->setEnabled(true);
 }
 
 void MainWindow::setSlidersSettings()
@@ -49,16 +90,15 @@ void MainWindow::setSlidersSettings()
     ui->horizontalScrollBar_Y2->setSliderPosition(cols-1);
 }
 
-void MainWindow::processData(HyperCube *ptrCube, Attributes* attr)
+void MainWindow::processData()
 {
     qDebug() << "Зашли в process data";
     ui->setupUi(this);
-    widgetHyperCube = new GLWidget(ptrCube, attr, ui->centralwidget);
+    widgetHyperCube = new GLWidget(hyperCube, m_attr, ui->centralwidget);
+
     widgetHyperCube->setObjectName(QStringLiteral("widgetHyperCube"));
     ui->verticalLayout->addWidget(widgetHyperCube);
-    hyperCube = ptrCube;
     setSlidersSettings();
-
     QObject::connect(ui->actionBrightCheck, SIGNAL(toggled(bool)), this, SLOT(showLabel_toggled(bool)));
     QObject::connect(ui->actionResizeCube,SIGNAL(triggered()),this,SLOT(prepareToResizeCube()));
     QObject::connect(widgetHyperCube,SIGNAL(redrawSliders()),

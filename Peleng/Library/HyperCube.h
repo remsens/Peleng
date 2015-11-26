@@ -51,6 +51,17 @@ public:
     //! @param iteratorBefore - используется при записи в цикле, смещение в байтах для канала, на которые нужно сместиться перед записью данных
     void SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore = 0);
 
+    //! Функция записи данных для одного канала. !!! Память должна быть уже выделена
+    //! @param data - указатель на блок данных
+    //! @param channel - номер канала
+    void SetDataChannel(u::cptr data, u::uint32 channel);
+
+    //! Функция записи данных для одного спектра в гиперкуб. !!! Память под данные должна быть уже выделена
+    //! @param data - указатель на блок данных
+    //! @param x - номер строки точки
+    //! @param у - номер столбца точки
+    void SetDataSpectrum(u::cptr data, u::uint32 x, u::uint32 y);
+
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
 

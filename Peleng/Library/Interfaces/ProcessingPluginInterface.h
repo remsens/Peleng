@@ -9,8 +9,10 @@
 
 class ProcessingPluginsInterface
 {
+
 public:
     virtual void Execute(HyperCube* cube, Attributes* attr) = 0;
+    virtual QObject* GetObjectPointer() = 0;
 };
 
 #define ProcessingPluginsInterface_iid  "by.nomrec.ProcessingPluginsInterface"

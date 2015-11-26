@@ -11,6 +11,6 @@
         <file>iconsCube/polygon.png</file>
         <file>iconsCube/contrast.png</file>
         <file>iconsCube/CreateSpectr.png</file>
-
+        <file>iconsCube/NoiseRemover.png</file>
     </qresource>
 </RCC>

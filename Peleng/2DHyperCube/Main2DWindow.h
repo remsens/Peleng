@@ -52,9 +52,13 @@ public slots:
     //! @param x - вектор с координатами Х точек
     //! @param y - вектор с координатами У точек
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
+    void closeEvent(QCloseEvent *e);
+    void needToUpdate(bool res);
+    void updateData();
+    void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
-
+    void CloseWindow(Main2DWindow* window);
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);
     void mouseDblClickOnColorMap( QMouseEvent* e);
@@ -65,6 +69,7 @@ private slots:
     void startIsClicked(uint dataX, uint dataY);//нажато "Начало" из контекстного меню
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
+
     void createLinePlotterSlot();
 
     void createPolygonSlot();
@@ -74,6 +79,7 @@ private slots:
     void addSpectr();
 
     void contextMenuRequest(QPoint point);
+
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
     void setInitSliders(int chan);
@@ -94,6 +100,17 @@ private:
     //! @return - битовое изображение
     QImage maskFromPolygons(QVector<QPolygon> polygonArr);
 
+
+
+    void OnActionMedian3Triggered();
+    void OnActionMedian5Triggered();
+    void OnActionMedian7Triggered();
+
+    void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
+    void createMenus();
+    void Noise();
+private:
+
     Ui::Main2DWindow *ui;
     QMenu *pContextMenu;
     QAction *pPlotAction;
@@ -103,6 +120,12 @@ private:
     QAction *pSelectAreaAction;
     QLabel *pStatusBarLabel;
     QAction* pAddSpectr;
+
+    QMenu* m_filters;
+    QMenu* m_medianFilter;
+    QAction* m_actionMedian3;
+    QAction* m_actionMedian5;
+    QAction* m_actionMedian7;
 
     bool firstWindowPlotter;
     bool linePlotterIsActive;
@@ -117,11 +140,16 @@ private:
     Attributes* m_attributes;
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
+
     bool flagSlidersEnabledForSlots;
     QVector<QPolygon> polygonArr;
     bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (т.е. полигон не в процессе построения)
     bool flagDoubleClicked;
     PolygonManager * polyMngr;
+
+    bool m_needToUpdate;
+    bool m_canDelete;
+
 };
 
 #endif // MAIN2DWINDOW_H

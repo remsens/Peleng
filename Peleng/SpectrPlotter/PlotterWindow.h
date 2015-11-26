@@ -35,7 +35,14 @@ private slots:
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
+    void ActionNoise3Toggled();
+    void ActionNoise5Toggled();
+    void ActionNoise7Toggled();
 
+private:
+    void NoiseAlgExecute();
+private slots:
+    void graphClicked(QCPAbstractPlottable*plottable);
 private:
     bool m_hold;
     Ui::PlotterWindow *ui;
@@ -48,6 +55,12 @@ private:
     HyperCube* m_cube;
     Attributes* m_attributes;
     QAction* m_actionSave;
+
+    QAction* m_actionNoise3;
+    QAction* m_actionNoise5;
+    QAction* m_actionNoise7;
+    QMenu*   m_menuNoise;
+    QMenu*   m_menuMedianNoise;
     QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
     QVector<double> m_xArr;
     QVector<double> m_yArr;

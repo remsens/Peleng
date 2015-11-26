@@ -1,6 +1,8 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
 
+#include <QMessageBox>
+
 int cmp2(const void *a, const void *b);
 
 
@@ -28,6 +30,15 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
         m_initChanel = 0;
 
     ui->setupUi(this);
+    pContextMenu = 0;
+    pPlotAction = 0;
+    pPlotHistAction = 0;
+    pPlotLineAction = 0;
+    m_filters = 0;
+    m_medianFilter = 0;
+    m_actionMedian3 = 0;
+    m_actionMedian5 = 0;
+    m_actionMedian7 = 0;
     pStatusBarLabel = new QLabel(this);
     ui->statusbar->addWidget(pStatusBarLabel);
     this->setWindowIcon(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"));//!!! почему-то можно поставить иконку только из qrc файла проекта 3Dcube (наверное, надо заинклудить qrc 2d куба в 3d проект)
@@ -59,13 +70,16 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
+
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
     connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
     connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
     connect(ui->polygonTool,SIGNAL(triggered()),SLOT(polygonTool()));
+
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
@@ -80,13 +94,38 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     //ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
     //ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
 //loadMaskFromFile();// потом удалить отсюда!!!
+    //проверить
+  //  int minCMap, maxCMap;
+   // findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+  //  drawHeatMap(m_initChanel,minCMap, maxCMap);
+    m_needToUpdate = false;
+    m_canDelete = true;
+    connectionsOfPlugins();
 
 }
 
 Main2DWindow::~Main2DWindow()
 {
+    if (pContextMenu) delete pContextMenu;
+    if (pPlotAction) delete pPlotAction;
+    if (pPlotHistAction) delete pPlotHistAction;
+    if (pPlotLineAction) delete pPlotLineAction;
+    if (m_filters)
+    {
+        delete m_filters;
+        delete m_medianFilter;
+        delete m_actionMedian3;
+        delete m_actionMedian5;
+        delete m_actionMedian7;
+    }
+    for (int i = 0; i < chnls; i++)
+    {
+        delete [] ChnlLimits[i];
+    }
+    delete [] ChnlLimits;
     delete ui;
 }
+
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
@@ -103,6 +142,52 @@ void Main2DWindow::resizeEvent(QResizeEvent *e)
         else
     {
         ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+
+void Main2DWindow::closeEvent(QCloseEvent *e)
+{
+    if (m_canDelete)
+    {
+        emit CloseWindow(this);
+    } else
+    {
+        QMessageBox::information(this, "Закрытие окна", "Невозможно закрыть окно программы! \nДождитесь окончания обработки данных");
+        e->ignore();
+    }
+
+}
+void Main2DWindow::updateData()
+{
+    ui->listWidget->setCurrentRow(m_initChanel);
+    ui->listWidget->item(m_initChanel)->setSelected(true);
+    ui->listWidget->setFocus();
+    ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+    initArrChanLimits();
+    fillChanList();
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+    drawHeatMap(m_initChanel,minCMap, maxCMap);
+}
+
+void Main2DWindow::connectionsOfPlugins()
+{
+    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
+    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
+}
+
+void Main2DWindow::needToUpdate(bool res)
+{
+    pContextMenu->setEnabled(true);
+    ui->menubar->setEnabled(true);
+    ui->listWidget->setEnabled(true);
+    if (res)
+    {
+        // кнопка
+        updateData();
+        m_needToUpdate = true;
+
+
     }
 }
 
@@ -114,9 +199,7 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
     int minCMap, maxCMap;
-
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap,0.04, 0.98);
-
     drawHeatMap(m_initChanel,minCMap, maxCMap);
 }
 
@@ -432,6 +515,18 @@ void Main2DWindow::createMenus()
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
     pPlotHistAction = new QAction(QIcon("qrc:/icons2Dcube/icons/Heat Map-50.png"),"Гистограмма",this);
     pAddSpectr = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"),"Загрузить спектр",this);
+    m_filters = new QMenu();
+    m_filters->setStyleSheet("border: 0px solid black;");
+    m_filters->setTitle("Фильтры");
+    m_filters->setIcon(QIcon(":/icons/NoiseRemover.png"));
+    m_medianFilter = new QMenu();
+    m_medianFilter->setStyleSheet("border: 0px solid black;");
+    m_medianFilter->setTitle("Медианный фильтр");
+
+    m_actionMedian3 = new QAction("3x3", this);
+    m_actionMedian5 = new QAction("5x5", this);
+    m_actionMedian7 = new QAction("7x7", this);;
+
     if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
     {
         pContextMenu->addAction(pPlotAction);
@@ -447,12 +542,23 @@ void Main2DWindow::createMenus()
     {
         pContextMenu->addAction(pPlotLineAction);
         connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-        //connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+        connect(this, SIGNAL(plotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         pContextMenu->addAction(pAddSpectr);
         connect(pAddSpectr,SIGNAL(triggered()),SLOT(addSpectr()));
+    }
+	if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+    {
+        m_medianFilter->addAction(m_actionMedian3);
+        m_medianFilter->addAction(m_actionMedian5);
+        m_medianFilter->addAction(m_actionMedian7);
+        m_filters->addMenu(m_medianFilter);
+        pContextMenu->addMenu(m_filters);
+        connect(m_actionMedian3, SIGNAL(triggered()), this, SLOT(OnActionMedian3Triggered()));
+        connect(m_actionMedian5, SIGNAL(triggered()), this, SLOT(OnActionMedian5Triggered()));
+        connect(m_actionMedian7, SIGNAL(triggered()), this, SLOT(OnActionMedian7Triggered()));
     }
     pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
 	pContextMenu->addAction(pSelectAreaAction);
@@ -501,15 +607,53 @@ void Main2DWindow::setInitSliders(int chan)
 
 void Main2DWindow::polygonTool()
 {
-    polyMngr->show();
+    polyMngr->show();    
+}
+
+void Main2DWindow::OnActionMedian3Triggered()
+{
+    m_attributes->SetMaskPixelsCount(3);
+    Noise();
+}
+
+void Main2DWindow::OnActionMedian5Triggered()
+{
+    m_attributes->SetMaskPixelsCount(5);
+    Noise();
+}
+
+void Main2DWindow::OnActionMedian7Triggered()
+{
+    m_attributes->SetMaskPixelsCount(7);
+    Noise();
+}
+
+void Main2DWindow::Noise()
+{
+    m_attributes->ClearList();
+    m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
+    m_attributes->SetNoiseAlg(Median2D);
+    m_attributes->SetApplyToAllCube(false);
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
 {
-    m_attributes->ClearList();
-    m_attributes->SetPoint(x, y, 0);
-    m_attributes->SetExternalSpectrFlag(false);
-    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
+    if (!m_needToUpdate)
+    {
+        m_attributes->ClearList();
+        m_attributes->SetPoint(x, y, 0);
+        m_attributes->SetExternalSpectrFlag(false);
+        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateData();
+            m_needToUpdate = false;
+        }
+    }
 }
 
 void Main2DWindow::addSpectr()
@@ -628,21 +772,42 @@ void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
     this->setToolTip(strForLineHelp);
     //emit flagsToolTip(globalPos,"");
 }
+
 void Main2DWindow::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
-    m_attributes->ClearList();
-    m_attributes->SetPoint(x1, y1, z1);
-    m_attributes->SetPoint(x2, y2, z2);
-    m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
+    if (!m_needToUpdate)
+    {
+        m_attributes->ClearList();
+        m_attributes->SetPoint(x1, y1, z1);
+        m_attributes->SetPoint(x2, y2, z2);
+        m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateData();
+            m_needToUpdate = false;
+        }
+    }
 }
 
 void Main2DWindow::prepareToHist()
 {
-
-    m_attributes->ClearList();
-    m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
-    m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
-
+    if (!m_needToUpdate)
+    {
+        m_attributes->ClearList();
+        m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
+        m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateData();
+            m_needToUpdate = false;
+        }
+    }
 }
 
 void Main2DWindow::contextMenuRequest(QPoint point)
