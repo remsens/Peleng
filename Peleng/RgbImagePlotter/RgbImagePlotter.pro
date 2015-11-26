@@ -15,20 +15,24 @@ DESTDIR = ../../Debug/MainApp/debug
 SOURCES += \
     rgbimageplugin.cpp \
     settingsdialog.cpp \
-    rgbimageform.cpp \
     ../Library/HyperCube.cpp \
     ../Library/GenericExc.cpp \
-    rgbprofile.cpp
+    rgbprofile.cpp \
+    rgbimagewindow.cpp \
+    ../Library/QCustomPlot.cpp \
+    zoomimage.cpp
 
 HEADERS += \
     rgbimageplugin.h \
     settingsdialog.h \
-    rgbimageform.h \
     cie.h \
     templeteconvolute.h \
     ../Library/HyperCube.h \
     ../Library/GenericExc.h \
-    rgbprofile.h
+    rgbprofile.h \
+    rgbimagewindow.h \
+    ../Library/QCustomPlot.h \
+    zoomimage.h
 DISTFILES += \
     RgbImagePlugin.json
 
@@ -39,4 +43,7 @@ unix {
 
 FORMS += \
     settingsdialog.ui \
-    rgbimageform.ui
+    rgbimagewindow.ui
+
+RESOURCES += \
+    icons.qrc

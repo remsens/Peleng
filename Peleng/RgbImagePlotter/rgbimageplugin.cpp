@@ -1,7 +1,8 @@
 #include "rgbimageplugin.h"
 
 #include <QDebug>
-#include "rgbimageform.h"
+#include "rgbimagewindow.h"
+#include "settingsdialog.h"
 
 RgbImagePlugin::RgbImagePlugin()
 {
@@ -13,8 +14,13 @@ RgbImagePlugin::RgbImagePlugin()
 void RgbImagePlugin::Execute(HyperCube *cube, Attributes *attr)
 {
 
-    RgbImageForm *rgbImageForm = new RgbImageForm();
-    rgbImageForm->plotImage(cube, attr);
+    SettingsDialog dialog(cube) ;
+    if (dialog.exec()) {
 
+        RgbImageWindow *rgbImageWindow = new RgbImageWindow();
+
+        rgbImageWindow->plotImage(cube, attr,&dialog);
+        rgbImageWindow->show();
+    }
 
 }

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
+#include "settingsdialog.h"
 
 namespace Ui {
 class RgbImageForm;
@@ -17,7 +18,7 @@ public:
     explicit RgbImageForm(QWidget *parent = 0);
     ~RgbImageForm();
 
-    void plotImage(HyperCube *cube, Attributes *attr);
+    void plotImage(HyperCube *cube, Attributes *attr, SettingsDialog *settings);
 
 private:
     Ui::RgbImageForm *ui;
