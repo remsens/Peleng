@@ -92,8 +92,9 @@ void GLWidget::updateCube()
     createCubeSides();
     fillCubeSides();
     //setFocusPolicy(Qt::StrongFocus);
-    memset(textures, 0, sizeof(textures));
+
     makeTextures();
+    paintGL();
     //rotateBy(200,400,0);
     //rotateBy(-2560,712,0);
     //createMenus();
