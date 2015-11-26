@@ -16,7 +16,7 @@ public:
     virtual ~Hyper2dPlugin();
 
 public slots:
-    void OnClose(Main2DWindow* window2D, bool longOperation);
+    void OnClose(Main2DWindow* window2D);
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);

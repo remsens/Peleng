@@ -33,13 +33,13 @@ public slots:
     //! @param x - вектор с координатами Х точек
     //! @param y - вектор с координатами У точек
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *e);
     void needToUpdate(bool res);
     void updateData();
     void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
-    void CloseWindow(Main2DWindow* window, bool longOperation);
+    void CloseWindow(Main2DWindow* window);
 private slots:
     void mousePressOnColorMap(QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
@@ -91,7 +91,7 @@ private:
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
     bool m_needToUpdate;
-    bool m_longOperation;
+    bool m_canDelete;
 };
 
 #endif // MAIN2DWINDOW_H

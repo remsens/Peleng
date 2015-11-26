@@ -85,6 +85,9 @@ public slots:
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
 
+protected:
+    void closeEvent(QCloseEvent *e);
+
 private slots:
 
     void prepareToPlotSpectr();

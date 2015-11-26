@@ -15,7 +15,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent)
      ,m_pCube(cube)
     , m_attributes(attr)
 {
-    setAttribute(Qt::WA_DeleteOnClose, false);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     ui->setupUi(this);
     pContextMenu = 0;
     pPlotAction = 0;
@@ -63,7 +63,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent)
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
     drawHeatMap(m_initChanel,minCMap, maxCMap);
     m_needToUpdate = false;
-    m_longOperation = false;
+    m_canDelete = true;
     connectionsOfPlugins();
 }
 
@@ -89,8 +89,17 @@ Main2DWindow::~Main2DWindow()
     delete ui;
 }
 
-void Main2DWindow::closeEvent(QCloseEvent *) {
-    emit CloseWindow(this, m_longOperation);
+void Main2DWindow::closeEvent(QCloseEvent *e)
+{
+    if (m_canDelete)
+    {
+        emit CloseWindow(this);
+    } else
+    {
+        QMessageBox::information(this, "Закрытие окна", "Невозможно закрыть окно программы! \nДождитесь окончания обработки данных");
+        e->ignore();
+    }
+
 }
 void Main2DWindow::updateData()
 {

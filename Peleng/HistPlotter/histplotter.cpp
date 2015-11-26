@@ -2,7 +2,7 @@
 
 #include "templatehistplot.h"
 #include <QElapsedTimer>
-
+#include <QDebug>
 
 
 HistPlotter::HistPlotter(HyperCube *cube, Attributes *attr)
@@ -10,16 +10,28 @@ HistPlotter::HistPlotter(HyperCube *cube, Attributes *attr)
     , m_attributes(attr)
 {
     customPlot =  new QCustomPlot();
+    customPlot->setAttribute(Qt::WA_DeleteOnClose, true);
     HIST_COUNT = 100;
     connect(this,SIGNAL(replot()),SLOT(deleteLater()));
+    connect(customPlot, SIGNAL(destroyed(QObject* )), this, SLOT(OnClose()));
 }
 
 
 HistPlotter::~HistPlotter()
 {
-    delete customPlot;
+ qDebug() << "delete histPlotter";
 }
 
+void HistPlotter::DestroyCustomPlot()
+{
+    delete customPlot;
+    qDebug() << "delete customplot";
+}
+
+void  HistPlotter::OnClose()
+{
+    emit Close(this);
+}
 
 void HistPlotter::plotLine(QCPAbstractPlottable *object, QMouseEvent *event)
 {
@@ -67,8 +79,9 @@ void HistPlotter::mouseClick(QMouseEvent *event)
             case type_double: ModifyCube<double>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
             default: ModifyCube<qint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
         }
-        emit this->replot();
-        customPlot->hide();
+        // emit сигнал в 2Д
+        //emit this->replot();
+        customPlot->close();
     }
 }
 

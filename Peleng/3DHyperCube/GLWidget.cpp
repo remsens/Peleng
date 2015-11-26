@@ -22,7 +22,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , m_attributes(attr)
 {
     qDebug() << "enter to GL";
-    setAttribute(Qt::WA_DeleteOnClose, false);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -54,7 +54,6 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
 
 GLWidget::~GLWidget()
 {
-
     makeCurrent();
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
@@ -78,7 +77,7 @@ GLWidget::~GLWidget()
     delete m_actionMedian2D_7;
 
     doneCurrent();
-    qDebug() << "delete GLwidget";
+    qDebug() << "finish delete GLwidget";
 }
 
 bool GLWidget::cantDelete()
@@ -177,210 +176,279 @@ void GLWidget::setClearColor(const QColor &color)
 }
 
 
-
 void GLWidget::sliderCh1ValueChanged(int value)// скольжение по каналам гиперкуба
 {
-    if (value < Ch2)
-        Ch1 = value;
-    else
+    if (!m_needToUpdate)
     {
-        Ch1 = Ch2-1;
-        value = Ch1;
+        if (value < Ch2)
+            Ch1 = value;
+        else
+        {
+            Ch1 = Ch2-1;
+            value = Ch1;
+        }
+
+        float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
+        float newVal = -1 + value * dcH;
+        coords[0][0][1] = newVal;//первый вариант
+        coords[0][1][1] = newVal;
+        coords[2][0][1] = newVal;
+        coords[2][1][1] = newVal;
+        coords[3][0][1] = newVal;
+        coords[3][1][1] = newVal;
+        coords[4][0][1] = newVal;
+        coords[4][1][1] = newVal;
+        coords[4][2][1] = newVal;
+        coords[4][3][1] = newVal;
+        coords[5][0][1] = newVal;
+        coords[5][1][1] = newVal;
+
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
-
-    float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
-    float newVal = -1 + value * dcH;
-
-    coords[0][0][1] = newVal;//первый вариант
-    coords[0][1][1] = newVal;
-    coords[2][0][1] = newVal;
-    coords[2][1][1] = newVal;
-    coords[3][0][1] = newVal;
-    coords[3][1][1] = newVal;
-    coords[4][0][1] = newVal;
-    coords[4][1][1] = newVal;
-    coords[4][2][1] = newVal;
-    coords[4][3][1] = newVal;
-    coords[5][0][1] = newVal;
-    coords[5][1][1] = newVal;
-
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
-    }
-
 }
+
 void GLWidget::sliderCh2ValueChanged(int value)// скольжение по каналам гиперкуба
 {
-    if (value > Ch1)
-        Ch2 = value;
-    else
+    if (!m_needToUpdate)
     {
-        Ch2 = Ch1+1;
-        value = Ch2;
-    }
-    float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
-    float invert = CHNLS-1 - value;
-    float newVal = 1 - invert * dcH;
-    coords[0][2][1] = newVal;
-    coords[0][3][1] = newVal;
-    coords[1][0][1] = newVal;
-    coords[1][1][1] = newVal;
-    coords[1][2][1] = newVal;
-    coords[1][3][1] = newVal;
-    coords[2][2][1] = newVal;
-    coords[2][3][1] = newVal;
-    coords[3][2][1] = newVal;
-    coords[3][3][1] = newVal;
-    coords[5][2][1] = newVal;
-    coords[5][3][1] = newVal;
+        if (value > Ch1)
+            Ch2 = value;
+        else
+        {
+            Ch2 = Ch1+1;
+            value = Ch2;
+        }
+        float dcH = (float)2/(CHNLS-1); //единица канала гиперкуба имеем длину dCh в координатах OpenGL куба
+        float invert = CHNLS-1 - value;
+        float newVal = 1 - invert * dcH;
+        coords[0][2][1] = newVal;
+        coords[0][3][1] = newVal;
+        coords[1][0][1] = newVal;
+        coords[1][1][1] = newVal;
+        coords[1][2][1] = newVal;
+        coords[1][3][1] = newVal;
+        coords[2][2][1] = newVal;
+        coords[2][3][1] = newVal;
+        coords[3][2][1] = newVal;
+        coords[3][3][1] = newVal;
+        coords[5][2][1] = newVal;
+        coords[5][3][1] = newVal;
 
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
 }
+
 void GLWidget::sliderX1ValueChanged(int value)// скольжение по строке гиперкуба
 {
-    if (value < R2)
-        R1 = value;
-    else
+    if (!m_needToUpdate)
     {
-        R1 = R2-1;
-        value = R1;
+        if (value < R2)
+            R1 = value;
+        else
+        {
+            R1 = R2-1;
+            value = R1;
+        }
+        float dx = (float)2*kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
+        float newVal = -kT + value * dx;
+        coords[0][1][0] = newVal;
+        coords[0][2][0] = newVal;
+        coords[1][1][0] = newVal;
+        coords[1][2][0] = newVal;
+        coords[3][0][0] = newVal;
+        coords[3][1][0] = newVal;
+        coords[3][2][0] = newVal;
+        coords[3][3][0] = newVal;
+        coords[4][1][0] = newVal;
+        coords[4][2][0] = newVal;
+        coords[5][0][0] = newVal;
+        coords[5][3][0] = newVal;
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
-    float dx = (float)2*kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
-    float newVal = -kT + value * dx;
-    coords[0][1][0] = newVal;
-    coords[0][2][0] = newVal;
-    coords[1][1][0] = newVal;
-    coords[1][2][0] = newVal;
-    coords[3][0][0] = newVal;
-    coords[3][1][0] = newVal;
-    coords[3][2][0] = newVal;
-    coords[3][3][0] = newVal;
-    coords[4][1][0] = newVal;
-    coords[4][2][0] = newVal;
-    coords[5][0][0] = newVal;
-    coords[5][3][0] = newVal;
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
-    }
+
+
 }
 void GLWidget::sliderX2ValueChanged(int value)// скольжение по строке гиперкуба
 {
-    if (value > R1)
-        R2 = value;
-    else
+    if (!m_needToUpdate)
     {
-        R2 = R1+1;
-        value = R2;
-    }
-    float dx = (float)2 * kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
-    float invert = ROWS-1 - value;
-    float newVal = kT - invert * dx;
-    coords[0][0][0] = newVal;
-    coords[0][3][0] = newVal;
-    coords[1][0][0] = newVal;
-    coords[1][3][0] = newVal;
-    coords[2][0][0] = newVal;
-    coords[2][1][0] = newVal;
-    coords[2][2][0] = newVal;
-    coords[2][3][0] = newVal;
-    coords[4][0][0] = newVal;
-    coords[4][3][0] = newVal;
-    coords[5][1][0] = newVal;
-    coords[5][2][0] = newVal;
+        if (value > R1)
+            R2 = value;
+        else
+        {
+            R2 = R1+1;
+            value = R2;
+        }
+        float dx = (float)2 * kT/(ROWS-1); //единица строки гиперкуба имеем длину dx в координатах OpenGL куба
+        float invert = ROWS-1 - value;
+        float newVal = kT - invert * dx;
+        coords[0][0][0] = newVal;
+        coords[0][3][0] = newVal;
+        coords[1][0][0] = newVal;
+        coords[1][3][0] = newVal;
+        coords[2][0][0] = newVal;
+        coords[2][1][0] = newVal;
+        coords[2][2][0] = newVal;
+        coords[2][3][0] = newVal;
+        coords[4][0][0] = newVal;
+        coords[4][3][0] = newVal;
+        coords[5][1][0] = newVal;
+        coords[5][2][0] = newVal;
 
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
+
 
 
 }
 void GLWidget::sliderY1ValueChanged(int value)
 {
-    if (value < C2)
-        C1 = value;
-    else
+    if (!m_needToUpdate)
     {
-        C1 = C2-1;
-        value = C1;
+        if (value < C2)
+            C1 = value;
+        else
+        {
+            C1 = C2-1;
+            value = C1;
+        }
+        float dCol = (float)2/(COLS-1); //единица столбца гиперкуба имеем длину dCol в координатах OpenGL куба
+        float newVal = -1 + value * dCol;
+        //    float coords[6][4][3] = {
+        //                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
+        //                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },//пустая грань
+        //                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },//напротив наполовину видной грани
+        //                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },//наполовину видная грань
+        //                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },//грань с фото
+        //                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
+        //                            };
+        coords[0][0][2] = newVal;//второй вариант
+        coords[0][1][2] = newVal;
+        coords[0][2][2] = newVal;
+        coords[0][3][2] = newVal;
+        coords[1][0][2] = newVal;
+        coords[1][1][2] = newVal;
+        coords[2][1][2] = newVal;
+        coords[2][2][2] = newVal;
+        coords[3][0][2] = newVal;
+        coords[3][3][2] = newVal;
+        coords[4][2][2] = newVal;
+        coords[4][3][2] = newVal;
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
-    float dCol = (float)2/(COLS-1); //единица столбца гиперкуба имеем длину dCol в координатах OpenGL куба
-    float newVal = -1 + value * dCol;
-    //    float coords[6][4][3] = {
-    //                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
-    //                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },//пустая грань
-    //                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },//напротив наполовину видной грани
-    //                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },//наполовину видная грань
-    //                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },//грань с фото
-    //                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
-    //                            };
-    coords[0][0][2] = newVal;//второй вариант
-    coords[0][1][2] = newVal;
-    coords[0][2][2] = newVal;
-    coords[0][3][2] = newVal;
-    coords[1][0][2] = newVal;
-    coords[1][1][2] = newVal;
-    coords[2][1][2] = newVal;
-    coords[2][2][2] = newVal;
-    coords[3][0][2] = newVal;
-    coords[3][3][2] = newVal;
-    coords[4][2][2] = newVal;
-    coords[4][3][2] = newVal;
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
-    }
+
 }
 void GLWidget::sliderY2ValueChanged(int value)
 {
-    if (value > C1)
-        C2 = value;
-    else
+    if (!m_needToUpdate)
     {
-        C2 = C1+1;
-        value = C2;
-    }
-    float dCol = (float)2/(COLS-1);
-    float invert = COLS-1 - value;
-    float newVal = 1 - invert * dCol;
-    coords[1][2][2] = newVal;
-    coords[1][3][2] = newVal;
-    coords[2][0][2] = newVal;
-    coords[2][3][2] = newVal;
-    coords[3][1][2] = newVal;
-    coords[3][2][2] = newVal;
-    coords[4][0][2] = newVal;
-    coords[4][1][2] = newVal;
-    coords[5][0][2] = newVal;
-    coords[5][1][2] = newVal;
-    coords[5][2][2] = newVal;
-    coords[5][3][2] = newVal;
-    if (FLAGisInit){
-        makeObject();
-        createCubeSides();
-        fillCubeSides();
-        makeTextures();
-        paintGL();
+        if (value > C1)
+            C2 = value;
+        else
+        {
+            C2 = C1+1;
+            value = C2;
+        }
+        float dCol = (float)2/(COLS-1);
+        float invert = COLS-1 - value;
+        float newVal = 1 - invert * dCol;
+        coords[1][2][2] = newVal;
+        coords[1][3][2] = newVal;
+        coords[2][0][2] = newVal;
+        coords[2][3][2] = newVal;
+        coords[3][1][2] = newVal;
+        coords[3][2][2] = newVal;
+        coords[4][0][2] = newVal;
+        coords[4][1][2] = newVal;
+        coords[5][0][2] = newVal;
+        coords[5][1][2] = newVal;
+        coords[5][2][2] = newVal;
+        coords[5][3][2] = newVal;
+        if (FLAGisInit){
+            makeObject();
+            createCubeSides();
+            fillCubeSides();
+            makeTextures();
+            paintGL();
+        }
+    } else
+    {
+        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+        if (answer == 0)
+        {
+            updateCube();
+            m_needToUpdate = false;
+        }
     }
 }
 
@@ -570,6 +638,14 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void GLWidget::closeEvent(QCloseEvent *e)
+{
+    if (cantDeleteVar)
+    {
+        e->ignore();
+    }
+}
+
 void GLWidget::addSpectr()
 {
     m_attributes->SetModeLib(1);
@@ -594,10 +670,6 @@ void GLWidget::Noise()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
-    if (this->isHidden())
-    {
-        emit CanDelete();
-    }
     cantDeleteVar = false;
 }
 

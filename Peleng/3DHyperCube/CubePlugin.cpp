@@ -17,13 +17,12 @@ CubePlugin::~CubePlugin()
     }
 }
 
-void CubePlugin::OnClose(MainWindow* window, bool cantDelete)
+void CubePlugin::OnClose(MainWindow* window)
 {
     for (int i = 0; i < m_listWindows.size(); i++)
     {
-        if (m_listWindows.at(i) == window && !cantDelete)
+        if (m_listWindows.at(i) == window)
         {
-            delete m_listWindows.at(i);
             m_listWindows.removeAt(i);
         }
     }
@@ -60,12 +59,13 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
 
     QCoreApplication::processEvents();
     MainWindow* w = new MainWindow(cube, attr);
-    QObject::connect(w, SIGNAL(Close(MainWindow*,bool)), this, SLOT(OnClose(MainWindow*,bool)));
+    QObject::connect(w, SIGNAL(Close(MainWindow*)), this, SLOT(OnClose(MainWindow*)));
     m_listWindows.append(w);
     w->processData();
     w->resize(1024,768);
     labelSplash->hide();
     w->show();
+
     delete labelSplash;
     delete pix;
 

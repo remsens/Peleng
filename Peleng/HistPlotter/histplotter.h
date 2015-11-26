@@ -18,9 +18,10 @@ public:
     HistPlotter(HyperCube* cube, Attributes* attr);
     virtual ~HistPlotter();
 
+    void DestroyCustomPlot();
 signals:
     void replot();
-
+    void Close(HistPlotter* obj);
 
 public slots:
     void plotLine(QCPAbstractPlottable* object,QMouseEvent* event);
@@ -29,7 +30,7 @@ public slots:
     {
         HIST_COUNT= HistCount;
     }
-
+    void  OnClose();
 
 
     // PelengPluginsInterface interface
