@@ -106,8 +106,6 @@ private:
     void OnActionMedian5Triggered();
     void OnActionMedian7Triggered();
 
-    void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
-    void createMenus();
     void Noise();
 private:
 

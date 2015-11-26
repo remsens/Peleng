@@ -142,6 +142,8 @@ void Main2DWindow::resizeEvent(QResizeEvent *e)
         else
     {
         ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+    }
+}
 
 void Main2DWindow::closeEvent(QCloseEvent *e)
 {

@@ -30,6 +30,7 @@ signals:
     void closePlotterWindow(PlotterWindow* w);
 private:
     void closeEvent(QCloseEvent *);
+    void NoiseAlgExecute();
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
 public slots:
@@ -39,10 +40,6 @@ public slots:
     void ActionNoise5Toggled();
     void ActionNoise7Toggled();
 
-private:
-    void NoiseAlgExecute();
-private slots:
-    void graphClicked(QCPAbstractPlottable*plottable);
 private:
     bool m_hold;
     Ui::PlotterWindow *ui;
