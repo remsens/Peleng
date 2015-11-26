@@ -6,7 +6,7 @@
 #include "../Library/HyperCube.h"
 #include "../Library/Types.h"
 #include "../Library/Attributes/Attributes.h"
-
+#include "PolygonManager.h"
 
 namespace Ui {
 class Main2DWindow;
@@ -21,6 +21,7 @@ public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     ~Main2DWindow();
     void resizeEvent(QResizeEvent *e);
+
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
     void fillChanList();
@@ -68,14 +69,15 @@ private slots:
 
     void createPolygonSlot();
     void addPolygonPoint(uint x,uint y);
+    void loadMaskFromFile();
     void prepareToHist();
-
     void addSpectr();
 
     void contextMenuRequest(QPoint point);
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
     void setInitSliders(int chan);
+    void polygonTool();
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
@@ -98,11 +100,8 @@ private:
    // QAction *pDeletePlotsAction;
     QAction *pPlotLineAction;
     QAction *pPlotHistAction;
-
     QAction *pSelectAreaAction;
-
     QLabel *pStatusBarLabel;
-
     QAction* pAddSpectr;
 
     bool firstWindowPlotter;
@@ -122,6 +121,7 @@ private:
     QVector<QPolygon> polygonArr;
     bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (т.е. полигон не в процессе построения)
     bool flagDoubleClicked;
+    PolygonManager * polyMngr;
 };
 
 #endif // MAIN2DWINDOW_H

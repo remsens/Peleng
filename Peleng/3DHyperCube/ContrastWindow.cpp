@@ -18,7 +18,6 @@ ContrastWindow::ContrastWindow(int initMin, int initMax, QWidget *parent) :
     ui->sliderMax->setMinimum(MIN);
     ui->sliderMax->setMaximum(MAX);
     ui->sliderMax->setValue(MAX);
-    setAttribute(Qt::WA_DeleteOnClose);
     connect(ui->sliderMin,SIGNAL(valueChanged(int)),SLOT(minChngdSlot(int)));
     connect(ui->sliderMax,SIGNAL(valueChanged(int)),SLOT(maxChngdSlot(int)));
 

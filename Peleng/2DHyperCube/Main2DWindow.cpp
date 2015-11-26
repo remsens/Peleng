@@ -5,17 +5,17 @@ int cmp2(const void *a, const void *b);
 
 
 Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::Main2DWindow),
-    firstWindowPlotter(true),
-    linePlotterIsActive(false),
-
-    m_dataX(0), m_dataY(0),
-    m_interplolate(false),
-    flagSlidersEnabledForSlots(false),
-    flagPolygonIsCreated(true),
-    flagDoubleClicked(false)
-         ,m_pCube(cube)
+    QMainWindow(parent)
+    , ui(new Ui::Main2DWindow)
+    , firstWindowPlotter(true)
+    , linePlotterIsActive(false)
+    , m_dataX(0)
+    , m_dataY(0)
+    , m_interplolate(false)
+    , flagSlidersEnabledForSlots(false)
+    , flagPolygonIsCreated(true)
+    , flagDoubleClicked(false)
+    , m_pCube(cube)
     , m_attributes(attr)
 
 
@@ -45,7 +45,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
-
+    polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
 
     if (m_attributes->GetPointsList().size())
     {
@@ -62,17 +62,24 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
     connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
     connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
+    connect(ui->polygonTool,SIGNAL(triggered()),SLOT(polygonTool()));
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
-    QSize mainSize = this->size();
-    this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
+    ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
 
-    ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
-    ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+
+    //    QSize mainSize = this->size();
+//    if(cols > rows) //rows/cols<1
+//        this->resize(mainSize.width() * rows/cols , mainSize.height());
+//    else
+//        this->resize(mainSize.width(), mainSize.width() * rows / cols);
+    //ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
+    //ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+//loadMaskFromFile();// потом удалить отсюда!!!
 
 }
 
@@ -83,9 +90,20 @@ Main2DWindow::~Main2DWindow()
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
-    ui->customPlot->setMinimumWidth(1);
-    ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
-
+   // ui->customPlot->setMinimumWidth(1);
+   // ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
+   // ui->customPlot->setFixedWidth(ui->customPlot->height()*  rows/cols);
+    //ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    QSize framesize =  ui->frameCustomPlot->size();
+    double RowsToCols = (double)rows / (double)cols;
+    if(RowsToCols > 1)
+    {
+        ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
+    }
+        else
+    {
+        ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+    }
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -196,6 +214,7 @@ void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,fl
     minCMap =  32767;
     maxCMap = -32767;
     qint16 *dataTemp = new qint16[rows*cols];
+
     m_pCube->GetDataChannel(chan, dataTemp);
     QElapsedTimer timer3;
     timer3.start();
@@ -290,7 +309,7 @@ void Main2DWindow::plotPointsOn2D(QVector<double> x, QVector<double> y)
 
 void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 {
-    if(flagDoubleClicked)
+    if(flagDoubleClicked) // потом брать этот флаг из мэнеджера. Флаг нужен, чтобы повторно не добавлялась одна и та же точка
     {
         flagDoubleClicked  = false;
         return;
@@ -328,14 +347,17 @@ void Main2DWindow::finishPolygonCreation()
     QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
     QPixmap alphaImage(QPixmap::fromImage(mask));
     pixItem->setPixmap(alphaImage);
-    ui->customPlot->addLayer("polygon");
-    ui->customPlot->setCurrentLayer("polygon");
-    pixItem->setScaled(true);
+//    ui->customPlot->addLayer("polygon");
+//    ui->customPlot->setCurrentLayer("polygon");
+    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
     ui->customPlot->addItem(pixItem);
     pixItem->topLeft->setCoords(0,0);
     pixItem->bottomRight->setCoords(rows-1,cols-1);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(ui->customPlot->axisRect());
+    ui->customPlot->replot();
+
+
 }
 
 QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
@@ -346,6 +368,7 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
 
     QImage mask(rows,cols,QImage::Format_ARGB32);
     mask.fill(qRgba(0, 0, 0, 0));
+    QByteArray byteArr(rows*cols,0x00);
     for(int i = 0; i < rows; ++i)
     {
         for(int j = 0; j < cols; ++j)
@@ -353,11 +376,29 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
             foreach(QPolygon polygon, polygonArr)
             {
                 if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                 {
+                    byteArr[i*cols+j] = 0x01;
                     mask.setPixel(i,j,qRgba(255, 0, 0, 255));
+                }
             }
         }
     }
-    qDebug()<<"create bit picture"<<timer.elapsed();
+    qDebug()<<"create ARGB32 picture"<<timer.elapsed();
+
+    // -------------------------------Тест, начало
+
+    QBitmap bitMap(rows,cols);
+    bitMap.fill(Qt::color0); //прозрачный
+
+
+    QFile file("D:/selected.area");
+    if(file.open(QIODevice::WriteOnly))
+    {   file.write(byteArr);
+        file.close();
+    }
+
+    //--------------------------------- Тест, конец
+
     return mask;
 }
 void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
@@ -425,6 +466,8 @@ void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
     line->end->setCoords(x2,y2);
     line->setPen(QPen(Qt::red));
     ui->customPlot->addItem(line);
+    ui->customPlot->replot();
+
 }
 
 void Main2DWindow::setInitSliders(int chan)
@@ -454,6 +497,11 @@ void Main2DWindow::setInitSliders(int chan)
     ui->SliderContrastMax->setValue(ChnlLimits[chan][1]);
     delete[] dataTemp;
     flagSlidersEnabledForSlots = true;
+}
+
+void Main2DWindow::polygonTool()
+{
+    polyMngr->show();
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
@@ -506,6 +554,48 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
     if (polygonArr.last().size() > 0)
         drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
     polygonArr.last().append(QPoint(x,y));
+
+
+}
+
+void Main2DWindow::loadMaskFromFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.area");
+    QFile file(fileName);
+    QByteArray byteArr;
+    if(file.open(QIODevice::ReadOnly))
+    {
+        byteArr = file.readAll(); // добавить в Try catch
+        file.close();
+        // Идет копипаст, todo
+        QImage mask(rows,cols,QImage::Format_ARGB32);
+        mask.fill(qRgba(0, 0, 0, 0));
+        QElapsedTimer timer;
+        timer.start();
+        for(int i = 0; i < rows; ++i)
+        {
+            for(int j = 0; j < cols; ++j)
+            {
+                if(byteArr[i*cols+j] == (char)0x01) //проверить (char)
+                     mask.setPixel(i,j,qRgba(0, 0, 255, 150));
+            }
+        }
+        qDebug()<<"create image from byte array: "<<timer.elapsed();
+
+        QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
+        QPixmap alphaImage(QPixmap::fromImage(mask));
+        pixItem->setPixmap(alphaImage);
+        ui->customPlot->addLayer("polygon");
+        ui->customPlot->setCurrentLayer("polygon");
+        pixItem->setScaled(true);
+        ui->customPlot->addItem(pixItem);
+        pixItem->topLeft->setCoords(0,0);
+        pixItem->bottomRight->setCoords(rows-1,cols-1);
+        pixItem->setClipToAxisRect(true);
+        pixItem->setClipAxisRect(ui->customPlot->axisRect());
+    }
+    else
+        qDebug()<<fileName<<" isn't opened";
 
 
 }

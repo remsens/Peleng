@@ -30,12 +30,9 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     Main2DWindow.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    PolygonManager.cpp
 
-    Polygon.cpp
-
-
-    ../Library/Attributes/Attributes.cpp
 
 
 HEADERS += \
@@ -45,18 +42,14 @@ HEADERS += \
      ../Library/QCustomPlot.h\
     ../Library/Types.h \
     Main2DWindow.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    PolygonManager.h
 
-
-    Polygon.h
-
-
-
-    ../Library/Attributes/Attributes.h
 
 
 FORMS += \
     Main2DWindow.ui \
+    PolygonManager.ui
 
 RESOURCES += \
     icons2Dcube.qrc \

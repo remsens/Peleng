@@ -30,7 +30,8 @@ signals:
     void closePlotterWindow(PlotterWindow* w);
 private:
     void closeEvent(QCloseEvent *);
-
+private slots:
+    void graphClicked(QCPAbstractPlottable *plottable);
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();

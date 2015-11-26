@@ -44,6 +44,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     {
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
     }
+    connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
 }
 
 PlotterWindow::~PlotterWindow()
@@ -56,6 +57,17 @@ PlotterWindow::~PlotterWindow()
 
 void PlotterWindow::closeEvent(QCloseEvent *) {
     emit closePlotterWindow(this);
+}
+
+void PlotterWindow::graphClicked(QCPAbstractPlottable *plottable)
+{
+
+    QString grafName = plottable->name();
+    QList<QCPData> XandY = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+//    XandY.at(i).key; //х
+//    XandY.at(i).value; //у
+    qDebug()<<grafName;
+
 }
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
@@ -103,9 +115,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             grafName.append(" Y:");
             grafName.append(QString::number(dataY));
         }
-        m_customPlot->setInteraction(QCP::iRangeDrag , true);
-        m_customPlot->setInteraction(QCP::iRangeZoom  , true);
-
+        m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
             m_customPlot->clearGraphs();

@@ -10,7 +10,7 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
-
+#include "ContrastWindow.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -27,6 +27,7 @@ public:
     QSize sizeHint() const Q_DECL_OVERRIDE;
     void rotateBy(int xAngle, int yAngle, int zAngle);
     void setClearColor(const QColor &color);
+    void resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2);
 
 public slots:
 
@@ -57,7 +58,7 @@ signals:
     void drawLabel(int, int, QString);
     void signalCurrentDataXYZ(uint,uint,uint);
     void flagsToolTip(QPoint, QString);
-    //void labelHelpLine(QString);
+    void redrawSliders();
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
@@ -129,17 +130,11 @@ private:
     QOpenGLShaderProgram *program;
     QOpenGLBuffer vbo;
     float kT = 1;
-    float coords[6][4][3] = {
-                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
-                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
-                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
-                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
-                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
-                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
-                            };
+    float coords[6][4][3];
     int Ch1, Ch2, R1, R2, C1, C2; // хранят value слайдеров
     int prevChN, prevRowsN ;
     int minCMap,maxCMap;
+    int minCMapSides,maxCMapSides;
     int absMin,absMax;
     HyperCube *m_pHyperCube;
     u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
@@ -152,6 +147,7 @@ private:
     QString strForLineHelp; //можно переделать и удалить это
     bool linePlotterIsActive = false;
 
+    ContrastWindow *m_contrastTool;
 
 };
 
