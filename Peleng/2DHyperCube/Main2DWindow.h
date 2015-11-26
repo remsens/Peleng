@@ -59,6 +59,7 @@ public slots:
 signals:
     void signalCurrentDataXY(uint,uint);
     void CloseWindow(Main2DWindow* window);
+
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);
     void mouseDblClickOnColorMap( QMouseEvent* e);
@@ -84,6 +85,9 @@ private slots:
     //! @param chan - текущий канал
     void setInitSliders(int chan);
     void polygonTool();
+    void OnActionMedian3Triggered();
+    void OnActionMedian5Triggered();
+    void OnActionMedian7Triggered();
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
@@ -102,9 +106,7 @@ private:
 
 
 
-    void OnActionMedian3Triggered();
-    void OnActionMedian5Triggered();
-    void OnActionMedian7Triggered();
+
 
     void Noise();
 private:

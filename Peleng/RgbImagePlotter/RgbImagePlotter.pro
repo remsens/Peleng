@@ -32,7 +32,8 @@ HEADERS += \
     rgbprofile.h \
     rgbimagewindow.h \
     ../Library/QCustomPlot.h \
-    zoomimage.h
+    zoomimage.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h
 DISTFILES += \
     RgbImagePlugin.json
 

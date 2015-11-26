@@ -9,7 +9,14 @@ RgbImagePlugin::RgbImagePlugin()
 
 }
 
+RgbImagePlugin::~RgbImagePlugin()
+{
 
+}
+QObject* RgbImagePlugin::GetObjectPointer()
+{
+    return this;
+}
 
 void RgbImagePlugin::Execute(HyperCube *cube, Attributes *attr)
 {

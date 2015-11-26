@@ -544,7 +544,7 @@ void Main2DWindow::createMenus()
     {
         pContextMenu->addAction(pPlotLineAction);
         connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-        connect(this, SIGNAL(plotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {

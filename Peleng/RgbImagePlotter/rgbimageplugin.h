@@ -11,7 +11,10 @@ class RgbImagePlugin : public QObject, public ProcessingPluginsInterface
     Q_INTERFACES(ProcessingPluginsInterface)
 public:
     RgbImagePlugin();
+    virtual ~RgbImagePlugin();
+
     void Execute(HyperCube *cube, Attributes *attr);
+    QObject* GetObjectPointer();
 };
 
 #endif // RGBIMAGEPLUGIN_H
