@@ -30,6 +30,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
         m_initChanel = 0;
 
     ui->setupUi(this);
+
     pContextMenu = 0;
     pPlotAction = 0;
     pPlotHistAction = 0;
@@ -51,13 +52,11 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
 
     setInitCustomplotSettings();
-    createMenus();
-
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
     polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
-
+    createMenus();
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
@@ -65,7 +64,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),polyMngr,SLOT(mouseDblClickOnParentColorMap(QMouseEvent*)));//перенесено в полиМенеджер
 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
@@ -127,7 +126,7 @@ Main2DWindow::~Main2DWindow()
 }
 
 
-void Main2DWindow::resizeEvent(QResizeEvent *e)
+void Main2DWindow::resizeEvent(QResizeEvent *)
 {
    // ui->customPlot->setMinimumWidth(1);
    // ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
@@ -419,7 +418,7 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
     qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
 }
 
-void Main2DWindow::finishPolygonCreation()
+/*void Main2DWindow::finishPolygonCreation()
 {
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     flagPolygonIsCreated = true;
@@ -443,9 +442,9 @@ void Main2DWindow::finishPolygonCreation()
     ui->customPlot->replot();
 
 
-}
+}*/
 
-QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
+/*QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
 {
 
     QElapsedTimer timer;
@@ -485,14 +484,15 @@ QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
     //--------------------------------- Тест, конец
 
     return mask;
-}
-void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
+}*/
+/*void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
 {
     if (!flagPolygonIsCreated)
-        finishPolygonCreation();
+        //finishPolygonCreation();
+        polyMngr->finishPolygonCreation();
     qDebug()<<"2x clicked";
 
-}
+}*/
 
 void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
@@ -564,10 +564,11 @@ void Main2DWindow::createMenus()
     }
     pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
 	pContextMenu->addAction(pSelectAreaAction);
-    connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));
+    //connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));//удалить строчку
+    connect(pSelectAreaAction,SIGNAL(triggered()),polyMngr,SLOT(createPolygonSlot()));
 }
 
-void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
+/*void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
 {
     QCPItemLine *line = new QCPItemLine(ui->customPlot);
     line->start->setCoords(x1,y1);
@@ -576,7 +577,7 @@ void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
     ui->customPlot->addItem(line);
     ui->customPlot->replot();
 
-}
+}*/
 
 void Main2DWindow::setInitSliders(int chan)
 {
@@ -682,7 +683,7 @@ void Main2DWindow::createLinePlotterSlot()
 
 }
 
-void Main2DWindow::createPolygonSlot()
+/*void Main2DWindow::createPolygonSlot()
 {
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     this->setToolTip(strForLineHelp);
@@ -692,9 +693,9 @@ void Main2DWindow::createPolygonSlot()
     flagPolygonIsCreated = false;
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
 
-}
+}*/
 
-void Main2DWindow::addPolygonPoint(uint x,uint y)
+/*void Main2DWindow::addPolygonPoint(uint x,uint y)
 {
     //раньше была проверка на flagPolygonIsCreated, но уже не надо
     if (polygonArr.last().size() > 0)
@@ -702,9 +703,9 @@ void Main2DWindow::addPolygonPoint(uint x,uint y)
     polygonArr.last().append(QPoint(x,y));
 
 
-}
+}*/
 
-void Main2DWindow::loadMaskFromFile()
+/*void Main2DWindow::loadMaskFromFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.area");
     QFile file(fileName);
@@ -744,7 +745,7 @@ void Main2DWindow::loadMaskFromFile()
         qDebug()<<fileName<<" isn't opened";
 
 
-}
+}*/
 
 void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {

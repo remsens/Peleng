@@ -15,25 +15,22 @@ PolygonManager::PolygonManager(int rows, int cols,
 {
     ui->setupUi(this);
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableWidget->insertRow(0);
-    ui->tableWidget->setItem(0,0, new QTableWidgetItem("first"));
-    ui->tableWidget->setItem(0,1, new QTableWidgetItem("second"));
-    ui->tableWidget->itemAt(0,0)->setBackgroundColor(Qt::red);
-    ui->tableWidget->insertRow(1);
-
-   ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-   connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(tableContextMenuRequest(QPoint)));
-   connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
-
+    //ui->tableWidget->setSelectionMode()
+    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(tableContextMenuRequest(QPoint)));
+    connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
+    connect(ui->buttonAddRegion,SIGNAL(clicked()),SLOT(onButtonAddRegion()));
+    connect(ui->buttonRemoveRegion,SIGNAL(clicked()),SLOT(onButtonRemoveRegion()));
+    connect(ui->buttonAddPolygon,SIGNAL(clicked()),SLOT(onButtonAddPolygon()));
 }
 
 void PolygonManager::createPolygonSlot()
 {
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     m_parent2D->setToolTip(strForLineHelp);
-    m_parent2D->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    m_cusPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     QPolygon polygon;
-    polygonArr.append(polygon);
+    m_polygonArr.append(polygon);
     m_polyCreationInProcess = true;
     connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
 
@@ -43,9 +40,9 @@ void PolygonManager::addPolygonPoint(uint x,uint y)
 {
     QColor color = Qt::red;
     QPoint p(x,y);
-    if (polygonArr.last().size() > 0)
-        drawLine(polygonArr.last().last(), p,  color);
-    polygonArr.last().append(p);
+    if (m_polygonArr.last().size() > 0)
+        drawLine(m_polygonArr.last().last(), p,  color);
+    m_polygonArr.last().append(p);
 }
 
 void PolygonManager::drawLine(QPoint p1, QPoint p2, QColor color)
@@ -57,26 +54,23 @@ void PolygonManager::drawLine(QPoint p1, QPoint p2, QColor color)
     m_cusPlot->addItem(line);
     m_cusPlot->replot();
 }
-
+void PolygonManager::mouseDblClickOnParentColorMap( QMouseEvent *)
+{
+    if (m_polyCreationInProcess)
+        finishPolygonCreation();
+}
 void PolygonManager::finishPolygonCreation()
 {
     disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     QColor color = Qt::red;
     m_polyCreationInProcess = false;
     m_flagDoubleClicked = true;
-    m_parent2D->setCursor(QCursor(Qt::ArrowCursor));
+    m_cusPlot->setCursor(QCursor(Qt::ArrowCursor));
     m_parent2D->setToolTip("");
-    drawLine(polygonArr.last().last(), polygonArr.last().first(), color );
-    //QImage mask = maskFromPolygons(polygonArr);//дописать
-    QCPItemPixmap *pixItem = new QCPItemPixmap(m_cusPlot);
-    // QPixmap alphaImage(QPixmap::fromImage(mask));
-    //pixItem->setPixmap(alphaImage);
-    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
-    m_cusPlot->addItem(pixItem);
-    pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(m_rows-1,m_cols-1);
-    pixItem->setClipToAxisRect(true);
-    pixItem->setClipAxisRect(m_cusPlot->axisRect());
+    drawLine(m_polygonArr.last().last(), m_polygonArr.last().first(), color );
+    QByteArray byteArr = byteMaskFromPolygons(m_polygonArr);
+    QImage mask = imageFromByteMask(byteArr,color);
+    drawImage(mask);
     m_cusPlot->replot();
 }
 
@@ -146,12 +140,12 @@ QImage PolygonManager::imageFromByteMask(QByteArray byteArr, QColor color)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(byteArr[i*m_cols+j] == (char)0x01) //проверить (char)
+            if(byteArr[i*m_cols+j] == 0x01)
                 mask.setPixel(i,j,color.rgba());
         }
     }
     return mask;
-    drawImage(mask);
+    //drawImage(mask);
 
 }
 void PolygonManager::drawImage(QImage mask)
@@ -169,12 +163,52 @@ void PolygonManager::drawImage(QImage mask)
 
 void PolygonManager::tableContextMenuRequest(QPoint pos)
 {
-    QMenu *menu = new QMenu(this);
-    QAction* action = new QAction("test action",this);
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    menu->addAction(action);
-    //ui->tableWidget->selectro
-    menu->popup(ui->tableWidget->mapToGlobal(pos));
+
+    QModelIndex index = ui->tableWidget->indexAt(pos);
+    if(index.isValid())
+    {
+        QMenu *menu = new QMenu(this);
+        QAction* actionColor = new QAction("Выбор цвета",this);
+        QAction* action2 = new QAction("test action 2",this);
+        QAction* action3 = new QAction("test action 3",this);
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        menu->addAction(actionColor);
+        menu->addAction(action2);
+        menu->addAction(action3);
+        menu->popup(QCursor::pos());//ui->tableWidget->mapToGlobal(pos)
+        connect(actionColor,SIGNAL(triggered()),SLOT(pickColor()));
+        //QColorDialog
+    }
+
+}
+void PolygonManager::pickColor() // должен возвращать цвет
+{
+    QColor color = QColorDialog::getColor(Qt::white);
+    ui->tableWidget->selectedItems().at(1)->setBackgroundColor(color);
+
+}
+
+void PolygonManager::onButtonAddRegion()
+{
+    Region region;
+    m_RegionArr.append(region);
+
+    int rowsCount = ui->tableWidget->rowCount();
+    ui->tableWidget->insertRow(rowsCount);
+    ui->tableWidget->setItem(rowsCount,0, new QTableWidgetItem());
+    ui->tableWidget->setItem(rowsCount,1, new QTableWidgetItem());
+}
+
+void PolygonManager::onButtonRemoveRegion()
+{
+    if( ui->tableWidget->selectedItems().isEmpty())
+        return;
+    ui->tableWidget->removeRow(ui->tableWidget->selectedItems().at(0)->row());
+}
+
+void PolygonManager::onButtonAddPolygon()
+{
+    createPolygonSlot();
 }
 
 void PolygonManager::currentRowChanged(QModelIndex i1, QModelIndex i2)

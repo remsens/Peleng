@@ -32,16 +32,23 @@
     <item>
      <layout class="QGridLayout" name="gridButtons">
       <item row="0" column="0" rowspan="2">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="buttonAddRegion">
         <property name="text">
          <string>Добавить регион интереса</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1" rowspan="2">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="buttonAddPolygon">
         <property name="text">
          <string>Добавить полигон</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="buttonRemoveRegion">
+        <property name="text">
+         <string>Удалить регион интереса</string>
         </property>
        </widget>
       </item>

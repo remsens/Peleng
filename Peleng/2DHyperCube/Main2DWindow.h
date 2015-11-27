@@ -20,7 +20,7 @@ class Main2DWindow : public QMainWindow
 public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     ~Main2DWindow();
-    void resizeEvent(QResizeEvent *e);
+    void resizeEvent(QResizeEvent *);
 
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
@@ -62,7 +62,7 @@ signals:
 
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);
-    void mouseDblClickOnColorMap( QMouseEvent* e);
+    //void mouseDblClickOnColorMap( QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
     void toggledActionInterpolation(bool flag){m_interplolate = flag;}
     void plotSpectr(uint x, uint y);
@@ -73,9 +73,9 @@ private slots:
 
     void createLinePlotterSlot();
 
-    void createPolygonSlot();
-    void addPolygonPoint(uint x,uint y);
-    void loadMaskFromFile();
+   // void createPolygonSlot();
+   // void addPolygonPoint(uint x,uint y);
+   // void loadMaskFromFile();
     void prepareToHist();
     void addSpectr();
 
@@ -91,18 +91,18 @@ private slots:
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
-    //! функция добавления линии на customPlot
-    //! @param x1 - Х начала линии
-    //! @param x2 - У начала линии
-    //! @param y1 - Х конца линии
-    //! @param y1 - У конца линии
-    void drawLine(uint x1, uint y1, uint x2, uint y2);
-    //! функция,завершающая создание полигона
-    void finishPolygonCreation();
-    //! функция,создающая маску для канала по полигону
-    //! @param polygonArr - вектор полигонов, по которым создается маска
-    //! @return - битовое изображение
-    QImage maskFromPolygons(QVector<QPolygon> polygonArr);
+//    //! функция добавления линии на customPlot
+//    //! @param x1 - Х начала линии
+//    //! @param x2 - У начала линии
+//    //! @param y1 - Х конца линии
+//    //! @param y1 - У конца линии
+//    void drawLine(uint x1, uint y1, uint x2, uint y2);
+//    //! функция,завершающая создание полигона
+//    void finishPolygonCreation();
+//    //! функция,создающая маску для канала по полигону
+//    //! @param polygonArr - вектор полигонов, по которым создается маска
+//    //! @return - битовое изображение
+//    QImage maskFromPolygons(QVector<QPolygon> polygonArr);
 
 
 

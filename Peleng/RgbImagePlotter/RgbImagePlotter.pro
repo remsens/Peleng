@@ -10,7 +10,8 @@ TARGET = RgbImagePlotter
 TEMPLATE = lib
 CONFIG += plugin
 
-DESTDIR = ../../Debug/MainApp/debug
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 SOURCES += \
     rgbimageplugin.cpp \
