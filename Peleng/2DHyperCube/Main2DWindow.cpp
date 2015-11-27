@@ -632,11 +632,37 @@ void Main2DWindow::OnActionMedian7Triggered()
 
 void Main2DWindow::Noise()
 {
+//    QProgressBar bar(this);
+//    bar.setWindowTitle("Подождите");
+//    bar.setRange(0,0);
+//    bar.setValue(100);
+//    QApplication::processEvents();
+//    bar.show();
+//    QProgressDialog dialog;
+//    dialog.setRange(0,0);
+//    dialog.setValue(0);
+//    dialog.show();
+//    QProgressDialog progress(this);
+//    progress.setWindowModality(Qt::WindowModal);
+//    progress.setLabelText("working...");
+//    progress.setCancelButton(0);
+//    progress.setRange(0,0);
+//    progress.setValue(0);
+//    progress.setMinimumDuration(0);
+//    progress.exec();
+//    QApplication::processEvents();
+    QMovie* spinnerMovie = new QMovie("qrc:/icons/load.GIF");
+    QLabel *spinnerLabel = new QLabel(this);
+    spinnerLabel->setMovie(spinnerMovie);
+    spinnerLabel->show();
+    spinnerMovie->start();
+
     m_attributes->ClearList();
     m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetApplyToAllCube(false);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);
+    spinnerMovie->finished();
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
