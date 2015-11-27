@@ -2,7 +2,7 @@
 
 #include "templatehistplot.h"
 #include <QElapsedTimer>
-
+#include <QDebug>
 
 
 HistPlotter::HistPlotter(HyperCube *cube, Attributes *attr)
@@ -10,16 +10,28 @@ HistPlotter::HistPlotter(HyperCube *cube, Attributes *attr)
     , m_attributes(attr)
 {
     customPlot =  new QCustomPlot();
+    customPlot->setAttribute(Qt::WA_DeleteOnClose, true);
     HIST_COUNT = 100;
     connect(this,SIGNAL(replot()),SLOT(deleteLater()));
+    connect(customPlot, SIGNAL(destroyed(QObject* )), this, SLOT(OnClose()));
 }
 
 
 HistPlotter::~HistPlotter()
 {
-    delete customPlot;
+ qDebug() << "delete histPlotter";
 }
 
+void HistPlotter::DestroyCustomPlot()
+{
+    delete customPlot;
+    qDebug() << "delete customplot";
+}
+
+void  HistPlotter::OnClose()
+{
+    emit Close(this);
+}
 
 void HistPlotter::plotLine(QCPAbstractPlottable *object, QMouseEvent *event)
 {
@@ -67,8 +79,9 @@ void HistPlotter::mouseClick(QMouseEvent *event)
             case type_double: ModifyCube<double>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
             default: ModifyCube<qint8>(m_cube,Channel,((QCPItemStraightLine*)customPlot->item(0))->point1->key(),x); break;
         }
-        emit this->replot();
-        customPlot->hide();
+        // emit сигнал в 2Д
+        //emit this->replot();
+        customPlot->close();
     }
 }
 
@@ -90,16 +103,16 @@ void HistPlotter::Plot()
     if (m_cube->GetSizeChannel()-1  < Channel) Channel = m_cube->GetSizeChannel()-1;
     QVector<double> key(HIST_COUNT+1),value(HIST_COUNT+1);
     switch (m_cube->GetFormatType()) {
-        case 1: CreateHistValue<qint8>(m_cube,Channel,HIST_COUNT, key, value); break;
-        case 11: CreateHistValue<quint8>(m_cube,Channel,HIST_COUNT, key, value); break;
-        case 2: CreateHistValue<qint16>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 22: CreateHistValue<quint16>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 3: CreateHistValue<qint32>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 33: CreateHistValue<quint32>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 4: CreateHistValue<qint64>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 44: CreateHistValue<quint64>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 5: CreateHistValue<float>(m_cube,Channel,HIST_COUNT,key, value); break;
-        case 6: CreateHistValue<double>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_int8: CreateHistValue<qint8>(m_cube,Channel,HIST_COUNT, key, value); break;
+        case type_uint8: CreateHistValue<quint8>(m_cube,Channel,HIST_COUNT, key, value); break;
+        case type_int16: CreateHistValue<qint16>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_uint16: CreateHistValue<quint16>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_int32: CreateHistValue<qint32>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_uint32: CreateHistValue<quint32>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_int64: CreateHistValue<qint64>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_uint64: CreateHistValue<quint64>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_float: CreateHistValue<float>(m_cube,Channel,HIST_COUNT,key, value); break;
+        case type_double: CreateHistValue<double>(m_cube,Channel,HIST_COUNT,key, value); break;
         default: CreateHistValue<qint8>(m_cube,Channel,HIST_COUNT,key, value); break;
     }
     bars->setData(key,value);

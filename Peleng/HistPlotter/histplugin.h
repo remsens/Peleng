@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
-#include "../Library/QCustomPlot.h"
+
+#include "histplotter.h"
 
 class HistPlugin : public QObject, public  ProcessingPluginsInterface
 {
@@ -17,7 +18,13 @@ public:
 
 public:
     void Execute(HyperCube *cube, Attributes* attr = 0);
+    QObject* GetObjectPointer();
 
+public slots:
+    void OnClose(HistPlotter* w);
+
+private:
+    QList<HistPlotter*> m_listWindows;
 };
 
 #endif // HISTPLUGIN_H

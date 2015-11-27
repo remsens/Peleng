@@ -10,7 +10,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 2DHyperCube
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
+
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:     DLLDESTDIR = ../../Release/MainApp/release
 
 DEFINES += TWODHYPERCUBE_LIBRARY
 CONFIG += plugin
@@ -28,7 +30,10 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/QCustomPlot.cpp \
     Main2DWindow.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    PolygonManager.cpp
+
+
 
 HEADERS += \
     Hyper2dPlugin.h \
@@ -37,10 +42,14 @@ HEADERS += \
      ../Library/QCustomPlot.h\
     ../Library/Types.h \
     Main2DWindow.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    PolygonManager.h
+
+
 
 FORMS += \
     Main2DWindow.ui \
+    PolygonManager.ui
 
 RESOURCES += \
     icons2Dcube.qrc \

@@ -29,11 +29,30 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
     m_actionSave = 0;
+    m_actionNoise3 = 0;
+    m_actionNoise5 = 0;
+    m_actionNoise7 = 0;
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         m_actionSave = new QAction("Сохранить в библиотеку", this);
         ui->menuSpectrum->addAction(m_actionSave);
         QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+    {
+        m_actionNoise3 = new QAction("Медианный 3х3", this);
+        m_actionNoise5 = new QAction("Медианный 5х5", this);
+        m_actionNoise7 = new QAction("Медианный 7х7", this);
+        m_menuMedianNoise = new QMenu("Медианный фильтр");
+        m_menuMedianNoise->addAction(m_actionNoise3);
+        m_menuMedianNoise->addAction(m_actionNoise5);
+        m_menuMedianNoise->addAction(m_actionNoise7);
+        m_menuNoise = new QMenu("Фильтры");
+        m_menuNoise->addMenu(m_menuMedianNoise);
+        ui->menuSpectrum->addMenu(m_menuNoise);
+        QObject::connect(m_actionNoise3, SIGNAL(triggered()), this, SLOT(ActionNoise3Toggled()));
+        QObject::connect(m_actionNoise5, SIGNAL(triggered()), this, SLOT(ActionNoise5Toggled()));
+        QObject::connect(m_actionNoise7, SIGNAL(triggered()), this, SLOT(ActionNoise7Toggled()));
     }
     if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
     {
@@ -44,11 +63,19 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     {
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
     }
+    connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
 }
 
 PlotterWindow::~PlotterWindow()
 {
+    m_xArr.clear();
+    m_yArr.clear();
     delete m_actionSave;
+    delete m_actionNoise3;
+    delete m_actionNoise5;
+    delete m_actionNoise7;
+    delete m_menuMedianNoise;
+    delete m_menuNoise;
     delete ui;
 }
 
@@ -56,11 +83,57 @@ void PlotterWindow::closeEvent(QCloseEvent *) {
     emit closePlotterWindow(this);
 }
 
+void PlotterWindow::NoiseAlgExecute()
+{
+    bool oldHold = m_hold;
+    m_hold = true;
+    m_attributes->SetNoiseAlg(Median1D);
+    m_attributes->SetApplyToAllCube(false);
+    m_attributes->SetXUnit(m_xArr);
+    m_attributes->SetYUnit(m_yArr);
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
+    m_hold = oldHold;
+}
+
+void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
+{
+    QString grafName = plottable->name();
+    QList<QCPData> XandY = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+    //    XandY.at(i).key; //х
+    //    XandY.at(i).value; //у
+}
+
+void PlotterWindow::ActionNoise3Toggled()
+{
+    m_attributes->SetMaskPixelsCount(3);
+    NoiseAlgExecute();
+}
+
+void PlotterWindow::ActionNoise5Toggled()
+{
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseAlgExecute();
+}
+
+void PlotterWindow::ActionNoise7Toggled()
+{
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseAlgExecute();
+}
+
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
+
+    initSize = size();
+
+    m_xArr.clear();
+    m_yArr.clear();
+
     QString err;
     try
     {    //если можем получить точку гиперкуба
+        m_xArr.clear();
+        m_yArr.clear();
         if (m_attributes->GetExternalSpectrFlag())
         {
             m_xArr = m_attributes->GetXUnits();
@@ -98,8 +171,8 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             grafName.append(" Y:");
             grafName.append(QString::number(dataY));
         }
-        m_customPlot->setInteraction(QCP::iRangeDrag , true);
-        m_customPlot->setInteraction(QCP::iRangeZoom  , true);
+
+        m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
 
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
@@ -187,7 +260,7 @@ void PlotterWindow::on_actionHold_toggled(bool value)
 void PlotterWindow::on_actionSave_toggled()
 {
     m_attributes->SetModeLib(0);
-    m_attributes->ClearList();
+    m_attributes->ClearUnitsLists();
     m_attributes->SetXUnit(m_xArr);
     m_attributes->SetYUnit(m_yArr);
     m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);

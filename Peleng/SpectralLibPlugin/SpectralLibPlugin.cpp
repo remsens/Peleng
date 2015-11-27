@@ -13,6 +13,10 @@ SpectralLibPlugin::~SpectralLibPlugin()
 {
 
 }
+QObject* SpectralLibPlugin::GetObjectPointer()
+{
+    return this;
+}
 
 void SpectralLibPlugin::Execute(HyperCube *cube, Attributes *attr)
 {

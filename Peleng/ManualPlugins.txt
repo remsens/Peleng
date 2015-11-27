@@ -1,0 +1,73 @@
+Автор: Лина Ширяева
+Описание: В документе подробно описано, какие аттрибуты нужно ОБЯЗАТЕЛЬНО задать для плагина, перед тем, как его вызвать + пример вызова
+Создание: 13.11.2015
+
+Отмечу, что по запуску программы в аттрибуты будет записан список доступных плагинов, который необходим для каждого плагина. Повторно проверять и перезаписывать пока что не нужно.
+Возможно понадобится позже, чтобы защитить программу от нехороших :) ручек пользователей, которые вдруг захотят по мере работы программы удалить часть плагинов (dll - библиотек).
+Важное замечание: каждый класс, который активно работает с параметрами классов HyperCube и Attributes, должны уметь private (или protected поля), для простоты работы. Лучше перестраховаться заранее:), чем потом скорее всего переписывать
+
+1). При загрузке первого плагина и первом вызове статического метода Attributes::I(), записываются доступные плагины (далее подразумевается, что список плагинов не меняется за все время жизни программы):
+	Пример:
+	Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
+2). Плагин 3DCube:
+	Описание: Отображение гиперспектральных данных в виде 3D куба
+	Аттрибуты: нет.
+3). Плагин 2DCube:
+	Описание: Отображение данных по каналам.
+	Аттрибуты: Список точек. Чтобы не засорять лишними данными класс аттрибутов (Attributes), было решено записать активную точку с 3DCube, а у нее уже взять канал (канал, который необходимо отобразить первым, при загрузке плагина)
+	Пример:
+	m_attributes->ClearList();
+    	m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
+        m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
+4). Плагин LinePlotter:
+	Описание: Выводит график спектральной яркости между произвольно выбранными точками на 3DСube или 2DCube
+	Аттрибуты: Список точек. (Должно быть не менее 2 точек)
+	Пример:
+	m_attributes->ClearList();
+    	m_attributes->SetPoint(x1, y1, z1);
+        m_attributes->SetPoint(x2, y2, z2);
+        m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pHyperCube, m_attributes); 
+5). Плагин SpectrPlotter:
+	Описание: Графическое представление для любой выбранной точки на 3DСube, 2DCube или отображение спектра, загруженного из файла.
+	Аттрибуты: Внешний спектр (загруженный из файла) или внутренний, для выбранной точки. Если спектр внешний, то нужно указать формат: 0 - формат текущей программы, 1 - aster или другой
+	(тут проблема с отображением на одном графике. Нужно, чтобы совпадали величины по оси У, и диапазон длин волн по оси Х. ). Также для внешнего спектра необходимо указать SpectrDesc (), если вдруг спектр формируется искуственно, как, например, 
+	в плагине NoiseRemover, а также вектор величин XUnits, YUnits.
+
+	Пример для собственного спектра (action "Спектр" из 2D и 3D):
+	m_attributes->ClearList();
+    	m_attributes->SetPoint(x, y, z);
+    	m_attributes->SetExternalSpectrFlag(false); // установим, что спектр не внешний
+    	m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes); 
+	
+	Пример для экспортируемого спектра (вызывается из Спектральной библиотеки):
+	m_attr->SetDescriptionItem(title, description);
+	m_attr->SetXUnit(x); // значение double
+        m_attr->SetYUnit(y); // значение double
+	
+6). Плагин SpectralLib:
+	Описание: Возможность сохранения спектров в спектральную библиотеку и экспорта спектров собственного формата и формата aster в программу.
+	Аттрибуты: Режим работы: 0 - для сохранения, 1 - для экспорта.
+
+	Пример сохранения:
+	m_attributes->SetModeLib(0);
+    	m_attributes->ClearUnitsLists();
+    	m_attributes->SetXUnit(m_xArr);
+    	m_attributes->SetYUnit(m_yArr);
+   	m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);
+    	m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
+
+	Пример экспорта спектра:
+    	m_attributes->SetModeLib(1);
+    	m_attributes->SetExternalSpectrFlag(true);
+    	m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_pHyperCube , m_attributes);
+	
+7). Плагин NoiseRemover:
+	Описание: удаление шумов с изображений
+	Аттрибуты: Алгоритм удаления шумов. При выборе алгоритмов для 1D, нужно задавать XUnits, YUnits. и размер маски.
+	Пример вызова для 1D:
+
+	m_attributes->SetMaskPixelsCount(3);
+	m_attributes->SetNoiseAlg(Median1D);
+    	m_attributes->SetXUnit(m_xArr);
+    	m_attributes->SetYUnit(m_yArr);
+    	m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes); 

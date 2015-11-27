@@ -12,6 +12,11 @@ LinePlugin::~LinePlugin()
 
 }
 
+QObject* LinePlugin::GetObjectPointer()
+{
+    return this;
+}
+
 void LinePlugin::Execute(HyperCube* cube, Attributes* attr)
 {    
     LinePlotterWindow* linePlotter = new LinePlotterWindow(attr);

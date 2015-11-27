@@ -51,13 +51,19 @@ void Attributes::SetYUnit(double yUnit)
 void Attributes::SetXUnit(QVector<double>& xUnits)
 {
     m_XUnits.clear();
-    m_XUnits.append(xUnits);
+//    m_XUnits.append(xUnits);
+    foreach (double x, xUnits) {
+        m_XUnits.append(x);
+    }
 }
 
 void Attributes::SetYUnit(QVector<double>& yUnits)
 {
     m_YUnits.clear();
-    m_YUnits.append(yUnits);
+    //m_YUnits.append(yUnits);
+    foreach (double y, yUnits) {
+        m_YUnits.append(y);
+    }
 }
 
 void Attributes::ClearUnitsLists()
@@ -146,4 +152,34 @@ int  Attributes::GetFormatExternalSpectr() const
 void Attributes::SetExternalSpectrFormat(int format)
 {
     m_formatExternalSpectr = format;
+}
+
+void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
+{
+    m_noiseAlg = alg;
+}
+
+NoiseAlgorithm Attributes::GetNoiseAlg() const
+{
+    return m_noiseAlg;
+}
+
+void Attributes::SetMaskPixelsCount(const u::uint32 pixelsNumber)
+{
+    m_maskPixelsCount = pixelsNumber;
+}
+
+u::uint32 Attributes::GetMaskPixelsCount() const
+{
+    return m_maskPixelsCount;
+}
+
+void Attributes::SetApplyToAllCube(bool apply)
+{
+    m_applyToAllCube = apply;
+}
+
+bool Attributes::GetApplyToAllCube() const
+{
+    return m_applyToAllCube;
 }

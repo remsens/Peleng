@@ -16,9 +16,13 @@ public:
     virtual ~CubePlugin();
 private:
     void Execute(HyperCube* cube, Attributes* attr);
+    QObject* GetObjectPointer();
+
+public slots:
+    void OnClose(MainWindow* window);
 
 private:
-    MainWindow* m_w;
+    QList<MainWindow*> m_listWindows;
 };
 
 #endif // CUBEPLUGIN_H
