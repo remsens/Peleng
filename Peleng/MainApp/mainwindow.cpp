@@ -110,10 +110,8 @@ void MainWindow::LoadFile()
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Noise Remover");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
-            //Attributes::I()->SetExternalSpectrFlag(false);
-            //Attributes::I()->SetPoint(100, 100, 100);
-//            Attributes::I()->SetMaskPixelsCount(3);
-//            Attributes::I()->SetNoiseAlg(Median2D);
+           // Attributes::I()->SetModeLib(1);
+            //cube->ResizeCube(51,223,1922,2447,193,791);//тест ресайза
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

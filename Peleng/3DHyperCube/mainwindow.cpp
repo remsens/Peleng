@@ -114,7 +114,7 @@ void MainWindow::processData()
 
 void MainWindow::resizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
-    //widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
+    widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
 }
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
@@ -146,6 +146,6 @@ void MainWindow::prepareToResizeCube()
     int R2 =  ui->horizontalScrollBar_X2->value();
     int C1 =  ui->horizontalScrollBar_Y1->value();
     int C2 =  ui->horizontalScrollBar_Y2->value();
-    //widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
+    widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
 }
 

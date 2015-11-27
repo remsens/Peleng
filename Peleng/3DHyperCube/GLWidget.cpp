@@ -6,6 +6,8 @@
 #include <GL/glu.h>
 #include <QDebug>
 
+#include "../HistPlotter/histplugin.h"
+
 
 using namespace std;
 
@@ -20,6 +22,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , zRot(0)
     , program(0)
     , m_attributes(attr)
+    , m_contrastTool(NULL)
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -28,22 +31,35 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     loadData(ptrCube);
     m_pHyperCube = ptrCube;
     kT = float(ROWS)/float(COLS);
-    for(int i=0;i<6;++i)
+    float coordsTemp[6][4][3] = {
+                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
+                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
+                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
+                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
+                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
+                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
+                            };
+    for(int i=0;i<6;++i) //или memcpy
         for(int j=0;j<4;++j)
-        {
-            if (coords[i][j][0] == 1)
-                coords[i][j][0] = kT;
-            else
-                coords[i][j][0] = -kT;
-        }
+            for(int k=0;k<3;++k)
+                coords[i][j][k] = coordsTemp[i][j][k];
+
+//    for(int i=0;i<6;++i)
+//        for(int j=0;j<4;++j)
+//        {
+//            if (coords[i][j][0] == 1)
+//                coords[i][j][0] = kT;
+//            else
+//                coords[i][j][0] = -kT;
+//        }
     Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
     prevChN = CHNLS, prevRowsN = ROWS;
     findMinMaxforColorMap(0.02,0.95);
+    findAbsoluteMinMax();
     createCubeSides();
     fillCubeSides();
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
-    //rotateBy(200,400,0);
     rotateBy(-2560,712,0);
     createMenus();
     setMouseTracking(true);
@@ -174,6 +190,36 @@ void GLWidget::setClearColor(const QColor &color)
 {
     clearColor = color;
     update();
+}
+
+void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
+{
+    m_pHyperCube->ResizeCube(Ch1,Ch2,R1,R2,C1,C2);
+    loadData(m_pHyperCube);
+    float oldKT = kT;
+    kT = float(ROWS)/float(COLS);
+    for(int i=0;i<6;++i)
+        for(int j=0;j<4;++j)
+        {
+            if (coords[i][j][0] == oldKT)
+                coords[i][j][0] = kT;
+            else
+                coords[i][j][0] = -kT;
+        }
+
+    //Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
+    this->Ch1 = 0; this->Ch2 = Ch2-Ch1; this->R1 = 0; this->R2 = R2-R1; this->C1 = 0; this->C2 = C2-C1;
+    prevChN = CHNLS, prevRowsN = ROWS;
+    findMinMaxforColorMap(0.02,0.95);
+    findAbsoluteMinMax();
+
+    makeObject();
+    createCubeSides();
+    fillCubeSides();
+    makeTextures();
+    paintGL();
+    update();
+    emit redrawSliders();
 }
 
 
@@ -516,6 +562,48 @@ void GLWidget::run2DCube()
     m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
 }
 
+void GLWidget::contrast()
+{
+    if(m_contrastTool == NULL)
+    {
+        m_contrastTool = new ContrastWindow(absMin,absMax);
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+    }
+    m_contrastTool->show();
+    m_contrastTool->raise();
+    m_contrastTool->showNormal();// если окно было свернуто
+}
+
+void GLWidget::repaintWithContrast(int min, int max)
+{
+    int nCHNLS = Ch2 - Ch1 + 1;
+    int nROWS = R2 - R1 + 1;
+    int nCOLS = C2 - C1 + 1;
+    QTransform rtt270;
+    QTransform rtt90;
+    QTransform rtt180;
+    rtt270.rotate(270);
+    rtt90.rotate(90);
+    rtt180.rotate(180);
+
+
+    makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
+    textures[0]->destroy();
+    textures[2]->destroy();
+    textures[3]->destroy();
+    textures[5]->destroy();
+
+
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,min,max).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,min,max).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,min,max).transformed(rtt270));
+    update();
+    minCMapSides = min; // чтобы при последующих перерисовках использовались новые, вручную установленные,  значения
+    maxCMapSides = max;
+
+}
+
 void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (!m_needToUpdate)
@@ -722,6 +810,7 @@ void GLWidget::createMenus()
     pContextMenu = new QMenu();
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+
     pPlotLineAction = new QAction("Спектральный срез", this);
     p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
     pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
@@ -767,6 +856,12 @@ void GLWidget::createMenus()
         pContextMenu->addAction(pAddSpectrAction);
         connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
     }
+
+    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
+    pContextMenu->addAction(pContrastAction);
+    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
+
+
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
         m_menuMedian1DFilters->addAction(m_actionMedian1D_3);
@@ -785,6 +880,7 @@ void GLWidget::createMenus()
         connect(m_actionMedian2D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_5Triggered()));
         connect(m_actionMedian2D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_7Triggered()));
     }
+
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -969,12 +1065,12 @@ void GLWidget::makeTextures()
     }
 
 
-    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,true).mirrored(false,true));// грань с фото .transformed(rtt180).mirrored(true,false)
-    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS).transformed(rtt270).mirrored(true,false)); //напротив темной грани
-    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,true)); //пустая грань
-    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS).transformed(rtt270).mirrored(true,false)); //
-    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS).transformed(rtt270)); //наполовину видная грань
-    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS).transformed(rtt270));
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// верхняя грань с фото
+    textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //напротив темной грани
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //нижняя грань с фото
+    textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //
+    textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270)); //наполовину видная грань
+    textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270));
 
 }
 
@@ -1163,7 +1259,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
 }
 
 //передаем, например  sidesDataCH_CO[0]
-QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
+QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
     QCustomPlot customPlot;
@@ -1192,7 +1288,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2, bool gr
     else
         colorMap->setGradient(QCPColorGradient::gpSpectrum);
     colorMap->rescaleDataRange(true);
-    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
+    colorMap->setDataRange(QCPRange(minContrast,maxContrast));
     customPlot.rescaleAxes();
     customPlot.replot();
     QPixmap pixmap = customPlot.toPixmap(dim1,dim2);
@@ -1211,10 +1307,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     qint16 *dataTemp = new qint16[ROWS*COLS];
     for (int i=0; i<10; ++i)           //!!! 10
     {
-        for (int j = 0; j<ROWS*COLS; ++j)
-        {
-            dataTemp[j]=data[i][j];
-        }
+        m_pHyperCube->GetDataChannel(i,dataTemp);
         qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];
@@ -1224,7 +1317,30 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             maxCMap = max;
         qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
     }
+    minCMapSides = minCMap;
+    maxCMapSides = maxCMap;
     delete[] dataTemp;
+}
+
+void GLWidget::findAbsoluteMinMax()
+{
+    int min =  32767;
+    int max = -32767;
+    QElapsedTimer timer3;
+    timer3.start();
+    for (int i = 0; i < CHNLS; ++i)
+    {
+        for (int j = 0; j < ROWS*COLS; ++j)
+        {
+            if(data[i][j] < min)
+                min = data[i][j];
+            if (data[i][j] > max)
+                max = data[i][j];
+        }
+    }
+    absMin = min;
+    absMax = max;
+    qDebug()<<"find abslolute min max in data: "<<timer3.elapsed();
 }
 
 int cmp(const void *a, const void *b)

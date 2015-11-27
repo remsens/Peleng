@@ -6,7 +6,6 @@
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
 #include "GLWidget.h"
-
 namespace Ui {
 class MainWindow;
 }

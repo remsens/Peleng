@@ -68,6 +68,8 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
 
 PlotterWindow::~PlotterWindow()
 {
+    m_xArr.clear();
+    m_yArr.clear();
     delete m_actionSave;
     delete m_actionNoise3;
     delete m_actionNoise5;
@@ -121,11 +123,17 @@ void PlotterWindow::ActionNoise7Toggled()
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
+
+    initSize = size();
+
     m_xArr.clear();
     m_yArr.clear();
+
     QString err;
     try
     {    //если можем получить точку гиперкуба
+        m_xArr.clear();
+        m_yArr.clear();
         if (m_attributes->GetExternalSpectrFlag())
         {
             m_xArr = m_attributes->GetXUnits();
@@ -163,7 +171,9 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             grafName.append(" Y:");
             grafName.append(QString::number(dataY));
         }
+
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
+
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
             m_customPlot->clearGraphs();

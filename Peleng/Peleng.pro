@@ -7,3 +7,4 @@ TEMPLATE = subdirs
  #   LinePlotter HistPlotter 3DHyperCube\
 
 SUBDIRS = ReadDataLib AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyperCube HistPlotter SpectralLibPlugin NoisePlugin\
+    RgbImagePlotter

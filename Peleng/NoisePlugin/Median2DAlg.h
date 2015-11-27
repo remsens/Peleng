@@ -114,7 +114,6 @@ public:
                          memcpy(arrWindow + k*pixlWindow, dataCube[ch] +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
                      }
                      qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Compare::CompareVariables<T>);
-
                      BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow + pixlWindow/2), sizeof(T), ((i+1) * (columns) + j +(pixlWindow)/2)*sizeof(T));
                   }
               }
