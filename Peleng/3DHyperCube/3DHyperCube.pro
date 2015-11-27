@@ -45,9 +45,7 @@ DISTFILES += \
 
 FORMS += \
     mainwindow.ui \
-
     ContrastWindow.ui
-
 
 
 SUBDIRS += \

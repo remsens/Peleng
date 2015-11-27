@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "GenericExc.h"
 #include "Utils/typeconvertor.h"
-
+#include <QDebug>
 
 HyperCube::HyperCube()
 {
@@ -213,7 +213,7 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
         {
             qint64 value;
             for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
-                LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,m_infoData.formatType,value);
+                LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType, m_infoData.formatType,value);
                 data.append(value);
             }
 

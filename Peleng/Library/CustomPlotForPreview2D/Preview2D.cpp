@@ -21,8 +21,10 @@ Preview2D::~Preview2D()
 
 void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
 {
-
-    m_ui->widget2D->resize(rows, cols);
+    if(rows>cols)
+         this->resize(this->width(), this->width() * cols / rows);
+    else
+        this->resize(this->width() * rows / cols, this->width() );
     setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
     int minCMap =  32767;
     int maxCMap = -32767;

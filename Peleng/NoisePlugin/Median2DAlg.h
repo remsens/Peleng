@@ -23,11 +23,7 @@ public:
     }
     virtual ~Median2DAlg()
     {
-        /*for (int i = 0; i < m_listCustomPlot.size(); i++)
-        {
-            delete m_listCustomPlot.at(i);
-        }
-        m_listCustomPlot.clear();*/
+
     }
 
     virtual bool Execute()
@@ -47,16 +43,17 @@ public:
     void ToWindow()
     {
         double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
-        QVector<double> data;
+        QVector<double> data; data.resize(BaseNoiseAlg<T>::m_cube->GetSizeChannel());
         BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, data);
         memcpy(dataChannel, data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double));
         data.clear();
+        data.resize(0);
         u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
         // фильтр
         u::uint32 pixlWindow = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
-        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines() - (pixlWindow + 1)/2; i++)
+        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines() - pixlWindow; i++)
         {
-            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns() - (pixlWindow + 1)/2; j++)
+            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns() - pixlWindow; j++)
             {
                 double* arrWindow = new double [pixlWindow*pixlWindow];
 
@@ -65,7 +62,7 @@ public:
                    memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(double)*pixlWindow);
                 }
                 qsort(arrWindow, pixlWindow*pixlWindow, sizeof(double), Compare::CompareVariables<double>);
-                dataChannel[(i+1) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow + pixlWindow/2];
+                dataChannel[(i+pixlWindow/2) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow*pixlWindow/2];
                 delete [] arrWindow;
             }
         }
@@ -98,9 +95,9 @@ public:
         QApplication::processEvents();
         for (u::uint32 ch  = 0; ch < channels; ch++)
         {
-             for (u::uint32 i = 0; i < lines - (pixlWindow + 1)/2+1; i++)
+             for (u::uint32 i = 0; i < lines - pixlWindow; i++)
              {
-                 for (u::uint32 j = 0; j < columns - (pixlWindow + 1)/2+1; j++)
+                 for (u::uint32 j = 0; j < columns - pixlWindow; j++)
                  {
                      for (u::uint32 k = 0; k < pixlWindow; k++)
                      {
@@ -114,7 +111,7 @@ public:
                          memcpy(arrWindow + k*pixlWindow, dataCube[ch] +((i+k)*(columns) + j), sizeof(T)*pixlWindow);
                      }
                      qsort(arrWindow, pixlWindow*pixlWindow, sizeof(T), Compare::CompareVariables<T>);
-                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow + pixlWindow/2), sizeof(T), ((i+1) * (columns) + j +(pixlWindow)/2)*sizeof(T));
+                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(ch, arrWindow + (pixlWindow*pixlWindow/2), sizeof(T), ((i+pixlWindow/2)*columns + j +(pixlWindow)/2)*sizeof(T));
                   }
               }
              double a = (double)((double)ch/channels);
