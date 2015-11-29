@@ -32,6 +32,9 @@ private:
     //! функция создания байтовой маски из полигонов
     QByteArray byteMaskFromPolygons(QVector<QPolygon> polygonArr);
 
+    //! функция создания байтовой маски из 2 других байтовых масок
+    QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
+
     //! функция сохранения байтовой маски на диск
     void saveByteMask(QByteArray byteArr);
 
@@ -53,7 +56,8 @@ private slots:
     //! слот обработки контекстного tableWidgetа
     void tableContextMenuRequest(QPoint pos);
 
-    void currentRowChanged(QModelIndex i1,QModelIndex i2); // возможно и не понадобится
+    //! слот обработки изменения выделения в tableWidget
+    void currentRowChanged(QModelIndex curr, QModelIndex prev);
 
     //! слот выбора цвета
     void pickColor();
@@ -67,6 +71,8 @@ private slots:
     //!  слот обработчика кнопки "Добавить полигон"
     void onButtonAddPolygon();
 
+
+
 private:
     Ui::PolygonManager *ui;
     int m_rows;
@@ -77,6 +83,7 @@ private:
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
     QVector<QPolygon> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
     QVector<Region> m_RegionArr;
+    int m_currIndexRegion;// или QModelIndex
 };
 
 #endif // POLYGONMANAGER_H
