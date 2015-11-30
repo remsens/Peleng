@@ -54,7 +54,8 @@ PolygonManager::PolygonManager(int rows, int cols,
     connect(ui->buttonAddRegion,SIGNAL(clicked()),SLOT(onButtonAddRegion()));
     connect(ui->buttonRemoveRegion,SIGNAL(clicked()),SLOT(onButtonRemoveRegion()));
     connect(ui->buttonAddPolygon,SIGNAL(clicked()),SLOT(onButtonAddPolygon()));
-
+    connect(ui->buttonSaveRegion,SIGNAL(clicked()),SLOT(onButtonSaveRegion()));
+    connect(ui->buttonLoadregion,SIGNAL(clicked()),SLOT(onButtonLoadRegion()));
 
 }
 
@@ -271,7 +272,7 @@ void PolygonManager::onButtonRemoveRegion()
     if(m_RegionArr[selectedRow].m_pixItem != NULL)
     {
         m_cusPlot->removeItem(m_RegionArr[selectedRow].m_pixItem);
-        foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_lines) {
+        foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_lines) {
             m_cusPlot->removeItem(line);
         }
         m_cusPlot->replot();
@@ -284,6 +285,24 @@ void PolygonManager::onButtonRemoveRegion()
 void PolygonManager::onButtonAddPolygon()
 {
     createPolygonSlot();
+}
+
+void PolygonManager::onButtonSaveRegion()
+{
+    if (ui->tableWidget->selectedItems().isEmpty())
+        return;
+    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr);
+}
+
+void PolygonManager::onButtonLoadRegion()
+{
+    if (ui->tableWidget->selectedItems().isEmpty())
+        return;
+    QByteArray byteArr = loadByteMaskFromFile();
+    QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
+    QImage mask = imageFromByteMask(byteArr,color);
+    drawImage(mask);
+    m_cusPlot->replot();
 }
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)

@@ -71,6 +71,12 @@ private slots:
     //!  слот обработчика кнопки "Добавить полигон"
     void onButtonAddPolygon();
 
+    //!  слот обработчика кнопки "Сохранить область"
+    void onButtonSaveRegion();
+
+    //!  слот обработчика кнопки "Загрузить область"
+    void onButtonLoadRegion();
+
 
 
 private:
