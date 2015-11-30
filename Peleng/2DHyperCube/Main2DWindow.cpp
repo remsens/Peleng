@@ -2,6 +2,7 @@
 #include "ui_Main2DWindow.h"
 
 #include <QMessageBox>
+#include "../Library/BusyIndicator/QProgressIndicator.h"
 
 int cmp2(const void *a, const void *b);
 
@@ -614,55 +615,59 @@ void Main2DWindow::polygonTool()
 
 void Main2DWindow::OnActionMedian3Triggered()
 {
+    this->setEnabled(false);
     m_attributes->SetMaskPixelsCount(3);
     Noise();
 }
 
 void Main2DWindow::OnActionMedian5Triggered()
 {
+    this->setEnabled(false);
     m_attributes->SetMaskPixelsCount(5);
     Noise();
 }
 
 void Main2DWindow::OnActionMedian7Triggered()
 {
+    this->setEnabled(false);
     m_attributes->SetMaskPixelsCount(7);
     Noise();
 }
 
 void Main2DWindow::Noise()
 {
-//    QProgressBar bar(this);
-//    bar.setWindowTitle("Подождите");
-//    bar.setRange(0,0);
-//    bar.setValue(100);
-//    QApplication::processEvents();
-//    bar.show();
-//    QProgressDialog dialog;
-//    dialog.setRange(0,0);
-//    dialog.setValue(0);
-//    dialog.show();
-//    QProgressDialog progress(this);
-//    progress.setWindowModality(Qt::WindowModal);
-//    progress.setLabelText("working...");
-//    progress.setCancelButton(0);
-//    progress.setRange(0,0);
-//    progress.setValue(0);
-//    progress.setMinimumDuration(0);
-//    progress.exec();
-//    QApplication::processEvents();
-    QMovie* spinnerMovie = new QMovie("qrc:/icons/load.GIF");
-    QLabel *spinnerLabel = new QLabel(this);
-    spinnerLabel->setMovie(spinnerMovie);
-    spinnerLabel->show();
-    spinnerMovie->start();
+//    QDialog d;
+//    d.setWindowModality(Qt::WindowModal);
+//    QProgressIndicator* pI = new QProgressIndicator();
+//    QFrame* frame = new QFrame();
+//    QVBoxLayout* vbl = new QVBoxLayout(frame);
+//    vbl->addWidget(pI);
+//    d.setLayout(vbl);
+//    pI->startAnimation();
+//    d.show();
 
+    QFrame* frame = new QFrame();
+    frame->setGeometry(this->geometry());
+    //QVBoxLayout* vbl = new QVBoxLayout(frame);
+   // vbl->setGeometry(frame->width()/2, frame->height()/2, 60, 60);
+    QProgressBar* bar = new QProgressBar(frame);
+    bar->setMinimum(0);
+    bar->setMaximum(0);
+    //QProgressIndicator* pI = new QProgressIndicator(frame);
+    //vbl->addWidget(pI);
+    //frame->setLayout(vbl);
+    //pI->startAnimation();
+    frame->show();
     m_attributes->ClearList();
     m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetApplyToAllCube(false);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);
-    spinnerMovie->finished();
+    bar->hide();
+    frame->hide();
+    //pI->stopAnimation();
+//    delete pI;
+//    delete vbl;
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
