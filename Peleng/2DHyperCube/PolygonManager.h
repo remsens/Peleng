@@ -36,7 +36,7 @@ private:
     QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
 
     //! функция сохранения байтовой маски на диск
-    void saveByteMask(QByteArray byteArr);
+    void saveByteMask(QByteArray byteArr, QString fileName);
 
     //! функция загрузки байтовой маски с диска
     QByteArray loadByteMaskFromFile();
@@ -77,6 +77,7 @@ private slots:
     //!  слот обработчика кнопки "Загрузить область"
     void onButtonLoadRegion();
 
+    void itemChanged(QTableWidgetItem* it);
 
 
 private:

@@ -271,8 +271,7 @@ void Main2DWindow::initArrChanLimits()
 
 void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 {
-    QElapsedTimer timer;
-    timer.start();
+
     qint16 *dat =  new qint16[rows * cols];
     m_pCube->GetDataChannel(chan,dat);
     for (int x=0; x < rows; ++x) {
@@ -285,7 +284,6 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     ui->customPlot->replot();
     delete dat;
-    qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
 }
 
 

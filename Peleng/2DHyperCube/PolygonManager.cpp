@@ -51,6 +51,7 @@ PolygonManager::PolygonManager(int rows, int cols,
     ui->tableWidget->setStyleSheet("selection-background-color: rgba(0, 0, 128, 100);");
     connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(tableContextMenuRequest(QPoint)));
     connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
+    connect( ui->tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(itemChanged(QTableWidgetItem*)));
     connect(ui->buttonAddRegion,SIGNAL(clicked()),SLOT(onButtonAddRegion()));
     connect(ui->buttonRemoveRegion,SIGNAL(clicked()),SLOT(onButtonRemoveRegion()));
     connect(ui->buttonAddPolygon,SIGNAL(clicked()),SLOT(onButtonAddPolygon()));
@@ -152,9 +153,9 @@ QByteArray PolygonManager::byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray ar
     return byteArr;
 }
 
-void PolygonManager::saveByteMask(QByteArray byteArr)
+void PolygonManager::saveByteMask(QByteArray byteArr, QString fileName)
 {
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),"*.area");
+
     QFile file(fileName);
     if(file.open(QIODevice::WriteOnly))
     {
@@ -262,6 +263,8 @@ void PolygonManager::onButtonAddRegion()
     ui->tableWidget->setItem(rowsCount,0, new QTableWidgetItem());
     ui->tableWidget->setItem(rowsCount,1, new QTableWidgetItem());
     ui->tableWidget->item(rowsCount,1)->setBackgroundColor(region.m_color);
+    ui->tableWidget->item(rowsCount,0)->setText(m_RegionArr.last().m_name);
+
 }
 
 void PolygonManager::onButtonRemoveRegion()
@@ -291,7 +294,8 @@ void PolygonManager::onButtonSaveRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr);
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name + ".area","*.area");
+    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
 }
 
 void PolygonManager::onButtonLoadRegion()
@@ -303,6 +307,14 @@ void PolygonManager::onButtonLoadRegion()
     QImage mask = imageFromByteMask(byteArr,color);
     drawImage(mask);
     m_cusPlot->replot();
+}
+
+void PolygonManager::itemChanged(QTableWidgetItem *it)
+{
+
+    if (it->column() == 0)
+        m_RegionArr[it->row()].m_name = it->text();
+
 }
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
