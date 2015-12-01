@@ -10,7 +10,7 @@ MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
     , m_attr(attr)
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
-     setAttribute(Qt::WA_DeleteOnClose, true);
+     //setAttribute(Qt::WA_DeleteOnClose, true);
      QFont font;
      font.setPixelSize(16);
      font.setBold(true);
@@ -140,6 +140,13 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
+    emit StartOperation(false);
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    this->show();
+    QString title = this->windowTitle();
+    this->setWindowTitle("Пожалуйста, подождите");
+    this->setEnabled(false);
+    QApplication::processEvents();
     int Ch1 =  ui->horizontalScrollBar_Ch1->value();
     int Ch2 =  ui->horizontalScrollBar_Ch2->value();
     int R1 =  ui->horizontalScrollBar_X1->value();
@@ -147,5 +154,11 @@ void MainWindow::prepareToResizeCube()
     int C1 =  ui->horizontalScrollBar_Y1->value();
     int C2 =  ui->horizontalScrollBar_Y2->value();
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
+    this->setEnabled(true);
+    this->setWindowTitle(title);
+    QApplication::processEvents();
+    emit FinishOperation(true);
+    this->setWindowFlags(Qt::Window & Qt::FramelessWindowHint);
+    this->show();
 }
 

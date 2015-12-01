@@ -76,6 +76,7 @@ signals:
     void redrawSliders();
     void CanDelete();
 
+
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;

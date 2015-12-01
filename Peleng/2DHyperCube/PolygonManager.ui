@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>418</height>
+    <width>456</width>
+    <height>421</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Инструмент выбора областей</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="3,1">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="3,0">
     <item>
      <widget class="QTableWidget" name="tableWidget">
       <column>
@@ -31,17 +31,38 @@
     </item>
     <item>
      <layout class="QGridLayout" name="gridButtons">
-      <item row="0" column="0" rowspan="2">
-       <widget class="QPushButton" name="pushButton">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="buttonAddRegion">
         <property name="text">
          <string>Добавить регион интереса</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="2">
-       <widget class="QPushButton" name="pushButton_2">
+      <item row="2" column="1">
+       <widget class="QPushButton" name="buttonAddPolygon">
         <property name="text">
          <string>Добавить полигон</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="buttonLoadregion">
+        <property name="text">
+         <string>Загрузить область</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="buttonRemoveRegion">
+        <property name="text">
+         <string>Удалить регион интереса</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="buttonSaveRegion">
+        <property name="text">
+         <string>Сохранить область</string>
         </property>
        </widget>
       </item>
@@ -54,7 +75,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>620</width>
+     <width>456</width>
      <height>21</height>
     </rect>
    </property>

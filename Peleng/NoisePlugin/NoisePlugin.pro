@@ -4,8 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Noise
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
-
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 DEFINES += NOISE_LIBRARY
 CONFIG += plugin
 unix {
