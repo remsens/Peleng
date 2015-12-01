@@ -19,7 +19,7 @@ class Main2DWindow : public QMainWindow
 
 public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
-    ~Main2DWindow();
+    virtual ~Main2DWindow();
     void resizeEvent(QResizeEvent *e);
 
     void setInitChanel(u::uint32 initChanel);
@@ -58,7 +58,7 @@ public slots:
     void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
-    void CloseWindow(Main2DWindow* window);
+    void CloseWindow();
 
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);
@@ -103,11 +103,6 @@ private:
     //! @param polygonArr - вектор полигонов, по которым создается маска
     //! @return - битовое изображение
     QImage maskFromPolygons(QVector<QPolygon> polygonArr);
-
-
-
-
-
     void Noise();
 private:
 

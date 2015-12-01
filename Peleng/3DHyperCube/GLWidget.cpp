@@ -566,7 +566,7 @@ void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z
 
 void GLWidget::paintGL()
 {
-    qDebug() << "Paint in GL";
+    //qDebug() << "Paint in GL";
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
@@ -620,7 +620,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
-    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
 
     if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
     {
@@ -871,12 +871,12 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
     {
-        qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+        //qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
         strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
     }
     else
     {
-        qDebug() <<"no spctr"<<endl;
+        //qDebug() <<"no spctr"<<endl;
         strForLbl = "";
     }
 
@@ -892,7 +892,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     globalPos = event->globalPos();
     evalDataCordsFromMouse(event->x(),event->y());
-    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
 }
 

@@ -4,6 +4,5 @@
     </qresource>
     <qresource prefix="/">
         <file>icons/NoiseRemover.png</file>
-        <file>icons/load.GIF</file>
     </qresource>
 </RCC>

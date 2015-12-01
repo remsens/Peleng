@@ -12,6 +12,7 @@ QProgressIndicator::QProgressIndicator(QWidget* parent)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setFocusPolicy(Qt::NoFocus);
+    startAnimation();
 }
 
 bool QProgressIndicator::isAnimated () const
@@ -37,7 +38,6 @@ void QProgressIndicator::startAnimation()
 
     if (m_timerId == -1)
         m_timerId = startTimer(m_delay);
-    update();
 }
 
 void QProgressIndicator::stopAnimation()
@@ -114,4 +114,5 @@ void QProgressIndicator::paintEvent(QPaintEvent * /*event*/)
         p.drawRoundedRect(-capsuleWidth*0.5, -(innerRadius+capsuleHeight), capsuleWidth, capsuleHeight, capsuleRadius, capsuleRadius);
         p.restore();
     }
+    QCoreApplication::processEvents();
 }
