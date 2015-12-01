@@ -141,8 +141,6 @@ void MainWindow::cubeResized()
 void MainWindow::prepareToResizeCube()
 {
     emit StartOperation(false);
-    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    this->show();
     QString title = this->windowTitle();
     this->setWindowTitle("Пожалуйста, подождите");
     this->setEnabled(false);
@@ -158,7 +156,5 @@ void MainWindow::prepareToResizeCube()
     this->setWindowTitle(title);
     QApplication::processEvents();
     emit FinishOperation(true);
-    this->setWindowFlags(Qt::Window & Qt::FramelessWindowHint);
-    this->show();
 }
 
