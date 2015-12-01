@@ -25,7 +25,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , m_contrastTool(NULL)
 {
     qDebug() << "enter to GL";
-    setAttribute(Qt::WA_DeleteOnClose, true);
+    //setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -194,6 +194,9 @@ void GLWidget::setClearColor(const QColor &color)
 
 void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
+    cantDeleteVar = true;
+    this->setEnabled(false);
+    QApplication::processEvents();
     m_pHyperCube->ResizeCube(Ch1,Ch2,R1,R2,C1,C2);
     loadData(m_pHyperCube);
     float oldKT = kT;
@@ -220,6 +223,9 @@ void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::ui
     paintGL();
     update();
     emit redrawSliders();
+    this->setEnabled(true);
+    cantDeleteVar = false;
+    QApplication::processEvents();
 }
 
 
@@ -1326,8 +1332,6 @@ void GLWidget::findAbsoluteMinMax()
 {
     int min =  32767;
     int max = -32767;
-    QElapsedTimer timer3;
-    timer3.start();
     for (int i = 0; i < CHNLS; ++i)
     {
         for (int j = 0; j < ROWS*COLS; ++j)
@@ -1340,7 +1344,6 @@ void GLWidget::findAbsoluteMinMax()
     }
     absMin = min;
     absMax = max;
-    qDebug()<<"find abslolute min max in data: "<<timer3.elapsed();
 }
 
 int cmp(const void *a, const void *b)

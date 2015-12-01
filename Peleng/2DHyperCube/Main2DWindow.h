@@ -54,7 +54,9 @@ public slots:
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
     void closeEvent(QCloseEvent *e);
     void needToUpdate(bool res);
+    void needToResize(bool res);
     void updateData();
+    void dataCubeResize();
     void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);

@@ -162,11 +162,41 @@ void Main2DWindow::updateData()
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+    for (int i = 0; i < chnls; i++)
+    {
+        delete [] ChnlLimits[i];
+    }
+    delete [] ChnlLimits;
     initArrChanLimits();
     fillChanList();
     int minCMap, maxCMap;
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
     drawHeatMap(m_initChanel,minCMap, maxCMap);
+}
+
+void Main2DWindow::dataCubeResize()
+{
+    for (int i = 0; i < chnls; i++)
+    {
+        delete [] ChnlLimits[i];
+    }
+    delete [] ChnlLimits;
+    setHyperCube(m_pCube);
+    setInitSliders(0);
+    ui->listWidget->setCurrentRow(0);
+    ui->listWidget->item(m_initChanel)->setSelected(true);
+    ui->listWidget->setFocus();
+    ui->listWidget->scrollToItem(ui->listWidget->item(0));
+
+    initArrChanLimits();
+    fillChanList();
+    QResizeEvent* e;
+    this->resizeEvent(e);
+//    int minCMap, maxCMap; // эти 3 строчки мб и не нужны
+//    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+//    drawHeatMap(m_initChanel,minCMap, maxCMap);
+
+
 }
 
 void Main2DWindow::connectionsOfPlugins()
@@ -175,6 +205,11 @@ void Main2DWindow::connectionsOfPlugins()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
+
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToResize(bool)));
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -190,6 +225,15 @@ void Main2DWindow::needToUpdate(bool res)
 
 
     }
+}
+
+void Main2DWindow::needToResize(bool res)
+{
+    pContextMenu->setEnabled(res);
+    ui->menubar->setEnabled(res);
+    ui->listWidget->setEnabled(res);
+    dataCubeResize();
+
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -321,7 +365,7 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 ) //мб переделать, что если после findMinMaxforColorMap minCMap = 0
+    if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
         int minCMap, maxCMap;
         findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
@@ -585,8 +629,6 @@ void Main2DWindow::setInitSliders(int chan)
     qint16 *dataTemp = new qint16[rows*cols];
     for (int j = 0; j<rows*cols; ++j)
         dataTemp[j]=data[chan][j];
-    QElapsedTimer timer3;
-    timer3.start();
     for (int i = 0; i < rows*cols; ++i)
     {
        if(dataTemp[i] < min)
@@ -594,7 +636,6 @@ void Main2DWindow::setInitSliders(int chan)
        if(dataTemp[i] > max)
            max = dataTemp[i];
     }
-    qDebug()<<"нахождение мин макс"<<timer3.elapsed()<< " мс";
 
     ui->SliderContrastMin->setMinimum(min);
     ui->SliderContrastMin->setMaximum(max);
