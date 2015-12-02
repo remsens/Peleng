@@ -33,7 +33,6 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
     Region.cpp\
-    ../Library/BusyIndicator/QProgressIndicator.cpp
 
 
 
@@ -47,9 +46,6 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
     Region.h
-    ../Library/BusyIndicator/QProgressIndicator.h
-
-
 
 
 FORMS += \

@@ -2,7 +2,6 @@
 #include "ui_Main2DWindow.h"
 
 #include <QMessageBox>
-#include "../Library/BusyIndicator/QProgressIndicator.h"
 
 int cmp2(const void *a, const void *b);
 
