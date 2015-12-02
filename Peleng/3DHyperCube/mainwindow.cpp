@@ -141,6 +141,7 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
+
 //    QRegion region(QRect(0,0,this->width(),this->height()));
 //    this->setMask(region);
 
@@ -148,7 +149,6 @@ void MainWindow::prepareToResizeCube()
     this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
     this->show();
     emit StartOperation(false);
-
     QString title = this->windowTitle();
     this->setWindowTitle("Пожалуйста, подождите");
     this->setEnabled(false);
@@ -160,8 +160,6 @@ void MainWindow::prepareToResizeCube()
     int C1 =  ui->horizontalScrollBar_Y1->value();
     int C2 =  ui->horizontalScrollBar_Y2->value();
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
-
-    qDebug()<<"resize done";
     this->setEnabled(true);
     this->setWindowTitle(title);
     //QApplication::processEvents();

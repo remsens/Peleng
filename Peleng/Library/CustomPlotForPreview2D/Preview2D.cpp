@@ -21,8 +21,11 @@ Preview2D::~Preview2D()
 
 void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
 {
-
-    m_ui->widget2D->resize(rows, cols);
+    qDebug() << "start Plot Noise";
+    if(rows>cols)
+         this->resize(this->width(), this->width() * cols / rows);
+    else
+        this->resize(this->width() * rows / cols, this->width() );
     setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
     int minCMap =  32767;
     int maxCMap = -32767;
@@ -52,6 +55,6 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const int num
     m_ui->widget2D->setInteraction(QCP::iRangeDrag,true);
     m_ui->widget2D->replot();
     this->show();
-    //delete [] dataTemp;
+    qDebug() << "finish plot noise";;
 
 }

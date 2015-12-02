@@ -32,7 +32,7 @@ SOURCES += \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
-    Region.cpp
+    Region.cpp\
 
 
 
@@ -46,7 +46,6 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
     Region.h
-
 
 
 FORMS += \

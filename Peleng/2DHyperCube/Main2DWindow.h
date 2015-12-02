@@ -19,8 +19,8 @@ class Main2DWindow : public QMainWindow
 
 public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
-    ~Main2DWindow();
-    void resizeEvent(QResizeEvent *);
+    virtual ~Main2DWindow();
+    void resizeEvent(QResizeEvent *e);
 
     void setInitChanel(u::uint32 initChanel);
     void setHyperCube(HyperCube* ptrCube);
@@ -60,7 +60,7 @@ public slots:
     void connectionsOfPlugins();
 signals:
     void signalCurrentDataXY(uint,uint);
-    void CloseWindow(Main2DWindow* window);
+    void CloseWindow();
 
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);

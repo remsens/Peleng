@@ -47,9 +47,6 @@ FORMS += \
     mainwindow.ui \
     ContrastWindow.ui
 
-    ContrastWindow.ui
-
-
 
 SUBDIRS += \
     ../SpectrPlotter/SpectrPlotter.pro

@@ -6,26 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
-    <height>418</height>
+    <width>738</width>
+    <height>638</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="title"/>
+   <iconset theme="title">
+    <normaloff/>
+   </iconset>
   </property>
-  <widget class="QCustomPlot" name="widget2D" native="true">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>541</width>
-     <height>421</height>
-    </rect>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCustomPlot" name="widget2D" native="true"/>
+   </item>
+  </layout>
  </widget>
  <customwidgets>
   <customwidget>
