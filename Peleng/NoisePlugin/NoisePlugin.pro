@@ -43,6 +43,7 @@ HEADERS += \
     ../Library/QCustomPlot.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
     ../Library/Utils/Compare.h \
+    SavitskiGolay1DAlg.h
 
 RESOURCES += \
     resources.qrc
