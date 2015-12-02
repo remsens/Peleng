@@ -11,7 +11,6 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/Utils/Compare.h"
 #include "../Library/CustomPlotForPreview2D/Preview2D.h"
-#include "../Library/BusyIndicator/QProgressIndicator.h"
 
 template <typename T>
 class Median2DAlg : public BaseNoiseAlg<T>

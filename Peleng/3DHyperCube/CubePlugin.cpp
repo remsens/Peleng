@@ -6,6 +6,7 @@
 #include "../LinePlotter/LinePlotterWindow.h"
 CubePlugin::CubePlugin(QObject *parent)
 {
+
 }
 
 CubePlugin::~CubePlugin()
@@ -26,6 +27,16 @@ void CubePlugin::OnClose(MainWindow* window)
             m_listWindows.removeAt(i);
         }
     }
+}
+
+void CubePlugin::onStart(bool flag)
+{
+    emit StartOperation(flag);
+}
+
+void CubePlugin::onFinish(bool flag)
+{
+    emit FinishOperation(flag);
 }
 
 QObject* CubePlugin::GetObjectPointer()
@@ -60,6 +71,8 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
     QCoreApplication::processEvents();
     MainWindow* w = new MainWindow(cube, attr);
     QObject::connect(w, SIGNAL(Close(MainWindow*)), this, SLOT(OnClose(MainWindow*)));
+    QObject::connect(w,SIGNAL(StartOperation(bool)),this,SLOT(onStart(bool)));
+    QObject::connect(w,SIGNAL(FinishOperation(bool)),this,SLOT(onFinish(bool)));
     m_listWindows.append(w);
     w->processData();
     w->resize(1024,768);

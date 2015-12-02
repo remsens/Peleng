@@ -4,8 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Noise
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
-
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 DEFINES += NOISE_LIBRARY
 CONFIG += plugin
 unix {
@@ -26,7 +26,6 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
     ../Library/Utils/Compare.cpp \
-    ../Library/BusyIndicator/QProgressIndicator.cpp
 
 
 HEADERS += \
@@ -44,7 +43,6 @@ HEADERS += \
     ../Library/QCustomPlot.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
     ../Library/Utils/Compare.h \
-    ../Library/BusyIndicator/QProgressIndicator.h
 
 RESOURCES += \
     resources.qrc
