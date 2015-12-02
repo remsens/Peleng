@@ -2,6 +2,7 @@
 #include "ui_Main2DWindow.h"
 
 #include <QMessageBox>
+#include "../Library/BusyIndicator/QProgressIndicator.h"
 
 int cmp2(const void *a, const void *b);
 
@@ -100,33 +101,27 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     m_needToUpdate = false;
     m_canDelete = true;
     connectionsOfPlugins();
-
 }
 
 Main2DWindow::~Main2DWindow()
 {
+    qDebug() << "Go to ~2D";
     if (pContextMenu) delete pContextMenu;
-    if (pPlotAction) delete pPlotAction;
-    if (pPlotHistAction) delete pPlotHistAction;
-    if (pPlotLineAction) delete pPlotLineAction;
-    if (m_filters)
-    {
-        delete m_filters;
-        delete m_medianFilter;
-        delete m_actionMedian3;
-        delete m_actionMedian5;
-        delete m_actionMedian7;
-    }
+    if (m_medianFilter) delete m_medianFilter;
+    if (m_filters) delete m_filters;
+
     for (int i = 0; i < chnls; i++)
     {
         delete [] ChnlLimits[i];
     }
+    qDebug() << "delete chnlLimits[i]";
     delete [] ChnlLimits;
+    qDebug() << "delete ChnlLimits";
     delete ui;
+    qDebug() << "finish ~2D";
 }
 
-
-void Main2DWindow::resizeEvent(QResizeEvent *)
+void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
    // ui->customPlot->setMinimumWidth(1);
    // ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
@@ -148,7 +143,7 @@ void Main2DWindow::closeEvent(QCloseEvent *e)
 {
     if (m_canDelete)
     {
-        emit CloseWindow(this);
+        emit CloseWindow();
     } else
     {
         QMessageBox::information(this, "Закрытие окна", "Невозможно закрыть окно программы! \nДождитесь окончания обработки данных");
@@ -217,13 +212,13 @@ void Main2DWindow::needToUpdate(bool res)
     pContextMenu->setEnabled(true);
     ui->menubar->setEnabled(true);
     ui->listWidget->setEnabled(true);
+    QCoreApplication::processEvents();
+    //this->setEnabled(true);
     if (res)
     {
         // кнопка
         updateData();
         m_needToUpdate = true;
-
-
     }
 }
 
@@ -284,8 +279,8 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->rescaleDataRange(true);
-
 }
+
 void Main2DWindow::fillChanList()
 {
     QList<double> list = m_pCube->GetListOfChannels();
@@ -294,8 +289,6 @@ void Main2DWindow::fillChanList()
         ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
         num++;
     }
-
-
 }
 
 
@@ -672,11 +665,19 @@ void Main2DWindow::OnActionMedian7Triggered()
 
 void Main2DWindow::Noise()
 {
+    m_canDelete = false;
+    pStatusBarLabel->setText("Пожалуйта подождите");
+    pContextMenu->setEnabled(false);
+    ui->menubar->setEnabled(false);
+    ui->listWidget->setEnabled(false);
+    QCoreApplication::processEvents();
     m_attributes->ClearList();
     m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetApplyToAllCube(false);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);
+    m_canDelete = true;
+
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
@@ -718,8 +719,6 @@ void Main2DWindow::createLinePlotterSlot()
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
-
-
 }
 
 /*void Main2DWindow::createPolygonSlot()

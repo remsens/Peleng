@@ -16,14 +16,15 @@ public:
     virtual ~Hyper2dPlugin();
 
 public slots:
-    void OnClose(Main2DWindow* window2D);
+    void OnClose();
 
 private:
     void Execute(HyperCube* cube, Attributes* attr);
     QObject* GetObjectPointer();
 
 private:
-    QList<Main2DWindow*> m_listWindows;
+    //QList<Main2DWindow*> m_listWindows;
+    Main2DWindow* m_window;
 };
 
 #endif // HYPER2DPLUGIN_H
