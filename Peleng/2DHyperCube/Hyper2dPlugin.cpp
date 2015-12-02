@@ -34,5 +34,7 @@ void Hyper2dPlugin::Execute(HyperCube *cube, Attributes *attr)
     }
     m_window->show();
     m_window->activateWindow();
+    m_window->raise();
+    m_window->showNormal();// если окно было свернуто
 }
 
