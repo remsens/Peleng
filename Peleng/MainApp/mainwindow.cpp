@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
       connect(ui->OpenFileAction,SIGNAL(triggered()),SLOT(LoadFile()));
       connect(ui->ExitAction,SIGNAL(triggered()),this,SLOT(exit()));
-
 }
 
 

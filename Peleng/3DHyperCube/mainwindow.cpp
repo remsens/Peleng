@@ -10,7 +10,7 @@ MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
     , m_attr(attr)
 {
      setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
-     //setAttribute(Qt::WA_DeleteOnClose, true);
+     setAttribute(Qt::WA_DeleteOnClose, true);
      QFont font;
      font.setPixelSize(16);
      font.setBold(true);
@@ -36,6 +36,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
         emit Close(this);
     }
 }
+
 
 void MainWindow::connectionsOfPlugins()
 {
@@ -140,10 +141,14 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
-    QRegion region(QRect(0,0,this->width(),this->height()));
-    this->setMask(region);
+//    QRegion region(QRect(0,0,this->width(),this->height()));
+//    this->setMask(region);
+
+    //this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);//вариант 1
+    this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
+    this->show();
     emit StartOperation(false);
-    //this->show();
+
     QString title = this->windowTitle();
     this->setWindowTitle("Пожалуйста, подождите");
     this->setEnabled(false);
@@ -155,11 +160,17 @@ void MainWindow::prepareToResizeCube()
     int C1 =  ui->horizontalScrollBar_Y1->value();
     int C2 =  ui->horizontalScrollBar_Y2->value();
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
+
+    qDebug()<<"resize done";
     this->setEnabled(true);
     this->setWindowTitle(title);
-    QApplication::processEvents();
+    //QApplication::processEvents();
     emit FinishOperation(true);
-    this->clearMask();
-    //this->show();
+    //this->setWindowFlags(this->windowFlags() | Qt::WindowCloseButtonHint); // вариант 1
+    this->setWindowFlags (this->windowFlags()  & ~Qt::CustomizeWindowHint &~Qt::WindowTitleHint);//вариант 2
+    this->show();
+    //this->setCursor(QCursor(Qt::ArrowCursor));
+//    this->clearMask();
+
 }
 
