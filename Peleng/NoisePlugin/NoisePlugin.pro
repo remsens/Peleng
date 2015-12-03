@@ -51,4 +51,4 @@ RESOURCES += \
 FORMS += \
     ../Library/CustomPlotForPreview2D/Preview2D.ui
 
-
+CONFIG += c++11

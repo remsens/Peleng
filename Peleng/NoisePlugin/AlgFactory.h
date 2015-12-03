@@ -5,6 +5,7 @@
 
 #include "Median1DAlg.h"
 #include "Median2DAlg.h"
+#include "SavitskiGolay1DAlg.h"
 #include "../Library/Attributes/Attributes.h"
 
 class AlgFactory
@@ -27,6 +28,11 @@ public:
             {
                 QSharedPointer<Median2DAlg<T> >  median2D(new Median2DAlg<T>(cube, attr));
                 return median2D;
+            }
+            case Savitski_Golay1D:
+            {
+                QSharedPointer<SavitskiGolay1DAlg<T> > savits1D(new SavitskiGolay1DAlg<T>(cube, attr));
+                return savits1D;
             }
         default:
             {
