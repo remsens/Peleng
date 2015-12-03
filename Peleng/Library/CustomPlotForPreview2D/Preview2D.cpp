@@ -9,6 +9,9 @@ Preview2D::Preview2D(QWidget *parent) :
     m_ui(new Ui::Preview2D)
 {
     m_ui->setupUi(this);
+    m_cPlot = new QCustomPlot(this);
+    m_ui->verticalLayout_2->addWidget(m_cPlot);
+
     //TODO
     //setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -21,37 +24,39 @@ Preview2D::~Preview2D()
 
 void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
 {
-
-    m_ui->widget2D->resize(rows, cols);
+    qDebug() << "start Plot Noise";
+    if(rows>cols)
+         this->resize(this->width(), this->width() * cols / rows);
+    else
+        this->resize(this->width() * rows / cols, this->width() );
     setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
     int minCMap =  32767;
     int maxCMap = -32767;
-//    double* dataTemp = new double[size];
-//    memcpy(dataTemp, data, size);
-//    qsort(dataTemp, size, sizeof(double), Compare::CompareVariables<double>);
-    QCPColorMap* colorMap = new QCPColorMap(m_ui->widget2D->xAxis, m_ui->widget2D->yAxis);
-    colorMap->setKeyAxis(m_ui->widget2D->xAxis);
-    colorMap->setValueAxis(m_ui->widget2D->yAxis);
+    QCPColorMap* colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
+    colorMap->setKeyAxis(m_cPlot->xAxis);
+    colorMap->setValueAxis(m_cPlot->yAxis);
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-    m_ui->widget2D->addPlottable(colorMap);
+    qDebug()<<"colorMap setSize";
+    m_cPlot->addPlottable(colorMap);
     for (u::uint32 x = 0; x < rows; x++) {
         for (u::uint32 y = 0; y < cols; y++) {
             colorMap->data()->setCell(x, y, data[x * cols + y] );
         }
     }
     qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
+    qDebug()<<"qsort";
     minCMap = data[int(rows*cols*0.02)];
     maxCMap = data[int(rows*cols*0.98)];
-    m_ui->widget2D->rescaleAxes();
+    m_cPlot->rescaleAxes();
     colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->setInterpolate(false);
-    m_ui->widget2D->setInteraction(QCP::iRangeZoom,true);
-    m_ui->widget2D->setInteraction(QCP::iRangeDrag,true);
-    m_ui->widget2D->replot();
+    m_cPlot->setInteraction(QCP::iRangeZoom,true);
+    m_cPlot->setInteraction(QCP::iRangeDrag,true);
+    m_cPlot->replot();
     this->show();
-    //delete [] dataTemp;
+    qDebug() << "finish plot noise";;
 
 }

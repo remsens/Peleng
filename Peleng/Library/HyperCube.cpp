@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "GenericExc.h"
 #include "Utils/typeconvertor.h"
-
+#include <QDebug>
 
 HyperCube::HyperCube()
 {
@@ -213,7 +213,7 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
         {
             qint64 value;
             for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
-                LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,m_infoData.formatType,value);
+                LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType, m_infoData.formatType,value);
                 data.append(value);
             }
 
@@ -244,38 +244,26 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
     {
            newInfoData.listChannels.push_back(oldWawes.at(Ch1 + i));
     }
- // потестить и сравнить с циклом выше
- /*   std::list<double>::iterator range_begin = m_infoData.listChannels.begin();
-    std::list<double>::iterator range_end = m_infoData.listChannels.begin();
-    std::advance(range_end,Ch1-1);
-    newInfoData.listChannels.erase(range_begin, range_end);
-    range_begin = newInfoData.listChannels.begin();
-    range_end = newInfoData.listChannels.end();
-    std::advance(range_begin,Ch2-Ch1-1);
-    newInfoData.listChannels.erase(range_begin,range_end);
-*/
-
     u::int8** dataCubeNew = new u::int8*[newInfoData.bands];
     for (u::uint32 i = 0; i < newInfoData.bands; i++)
     {
         dataCubeNew[i] = new u::int8[newInfoData.lines * newInfoData.samples * m_infoData.bytesType];
         int index = 0;
-        for(int j = 0; j < newInfoData.lines; j++)
+        for(u::uint32 j = 0; j < newInfoData.lines; j++)
         {
             for(int k = 0; k < newInfoData.samples; k++)
             {
                 memcpy(dataCubeNew[i] + (index*m_infoData.bytesType), m_dataCube[i+Ch1] + (m_infoData.samples * (j + R1) + k + C1)*m_infoData.bytesType, m_infoData.bytesType);
-                //dataCubeNew[i][j*newInfoData.samples + k] =  m_dataCube[i + Ch1][m_infoData.samples * (j + R1) + k + C1 ];
                 index++;
             }
         }
         delete[] m_dataCube[i + Ch1];
     }
-    for(int i = Ch2 + 1; i < m_infoData.bands; i++)
+    for(u::uint32 i = Ch2 + 1; i < m_infoData.bands; i++)
     {
         delete[] m_dataCube[i];
     }
-    for(int i = 0; i < Ch1; i++)
+    for(u::uint32 i = 0; i < Ch1; i++)
     {
         delete[] m_dataCube[i];
     }

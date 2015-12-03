@@ -30,6 +30,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
         m_initChanel = 0;
 
     ui->setupUi(this);
+
     pContextMenu = 0;
     pPlotAction = 0;
     pPlotHistAction = 0;
@@ -51,13 +52,11 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
 
     setInitCustomplotSettings();
-    createMenus();
-
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
     polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
-
+    createMenus();
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
@@ -65,7 +64,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
     connect(ui->customPlot,SIGNAL(mouseMove(QMouseEvent*)),SLOT(mouseMoveOnColorMap(QMouseEvent*)));
-    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),SLOT(mouseDblClickOnColorMap(QMouseEvent*)));
+    connect(ui->customPlot,SIGNAL(mouseDoubleClick(QMouseEvent*)),polyMngr,SLOT(mouseDblClickOnParentColorMap(QMouseEvent*)));//перенесено в полиМенеджер
 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
@@ -101,31 +100,25 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     m_needToUpdate = false;
     m_canDelete = true;
     connectionsOfPlugins();
-
 }
 
 Main2DWindow::~Main2DWindow()
 {
+    qDebug() << "Go to ~2D";
     if (pContextMenu) delete pContextMenu;
-    if (pPlotAction) delete pPlotAction;
-    if (pPlotHistAction) delete pPlotHistAction;
-    if (pPlotLineAction) delete pPlotLineAction;
-    if (m_filters)
-    {
-        delete m_filters;
-        delete m_medianFilter;
-        delete m_actionMedian3;
-        delete m_actionMedian5;
-        delete m_actionMedian7;
-    }
+    if (m_medianFilter) delete m_medianFilter;
+    if (m_filters) delete m_filters;
+
     for (int i = 0; i < chnls; i++)
     {
         delete [] ChnlLimits[i];
     }
+    qDebug() << "delete chnlLimits[i]";
     delete [] ChnlLimits;
+    qDebug() << "delete ChnlLimits";
     delete ui;
+    qDebug() << "finish ~2D";
 }
-
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
@@ -149,7 +142,7 @@ void Main2DWindow::closeEvent(QCloseEvent *e)
 {
     if (m_canDelete)
     {
-        emit CloseWindow(this);
+        emit CloseWindow();
     } else
     {
         QMessageBox::information(this, "Закрытие окна", "Невозможно закрыть окно программы! \nДождитесь окончания обработки данных");
@@ -163,11 +156,41 @@ void Main2DWindow::updateData()
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
+    for (int i = 0; i < chnls; i++)
+    {
+        delete [] ChnlLimits[i];
+    }
+    delete [] ChnlLimits;
     initArrChanLimits();
     fillChanList();
     int minCMap, maxCMap;
     findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
     drawHeatMap(m_initChanel,minCMap, maxCMap);
+}
+
+void Main2DWindow::dataCubeResize()
+{
+    for (int i = 0; i < chnls; i++)
+    {
+        delete [] ChnlLimits[i];
+    }
+    delete [] ChnlLimits;
+    setHyperCube(m_pCube);
+    setInitSliders(0);
+    ui->listWidget->setCurrentRow(0);
+    ui->listWidget->item(m_initChanel)->setSelected(true);
+    ui->listWidget->setFocus();
+    ui->listWidget->scrollToItem(ui->listWidget->item(0));
+
+    initArrChanLimits();
+    fillChanList();
+    QResizeEvent* e;
+    this->resizeEvent(e);
+//    int minCMap, maxCMap; // эти 3 строчки мб и не нужны
+//    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
+//    drawHeatMap(m_initChanel,minCMap, maxCMap);
+
+
 }
 
 void Main2DWindow::connectionsOfPlugins()
@@ -176,6 +199,11 @@ void Main2DWindow::connectionsOfPlugins()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
+
+    connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToResize(bool)));
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -183,14 +211,23 @@ void Main2DWindow::needToUpdate(bool res)
     pContextMenu->setEnabled(true);
     ui->menubar->setEnabled(true);
     ui->listWidget->setEnabled(true);
+    QCoreApplication::processEvents();
+    //this->setEnabled(true);
     if (res)
     {
         // кнопка
         updateData();
         m_needToUpdate = true;
-
-
     }
+}
+
+void Main2DWindow::needToResize(bool res)
+{
+    pContextMenu->setEnabled(res);
+    ui->menubar->setEnabled(res);
+    ui->listWidget->setEnabled(res);
+    dataCubeResize();
+
 }
 
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
@@ -216,11 +253,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
 
 
-//    ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-//    ui->customPlot->setMinimumSize( this->size().width()*0.75 ,this->size().width()*0.75 * cols / rows );
-    //QSize mainSize = this->size();
-    //this->resize(mainSize.width()*1.5, mainSize.width() * cols / rows*1.5);
-//    resizeEvent(QResizeEvent(this->size(),this->size()));
+
 }
 
 void Main2DWindow::setInitCustomplotSettings()
@@ -241,8 +274,8 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->rescaleDataRange(true);
-
 }
+
 void Main2DWindow::fillChanList()
 {
     QList<double> list = m_pCube->GetListOfChannels();
@@ -251,8 +284,6 @@ void Main2DWindow::fillChanList()
         ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
         num++;
     }
-
-
 }
 
 
@@ -272,8 +303,7 @@ void Main2DWindow::initArrChanLimits()
 
 void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
 {
-    QElapsedTimer timer;
-    timer.start();
+
     qint16 *dat =  new qint16[rows * cols];
     m_pCube->GetDataChannel(chan,dat);
     for (int x=0; x < rows; ++x) {
@@ -286,7 +316,6 @@ void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     ui->customPlot->replot();
     delete dat;
-    qDebug()<<"drawHeatMap"<<timer.elapsed()<< " ms";
 }
 
 
@@ -324,7 +353,7 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
-    if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 ) //мб переделать, что если после findMinMaxforColorMap minCMap = 0
+    if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
         int minCMap, maxCMap;
         findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
@@ -419,80 +448,6 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
     qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
 }
 
-void Main2DWindow::finishPolygonCreation()
-{
-    disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-    flagPolygonIsCreated = true;
-    flagDoubleClicked = true;
-    setCursor(QCursor(Qt::ArrowCursor));
-    this->setToolTip("");
-    drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), polygonArr.last().first().x(),  polygonArr.last().first().y() );
-
-    QImage mask = maskFromPolygons(polygonArr);
-    QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
-    QPixmap alphaImage(QPixmap::fromImage(mask));
-    pixItem->setPixmap(alphaImage);
-//    ui->customPlot->addLayer("polygon");
-//    ui->customPlot->setCurrentLayer("polygon");
-    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
-    ui->customPlot->addItem(pixItem);
-    pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(rows-1,cols-1);
-    pixItem->setClipToAxisRect(true);
-    pixItem->setClipAxisRect(ui->customPlot->axisRect());
-    ui->customPlot->replot();
-
-
-}
-
-QImage Main2DWindow::maskFromPolygons(QVector<QPolygon> polygonArr)
-{
-
-    QElapsedTimer timer;
-    timer.start();
-
-    QImage mask(rows,cols,QImage::Format_ARGB32);
-    mask.fill(qRgba(0, 0, 0, 0));
-    QByteArray byteArr(rows*cols,0x00);
-    for(int i = 0; i < rows; ++i)
-    {
-        for(int j = 0; j < cols; ++j)
-        {
-            foreach(QPolygon polygon, polygonArr)
-            {
-                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
-                 {
-                    byteArr[i*cols+j] = 0x01;
-                    mask.setPixel(i,j,qRgba(255, 0, 0, 255));
-                }
-            }
-        }
-    }
-    qDebug()<<"create ARGB32 picture"<<timer.elapsed();
-
-    // -------------------------------Тест, начало
-
-    QBitmap bitMap(rows,cols);
-    bitMap.fill(Qt::color0); //прозрачный
-
-
-    QFile file("D:/selected.area");
-    if(file.open(QIODevice::WriteOnly))
-    {   file.write(byteArr);
-        file.close();
-    }
-
-    //--------------------------------- Тест, конец
-
-    return mask;
-}
-void Main2DWindow::mouseDblClickOnColorMap( QMouseEvent *e)
-{
-    if (!flagPolygonIsCreated)
-        finishPolygonCreation();
-    qDebug()<<"2x clicked";
-
-}
 
 void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
@@ -564,19 +519,11 @@ void Main2DWindow::createMenus()
     }
     pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
 	pContextMenu->addAction(pSelectAreaAction);
-    connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));
+    //connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));//удалить строчку
+    connect(pSelectAreaAction,SIGNAL(triggered()),polyMngr,SLOT(createPolygonSlot()));
 }
 
-void Main2DWindow::drawLine(uint x1, uint y1, uint x2, uint y2)
-{
-    QCPItemLine *line = new QCPItemLine(ui->customPlot);
-    line->start->setCoords(x1,y1);
-    line->end->setCoords(x2,y2);
-    line->setPen(QPen(Qt::red));
-    ui->customPlot->addItem(line);
-    ui->customPlot->replot();
 
-}
 
 void Main2DWindow::setInitSliders(int chan)
 {
@@ -586,8 +533,6 @@ void Main2DWindow::setInitSliders(int chan)
     qint16 *dataTemp = new qint16[rows*cols];
     for (int j = 0; j<rows*cols; ++j)
         dataTemp[j]=data[chan][j];
-    QElapsedTimer timer3;
-    timer3.start();
     for (int i = 0; i < rows*cols; ++i)
     {
        if(dataTemp[i] < min)
@@ -595,7 +540,6 @@ void Main2DWindow::setInitSliders(int chan)
        if(dataTemp[i] > max)
            max = dataTemp[i];
     }
-    qDebug()<<"нахождение мин макс"<<timer3.elapsed()<< " мс";
 
     ui->SliderContrastMin->setMinimum(min);
     ui->SliderContrastMin->setMaximum(max);
@@ -632,11 +576,24 @@ void Main2DWindow::OnActionMedian7Triggered()
 
 void Main2DWindow::Noise()
 {
+    this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
+    this->show();
+    m_canDelete = false;
+    pStatusBarLabel->setText("Пожалуйта подождите");
+    pContextMenu->setEnabled(false);
+    ui->menubar->setEnabled(false);
+    ui->listWidget->setEnabled(false);
+    QCoreApplication::processEvents();
     m_attributes->ClearList();
     m_attributes->SetPoint(0,0, ui->listWidget->currentRow());
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetApplyToAllCube(false);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pCube, m_attributes);
+    m_canDelete = true;
+    this->setWindowFlags (this->windowFlags()  & ~Qt::CustomizeWindowHint &~Qt::WindowTitleHint);//вариант 2
+    this->show();
+    this->lower();
+
 }
 
 void Main2DWindow::plotSpectr(uint x, uint y)
@@ -678,73 +635,9 @@ void Main2DWindow::createLinePlotterSlot()
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
-
-
 }
 
-void Main2DWindow::createPolygonSlot()
-{
-    QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
-    this->setToolTip(strForLineHelp);
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));   
-    QPolygon polygon;
-    polygonArr.append(polygon);
-    flagPolygonIsCreated = false;
-    connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
 
-}
-
-void Main2DWindow::addPolygonPoint(uint x,uint y)
-{
-    //раньше была проверка на flagPolygonIsCreated, но уже не надо
-    if (polygonArr.last().size() > 0)
-        drawLine(polygonArr.last().last().x(), polygonArr.last().last().y(), x, y );
-    polygonArr.last().append(QPoint(x,y));
-
-
-}
-
-void Main2DWindow::loadMaskFromFile()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.area");
-    QFile file(fileName);
-    QByteArray byteArr;
-    if(file.open(QIODevice::ReadOnly))
-    {
-        byteArr = file.readAll(); // добавить в Try catch
-        file.close();
-        // Идет копипаст, todo
-        QImage mask(rows,cols,QImage::Format_ARGB32);
-        mask.fill(qRgba(0, 0, 0, 0));
-        QElapsedTimer timer;
-        timer.start();
-        for(int i = 0; i < rows; ++i)
-        {
-            for(int j = 0; j < cols; ++j)
-            {
-                if(byteArr[i*cols+j] == (char)0x01) //проверить (char)
-                     mask.setPixel(i,j,qRgba(0, 0, 255, 150));
-            }
-        }
-        qDebug()<<"create image from byte array: "<<timer.elapsed();
-
-        QCPItemPixmap *pixItem = new QCPItemPixmap(ui->customPlot);
-        QPixmap alphaImage(QPixmap::fromImage(mask));
-        pixItem->setPixmap(alphaImage);
-        ui->customPlot->addLayer("polygon");
-        ui->customPlot->setCurrentLayer("polygon");
-        pixItem->setScaled(true);
-        ui->customPlot->addItem(pixItem);
-        pixItem->topLeft->setCoords(0,0);
-        pixItem->bottomRight->setCoords(rows-1,cols-1);
-        pixItem->setClipToAxisRect(true);
-        pixItem->setClipAxisRect(ui->customPlot->axisRect());
-    }
-    else
-        qDebug()<<fileName<<" isn't opened";
-
-
-}
 
 void Main2DWindow::startIsClicked(uint dataX, uint dataY)
 {

@@ -18,6 +18,7 @@ void RgbProfile::readFromFile(QString FileName)
 
     QFile file(FileName);
       if (!file.open(QIODevice::ReadOnly)) {
+          // TODO
           qDebug() << file.errorString();
           return;
       }

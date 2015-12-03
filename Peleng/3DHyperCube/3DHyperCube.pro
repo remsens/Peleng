@@ -47,8 +47,6 @@ FORMS += \
     mainwindow.ui \
     ContrastWindow.ui
 
-    ContrastWindow.ui
-
 
 
 SUBDIRS += \

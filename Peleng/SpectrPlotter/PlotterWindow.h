@@ -26,6 +26,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent * event);
 
+
 signals:
     void closePlotterWindow(PlotterWindow* w);
 private:
@@ -33,6 +34,9 @@ private:
     void NoiseAlgExecute();
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
+    void contextMenuRequest(QPoint pos);
+    void removeSelectedGraph();
+    void removeAllExceptSelectedGraph();
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();

@@ -37,6 +37,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
     }
 }
 
+
 void MainWindow::connectionsOfPlugins()
 {
     connect(m_attr->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), this, SLOT(setDisabledMenuBar(bool)));
@@ -140,6 +141,18 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
+
+//    QRegion region(QRect(0,0,this->width(),this->height()));
+//    this->setMask(region);
+
+    //this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);//вариант 1
+    this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
+    this->show();
+    emit StartOperation(false);
+    QString title = this->windowTitle();
+    this->setWindowTitle("Пожалуйста, подождите");
+    this->setEnabled(false);
+    QApplication::processEvents();
     int Ch1 =  ui->horizontalScrollBar_Ch1->value();
     int Ch2 =  ui->horizontalScrollBar_Ch2->value();
     int R1 =  ui->horizontalScrollBar_X1->value();
@@ -147,5 +160,16 @@ void MainWindow::prepareToResizeCube()
     int C1 =  ui->horizontalScrollBar_Y1->value();
     int C2 =  ui->horizontalScrollBar_Y2->value();
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
+    this->setEnabled(true);
+    this->setWindowTitle(title);
+    //QApplication::processEvents();
+    emit FinishOperation(true);
+    //this->setWindowFlags(this->windowFlags() | Qt::WindowCloseButtonHint); // вариант 1
+    this->setWindowFlags (this->windowFlags()  & ~Qt::CustomizeWindowHint &~Qt::WindowTitleHint);//вариант 2
+    this->show();
+
+    //this->setCursor(QCursor(Qt::ArrowCursor));
+//    this->clearMask();
+
 }
 
