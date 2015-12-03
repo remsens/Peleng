@@ -42,25 +42,7 @@ public:
     }
     void ToWindow()
     {
-//        QProgressDialog* d = new QProgressDialog();
-//        d->setMinimum(0);
-//        d->setMaximum(0);
-//        d->setValue(0);
-//        d->exec();
-//        QFrame* frame = new QFrame();
-//        frame->setWindowOpacity(0.5);
-//        frame->setGeometry(QApplication::desktop()->screenGeometry().width()/2-30, QApplication::desktop()->screenGeometry().height()/2-30, 100, 100);
-//         QVBoxLayout* vbl = new QVBoxLayout(frame);
-//         vbl->setGeometry(frame->geometry());
-//         QProgressIndicator* pI = new QProgressIndicator(frame);
-//         QThread* thread = new QThread();
-//        vbl->addWidget(pI);
-//         frame->setLayout(vbl);
-//        // pI->startAnimation();
-//         frame->moveToThread(thread);
-//         frame->show();
-//         thread->start();
-//        QCoreApplication::processEvents();
+
         qDebug() << "start noise";
         double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
         QVector<double> data; data.resize(BaseNoiseAlg<T>::m_cube->GetSizeChannel());
@@ -87,10 +69,19 @@ public:
             }
         }
         Preview2D* previewWindow = new Preview2D();
+
+        ///////////
+
+
+        //Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+
+
+        ///////////
         previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         delete [] dataChannel;
         qDebug() << "finish noise";
     }
+
 
     bool ToCube()
     {
