@@ -56,6 +56,9 @@ public slots:
     void needToUpdate(bool res);
     void updateData();
     void connectionsOfPlugins();
+
+    void plotFromAttributes(qint32 channel, Attributes* attr);
+
 signals:
     void signalCurrentDataXY(uint,uint);
     void CloseWindow(Main2DWindow* window);
