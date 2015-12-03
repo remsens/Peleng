@@ -106,7 +106,64 @@ private:
 
     bool ToCube()
     {
-        return false;
+        QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
+        QProgressDialog* progressBar  = new QProgressDialog();
+        progressBar->setLabelText("Устранение шумов у гиперспектральных данных");
+        progressBar->setWindowIcon(icon);
+        QString descr = QString("Фильтр Савитского-Голау. Маска: %1 пикселей. Степень полинома: %2 ").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()).arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetDegreePolinom())));
+        progressBar->setWindowTitle(descr);
+        progressBar->setRange(0, 100);
+        progressBar->setWindowModality(Qt::WindowModal);
+        progressBar->setCancelButtonText("Отмена");
+        progressBar->show();
+
+        u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+        u::int32* coeff = new u::int32[maskPixels];
+        u::uint32 normalization;
+        ChooseCoef(coeff, normalization);
+        u::uint32 size = BaseNoiseAlg<T>::m_cube->GetSizeSpectrum();
+        u::uint32 linesCube = BaseNoiseAlg<T>::m_cube->GetLines();
+        u::uint32 columnsCube = BaseNoiseAlg<T>::m_cube->GetColumns();
+        int percent = 0;
+        u::uint32 maxValueBar = linesCube*columnsCube;
+        T** dataCube = (T**)BaseNoiseAlg<T>::m_cube->GetDataCube();
+        progressBar->setValue(0);
+        QApplication::processEvents();
+        for (u::uint32 lines = 0; lines < linesCube; lines++)
+        {
+             for (u::uint32 col = 0; col <columnsCube; col++)
+             {
+                 if (progressBar->wasCanceled())
+                 {
+                     delete progressBar;
+                     //From HDF
+                     return false;
+                 }
+                 for (u::uint32 i = maskPixels/2; i < size - maskPixels/2; i++)
+                 {
+                     T temp = 0;
+                     for (u::uint8 j = 0; j < maskPixels; j++)
+                     {
+                         temp+= dataCube[i + j-maskPixels/2][lines*columnsCube + col]*coeff[j];
+                     }
+                     //BaseNoiseAlg<T>::m_cube->SetDataBuffer(i, &(temp/normalization), sizeof(T), (lines*columnsCube+col)*sizeof(T));
+                     dataCube[i][lines*columnsCube + col] = temp/normalization;
+                 }
+                 double a = lines*columnsCube + col;
+                 double b = a/maxValueBar*100;
+                 percent = b*100/100;
+                 progressBar->setValue(percent);
+                 QApplication::processEvents();
+             }
+        }
+        if (!progressBar->wasCanceled())
+        {
+            progressBar->setValue(100);
+            QApplication::processEvents();
+            progressBar->hide();
+            delete progressBar;
+        }
+        return true;
     }
 
     void ToSpectrWindow()

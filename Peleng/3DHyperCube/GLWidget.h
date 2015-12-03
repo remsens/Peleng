@@ -49,6 +49,12 @@ public slots:
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
 
+    void ActionNoiseSavitGolay2_3_5Toogled();
+    void ActionNoiseSavitGolay2_3_7Toogled();
+    void ActionNoiseSavitGolay2_3_9Toogled();
+    void ActionNoiseSavitGolay4_5_7Toogled();
+    void ActionNoiseSavitGolay4_5_9Toogled();
+
 protected:
     void closeEvent(QCloseEvent *e);
 
@@ -64,6 +70,7 @@ private slots:
     void repaintWithContrast(int min, int max);
     void updateCube();
     void needToUpdate(bool needToUpdate);
+    void ShowContextMenu(const QPoint& pos);
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
@@ -86,7 +93,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
+   // void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
 private:
     void makeObject();
     void loadData(HyperCube* ptrCube);
@@ -103,11 +110,12 @@ private:
     void findAbsoluteMinMax();
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
-    void createMenus();
+    //void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
     void Noise();
+    void NoiseGolayAlgExecute();
 
 private:
     QMenu* pContextMenu;
