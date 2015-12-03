@@ -1,22 +1,43 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-11-27T10:17:32
-#
-#-------------------------------------------------
-
-QT       -= gui
+QT       = quick widgets printsupport
 
 TARGET = SpectralDistance
 TEMPLATE = lib
 
+DLLDESTDIR = ../../Debug/MainApp/debug
 DEFINES += SPECTRALDISTANCE_LIBRARY
-
-SOURCES += spectraldistance.cpp
-
-HEADERS += spectraldistance.h\
-        spectraldistance_global.h
-
+CONFIG += plugin
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+DESTDIR = ../../Debug/MainApp/debug
+
+DISTFILES += \
+    SpectralDistance.json \
+    sdistancewin.qml
+
+SOURCES += spectraldistance.cpp \
+    ../Library/HyperCube.cpp \
+    ../Library/GenericExc.cpp \
+    ../Library/Attributes/Attributes.cpp \
+    ../Library/CustomPlotForPreview2D/Preview2D.cpp \
+    ../Library/QCustomPlot.cpp
+
+HEADERS += spectraldistance.h\
+    ../Library/HyperCube.h \
+    ../Library/Types.h \
+    ../Library/Attributes/Attributes.h \
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/CustomPlotForPreview2D/Preview2D.h \
+    ../Library/QCustomPlot.h
+
+
+
+RESOURCES += \
+    qmldata.qrc
+
+FORMS += \
+    ../Library/CustomPlotForPreview2D/Preview2D.ui
+
+
