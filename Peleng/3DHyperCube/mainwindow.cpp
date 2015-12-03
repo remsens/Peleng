@@ -167,6 +167,7 @@ void MainWindow::prepareToResizeCube()
     //this->setWindowFlags(this->windowFlags() | Qt::WindowCloseButtonHint); // вариант 1
     this->setWindowFlags (this->windowFlags()  & ~Qt::CustomizeWindowHint &~Qt::WindowTitleHint);//вариант 2
     this->show();
+
     //this->setCursor(QCursor(Qt::ArrowCursor));
 //    this->clearMask();
 
