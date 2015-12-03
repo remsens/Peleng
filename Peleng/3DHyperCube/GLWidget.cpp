@@ -61,7 +61,10 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
     rotateBy(-2560,712,0);
-    createMenus();
+    //createMenus();
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+//    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+//        this, SLOT(ShowContextMenu(const QPoint&)));
     setMouseTracking(true);
     firstWindowPlotter = true;
     m_needToUpdate = false;
@@ -74,24 +77,7 @@ GLWidget::~GLWidget()
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
         delete textures[i];
-
     SidesDestructor();
-    disconnect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
-    disconnect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
-    delete pContextMenu;
-    delete pPlotAction;
-    delete pAddSpectrAction;
-    delete program;
-    delete m_menuFilters;
-    delete m_menuMedian1DFilters;
-    delete m_menuMedian2DFilters;
-    delete m_actionMedian1D_3;
-    delete m_actionMedian1D_5;
-    delete m_actionMedian1D_7;
-    delete m_actionMedian2D_3;
-    delete m_actionMedian2D_5;
-    delete m_actionMedian2D_7;
-
     doneCurrent();
     qDebug() << "finish delete GLwidget";
 }
@@ -627,26 +613,14 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-
-    if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
+    if (event->button() == Qt::RightButton)
     {
-        pContextMenu->removeAction(pPlotAction);
-        pContextMenu->removeAction(p2DCubeAction);
-    }
-    else
+        ShowContextMenu(event->pos());
+    } else if (event->button() == Qt::LeftButton)
     {
-        if (event->button() == Qt::LeftButton)
-            emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
-        if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
-        {
-            pContextMenu->addAction(pPlotAction);
-        }
-        if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
-        {
-            pContextMenu->addAction(p2DCubeAction);
-        }
-
+        emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
     }
+
 }
 
 void GLWidget::closeEvent(QCloseEvent *e)
@@ -671,14 +645,14 @@ void GLWidget::needToUpdate(bool needToUpdate)
         // кнопка
         m_needToUpdate = true;
     }
-    pContextMenu->setEnabled(true);
+    //pContextMenu->setEnabled(true);
 }
 
 void GLWidget::Noise()
 {
     cantDeleteVar = true;
     m_attributes->SetApplyToAllCube(true);
-    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    //connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
@@ -727,80 +701,199 @@ void GLWidget::OnActionMedian2D_7Triggered()
     Noise();
 }
 
-void GLWidget::createMenus()
+void GLWidget::ShowContextMenu(const QPoint& pos)
 {
-    pContextMenu = new QMenu();
-    pContextMenu->setStyleSheet("border: 0px solid black;");
-    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
-    p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
-    pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
-    m_menuMedian1DFilters = new QMenu();
-    m_menuMedian1DFilters->setStyleSheet("border: 0px solid black;");
-    m_menuMedian1DFilters->setTitle("Медианный фильтр по спектрам");
-    m_menuMedian2DFilters = new QMenu();
-    m_menuMedian2DFilters->setStyleSheet("border: 0px solid black;");
-    m_menuMedian2DFilters->setTitle("Медианный фильт по каналам");
-
-    m_menuFilters = new QMenu();
-    m_menuFilters->setStyleSheet("border: 0px solid black;");
-    m_menuFilters->setTitle("Фильтры");
-    m_menuFilters->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
-
-    m_actionMedian1D_3 = new QAction ("3x3", this);
-    m_actionMedian1D_5 = new QAction ("5x5", this);
-    m_actionMedian1D_7 = new QAction ("7x7", this);
-
-    m_actionMedian2D_3 = new QAction ("3x3", this);
-    m_actionMedian2D_5 = new QAction ("5x5", this);
-    m_actionMedian2D_7 = new QAction ("7x7", this);
-
-    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+    QMenu* contextMenu = new QMenu(this);
+    contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
+    contextMenu->setStyleSheet("border: 0px solid black;");
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 ) // если клик не на кубе - удаляем экшены из меню
     {
-        pContextMenu->addAction(pPlotAction);
-        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-    }
-    if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
-    {
-        pContextMenu->addAction(p2DCubeAction);
-        connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+        if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this, SLOT(prepareToPlotSpectr()));
+            connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+        }
+        if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this, SLOT(run2DCube()));
+        }
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        pContextMenu->addAction(pPlotLineAction);
-        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+        contextMenu->addAction("Спектральный срез", this, SLOT(createLinePlotterSlot()));
         connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
-        pContextMenu->addAction(pAddSpectrAction);
-        connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this, SLOT(addSpectr()));
     }
-
-    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
-    pContextMenu->addAction(pContrastAction);
-    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
-
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this, SLOT(contrast()));
 
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_3);
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_5);
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_7);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_3);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_5);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_7);
-        m_menuFilters->addMenu(m_menuMedian1DFilters);
-        m_menuFilters->addMenu(m_menuMedian2DFilters);
-        pContextMenu->addMenu(m_menuFilters);
-        connect(m_actionMedian1D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_3Triggered()));
-        connect(m_actionMedian1D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_5Triggered()));
-        connect(m_actionMedian1D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_7Triggered()));
-        connect(m_actionMedian2D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_3Triggered()));
-        connect(m_actionMedian2D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_5Triggered()));
-        connect(m_actionMedian2D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_7Triggered()));
+        QMenu* menuNoise = new QMenu("Фильтры", this);
+        menuNoise->setAttribute(Qt::WA_DeleteOnClose, true);
+        menuNoise->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
+        QMenu* menuNoiseMedian = new QMenu("Медианный фильтр", this);
+        menuNoiseMedian->setAttribute(Qt::WA_DeleteOnClose, true);
+        QMenu* menuMedianSpectr = new QMenu("Медианный фильтр по спектрам", this);
+        menuMedianSpectr->setAttribute(Qt::WA_DeleteOnClose, true);
+        menuMedianSpectr->addAction("Маска: 3 пикселя", this, SLOT(OnActionMedian1D_3Triggered()));
+        menuMedianSpectr->addAction("Маска: 5 пикселей", this, SLOT(OnActionMedian1D_5Triggered()));
+        menuMedianSpectr->addAction("Маска: 7 пикселей", this, SLOT(OnActionMedian1D_7Triggered()));
+        QMenu* menuMedianChannel = new QMenu("Медианный фильт по каналам", this);
+        menuMedianChannel->setAttribute(Qt::WA_DeleteOnClose, true);
+        menuMedianChannel->addAction("Маска: 3х3 пикселей", this, SLOT(OnActionMedian2D_3Triggered()));
+        menuMedianChannel->addAction("Маска: 5х5 пикселей", this, SLOT(OnActionMedian2D_5Triggered()));
+        menuMedianChannel->addAction("Маска: 7х7 пикселей", this, SLOT(OnActionMedian2D_7Triggered()));
+        menuNoiseMedian->addMenu(menuMedianSpectr);
+        menuNoiseMedian->addMenu(menuMedianChannel);
+        menuNoise->addMenu(menuNoiseMedian);
+
+        QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", this);
+        menuNoiseSavGolay->setAttribute(Qt::WA_DeleteOnClose, true);
+        QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", this);
+        menuSavitskogoGolayDegreePoligons_2_3->setAttribute(Qt::WA_DeleteOnClose, true);
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
+
+        QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", this);
+        menuSavitskogoGolayDegreePoligons_4_5->setAttribute(Qt::WA_DeleteOnClose, true);
+        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
+
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+        menuNoise->addMenu(menuNoiseSavGolay);
+        contextMenu->addMenu(menuNoise);
     }
+    contextMenu->popup(this->mapToGlobal(pos));
+    if (cantDeleteVar)
+    {
+        contextMenu->setEnabled(false);
+    }
+}
+
+//void GLWidget::createMenus()
+//{
+//    pContextMenu = new QMenu();
+//    pContextMenu->setStyleSheet("border: 0px solid black;");
+//    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
+//    pPlotLineAction = new QAction("Спектральный срез", this);
+//    p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
+//    pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
+//    m_menuMedian1DFilters = new QMenu();
+//    m_menuMedian1DFilters->setStyleSheet("border: 0px solid black;");
+//    m_menuMedian1DFilters->setTitle("Медианный фильтр по спектрам");
+//    m_menuMedian2DFilters = new QMenu();
+//    m_menuMedian2DFilters->setStyleSheet("border: 0px solid black;");
+//    m_menuMedian2DFilters->setTitle("Медианный фильт по каналам");
+
+//    m_menuFilters = new QMenu();
+//    m_menuFilters->setStyleSheet("border: 0px solid black;");
+//    m_menuFilters->setTitle("Фильтры");
+//    m_menuFilters->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
+
+//    m_actionMedian1D_3 = new QAction ("3x3", this);
+//    m_actionMedian1D_5 = new QAction ("5x5", this);
+//    m_actionMedian1D_7 = new QAction ("7x7", this);
+
+//    m_actionMedian2D_3 = new QAction ("3x3", this);
+//    m_actionMedian2D_5 = new QAction ("5x5", this);
+//    m_actionMedian2D_7 = new QAction ("7x7", this);
+
+//    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+//    {
+//        pContextMenu->addAction(pPlotAction);
+//        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
+//        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+//    }
+//    if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
+//    {
+//        pContextMenu->addAction(p2DCubeAction);
+//        connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+//    }
+//    if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
+//    {
+//        pContextMenu->addAction(pPlotLineAction);
+//        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
+//        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+//    }
+//    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+//    {
+//        pContextMenu->addAction(pAddSpectrAction);
+//        connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
+//    }
+
+//    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
+//    pContextMenu->addAction(pContrastAction);
+//    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
+
+
+//    if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+//    {
+//        m_menuMedian1DFilters->addAction(m_actionMedian1D_3);
+//        m_menuMedian1DFilters->addAction(m_actionMedian1D_5);
+//        m_menuMedian1DFilters->addAction(m_actionMedian1D_7);
+//        m_menuMedian2DFilters->addAction(m_actionMedian2D_3);
+//        m_menuMedian2DFilters->addAction(m_actionMedian2D_5);
+//        m_menuMedian2DFilters->addAction(m_actionMedian2D_7);
+//        m_menuFilters->addMenu(m_menuMedian1DFilters);
+//        m_menuFilters->addMenu(m_menuMedian2DFilters);
+//        pContextMenu->addMenu(m_menuFilters);
+//        connect(m_actionMedian1D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_3Triggered()));
+//        connect(m_actionMedian1D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_5Triggered()));
+//        connect(m_actionMedian1D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_7Triggered()));
+//        connect(m_actionMedian2D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_3Triggered()));
+//        connect(m_actionMedian2D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_5Triggered()));
+//        connect(m_actionMedian2D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_7Triggered()));
+//    }
+//}
+void GLWidget::NoiseGolayAlgExecute()
+{
+    cantDeleteVar = true;
+    m_attributes->SetNoiseAlg(Savitski_Golay1D);
+    m_attributes->SetApplyToAllCube(true);
+   // connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
+    cantDeleteVar = false;
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_5Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_7Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_9Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay4_5_7Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay4_5_9Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -937,11 +1030,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
     update();
 }
-void GLWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-    pContextMenu->exec(event->globalPos());
+//void GLWidget::contextMenuEvent(QContextMenuEvent *event)
+//{
+//    pContextMenu->exec(event->globalPos());
 
-}
+//}
 
 void GLWidget::scale_plus() // приблизить сцену
 {

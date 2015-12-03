@@ -79,21 +79,7 @@ private:
 
     bool ToCube()
     {
-//        QPixmap pixmap(":/NoiseRemover/icons/NoiseRemover.png");
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
-//        if (BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()%2 == 0)
-//        {
-//            // ошибка, нужно нечетное число
-//            QMessageBox* box = new QMessageBox();
-//            box->setIconPixmap(pixmap);
-//            box->setInformativeText(QObject::tr("Ошибка"));
-//            box->setStandardButtons(QMessageBox::Ok);
-//            box->setButtonText(QMessageBox::Ok, QObject::tr("Ок"));
-//            box->setText("Неверно выбрано окно пикселей");
-//            box->exec();
-//            delete box;
-//            return;
-//        }
         u::uint32 size = BaseNoiseAlg<T>::m_cube->GetSizeSpectrum();
 
         QProgressDialog* progressBar  = new QProgressDialog();
