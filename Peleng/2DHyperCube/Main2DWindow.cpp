@@ -69,7 +69,6 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
-
     connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
     connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
     connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
@@ -176,14 +175,16 @@ void Main2DWindow::dataCubeResize()
     }
     delete [] ChnlLimits;
     setHyperCube(m_pCube);
-    setInitSliders(0);
+    initArrChanLimits();
+
+    fillChanList();
+    //setInitSliders(0);
     ui->listWidget->setCurrentRow(0);
-    ui->listWidget->item(m_initChanel)->setSelected(true);
+    ui->listWidget->item(0)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(0));
+    emit  ui->listWidget->currentRowChanged(0);
 
-    initArrChanLimits();
-    fillChanList();
     QResizeEvent* e;
     this->resizeEvent(e);
 //    int minCMap, maxCMap; // эти 3 строчки мб и не нужны
@@ -278,12 +279,25 @@ void Main2DWindow::setInitCustomplotSettings()
 
 void Main2DWindow::fillChanList()
 {
+
+    disconnect(ui->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(updateViewchan(int)));
+    disconnect(ui->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(setInitSliders(int)));
     QList<double> list = m_pCube->GetListOfChannels();
     int num = 0;
     foreach(double i , list) {
-        ui->listWidget->addItem(QString("%1 - %2 нм").arg(num).arg(i));
+        ui->listWidget->insertItem(num,QString("%1 - %2 нм").arg(num).arg(i));
         num++;
     }
+    ui->listWidget->clearSelection();
+    QApplication::processEvents();
+    int nRows = ui->listWidget->count();
+    for(int i = nRows-1; i >num-1 ; --i)
+    {
+        delete ui->listWidget->item(i);
+    }
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
+
 }
 
 
