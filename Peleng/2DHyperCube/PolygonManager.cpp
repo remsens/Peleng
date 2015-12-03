@@ -31,7 +31,7 @@ public:
 
 PolygonManager::PolygonManager(int rows, int cols,
                                QCustomPlot *cusPlot, QWidget *parent2Dwindow) :
-    QMainWindow(parent2Dwindow)
+    QMainWindow(0)
   , ui(new Ui::PolygonManager)
   , m_rows(rows)
   , m_cols (cols)
@@ -43,6 +43,7 @@ PolygonManager::PolygonManager(int rows, int cols,
 
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/icons2Dcube/icons/polygon.png"));
     ui->tableWidget->setItemDelegate(new BackgroundDelegate(this));
     ui->tableWidget->setStyleSheet("selection-background-color: rgba(128, 128, 128, 40);");
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
