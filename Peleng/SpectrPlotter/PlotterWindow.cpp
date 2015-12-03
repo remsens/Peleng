@@ -64,6 +64,8 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
     }
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
 }
 
 PlotterWindow::~PlotterWindow()
@@ -98,9 +100,53 @@ void PlotterWindow::NoiseAlgExecute()
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
 {
     QString grafName = plottable->name();
-    QList<QCPData> XandY = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+    QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+    m_xArr.clear();
+    m_yArr.clear();
+    foreach(QCPData xy,XandYlist)
+    {
+        m_xArr.append(xy.key);
+        m_yArr.append(xy.value);
+    }
     //    XandY.at(i).key; //х
     //    XandY.at(i).value; //у
+}
+
+void PlotterWindow::contextMenuRequest(QPoint pos)
+{
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
+        menu->addAction("Сохранить выделенный график",this,SLOT(on_actionSave_toggled()));
+        menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
+    }
+    menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::removeSelectedGraph()
+{
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        m_customPlot->removeGraph(m_customPlot->selectedGraphs().first());
+        m_customPlot->replot();
+    }
+}
+
+void PlotterWindow::removeAllExceptSelectedGraph()
+{
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        for (int i = m_customPlot->graphCount()-1; i >= 0; --i)
+        {
+            if(!m_customPlot->graph(i)->selected())
+            {
+                m_customPlot->removeGraph(i);
+            }
+        }
+        m_customPlot->replot();
+    }
 }
 
 void PlotterWindow::ActionNoise3Toggled()

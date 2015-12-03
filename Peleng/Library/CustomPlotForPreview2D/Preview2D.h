@@ -2,7 +2,7 @@
 #define PREVIEW2D_H
 
 #include <QWidget>
-
+#include "../QCustomPlot.h"
 namespace Ui {
 class Preview2D;
 }
@@ -19,6 +19,7 @@ public:
 
 private:
     Ui::Preview2D *m_ui;
+    QCustomPlot* m_cPlot;
 };
 
 #endif // PREVIEW2D_H
