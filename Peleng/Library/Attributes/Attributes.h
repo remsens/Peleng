@@ -13,7 +13,7 @@ class Attributes;
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
 
 enum NoiseAlgorithm {
-    Median2D, Median1D
+    Median2D, Median1D, Savitski_Golay1D
 };
 
 class Attributes
@@ -67,6 +67,9 @@ public:
 
     void SetMaskPixelsCount(const u::uint32 pixelsNumber);
     u::uint32 GetMaskPixelsCount() const;
+    // только для алгоритма Савитского-Голау
+    void SetDegreePolinom(u::uint8 degree);
+    u::uint8 GetDegreePolinom() const;
 private:
     Attributes();
     Attributes(const Attributes&);
@@ -90,6 +93,7 @@ private:
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
     int m_maskPixelsCount;
     bool m_applyToAllCube;
+    u::uint8 m_degreePolinom;
 };
 
 #endif // ATTRIBUTES_H

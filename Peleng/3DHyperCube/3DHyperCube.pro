@@ -63,10 +63,3 @@ RESOURCES += \
     icons3Dcube.qrc \
     splash.qrc
 
-
-
-
-#win32: LIBS += -L$$PWD/../../Debug/2DHyperCube/debug/ -l2DHyperCube
-
-#INCLUDEPATH += $$PWD/../../Debug/2DHyperCube/debug
-#DEPENDPATH += $$PWD/../../Debug/2DHyperCube/debug
