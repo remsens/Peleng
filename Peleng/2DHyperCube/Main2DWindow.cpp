@@ -82,20 +82,6 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
     ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
-
-
-    //    QSize mainSize = this->size();
-//    if(cols > rows) //rows/cols<1
-//        this->resize(mainSize.width() * rows/cols , mainSize.height());
-//    else
-//        this->resize(mainSize.width(), mainSize.width() * rows / cols);
-    //ui->customPlot->setMinimumSize(this->size().width() * 0.75 ,this->size().width() * 0.75* cols / rows);
-    //ui->customPlot->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-//loadMaskFromFile();// потом удалить отсюда!!!
-    //проверить
-  //  int minCMap, maxCMap;
-   // findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
-  //  drawHeatMap(m_initChanel,minCMap, maxCMap);
     m_needToUpdate = false;
     m_canDelete = true;
     connectionsOfPlugins();
@@ -117,14 +103,12 @@ Main2DWindow::~Main2DWindow()
     qDebug() << "delete ChnlLimits";
     delete ui;
     qDebug() << "finish ~2D";
+    delete polyMngr;
 }
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
-   // ui->customPlot->setMinimumWidth(1);
-   // ui->customPlot->setFixedHeight( ui->customPlot->width()* cols / rows);
-   // ui->customPlot->setFixedWidth(ui->customPlot->height()*  rows/cols);
-    //ui->customPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+
     QSize framesize =  ui->frameCustomPlot->size();
     double RowsToCols = (double)rows / (double)cols;
     if(RowsToCols > 1)
@@ -187,11 +171,6 @@ void Main2DWindow::dataCubeResize()
 
     QResizeEvent* e;
     this->resizeEvent(e);
-//    int minCMap, maxCMap; // эти 3 строчки мб и не нужны
-//    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
-//    drawHeatMap(m_initChanel,minCMap, maxCMap);
-
-
 }
 
 void Main2DWindow::connectionsOfPlugins()
@@ -531,10 +510,6 @@ void Main2DWindow::createMenus()
         connect(m_actionMedian5, SIGNAL(triggered()), this, SLOT(OnActionMedian5Triggered()));
         connect(m_actionMedian7, SIGNAL(triggered()), this, SLOT(OnActionMedian7Triggered()));
     }
-    pSelectAreaAction = new QAction(QIcon(":/IconsCube/iconsCube/polygon.png"), "Выбрать область",this);
-	pContextMenu->addAction(pSelectAreaAction);
-    //connect(pSelectAreaAction,SIGNAL(triggered()),SLOT(createPolygonSlot()));//удалить строчку
-    connect(pSelectAreaAction,SIGNAL(triggered()),polyMngr,SLOT(createPolygonSlot()));
 }
 
 
@@ -567,7 +542,9 @@ void Main2DWindow::setInitSliders(int chan)
 
 void Main2DWindow::polygonTool()
 {
-    polyMngr->show();    
+    polyMngr->show();
+    polyMngr->raise();
+    polyMngr->showNormal();
 }
 
 void Main2DWindow::OnActionMedian3Triggered()
