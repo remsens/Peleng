@@ -183,3 +183,13 @@ bool Attributes::GetApplyToAllCube() const
 {
     return m_applyToAllCube;
 }
+
+void Attributes::SetDegreePolinom(u::uint8 degree)
+{
+    m_degreePolinom = degree;
+}
+
+u::uint8 Attributes::GetDegreePolinom() const
+{
+    return m_degreePolinom;
+}
