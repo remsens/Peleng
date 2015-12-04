@@ -110,7 +110,6 @@ private:
     void findAbsoluteMinMax();
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
-    //void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
@@ -118,29 +117,7 @@ private:
     void NoiseGolayAlgExecute();
 
 private:
-    QMenu* pContextMenu;
-    QAction* pPlotAction;
-    //QAction* pDeletePlotsAction;
     Attributes* m_attributes;
-    QAction* pSetStartAction;
-    QAction* pSetFinishAction;
-    QAction* pPlotLineAction;
-    QAction* p2DCubeAction;
-
-    QAction* pContrastAction;
-
-    QAction* pAddSpectrAction;
-    // actions and menus для фильтров
-    QMenu* m_menuFilters;
-    QMenu* m_menuMedian1DFilters;
-    QMenu* m_menuMedian2DFilters;
-    QAction* m_actionMedian1D_3;
-    QAction* m_actionMedian1D_5;
-    QAction* m_actionMedian1D_7;
-    QAction* m_actionMedian2D_3;
-    QAction* m_actionMedian2D_5;
-    QAction* m_actionMedian2D_7;
-
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;
