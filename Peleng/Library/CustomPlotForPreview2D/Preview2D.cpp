@@ -39,8 +39,8 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const int num
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
     qDebug()<<"colorMap setSize";
     m_cPlot->addPlottable(colorMap);
-    for (u::uint32 x = 0; x < rows; x++) {
-        for (u::uint32 y = 0; y < cols; y++) {
+    for (u::int32 x = 0; x < rows; x++) {
+        for (u::int32 y = 0; y < cols; y++) {
             colorMap->data()->setCell(x, y, data[x * cols + y] );
         }
     }
