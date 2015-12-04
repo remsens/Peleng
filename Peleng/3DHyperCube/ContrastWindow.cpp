@@ -2,22 +2,22 @@
 #include "ui_ContrastWindow.h"
 #include <QDebug>
 
-ContrastWindow::ContrastWindow(int initMin, int initMax, QWidget *parent) :
+ContrastWindow::ContrastWindow(int absMin, int absMax, int initMin, int initMax, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ContrastWindow)
 {
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/IconsCube/iconsCube/contrast.png"));
-    MIN = initMin;
-    MAX = initMax;
+    MIN = absMin;
+    MAX = absMax;
 
 
     ui->sliderMin->setMinimum(MIN);
     ui->sliderMin->setMaximum(MAX);
-    ui->sliderMin->setValue(MIN);
+    ui->sliderMin->setValue(initMin);
     ui->sliderMax->setMinimum(MIN);
     ui->sliderMax->setMaximum(MAX);
-    ui->sliderMax->setValue(MAX);
+    ui->sliderMax->setValue(initMax);
     connect(ui->sliderMin,SIGNAL(valueChanged(int)),SLOT(minChngdSlot(int)));
     connect(ui->sliderMax,SIGNAL(valueChanged(int)),SLOT(maxChngdSlot(int)));
 
