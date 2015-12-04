@@ -108,9 +108,9 @@ private:
     {
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
         QProgressDialog* progressBar  = new QProgressDialog();
-        progressBar->setLabelText("Устранение шумов у гиперспектральных данных");
+        progressBar->setLabelText("        Устранение шумов у гиперспектральных данных         ");
         progressBar->setWindowIcon(icon);
-        QString descr = QString("Фильтр Савитского-Голау. Маска: %1 пикселей. Степень полинома: %2 ").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()).arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetDegreePolinom())));
+        QString descr = QString("Фильтр Савитского-Голау. Маска: %1 пикселей. Степень полинома: %2").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()), QString::number(BaseNoiseAlg<T>::m_attributes->GetDegreePolinom()));
         progressBar->setWindowTitle(descr);
         progressBar->setRange(0, 100);
         progressBar->setWindowModality(Qt::WindowModal);
@@ -141,13 +141,13 @@ private:
                  }
                  for (u::uint32 i = maskPixels/2; i < size - maskPixels/2; i++)
                  {
-                     T temp = 0;
+                     double temp = 0;
                      for (u::uint8 j = 0; j < maskPixels; j++)
                      {
                          temp+= dataCube[i + j-maskPixels/2][lines*columnsCube + col]*coeff[j];
                      }
-                     //BaseNoiseAlg<T>::m_cube->SetDataBuffer(i, &(temp/normalization), sizeof(T), (lines*columnsCube+col)*sizeof(T));
-                     dataCube[i][lines*columnsCube + col] = temp/normalization;
+                     T value = temp/normalization;
+                     BaseNoiseAlg<T>::m_cube->SetDataBuffer(i, &value, sizeof(T), (lines*columnsCube+col)*sizeof(T));
                  }
                  double a = lines*columnsCube + col;
                  double b = a/maxValueBar*100;
