@@ -66,8 +66,10 @@ private slots:
     void createLinePlotterSlot();
     void run2DCube();
 
-    void contrast();
-    void repaintWithContrast(int min, int max);
+    void contrastSides(); //боковые грани
+    void contrastTopSide(); //боковые грани
+    void repaintSidesWithContrast(int min, int max);
+    void repaintTopWithContrast(int min, int max);
     void updateCube();
     void needToUpdate(bool needToUpdate);
     void ShowContextMenu(const QPoint& pos);
@@ -164,6 +166,8 @@ private:
     bool cantDeleteVar;
 
     ContrastWindow *m_contrastTool;
+    bool contrastTopconnected;
+    bool contrastSidesconnected;
 
 };
 
