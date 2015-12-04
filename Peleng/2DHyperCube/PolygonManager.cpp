@@ -234,19 +234,16 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
     {
         QMenu *menu = new QMenu(this);
         QAction* actionColor = new QAction("Выбор цвета",this);
-        QAction* action2 = new QAction("test action 2",this);
-        QAction* action3 = new QAction("test action 3",this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
         menu->addAction(actionColor);
-        menu->addAction(action2);
-        menu->addAction(action3);
-        menu->popup(QCursor::pos());//ui->tableWidget->mapToGlobal(pos)
+        menu->popup(QCursor::pos());
         connect(actionColor,SIGNAL(triggered()),SLOT(pickColor()));
     }
 
 }
 void PolygonManager::pickColor() // должен возвращать цвет
 {
+    QColorDialog dialog;
     QColor color = QColorDialog::getColor(Qt::white);
     ui->tableWidget->selectedItems().at(1)->setBackgroundColor(color);
     m_RegionArr[m_currIndexRegion].m_color = color;
