@@ -67,6 +67,11 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     cantDeleteVar = false;
     connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
     connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    m_contrastTool = new ContrastWindow(absMin,absMax,minCMapSides,maxCMapSides);
+    connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
+    connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    contrastTopconnected = true;
+    contrastSidesconnected = true;
 }
 
 GLWidget::~GLWidget()
@@ -470,19 +475,47 @@ void GLWidget::run2DCube()
     m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
 }
 
-void GLWidget::contrast()
+void GLWidget::contrastSides()
 {
-    if(m_contrastTool == NULL)
+
+    if(!contrastSidesconnected)
     {
-        m_contrastTool = new ContrastWindow(absMin,absMax,minCMapSides,maxCMapSides);
-        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+        contrastSidesconnected = true;
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
     }
+    if(contrastTopconnected)
+    {
+        contrastTopconnected = false;
+        disconnect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    }
+
+    m_contrastTool->setMinMax(absMin,absMax,minCMapSides,maxCMapSides);
+
     m_contrastTool->show();
     m_contrastTool->raise();
-    m_contrastTool->showNormal();// если окно было свернуто
+    m_contrastTool->showNormal();
 }
 
-void GLWidget::repaintWithContrast(int min, int max)
+void GLWidget::contrastTopSide()
+{
+
+    if(!contrastTopconnected)
+    {
+        contrastTopconnected = true;
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    }
+    if(contrastSidesconnected)
+    {
+        contrastSidesconnected = false;
+        disconnect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
+    }
+    m_contrastTool->setMinMax(absMin,absMax,minCMap,maxCMap);
+    m_contrastTool->show();
+    m_contrastTool->raise();
+    m_contrastTool->showNormal();
+}
+
+void GLWidget::repaintSidesWithContrast(int min, int max)
 {
     int nCHNLS = Ch2 - Ch1 + 1;
     int nROWS = R2 - R1 + 1;
@@ -501,7 +534,6 @@ void GLWidget::repaintWithContrast(int min, int max)
     textures[3]->destroy();
     textures[5]->destroy();
 
-
     textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,min,max).transformed(rtt270).mirrored(true,false)); //напротив темной грани
     textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,min,max).transformed(rtt270).mirrored(true,false)); //
     textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
@@ -510,6 +542,19 @@ void GLWidget::repaintWithContrast(int min, int max)
     minCMapSides = min; // чтобы при последующих перерисовках использовались новые, вручную установленные,  значения
     maxCMapSides = max;
 
+}
+
+void GLWidget::repaintTopWithContrast(int min, int max)
+{
+    int nROWS = R2 - R1 + 1;
+    int nCOLS = C2 - C1 + 1;
+    makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
+    textures[1]->destroy();
+    textures[4]->destroy();
+
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,min,max,true).mirrored(false,true));// верхняя грань с фото
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,min,max,true)); //нижняя грань с фото
+    update();
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
@@ -698,7 +743,8 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     QMenu* contextMenu = new QMenu(this);
     contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
     contextMenu->setStyleSheet("border: 0px solid black;");
-    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование боковых граней",this, SLOT(contrast()));
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование боковых граней",this, SLOT(contrastSides()));
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование верхних граней",this, SLOT(contrastTopSide()));
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 ) // если клик не на кубе - удаляем экшены из меню
     {
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
