@@ -12,7 +12,7 @@ class ContrastWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit ContrastWindow(int initMin, int initMax, QWidget *parent = 0);
+    explicit ContrastWindow(int absMin, int absMax, int initMin, int initMax,  QWidget *parent = 0);
     ~ContrastWindow();
 signals:
     minMaxChanged(int,int);

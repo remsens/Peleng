@@ -474,7 +474,7 @@ void GLWidget::contrast()
 {
     if(m_contrastTool == NULL)
     {
-        m_contrastTool = new ContrastWindow(absMin,absMax);
+        m_contrastTool = new ContrastWindow(absMin,absMax,minCMapSides,maxCMapSides);
         connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
     }
     m_contrastTool->show();
@@ -698,7 +698,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     QMenu* contextMenu = new QMenu(this);
     contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
     contextMenu->setStyleSheet("border: 0px solid black;");
-    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this, SLOT(contrast()));
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование боковых граней",this, SLOT(contrast()));
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 ) // если клик не на кубе - удаляем экшены из меню
     {
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
