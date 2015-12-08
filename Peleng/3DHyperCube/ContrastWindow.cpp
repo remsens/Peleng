@@ -47,6 +47,7 @@ void ContrastWindow::setMinMax(int absMin, int absMax,int initMin, int initMax)
 void ContrastWindow::minChngdSlot(int val)
 {
     MIN = val;
+    MAX = ui->sliderMax->value();
     if (MIN < MAX)
     {
         emit minMaxChanged(MIN,MAX);
@@ -60,6 +61,7 @@ void ContrastWindow::minChngdSlot(int val)
 void ContrastWindow::maxChngdSlot(int val)
 {
     MAX = val;
+    MIN = ui->sliderMin->value();
     if (MIN < MAX)
     {
         emit minMaxChanged(MIN,MAX);
