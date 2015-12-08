@@ -25,7 +25,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , m_contrastTool(NULL)
 {
     qDebug() << "enter to GL";
-    //setAttribute(Qt::WA_DeleteOnClose, true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
     loadData(ptrCube);
@@ -82,6 +82,7 @@ GLWidget::~GLWidget()
         delete textures[i];
     SidesDestructor();
     doneCurrent();
+    delete m_contrastTool;
     qDebug() << "finish delete GLwidget";
 }
 
