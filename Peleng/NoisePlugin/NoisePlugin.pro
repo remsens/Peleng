@@ -2,7 +2,7 @@ QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Noise
+TARGET = NoisePlugin
 TEMPLATE = lib
 Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
 Release:    DLLDESTDIR = ../../Release/MainApp/release
