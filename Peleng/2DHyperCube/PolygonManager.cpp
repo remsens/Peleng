@@ -1,6 +1,6 @@
 #include "PolygonManager.h"
 #include "ui_PolygonManager.h"
-
+#include "../Library/GenericExc.h"
 class BackgroundDelegate : public QStyledItemDelegate // для того, чтобы через выделение не был виден цвет ячейки
 {
 public:
@@ -175,6 +175,7 @@ QByteArray PolygonManager::loadByteMaskFromFile()
         if (file.size() != m_rows*m_cols) // потестировать это
         {
             qDebug()<< "file.size() != m_rows*m_cols;  чтение запрещено";
+            throw GenericExc("не подходит размер выбранной маски к размеру изображения",-1);
             return byteArr; //возвращаем заполненный нулями байтэррэй
         }
         else
@@ -292,19 +293,27 @@ void PolygonManager::onButtonSaveRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name + ".area","*.area");
-    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
+    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
 }
 
 void PolygonManager::onButtonLoadRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QByteArray byteArr = loadByteMaskFromFile();
-    QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-    QImage mask = imageFromByteMask(byteArr,color);
-    drawImage(mask);
-    m_cusPlot->replot();
+    try
+    {
+        QByteArray byteArr = loadByteMaskFromFile();
+        QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
+        QImage mask = imageFromByteMask(byteArr,color);
+        drawImage(mask);
+        m_cusPlot->replot();
+    }
+    catch(GenericExc e)
+    {
+        qDebug()<<e.GetWhat();
+    }
+
 }
 
 void PolygonManager::itemChanged(QTableWidgetItem *it)
