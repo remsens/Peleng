@@ -33,7 +33,11 @@ void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint 
     m_customPlot->clearGraphs(); // только 1 график на виджете
     uint k = 1;
     int length = round (qSqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1)) / k);
-
+    if (length == 0)
+    {
+        qDebug()<<"длина среза = 0";
+        return;
+    }
     int* cordXarr = new int[length];
     int* cordYarr = new int[length];
     int* cordZarr = new int[length];
