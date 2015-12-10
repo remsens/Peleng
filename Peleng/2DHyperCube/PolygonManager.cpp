@@ -311,6 +311,7 @@ void PolygonManager::onButtonLoadRegion()
     }
     catch(GenericExc e)
     {
+        QMessageBox::warning(this,"предупреждение","не подходит размер выбранной маски к размеру изображения");
         qDebug()<<e.GetWhat();
     }
 

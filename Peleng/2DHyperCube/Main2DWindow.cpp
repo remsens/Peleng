@@ -81,7 +81,10 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
     emit  ui->listWidget->currentRowChanged(m_initChanel);
 
-    ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
+//    ui->frameCustomPlot->resize(this->size()); // чтобы избавиться от бага с очень маленьким размером фрейма
+//    QResizeEvent *e = new QResizeEvent(this->size(),this->size());
+//    resizeEvent(e);
+//    delete e;
     m_needToUpdate = false;
     m_canDelete = true;
     connectionsOfPlugins();
@@ -108,16 +111,18 @@ Main2DWindow::~Main2DWindow()
 
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
-
     QSize framesize =  ui->frameCustomPlot->size();
     double RowsToCols = (double)rows / (double)cols;
     if(RowsToCols > 1)
     {
-        ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
+        //ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
+        //ui->customPlot->setMinimumHeight(framesize.width() / RowsToCols*0.95);
+        ui->customPlot->resize(framesize.width()*0.99 , framesize.width() / RowsToCols*0.99);
     }
         else
     {
-        ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+        //ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
+        ui->customPlot->resize(framesize.height() * RowsToCols*0.99, framesize.height()*0.99);
     }
 }
 
@@ -370,7 +375,6 @@ void Main2DWindow::leftBorderContrast(int left)
         int chan = ui->listWidget->currentRow();
         ChnlLimits[chan][0] = left;
         drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
-        qDebug()<<"leftBorderContrast chan:"<<chan;
     }
 }
 
@@ -381,7 +385,6 @@ void Main2DWindow::rightBorderContrast(int right)
         int chan = ui->listWidget->currentRow();
         ChnlLimits[chan][1] = right;
         drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
-        qDebug()<<"rightBorderContrast chan:"<<chan;
     }
 }
 

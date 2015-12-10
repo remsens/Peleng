@@ -33,6 +33,7 @@ void Hyper2dPlugin::Execute(HyperCube *cube, Attributes *attr)
         QObject::connect(m_window, SIGNAL(CloseWindow()), this, SLOT(OnClose()));
     }
     m_window->show();
+    m_window->resize(m_window->size().width(),m_window->size().height() + 1);
     m_window->activateWindow();
     m_window->raise();
     m_window->showNormal();// если окно было свернуто
