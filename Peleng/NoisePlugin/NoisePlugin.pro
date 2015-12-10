@@ -2,7 +2,7 @@ QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Noise
+TARGET = NoisePlugin
 TEMPLATE = lib
 Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
 Release:    DLLDESTDIR = ../../Release/MainApp/release
@@ -43,6 +43,7 @@ HEADERS += \
     ../Library/QCustomPlot.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
     ../Library/Utils/Compare.h \
+    SavitskiGolay1DAlg.h
 
 RESOURCES += \
     resources.qrc
@@ -50,4 +51,4 @@ RESOURCES += \
 FORMS += \
     ../Library/CustomPlotForPreview2D/Preview2D.ui
 
-
+CONFIG += c++11

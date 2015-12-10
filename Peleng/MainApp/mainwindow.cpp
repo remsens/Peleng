@@ -105,13 +105,14 @@ void MainWindow::LoadFile()
         if (m_pluginsControl->GetProcessingPlugins().size() > 0)
         {
 
-            //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
+            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Noise Remover");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
-            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("SpectralDistance");
+            //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("SpectralDistance");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
+            //Attributes::I()->SetPoint(150, 150, 200);
            // Attributes::I()->SetModeLib(1);
-            cube->ResizeCube(0,223,0,1200,0,400);//тест ресайза
+            cube->ResizeCube(0,223,50,1200,50,400);//чтобы не висла память
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

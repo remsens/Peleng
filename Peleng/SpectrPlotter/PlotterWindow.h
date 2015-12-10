@@ -31,7 +31,8 @@ signals:
     void closePlotterWindow(PlotterWindow* w);
 private:
     void closeEvent(QCloseEvent *);
-    void NoiseAlgExecute();
+    void NoiseMedianAlgExecute();
+    void NoiseGolayAlgExecute();
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
     void contextMenuRequest(QPoint pos);
@@ -40,10 +41,15 @@ private slots:
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
-    void ActionNoise3Toggled();
-    void ActionNoise5Toggled();
-    void ActionNoise7Toggled();
+    void ActionNoise3MedianToggled();
+    void ActionNoise5MedianToggled();
+    void ActionNoise7MedianToggled();
 
+    void ActionNoiseSavitGolay2_3_5Toogled();
+    void ActionNoiseSavitGolay2_3_7Toogled();
+    void ActionNoiseSavitGolay2_3_9Toogled();
+    void ActionNoiseSavitGolay4_5_7Toogled();
+    void ActionNoiseSavitGolay4_5_9Toogled();
 private:
     bool m_hold;
     Ui::PlotterWindow *ui;
@@ -55,13 +61,6 @@ private:
     int autoTickCountY;
     HyperCube* m_cube;
     Attributes* m_attributes;
-    QAction* m_actionSave;
-
-    QAction* m_actionNoise3;
-    QAction* m_actionNoise5;
-    QAction* m_actionNoise7;
-    QMenu*   m_menuNoise;
-    QMenu*   m_menuMedianNoise;
     QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
     QVector<double> m_xArr;
     QVector<double> m_yArr;

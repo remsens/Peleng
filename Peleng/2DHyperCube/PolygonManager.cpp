@@ -1,6 +1,6 @@
 #include "PolygonManager.h"
 #include "ui_PolygonManager.h"
-
+#include "../Library/GenericExc.h"
 class BackgroundDelegate : public QStyledItemDelegate // для того, чтобы через выделение не был виден цвет ячейки
 {
 public:
@@ -31,7 +31,7 @@ public:
 
 PolygonManager::PolygonManager(int rows, int cols,
                                QCustomPlot *cusPlot, QWidget *parent2Dwindow) :
-    QMainWindow(parent2Dwindow)
+    QMainWindow(0)
   , ui(new Ui::PolygonManager)
   , m_rows(rows)
   , m_cols (cols)
@@ -43,6 +43,7 @@ PolygonManager::PolygonManager(int rows, int cols,
 
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/icons2Dcube/icons/polygon.png"));
     ui->tableWidget->setItemDelegate(new BackgroundDelegate(this));
     ui->tableWidget->setStyleSheet("selection-background-color: rgba(128, 128, 128, 40);");
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -174,6 +175,7 @@ QByteArray PolygonManager::loadByteMaskFromFile()
         if (file.size() != m_rows*m_cols) // потестировать это
         {
             qDebug()<< "file.size() != m_rows*m_cols;  чтение запрещено";
+            throw GenericExc("не подходит размер выбранной маски к размеру изображения",-1);
             return byteArr; //возвращаем заполненный нулями байтэррэй
         }
         else
@@ -233,19 +235,16 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
     {
         QMenu *menu = new QMenu(this);
         QAction* actionColor = new QAction("Выбор цвета",this);
-        QAction* action2 = new QAction("test action 2",this);
-        QAction* action3 = new QAction("test action 3",this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
         menu->addAction(actionColor);
-        menu->addAction(action2);
-        menu->addAction(action3);
-        menu->popup(QCursor::pos());//ui->tableWidget->mapToGlobal(pos)
+        menu->popup(QCursor::pos());
         connect(actionColor,SIGNAL(triggered()),SLOT(pickColor()));
     }
 
 }
 void PolygonManager::pickColor() // должен возвращать цвет
 {
+    QColorDialog dialog;
     QColor color = QColorDialog::getColor(Qt::white);
     ui->tableWidget->selectedItems().at(1)->setBackgroundColor(color);
     m_RegionArr[m_currIndexRegion].m_color = color;
@@ -294,19 +293,27 @@ void PolygonManager::onButtonSaveRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name + ".area","*.area");
-    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
+    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
 }
 
 void PolygonManager::onButtonLoadRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QByteArray byteArr = loadByteMaskFromFile();
-    QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-    QImage mask = imageFromByteMask(byteArr,color);
-    drawImage(mask);
-    m_cusPlot->replot();
+    try
+    {
+        QByteArray byteArr = loadByteMaskFromFile();
+        QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
+        QImage mask = imageFromByteMask(byteArr,color);
+        drawImage(mask);
+        m_cusPlot->replot();
+    }
+    catch(GenericExc e)
+    {
+        qDebug()<<e.GetWhat();
+    }
+
 }
 
 void PolygonManager::itemChanged(QTableWidgetItem *it)

@@ -19,6 +19,8 @@ public:
     ~PolygonManager();
     //! функция,завершающая создание полигона
     void finishPolygonCreation();
+    void setRows(int rows){m_rows = rows;}
+    void setCols(int cols){m_cols = cols;}
 public slots:
     //! слот соединяющийся с сигналом по экшену в контестном меню с 2D куба
     void createPolygonSlot();
