@@ -22,9 +22,11 @@ void SpectralDistance::callMethod(int methNumber)
         break;
     }
     case 1:{
+        CalcSpectralAngle();
         break;
     }
     case 2:{
+        CalcSpectralCorellation();
 
         break;
     }
@@ -92,7 +94,7 @@ void SpectralDistance::CalcEvklidDistance()
     qDebug() << "max:" << max_value;
     qDebug() << "execute time" << (GetTickCount() - execute_time) / 1000.0;
     is_cubemap_emty = false;
-    selectRange(10);
+    selectRange(5);
 }
 
 void SpectralDistance::CalcSpectralAngle()
@@ -127,7 +129,7 @@ void SpectralDistance::CalcSpectralAngle()
                 local_val2 += pow(data_ptr[j * line_count + i],2);
                 local_val3 += pow(data_ptr[l*line_count + k],2);
             }
-            cube_map[i][j] = local_val1 / (local_val2 * local_val3);
+            cube_map[i][j] = acos(local_val1 / (sqrt(local_val2) * sqrt(local_val3)));
             if (cube_map[i][j] > max_value)
             {
                max_value = cube_map[i][j];
@@ -138,6 +140,10 @@ void SpectralDistance::CalcSpectralAngle()
             }
         }
     }
+    qDebug() << "min:" << min_value;
+    qDebug() << "max:" << max_value;
+    is_cubemap_emty = false;
+    selectRange(5);
 }
 
 void SpectralDistance::CalcSpectralCorellation()
@@ -177,7 +183,7 @@ void SpectralDistance::CalcSpectralCorellation()
                 local_val2 += pow(data_ptr[j*line_count + i] - average_ij, 2);
                 local_val3 += pow(data_ptr[l*line_count + k] - average_kl, 2);
             }
-            cube_map[i][j] = local_val1 / (local_val2 * local_val3);
+            cube_map[i][j] = local_val1 / (sqrt(local_val2) * sqrt(local_val3));
             if (cube_map[i][j] > max_value)
             {
                max_value = cube_map[i][j];
@@ -189,7 +195,8 @@ void SpectralDistance::CalcSpectralCorellation()
         }
     }
 
-
+    is_cubemap_emty = false;
+    selectRange(5);
 
 }
 
@@ -217,7 +224,7 @@ void SpectralDistance::selectRange(const double percent)
             {
                 masked_map[i][j] = round(cube_map[i][j]);
                 new_map[i][j] = round(cube_map[i][j]);
-                view_mem[i + cube_map.length() * j] = round(cube_map[i][j]);
+                view_mem[i + cube_map.length() * j] = 255; //round(cube_map[i][j]);
             } else
             {
                 masked_map[i][j] = 0;
@@ -226,7 +233,7 @@ void SpectralDistance::selectRange(const double percent)
             }
         }
     }
-    preview_2d->Plot(view_mem, line_count, row_count / 2);
+    preview_2d->Plot(view_mem, line_count, row_count);
     }
 }
 
