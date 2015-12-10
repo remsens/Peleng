@@ -93,24 +93,23 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         bool flagEndDescription = false;
         bool startData = false;
         // костыль, чтобы отличать класс от подкласса
-       // bool classTitle = false;
+        // bool classTitle = false;
         while (!m_inStream->atEnd())
         {
             QString line = m_inStream->readLine();
             if (line.compare("\r\n") == 0 || line.compare("") == 0 || line.compare(" ") == 0 || line.compare("\n") == 0){
                 if (flagEndDescription)
                 {
-                   // Закидываем последний
-                   m_attr->SetDescriptionItem(title, description);
-                   item.clear();
-                   title.clear();
-                   description.clear();
-                   startData = true;
-                   flagEndDescription = false;
+                    // Закидываем последний
+                    m_attr->SetDescriptionItem(title, description);
+                    item.clear();
+                    title.clear();
+                    description.clear();
+                    startData = true;
+                    flagEndDescription = false;
                 }
                 continue;
             }
-
             if (!startData)
             {
                 bool contains = false;
@@ -124,27 +123,27 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
 
                         }
                         // закинуть предыдущие и начать новые
-                       if (i == possibleTitles.size()-1)
-                       {
-                           flagEndDescription = true;
-                       }
-                       if (!title.isEmpty())
-                       {
+                        if (i == possibleTitles.size()-1)
+                        {
+                            flagEndDescription = true;
+                        }
+                        if (!title.isEmpty())
+                        {
                             m_attr->SetDescriptionItem(title, description);
                             item.clear();
                             title.clear();
                             description.clear();
-                       }
-                       item = line.split(possibleTitles.at(i), QString::KeepEmptyParts, Qt::CaseInsensitive );
-                       title = possibleTitles.at(i);
-                       if (item.size() >= 2)
-                       {
-                          description = item.at(1);
-                       } else {
-                           description = "";
-                       }
-                       contains = true;
-                       break;
+                        }
+                        item = line.split(possibleTitles.at(i), QString::KeepEmptyParts, Qt::CaseInsensitive );
+                        title = possibleTitles.at(i);
+                        if (item.size() >= 2)
+                        {
+                            description = item.at(1);
+                        } else {
+                            description = "";
+                        }
+                        contains = true;
+                        break;
                     }
                 }
                 if (!contains)
@@ -191,27 +190,27 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         {
             throw GenericExc(tr("Неизвестный формат данных"));
         }
-    // сформировать одну строку
-    // QMessageBox;
-    QString toMessageBox;
-    for (int i = 0; i < m_attr->GetSpectrumDescription().size(); i++)
-    {
-        toMessageBox.append(m_attr->GetSpectrumDescription().at(i).title);
-        toMessageBox.append(m_attr->GetSpectrumDescription().at(i).description);
+        // сформировать одну строку
+        // QMessageBox;
+        QString toMessageBox;
+        for (int i = 0; i < m_attr->GetSpectrumDescription().size(); i++)
+        {
+            toMessageBox.append(m_attr->GetSpectrumDescription().at(i).title);
+            toMessageBox.append(m_attr->GetSpectrumDescription().at(i).description);
+            toMessageBox.append("\n");
+        }
         toMessageBox.append("\n");
-    }
-    toMessageBox.append("\n");
-    toMessageBox.append("X Units size: ");
-    toMessageBox.append(QString::number(m_attr->GetXUnits().size()));
-    toMessageBox.append("\n");
-    toMessageBox.append("Y Units size: ");
-    toMessageBox.append(QString::number(m_attr->GetYUnits().size()));
-    QMessageBox::information(this, "Информация о загруженном спектре", toMessageBox);
-    if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
-    {
-        m_attr->SetExternalSpectrFlag(true);
-        m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
-    }
+        toMessageBox.append("X Units size: ");
+        toMessageBox.append(QString::number(m_attr->GetXUnits().size()));
+        toMessageBox.append("\n");
+        toMessageBox.append("Y Units size: ");
+        toMessageBox.append(QString::number(m_attr->GetYUnits().size()));
+        QMessageBox::information(this, "Информация о загруженном спектре", toMessageBox);
+        if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
+        {
+            m_attr->SetExternalSpectrFlag(true);
+            m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
+        }
     } catch (const GenericExc& exc)
     {
         err = exc.GetWhat();

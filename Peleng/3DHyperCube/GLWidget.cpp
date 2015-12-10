@@ -61,11 +61,17 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     memset(textures, 0, sizeof(textures));
     rotateBy(-2560,712,0);
-    createMenus();
     setMouseTracking(true);
     firstWindowPlotter = true;
     m_needToUpdate = false;
     cantDeleteVar = false;
+    connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
+    connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+    m_contrastTool = new ContrastWindow(absMin,absMax,minCMapSides,maxCMapSides);
+    connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
+    connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    contrastTopconnected = true;
+    contrastSidesconnected = true;
 }
 
 GLWidget::~GLWidget()
@@ -74,25 +80,9 @@ GLWidget::~GLWidget()
     vbo.destroy();
     for (int i = 0; i < 6; ++i)
         delete textures[i];
-
     SidesDestructor();
-    disconnect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
-    disconnect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
-    delete pContextMenu;
-    delete pPlotAction;
-    delete pAddSpectrAction;
-    delete program;
-    delete m_menuFilters;
-    delete m_menuMedian1DFilters;
-    delete m_menuMedian2DFilters;
-    delete m_actionMedian1D_3;
-    delete m_actionMedian1D_5;
-    delete m_actionMedian1D_7;
-    delete m_actionMedian2D_3;
-    delete m_actionMedian2D_5;
-    delete m_actionMedian2D_7;
-
     doneCurrent();
+    delete m_contrastTool;
     qDebug() << "finish delete GLwidget";
 }
 
@@ -194,6 +184,9 @@ void GLWidget::setClearColor(const QColor &color)
 
 void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
+    cantDeleteVar = true;
+    this->setEnabled(false);
+    QApplication::processEvents();
     m_pHyperCube->ResizeCube(Ch1,Ch2,R1,R2,C1,C2);
     loadData(m_pHyperCube);
     float oldKT = kT;
@@ -220,6 +213,9 @@ void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::ui
     paintGL();
     update();
     emit redrawSliders();
+    this->setEnabled(true);
+    cantDeleteVar = false;
+    QApplication::processEvents();
 }
 
 
@@ -470,7 +466,6 @@ void GLWidget::createLinePlotterSlot()
     setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
-    pContextMenu->hide();
     this->setToolTip(strForLineHelp);
 }
 
@@ -481,19 +476,47 @@ void GLWidget::run2DCube()
     m_attributes->GetAvailablePlugins().value("2DCube UI")->Execute(m_pHyperCube, m_attributes);
 }
 
-void GLWidget::contrast()
+void GLWidget::contrastSides()
 {
-    if(m_contrastTool == NULL)
+
+    if(!contrastSidesconnected)
     {
-        m_contrastTool = new ContrastWindow(absMin,absMax);
-        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintWithContrast(int,int)));
+        contrastSidesconnected = true;
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
     }
+    if(contrastTopconnected)
+    {
+        contrastTopconnected = false;
+        disconnect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    }
+
+    m_contrastTool->setMinMax(absMin,absMax,minCMapSides,maxCMapSides);
+
     m_contrastTool->show();
     m_contrastTool->raise();
-    m_contrastTool->showNormal();// если окно было свернуто
+    m_contrastTool->showNormal();
 }
 
-void GLWidget::repaintWithContrast(int min, int max)
+void GLWidget::contrastTopSide()
+{
+
+    if(!contrastTopconnected)
+    {
+        contrastTopconnected = true;
+        connect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintTopWithContrast(int,int)));
+    }
+    if(contrastSidesconnected)
+    {
+        contrastSidesconnected = false;
+        disconnect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
+    }
+    m_contrastTool->setMinMax(absMin,absMax,minCMap,maxCMap);
+    m_contrastTool->show();
+    m_contrastTool->raise();
+    m_contrastTool->showNormal();
+}
+
+void GLWidget::repaintSidesWithContrast(int min, int max)
 {
     int nCHNLS = Ch2 - Ch1 + 1;
     int nROWS = R2 - R1 + 1;
@@ -512,7 +535,6 @@ void GLWidget::repaintWithContrast(int min, int max)
     textures[3]->destroy();
     textures[5]->destroy();
 
-
     textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,min,max).transformed(rtt270).mirrored(true,false)); //напротив темной грани
     textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,min,max).transformed(rtt270).mirrored(true,false)); //
     textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,min,max).transformed(rtt270)); //наполовину видная грань
@@ -521,6 +543,19 @@ void GLWidget::repaintWithContrast(int min, int max)
     minCMapSides = min; // чтобы при последующих перерисовках использовались новые, вручную установленные,  значения
     maxCMapSides = max;
 
+}
+
+void GLWidget::repaintTopWithContrast(int min, int max)
+{
+    int nROWS = R2 - R1 + 1;
+    int nCOLS = C2 - C1 + 1;
+    makeCurrent();// ставим текущий контекст, чтобы текстуры смогли удалиться
+    textures[1]->destroy();
+    textures[4]->destroy();
+
+    textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,min,max,true).mirrored(false,true));// верхняя грань с фото
+    textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,min,max,true)); //нижняя грань с фото
+    update();
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
@@ -566,7 +601,7 @@ void GLWidget::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z
 
 void GLWidget::paintGL()
 {
-    qDebug() << "Paint in GL";
+    //qDebug() << "Paint in GL";
     glClearColor(clearColor.redF(), clearColor.greenF(), clearColor.blueF(), clearColor.alphaF());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     calcCenterCube(Ch1, Ch2, R1, R2, C1, C2);
@@ -620,27 +655,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
-    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-
-    if (!(m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1) ) // если клик не на кубе - удаляем экшены из меню
+    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    if (event->button() == Qt::RightButton)
     {
-        pContextMenu->removeAction(pPlotAction);
-        pContextMenu->removeAction(p2DCubeAction);
+        ShowContextMenu(event->pos());
     }
-    else
-    {
-        if (event->button() == Qt::LeftButton)
-            emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
-        if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
-        {
-            pContextMenu->addAction(pPlotAction);
-        }
-        if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
-        {
-            pContextMenu->addAction(p2DCubeAction);
-        }
-
-    }
+    emit signalCurrentDataXYZ(m_dataX, m_dataY, m_dataZ); // нужен для LinePlotter'а. отправка сигнала только тогда, когда клик по кубу
 }
 
 void GLWidget::closeEvent(QCloseEvent *e)
@@ -665,14 +685,12 @@ void GLWidget::needToUpdate(bool needToUpdate)
         // кнопка
         m_needToUpdate = true;
     }
-    pContextMenu->setEnabled(true);
 }
 
 void GLWidget::Noise()
 {
     cantDeleteVar = true;
     m_attributes->SetApplyToAllCube(true);
-    connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
@@ -721,80 +739,117 @@ void GLWidget::OnActionMedian2D_7Triggered()
     Noise();
 }
 
-void GLWidget::createMenus()
+void GLWidget::ShowContextMenu(const QPoint& pos)
 {
-    pContextMenu = new QMenu();
-    pContextMenu->setStyleSheet("border: 0px solid black;");
-    pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
-    pPlotLineAction = new QAction("Спектральный срез", this);
-    p2DCubeAction = new QAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this);
-    pAddSpectrAction = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this);
-    m_menuMedian1DFilters = new QMenu();
-    m_menuMedian1DFilters->setStyleSheet("border: 0px solid black;");
-    m_menuMedian1DFilters->setTitle("Медианный фильтр по спектрам");
-    m_menuMedian2DFilters = new QMenu();
-    m_menuMedian2DFilters->setStyleSheet("border: 0px solid black;");
-    m_menuMedian2DFilters->setTitle("Медианный фильт по каналам");
-
-    m_menuFilters = new QMenu();
-    m_menuFilters->setStyleSheet("border: 0px solid black;");
-    m_menuFilters->setTitle("Фильтры");
-    m_menuFilters->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
-
-    m_actionMedian1D_3 = new QAction ("3x3", this);
-    m_actionMedian1D_5 = new QAction ("5x5", this);
-    m_actionMedian1D_7 = new QAction ("7x7", this);
-
-    m_actionMedian2D_3 = new QAction ("3x3", this);
-    m_actionMedian2D_5 = new QAction ("5x5", this);
-    m_actionMedian2D_7 = new QAction ("7x7", this);
-
-    if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+    QMenu* contextMenu = new QMenu(this);
+    contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
+    contextMenu->setStyleSheet("border: 0px solid black;");
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование боковых граней",this, SLOT(contrastSides()));
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование верхних граней",this, SLOT(contrastTopSide()));
+    if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 ) // если клик не на кубе - удаляем экшены из меню
     {
-        pContextMenu->addAction(pPlotAction);
-        connect(pPlotAction,SIGNAL(triggered()),SLOT(prepareToPlotSpectr()));
-        connect(this,SIGNAL(sendXYZ(uint,uint,uint)),SLOT(plotSpectr(uint,uint,uint) ));
-    }
-    if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
-    {
-        pContextMenu->addAction(p2DCubeAction);
-        connect(p2DCubeAction,SIGNAL(triggered()),SLOT(run2DCube()));
+        if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this, SLOT(prepareToPlotSpectr()));
+
+        }
+        if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this, SLOT(run2DCube()));
+        }
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        pContextMenu->addAction(pPlotLineAction);
-        connect(pPlotLineAction,SIGNAL(triggered()),SLOT(createLinePlotterSlot()));
-        connect(this, SIGNAL(signalPlotAlongLine(uint,uint,uint,uint,uint,uint)),SLOT(plotAlongLine(uint,uint,uint,uint,uint,uint)));
+        contextMenu->addAction("Спектральный срез", this, SLOT(createLinePlotterSlot()));
+
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
-        pContextMenu->addAction(pAddSpectrAction);
-        connect(pAddSpectrAction, SIGNAL(triggered()), this, SLOT(addSpectr()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this, SLOT(addSpectr()));
     }
-
-    pContrastAction = new QAction(QIcon(":/IconsCube/iconsCube/contrast.png"),"Контрастирование",this);
-    pContextMenu->addAction(pContrastAction);
-    connect(pContrastAction,SIGNAL(triggered()),SLOT(contrast()));
-
-
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_3);
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_5);
-        m_menuMedian1DFilters->addAction(m_actionMedian1D_7);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_3);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_5);
-        m_menuMedian2DFilters->addAction(m_actionMedian2D_7);
-        m_menuFilters->addMenu(m_menuMedian1DFilters);
-        m_menuFilters->addMenu(m_menuMedian2DFilters);
-        pContextMenu->addMenu(m_menuFilters);
-        connect(m_actionMedian1D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_3Triggered()));
-        connect(m_actionMedian1D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_5Triggered()));
-        connect(m_actionMedian1D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian1D_7Triggered()));
-        connect(m_actionMedian2D_3, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_3Triggered()));
-        connect(m_actionMedian2D_5, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_5Triggered()));
-        connect(m_actionMedian2D_7, SIGNAL(triggered()), this, SLOT(OnActionMedian2D_7Triggered()));
+        QMenu* menuNoise = new QMenu("Фильтры", contextMenu);
+        menuNoise->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
+        QMenu* menuNoiseMedian = new QMenu("Медианный фильтр", contextMenu);
+        QMenu* menuMedianSpectr = new QMenu("Медианный фильтр по спектрам", contextMenu);
+        menuMedianSpectr->addAction("Маска: 3 пикселя", this, SLOT(OnActionMedian1D_3Triggered()));
+        menuMedianSpectr->addAction("Маска: 5 пикселей", this, SLOT(OnActionMedian1D_5Triggered()));
+        menuMedianSpectr->addAction("Маска: 7 пикселей", this, SLOT(OnActionMedian1D_7Triggered()));
+        QMenu* menuMedianChannel = new QMenu("Медианный фильт по каналам", contextMenu);
+        menuMedianChannel->addAction("Маска: 3х3 пикселей", this, SLOT(OnActionMedian2D_3Triggered()));
+        menuMedianChannel->addAction("Маска: 5х5 пикселей", this, SLOT(OnActionMedian2D_5Triggered()));
+        menuMedianChannel->addAction("Маска: 7х7 пикселей", this, SLOT(OnActionMedian2D_7Triggered()));
+        menuNoiseMedian->addMenu(menuMedianSpectr);
+        menuNoiseMedian->addMenu(menuMedianChannel);
+        menuNoise->addMenu(menuNoiseMedian);
+
+        QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", contextMenu);
+        QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", contextMenu);
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
+
+        QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", contextMenu);
+        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
+
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+        menuNoise->addMenu(menuNoiseSavGolay);
+        contextMenu->addMenu(menuNoise);
     }
+    contextMenu->popup(this->mapToGlobal(pos));
+    if (cantDeleteVar)
+    {
+        contextMenu->setEnabled(false);
+    }
+}
+
+void GLWidget::NoiseGolayAlgExecute()
+{
+    cantDeleteVar = true;
+    m_attributes->SetNoiseAlg(Savitski_Golay1D);
+    m_attributes->SetApplyToAllCube(true);
+   // connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
+    cantDeleteVar = false;
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_5Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_7Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay2_3_9Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay4_5_7Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay4_5_9Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
 }
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
@@ -871,12 +926,12 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
     {
-        qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
+        //qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
         strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
     }
     else
     {
-        qDebug() <<"no spctr"<<endl;
+        //qDebug() <<"no spctr"<<endl;
         strForLbl = "";
     }
 
@@ -892,7 +947,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     globalPos = event->globalPos();
     evalDataCordsFromMouse(event->x(),event->y());
-    qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
+    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
 }
 
@@ -930,11 +985,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     update();
-}
-void GLWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-    pContextMenu->exec(event->globalPos());
-
 }
 
 void GLWidget::scale_plus() // приблизить сцену
@@ -1228,8 +1278,6 @@ void GLWidget::findAbsoluteMinMax()
 {
     int min =  32767;
     int max = -32767;
-    QElapsedTimer timer3;
-    timer3.start();
     for (int i = 0; i < CHNLS; ++i)
     {
         for (int j = 0; j < ROWS*COLS; ++j)
@@ -1242,7 +1290,6 @@ void GLWidget::findAbsoluteMinMax()
     }
     absMin = min;
     absMax = max;
-    qDebug()<<"find abslolute min max in data: "<<timer3.elapsed();
 }
 
 int cmp(const void *a, const void *b)

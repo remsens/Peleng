@@ -42,6 +42,8 @@ public:
     }
     void ToWindow()
     {
+
+        qDebug() << "start noise";
         double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
         QVector<double> data; data.resize(BaseNoiseAlg<T>::m_cube->GetSizeChannel());
         BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, data);
@@ -67,9 +69,19 @@ public:
             }
         }
         Preview2D* previewWindow = new Preview2D();
+
+        ///////////
+
+
+        //Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+
+
+        ///////////
         previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         delete [] dataChannel;
+        qDebug() << "finish noise";
     }
+
 
     bool ToCube()
     {

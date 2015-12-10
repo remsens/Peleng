@@ -2,10 +2,10 @@ QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Noise
+TARGET = NoisePlugin
 TEMPLATE = lib
-DLLDESTDIR = ../../Debug/MainApp/debug
-
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 DEFINES += NOISE_LIBRARY
 CONFIG += plugin
 unix {
@@ -25,7 +25,7 @@ SOURCES += \
     Median1DAlg.cpp \
     ../Library/QCustomPlot.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
-    ../Library/Utils/Compare.cpp
+    ../Library/Utils/Compare.cpp \
 
 
 HEADERS += \
@@ -42,7 +42,8 @@ HEADERS += \
     AlgFactory.h \
     ../Library/QCustomPlot.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
-    ../Library/Utils/Compare.h
+    ../Library/Utils/Compare.h \
+    SavitskiGolay1DAlg.h
 
 RESOURCES += \
     resources.qrc
@@ -50,4 +51,4 @@ RESOURCES += \
 FORMS += \
     ../Library/CustomPlotForPreview2D/Preview2D.ui
 
-
+CONFIG += c++11

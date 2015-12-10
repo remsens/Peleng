@@ -28,32 +28,6 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
-    m_actionSave = 0;
-    m_actionNoise3 = 0;
-    m_actionNoise5 = 0;
-    m_actionNoise7 = 0;
-    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
-    {
-        m_actionSave = new QAction("Сохранить в библиотеку", this);
-        ui->menuSpectrum->addAction(m_actionSave);
-        QObject::connect(m_actionSave, SIGNAL(triggered(bool)), this, SLOT(on_actionSave_toggled()));
-    }
-    if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
-    {
-        m_actionNoise3 = new QAction("Медианный 3х3", this);
-        m_actionNoise5 = new QAction("Медианный 5х5", this);
-        m_actionNoise7 = new QAction("Медианный 7х7", this);
-        m_menuMedianNoise = new QMenu("Медианный фильтр");
-        m_menuMedianNoise->addAction(m_actionNoise3);
-        m_menuMedianNoise->addAction(m_actionNoise5);
-        m_menuMedianNoise->addAction(m_actionNoise7);
-        m_menuNoise = new QMenu("Фильтры");
-        m_menuNoise->addMenu(m_menuMedianNoise);
-        ui->menuSpectrum->addMenu(m_menuNoise);
-        QObject::connect(m_actionNoise3, SIGNAL(triggered()), this, SLOT(ActionNoise3Toggled()));
-        QObject::connect(m_actionNoise5, SIGNAL(triggered()), this, SLOT(ActionNoise5Toggled()));
-        QObject::connect(m_actionNoise7, SIGNAL(triggered()), this, SLOT(ActionNoise7Toggled()));
-    }
     if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
     {
         ui->menuSpectrum->removeAction(ui->actionHold);
@@ -64,18 +38,14 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
     }
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
 }
 
 PlotterWindow::~PlotterWindow()
 {
     m_xArr.clear();
     m_yArr.clear();
-    delete m_actionSave;
-    delete m_actionNoise3;
-    delete m_actionNoise5;
-    delete m_actionNoise7;
-    delete m_menuMedianNoise;
-    delete m_menuNoise;
     delete ui;
 }
 
@@ -83,7 +53,7 @@ void PlotterWindow::closeEvent(QCloseEvent *) {
     emit closePlotterWindow(this);
 }
 
-void PlotterWindow::NoiseAlgExecute()
+void PlotterWindow::NoiseMedianAlgExecute()
 {
     bool oldHold = m_hold;
     m_hold = true;
@@ -98,27 +68,101 @@ void PlotterWindow::NoiseAlgExecute()
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
 {
     QString grafName = plottable->name();
-    QList<QCPData> XandY = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+    QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+    m_xArr.clear();
+    m_yArr.clear();
+    foreach(QCPData xy,XandYlist)
+    {
+        m_xArr.append(xy.key);
+        m_yArr.append(xy.value);
+    }
     //    XandY.at(i).key; //х
     //    XandY.at(i).value; //у
 }
 
-void PlotterWindow::ActionNoise3Toggled()
+void PlotterWindow::contextMenuRequest(QPoint pos)
+{
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
+        menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
+        if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+        {
+            menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
+        }
+        if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
+        {
+            QMenu* menuNoise = new QMenu("Фильтры", this);
+
+            QMenu* menuNoiseMedian = new QMenu("Медианный фильтр", this);
+            menuNoiseMedian->addAction("Медианный 3х3", this, SLOT(ActionNoise3MedianToggled()));
+            menuNoiseMedian->addAction("Медианный 5х5", this, SLOT(ActionNoise5MedianToggled()));
+            menuNoiseMedian->addAction("Медианный 7х7", this, SLOT(ActionNoise7MedianToggled()));
+            menuNoise->addMenu(menuNoiseMedian);
+
+            QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", this);
+
+            QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", this);
+            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
+            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
+
+            QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", this);
+            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
+
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+            menuNoise->addMenu(menuNoiseSavGolay);
+            menu->addMenu(menuNoise);
+        }
+
+    }
+    menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::removeSelectedGraph()
+{
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        m_customPlot->removeGraph(m_customPlot->selectedGraphs().first());
+        m_customPlot->replot();
+    }
+}
+
+void PlotterWindow::removeAllExceptSelectedGraph()
+{
+    if (m_customPlot->selectedGraphs().size() > 0)
+    {
+        for (int i = m_customPlot->graphCount()-1; i >= 0; --i)
+        {
+            if(!m_customPlot->graph(i)->selected())
+            {
+                m_customPlot->removeGraph(i);
+            }
+        }
+        m_customPlot->replot();
+    }
+}
+
+void PlotterWindow::ActionNoise3MedianToggled()
 {
     m_attributes->SetMaskPixelsCount(3);
-    NoiseAlgExecute();
+    NoiseMedianAlgExecute();
 }
 
-void PlotterWindow::ActionNoise5Toggled()
+void PlotterWindow::ActionNoise5MedianToggled()
 {
     m_attributes->SetMaskPixelsCount(5);
-    NoiseAlgExecute();
+    NoiseMedianAlgExecute();
 }
 
-void PlotterWindow::ActionNoise7Toggled()
+void PlotterWindow::ActionNoise7MedianToggled()
 {
     m_attributes->SetMaskPixelsCount(7);
-    NoiseAlgExecute();
+    NoiseMedianAlgExecute();
 }
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
@@ -267,3 +311,48 @@ void PlotterWindow::on_actionSave_toggled()
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
 }
 
+void PlotterWindow::NoiseGolayAlgExecute()
+{
+    bool oldHold = m_hold;
+    m_hold = true;
+    m_attributes->SetNoiseAlg(Savitski_Golay1D);
+    m_attributes->SetApplyToAllCube(false);
+    m_attributes->SetXUnit(m_xArr);
+    m_attributes->SetYUnit(m_yArr);
+    m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
+    m_hold = oldHold;
+}
+
+void PlotterWindow::ActionNoiseSavitGolay2_3_5Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
+void PlotterWindow::ActionNoiseSavitGolay2_3_7Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay2_3_9Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay4_5_7Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay4_5_9Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}

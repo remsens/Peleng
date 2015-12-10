@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "../Library/QCustomPlot.h"
-
+#include "Region.h"
 
 namespace Ui {
 class PolygonManager;
@@ -17,21 +17,28 @@ public:
     explicit PolygonManager(int rows, int cols,
                             QCustomPlot *cusPlot, QWidget *parent2Dwindow);
     ~PolygonManager();
-
+    //! функция,завершающая создание полигона
+    void finishPolygonCreation();
+    void setRows(int rows){m_rows = rows;}
+    void setCols(int cols){m_cols = cols;}
 public slots:
+    //! слот соединяющийся с сигналом по экшену в контестном меню с 2D куба
+    void createPolygonSlot();
 
+    //! слот обрабатывающий двойной клик по колормэпу 2D куба
+    void mouseDblClickOnParentColorMap( QMouseEvent *);
 private:
     //! функция отрисовки линии на customPlot
     void drawLine(QPoint p1, QPoint p2, QColor color);
 
-    //! функция,завершающая создание полигона
-    void finishPolygonCreation();
-
     //! функция создания байтовой маски из полигонов
     QByteArray byteMaskFromPolygons(QVector<QPolygon> polygonArr);
 
+    //! функция создания байтовой маски из 2 других байтовых масок
+    QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
+
     //! функция сохранения байтовой маски на диск
-    void saveByteMask(QByteArray byteArr);
+    void saveByteMask(QByteArray byteArr, QString fileName);
 
     //! функция загрузки байтовой маски с диска
     QByteArray loadByteMaskFromFile();
@@ -43,8 +50,7 @@ private:
     void drawImage(QImage mask);
 
 private slots:
-    //! слот загрузки байтовой маски с диска
-    void createPolygonSlot();
+
 
     //! слот добавления точки полигона по клику
     void addPolygonPoint(uint x, uint y);
@@ -52,7 +58,30 @@ private slots:
     //! слот обработки контекстного tableWidgetа
     void tableContextMenuRequest(QPoint pos);
 
-    void currentRowChanged(QModelIndex i1,QModelIndex i2);
+    //! слот обработки изменения выделения в tableWidget
+    void currentRowChanged(QModelIndex curr, QModelIndex prev);
+
+    //! слот выбора цвета
+    void pickColor();
+
+    //! слот обработчика кнопки "Добавить регион интереса"
+    void onButtonAddRegion();
+
+    //! слот обработчика кнопки "Удалить регион интереса"
+    void onButtonRemoveRegion();
+
+    //!  слот обработчика кнопки "Добавить полигон"
+    void onButtonAddPolygon();
+
+    //!  слот обработчика кнопки "Сохранить область"
+    void onButtonSaveRegion();
+
+    //!  слот обработчика кнопки "Загрузить область"
+    void onButtonLoadRegion();
+
+    void itemChanged(QTableWidgetItem* it);
+
+
 private:
     Ui::PolygonManager *ui;
     int m_rows;
@@ -61,7 +90,9 @@ private:
     bool m_flagDoubleClicked;
     QCustomPlot * m_cusPlot;
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
-    QVector<QPolygon> polygonArr;
+    QVector<QPolygon> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
+    QVector<Region> m_RegionArr;
+    int m_currIndexRegion;// или QModelIndex
 };
 
 #endif // POLYGONMANAGER_H

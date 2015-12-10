@@ -31,7 +31,8 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
-    PolygonManager.cpp
+    PolygonManager.cpp \
+    Region.cpp\
 
 
 
@@ -43,8 +44,8 @@ HEADERS += \
     ../Library/Types.h \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
-    PolygonManager.h
-
+    PolygonManager.h \
+    Region.h
 
 
 FORMS += \

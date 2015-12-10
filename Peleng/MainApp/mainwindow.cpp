@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
       connect(ui->OpenFileAction,SIGNAL(triggered()),SLOT(LoadFile()));
       connect(ui->ExitAction,SIGNAL(triggered()),this,SLOT(exit()));
-
 }
 
 
@@ -110,8 +109,9 @@ void MainWindow::LoadFile()
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Noise Remover");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
+            //Attributes::I()->SetPoint(150, 150, 200);
            // Attributes::I()->SetModeLib(1);
-            //cube->ResizeCube(51,223,1922,2447,193,791);//тест ресайза
+            cube->ResizeCube(0,223,50,1200,50,400);//чтобы не висла память
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
 

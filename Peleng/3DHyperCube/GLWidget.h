@@ -49,6 +49,12 @@ public slots:
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
 
+    void ActionNoiseSavitGolay2_3_5Toogled();
+    void ActionNoiseSavitGolay2_3_7Toogled();
+    void ActionNoiseSavitGolay2_3_9Toogled();
+    void ActionNoiseSavitGolay4_5_7Toogled();
+    void ActionNoiseSavitGolay4_5_9Toogled();
+
 protected:
     void closeEvent(QCloseEvent *e);
 
@@ -60,10 +66,13 @@ private slots:
     void createLinePlotterSlot();
     void run2DCube();
 
-    void contrast();
-    void repaintWithContrast(int min, int max);
+    void contrastSides(); //боковые грани
+    void contrastTopSide(); //боковые грани
+    void repaintSidesWithContrast(int min, int max);
+    void repaintTopWithContrast(int min, int max);
     void updateCube();
     void needToUpdate(bool needToUpdate);
+    void ShowContextMenu(const QPoint& pos);
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
@@ -76,6 +85,7 @@ signals:
     void redrawSliders();
     void CanDelete();
 
+
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
@@ -85,7 +95,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
-    void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
+   // void contextMenuEvent(QContextMenuEvent* event)Q_DECL_OVERRIDE;
 private:
     void makeObject();
     void loadData(HyperCube* ptrCube);
@@ -102,36 +112,14 @@ private:
     void findAbsoluteMinMax();
     QImage from2Dmass2QImage(qint16 *data);
     QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
-    void createMenus();
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
     void Noise();
+    void NoiseGolayAlgExecute();
 
 private:
-    QMenu* pContextMenu;
-    QAction* pPlotAction;
-    //QAction* pDeletePlotsAction;
     Attributes* m_attributes;
-    QAction* pSetStartAction;
-    QAction* pSetFinishAction;
-    QAction* pPlotLineAction;
-    QAction* p2DCubeAction;
-
-    QAction* pContrastAction;
-
-    QAction* pAddSpectrAction;
-    // actions and menus для фильтров
-    QMenu* m_menuFilters;
-    QMenu* m_menuMedian1DFilters;
-    QMenu* m_menuMedian2DFilters;
-    QAction* m_actionMedian1D_3;
-    QAction* m_actionMedian1D_5;
-    QAction* m_actionMedian1D_7;
-    QAction* m_actionMedian2D_3;
-    QAction* m_actionMedian2D_5;
-    QAction* m_actionMedian2D_7;
-
     QColor clearColor;
     QPoint lastPos;
     QPoint globalPos;
@@ -178,6 +166,8 @@ private:
     bool cantDeleteVar;
 
     ContrastWindow *m_contrastTool;
+    bool contrastTopconnected;
+    bool contrastSidesconnected;
 
 };
 

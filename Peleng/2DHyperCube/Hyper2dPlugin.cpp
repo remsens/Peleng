@@ -1,16 +1,17 @@
 #include "Hyper2dPlugin.h"
 
+#include <QDebug>
+
 Hyper2dPlugin::Hyper2dPlugin(QObject *parent) : QObject(parent)
 {
-
+    m_window = NULL;
 }
 
 Hyper2dPlugin::~Hyper2dPlugin()
 {
-    for (int i = 0; i < m_listWindows.size(); i++)
+    if (m_window != NULL)
     {
-        delete m_listWindows.at(i);
-        m_listWindows.removeAt(i);
+        delete m_window;
     }
 }
 
@@ -19,22 +20,21 @@ QObject* Hyper2dPlugin::GetObjectPointer()
     return this;
 }
 
-void Hyper2dPlugin::OnClose(Main2DWindow* window2D)
+void Hyper2dPlugin::OnClose()
 {
-    for (int i = 0; i < m_listWindows.size(); i++)
-    {
-        if (m_listWindows.at(i) == window2D)
-        {
-            m_listWindows.removeAt(i);
-        }
-    }
+    m_window = NULL;
 }
 
 void Hyper2dPlugin::Execute(HyperCube *cube, Attributes *attr)
 {
-    Main2DWindow* w = new Main2DWindow(cube, attr);
-    QObject::connect(w, SIGNAL(CloseWindow(Main2DWindow*)), this, SLOT(OnClose(Main2DWindow*)));
-    m_listWindows.append(w);
-    w->show();
+    if (m_window == NULL)
+    {
+        m_window = new Main2DWindow(cube, attr);
+        QObject::connect(m_window, SIGNAL(CloseWindow()), this, SLOT(OnClose()));
+    }
+    m_window->show();
+    m_window->activateWindow();
+    m_window->raise();
+    m_window->showNormal();// если окно было свернуто
 }
 

@@ -19,7 +19,7 @@ class Main2DWindow : public QMainWindow
 
 public:
     explicit Main2DWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
-    ~Main2DWindow();
+    virtual ~Main2DWindow();
     void resizeEvent(QResizeEvent *e);
 
     void setInitChanel(u::uint32 initChanel);
@@ -35,37 +35,44 @@ public slots:
     //! @param minCMap - значение в канале,которому будет соответствовать белый цвет
     //! @param maxCMap - значение в канале,которому будет соответствовать черный цвет
     void drawHeatMap(int chan, int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
+
     //! Слот отрисовки,вызывающий drawHeatMap и работающий с ChnlLimits
     //! @param chan - номер канала
     void updateViewchan(int chan);
+
     //! Слот, принимающий сигнал об изменении мин. значения для построения colorMap
     //! @param left - значение ползунка слайдера
     void leftBorderContrast(int left);
+
     //! Слот, принимающий сигнал об изменении макс. значения для построения colorMap
     //! @param right - значение ползунка слайдера
     void rightBorderContrast(int right);
+
     //! Слот контрастирования методом линейного растягивания гистограммы
     //! @param left -  значение в канале,которому будет соответствовать белый цвет
     //! @param right -  значение в канале,которому будет соответствовать черный цвет
     void contrastImage(int left,int right);
+
     //! Слот для отображения (выделения цветом) точек на 2D
     //! @param x - вектор с координатами Х точек
     //! @param y - вектор с координатами У точек
     void plotPointsOn2D(QVector<double> x,  QVector<double> y);
     void closeEvent(QCloseEvent *e);
     void needToUpdate(bool res);
+    void needToResize(bool res);
     void updateData();
+    void dataCubeResize();
     void connectionsOfPlugins();
 
     void plotFromAttributes(qint32 channel, Attributes* attr);
 
 signals:
     void signalCurrentDataXY(uint,uint);
-    void CloseWindow(Main2DWindow* window);
+    void CloseWindow();
 
 private slots:
     void mousePressOnColorMap( QMouseEvent* e);
-    void mouseDblClickOnColorMap( QMouseEvent* e);
+    //void mouseDblClickOnColorMap( QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
     void toggledActionInterpolation(bool flag){m_interplolate = flag;}
     void plotSpectr(uint x, uint y);
@@ -76,9 +83,7 @@ private slots:
 
     void createLinePlotterSlot();
 
-    void createPolygonSlot();
-    void addPolygonPoint(uint x,uint y);
-    void loadMaskFromFile();
+
     void prepareToHist();
     void addSpectr();
 
@@ -94,23 +99,6 @@ private slots:
 private:
     void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
-    //! функция добавления линии на customPlot
-    //! @param x1 - Х начала линии
-    //! @param x2 - У начала линии
-    //! @param y1 - Х конца линии
-    //! @param y1 - У конца линии
-    void drawLine(uint x1, uint y1, uint x2, uint y2);
-    //! функция,завершающая создание полигона
-    void finishPolygonCreation();
-    //! функция,создающая маску для канала по полигону
-    //! @param polygonArr - вектор полигонов, по которым создается маска
-    //! @return - битовое изображение
-    QImage maskFromPolygons(QVector<QPolygon> polygonArr);
-
-
-
-
-
     void Noise();
 private:
 
