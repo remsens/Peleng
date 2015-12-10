@@ -11,7 +11,8 @@ unix {
     INSTALLS += target
 }
 
-DESTDIR = ../../Debug/MainApp/debug
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 DISTFILES += \
     SpectralDistance.json \

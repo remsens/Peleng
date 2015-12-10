@@ -12,5 +12,6 @@
         <file>iconsCube/contrast.png</file>
         <file>iconsCube/CreateSpectr.png</file>
         <file>iconsCube/NoiseRemover.png</file>
+        <file>iconsCube/distance.png</file>
     </qresource>
 </RCC>
