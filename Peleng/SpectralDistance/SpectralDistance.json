@@ -1,0 +1,5 @@
+{
+    "Type" : "ProcessingFormat",
+    "Name" : "SpectralDistance",
+    "Description" : "Callculate spectral distances"
+}

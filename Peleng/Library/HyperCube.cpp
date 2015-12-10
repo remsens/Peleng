@@ -251,7 +251,7 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
         int index = 0;
         for(u::uint32 j = 0; j < newInfoData.lines; j++)
         {
-            for(int k = 0; k < newInfoData.samples; k++)
+            for(u::uint32 k = 0; k < newInfoData.samples; k++)
             {
                 memcpy(dataCubeNew[i] + (index*m_infoData.bytesType), m_dataCube[i+Ch1] + (m_infoData.samples * (j + R1) + k + C1)*m_infoData.bytesType, m_infoData.bytesType);
                 index++;
