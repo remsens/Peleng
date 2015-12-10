@@ -87,8 +87,11 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
     if (m_customPlot->selectedGraphs().size() > 0)
     {
         menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
-        menu->addAction("Сохранить выделенный график",this,SLOT(on_actionSave_toggled()));
         menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
+        if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+        {
+            menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
+        }
         if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
         {
             QMenu* menuNoise = new QMenu("Фильтры", this);
@@ -115,10 +118,7 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             menuNoise->addMenu(menuNoiseSavGolay);
             menu->addMenu(menuNoise);
         }
-        if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
-        {
-            menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
-        }
+
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
 }
