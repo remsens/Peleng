@@ -739,6 +739,16 @@ void GLWidget::OnActionMedian2D_7Triggered()
     Noise();
 }
 
+void GLWidget::ActionSpectralDistanceToogled()
+{
+    cantDeleteVar = true;
+    m_attributes->ClearList();
+    m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pHyperCube, m_attributes);
+    cantDeleteVar = false;
+}
+
 void GLWidget::ShowContextMenu(const QPoint& pos)
 {
     QMenu* contextMenu = new QMenu(this);
@@ -756,6 +766,10 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
         {
             contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this, SLOT(run2DCube()));
+        }
+        if (m_attributes->GetAvailablePlugins().contains("SpectralDistance"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/distance.png"), "Сравнить со спектральными кривыми", this, SLOT(ActionSpectralDistanceToogled()));
         }
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
