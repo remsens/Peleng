@@ -22,7 +22,7 @@ SOURCES +=\
     ../Library/QCustomPlot.cpp \
     histplugin.cpp \
     ../Library/Attributes/Attributes.cpp \
-    histplotter.cpp
+    histplotterwidget.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -34,7 +34,10 @@ HEADERS  += \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
     templatehistplot.h \
-    histplotter.h
+    histplotterwidget.h
 
 DISTFILES += \
     HistPlugin.json
+
+FORMS += \
+    histplotterwidget.ui

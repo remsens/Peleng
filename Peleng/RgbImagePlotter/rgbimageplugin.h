@@ -9,6 +9,7 @@ class RgbImagePlugin : public QObject, public ProcessingPluginsInterface
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "by.remsens.hyperview.rgbimage" FILE "RgbImagePlugin.json")
     Q_INTERFACES(ProcessingPluginsInterface)
+
 public:
     RgbImagePlugin();
     virtual ~RgbImagePlugin();

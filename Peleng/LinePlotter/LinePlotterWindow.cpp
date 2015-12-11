@@ -33,7 +33,11 @@ void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint 
     m_customPlot->clearGraphs(); // только 1 график на виджете
     uint k = 1;
     int length = round (qSqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1)) / k);
-
+    if (length == 0)
+    {
+        qDebug()<<"длина среза = 0";
+        return;
+    }
     int* cordXarr = new int[length];
     int* cordYarr = new int[length];
     int* cordZarr = new int[length];
@@ -76,14 +80,18 @@ void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint 
 
     m_customPlot->setInteraction(QCP::iRangeDrag , true);
     m_customPlot->setInteraction(QCP::iRangeZoom  , true);
-   // pPlotWidget->legend->setVisible(true);
+
     m_customPlot->addGraph();
     m_customPlot->graph()->setPen(QPen(Qt::black));
 
-    //pPlotWidget->graph()->setName("grafName");
+
     m_customPlot->graph()->setData(plotXArr,plotYArr);
     m_customPlot->xAxis->setRange(plotXArr.first(),plotXArr.last());
     m_customPlot->yAxis->setRange(minY,maxY);
+
+    m_customPlot->legend->setVisible(true);
+    m_customPlot->graph()->setName("Начало(X=" + QString::number(x1) +", Y="+ QString::number(y1) +", Z="+ QString::number(z1) + ")"
+                                   +" Конец(X=" + QString::number(x2) +", Y="+ QString::number(y2) +", Z="+ QString::number(z2) + ")");
     m_customPlot->replot();
 }
 

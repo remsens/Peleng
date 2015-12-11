@@ -739,6 +739,16 @@ void GLWidget::OnActionMedian2D_7Triggered()
     Noise();
 }
 
+void GLWidget::ActionSpectralDistanceToogled()
+{
+    cantDeleteVar = true;
+    m_attributes->ClearList();
+    m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pHyperCube, m_attributes);
+    cantDeleteVar = false;
+}
+
 void GLWidget::ShowContextMenu(const QPoint& pos)
 {
     QMenu* contextMenu = new QMenu(this);
@@ -757,15 +767,23 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
         {
             contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"),"2D представление",this, SLOT(run2DCube()));
         }
+        if (m_attributes->GetAvailablePlugins().contains("SpectralDistance"))
+        {
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/distance.png"), "Сравнить со спектральными кривыми", this, SLOT(ActionSpectralDistanceToogled()));
+        }
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        contextMenu->addAction("Спектральный срез", this, SLOT(createLinePlotterSlot()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"), "Спектральный срез", this, SLOT(createLinePlotterSlot()));
 
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         contextMenu->addAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this, SLOT(addSpectr()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
+    {
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB коррекция", this, SLOT(ActionRGBCorrectionToogled()));
     }
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
@@ -804,6 +822,11 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         contextMenu->setEnabled(false);
     }
+}
+
+void GLWidget::ActionRGBCorrectionToogled()
+{
+    m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pHyperCube, m_attributes);
 }
 
 void GLWidget::NoiseGolayAlgExecute()
@@ -1257,9 +1280,12 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     int min;
     int max;
     qint16 *dataTemp = new qint16[ROWS*COLS];
-    for (int i=0; i<10; ++i)           //!!! 10
+    int n = 10; // количество сортировок
+    int step = (CHNLS-1)/(n-1);
+
+    for (int i=0; i<n; ++i)
     {
-        m_pHyperCube->GetDataChannel(i,dataTemp);
+        m_pHyperCube->GetDataChannel(i*step,dataTemp);
         qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];
@@ -1267,7 +1293,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             minCMap = min;
         if (max > maxCMap )
             maxCMap = max;
-        qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
+        qDebug()<<"выполнено"<<i<<"/"<<n;
     }
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;

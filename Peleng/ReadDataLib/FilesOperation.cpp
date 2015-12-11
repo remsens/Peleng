@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <istream>
+#include <string>
+
 #include "../Library/GenericExc.h"
 #include <QString>
 #include <QDebug>
@@ -49,14 +52,16 @@ void FilesOperation::SetFileName(const std::string headerName) {
 }
 
 u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
-    std::ifstream file(fileName.c_str(), std::ios_base::binary);
+    using namespace std;
+    ifstream file(fileName.c_str(), ios_base::binary);
+
 	if (file == NULL) {
         throw GenericExc("Невозможно открыть файл-заголовок");
 		return false;
 	}
 	int size = 0;
 	if (file) 	{
-		file.seekg(0, std::ios_base::end);
+        file.seekg(0,ios_base::end);
 		size = (int)file.tellg();
 		file.close();
 	}
