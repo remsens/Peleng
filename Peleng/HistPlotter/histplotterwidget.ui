@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Контрастирование</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../2DHyperCube/icons2Dcube.qrc">
+    <normaloff>:/icons2Dcube/icons/histogram.png</normaloff>:/icons2Dcube/icons/histogram.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
    <item>
     <widget class="QGroupBox" name="groupBox_3">
@@ -122,7 +126,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../2DHyperCube/icons2Dcube.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
