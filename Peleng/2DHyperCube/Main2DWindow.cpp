@@ -117,12 +117,14 @@ void Main2DWindow::resizeEvent(QResizeEvent *e)
     {
         //ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
         //ui->customPlot->setMinimumHeight(framesize.width() / RowsToCols*0.95);
-        ui->customPlot->resize(framesize.width()*0.99 , framesize.width() / RowsToCols*0.99);
+        ui->customPlot->resize(framesize.width() , framesize.width() / RowsToCols);
+        ui->customPlot->move(0,framesize.height()/2 - ui->customPlot->height()/2 );
     }
         else
     {
         //ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
-        ui->customPlot->resize(framesize.height() * RowsToCols*0.99, framesize.height()*0.99);
+        ui->customPlot->resize(framesize.height() * RowsToCols, framesize.height());
+        ui->customPlot->move(framesize.width()/2 - ui->customPlot->width()/2,0);
     }
 }
 
