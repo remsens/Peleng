@@ -7,6 +7,7 @@ SettingsDialog::SettingsDialog(HyperCube *cube, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SettingsDialog)
 {
+    setWindowIcon(QIcon(":/rgb/icons/icons/RGB.png"));
     TypeOfMethod=0;
     /*ui->StdProfileComboBox->setCurrentIndex(0);
     ui->Ch1ComboBox->setCurrentIndex(0);

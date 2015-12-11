@@ -10,7 +10,8 @@ RgbImageWindow::RgbImageWindow(QWidget *parent) :
     ui(new Ui::RgbImageWindow)
 {
     ui->setupUi(this);
-
+    setAttribute(Qt::WA_DeleteOnClose);
+    setWindowIcon(QIcon(":/rgb/icons/icons/RGB.png"));
     // Для zoom
 
 

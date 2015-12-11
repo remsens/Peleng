@@ -12,5 +12,7 @@
         <file>iconsCube/contrast.png</file>
         <file>iconsCube/CreateSpectr.png</file>
         <file>iconsCube/NoiseRemover.png</file>
+        <file>iconsCube/Line Plotter.png</file>
+        <file>iconsCube/RGB.png</file>
     </qresource>
 </RCC>

@@ -55,6 +55,8 @@ public slots:
     void ActionNoiseSavitGolay4_5_7Toogled();
     void ActionNoiseSavitGolay4_5_9Toogled();
 
+    void ActionRGBCorrectionToogled();
+
 protected:
     void closeEvent(QCloseEvent *e);
 
