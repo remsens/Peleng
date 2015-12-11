@@ -187,12 +187,26 @@ void Main2DWindow::connectionsOfPlugins()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
+    connect(m_attributes->GetAvailablePlugins().value("Hist UI")->GetObjectPointer(), SIGNAL(replotChannel(qint32, Attributes*)), this, SLOT(plotFromAttributes(qint32, Attributes*)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
 
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToResize(bool)));
+}
+
+void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
+{
+
+    QList<Point> points = attr->GetPointsList();
+    for (int i=0; i < points.size(); ++i) {
+            colorMap->data()->setCell(points.at(i).x, points.at(i).y,points.at(i).z );
+    }
+    ui->customPlot->rescaleAxes();
+   // qDebug() << attr->GetPointsList().at(0).z;
+
+    ui->customPlot->replot();
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -470,7 +484,7 @@ void Main2DWindow::createMenus()
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this);
 
     pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"),"Спектральный срез", this);
-    pPlotHistAction = new QAction(QIcon("qrc:/icons2Dcube/icons/Heat Map-50.png"),"Гистограмма",this);
+    pPlotHistAction = new QAction(QIcon(":/icons2Dcube/icons/histogram.png"),"Гистограмма",this);
     pAddSpectr = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"),"Загрузить спектр",this);
     m_filters = new QMenu();
     m_filters->setStyleSheet("border: 0px solid black;");
@@ -694,12 +708,12 @@ void Main2DWindow::prepareToHist()
         m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
     } else
     {
-        int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
+   /*     int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
         if (answer == 0)
         {
             updateData();
             m_needToUpdate = false;
-        }
+        }*/
     }
 }
 

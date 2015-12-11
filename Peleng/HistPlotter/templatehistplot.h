@@ -1,173 +1,104 @@
 #include <QVector>
-#include <QProgressDialog>
-#include <QTimer>
+
 #include "../Library/HyperCube.h"
-#include <climits>
+#include "../Library/Attributes/Attributes.h"
+#include <algorithm>
+#include <math.h>
 
 #ifndef TEMPLATEHISTPLOT
 #define TEMPLATEHISTPLOT
 
-static const qint32 PROGRESS_PERIOD_UPDATE = 3000; //мс
 
 
 template<typename T>
-void CreateHistValue(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value) {
+void SumBoundary(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value,Attributes *attr=0,  qint32 LeftBoundary=0, qint32 RightBoundary = 0) {
 
-    QElapsedTimer timer;
-    timer.start();
-
-    quint64 ProgressMax = 0;
-    if (Channel<0) ProgressMax = cube->GetSizeCube()*2;
-    else ProgressMax = cube->GetSizeChannel()*2;
-
-    QProgressDialog progress("Формирование гистограммы", "Отменить", 0, ProgressMax);
-    progress.setWindowModality(Qt::WindowModal);
-
-
+    if (attr) attr->ClearList();
     T *data = new T[cube->GetSizeChannel()];
+    cube->GetDataChannel(Channel,data);
 
-    T minValue=std::numeric_limits<T>::max();
-    T maxValue=std::numeric_limits<T>::min();
+    T maxValue = *std::max_element(data,data+cube->GetSizeChannel());
+    T minValue = *std::min_element(data,data+cube->GetSizeChannel());
 
+    if (LeftBoundary==0) LeftBoundary = minValue;
+    if (RightBoundary==0) RightBoundary = maxValue;
 
-    if (Channel<0) {
-        for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
-            cube->GetDataChannel(i,data);
-            for (unsigned int j = 0; j <cube->GetSizeChannel()/cube->GetBytesInElements(); j++ ) {
-                if (maxValue <= data[j]) maxValue = data[j];
-                if (minValue >= data[j]) minValue = data[j];
-                if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                    progress.setValue(i*cube->GetSizeChannel() + j*cube->GetBytesInElements());
-                    if (progress.wasCanceled()) {
-                        progress.setValue(ProgressMax);
-                        delete[] data;
-                        return;
-                    }
-                    timer.restart();
-                    QApplication::processEvents();
-
-                }
-            }
-
-        }
-    } else {
-        cube->GetDataChannel(Channel,data);
-        for (unsigned int j = 0; j <cube->GetSizeChannel()/cube->GetBytesInElements(); j++ ) {
-            if (maxValue <= data[j]) maxValue = data[j];
-            if (minValue >= data[j]) minValue = data[j];
-            if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                 progress.setValue(j*cube->GetBytesInElements());
-                 if (progress.wasCanceled()) {
-                    progress.setValue(ProgressMax);
-                    delete[] data;
-                    return;
-                 }
-                 timer.restart();
-                 QApplication::processEvents();
-
-            }
-        }
-    }
-
-    progress.setValue(ProgressMax/2);
     T step = (maxValue-minValue)/HIST_COUNT + 1;
 
-
-    if (Channel<0) {
-        for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
-                cube->GetDataChannel(i,data);
-                for (unsigned int j = 0; j <cube->GetSizeChannel()/cube->GetBytesInElements(); j++ ) {
-                    value[(data[j]-minValue)/(step)]++;
-                    if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                        progress.setValue(ProgressMax+i*cube->GetSizeChannel() + j*cube->GetBytesInElements());
-                        if (progress.wasCanceled()) {
-                            progress.setValue(ProgressMax);
-                            delete[] data;
-                            return;
-                        }
-                        timer.restart();
-                        QApplication::processEvents();
-
-                    }
-                }
-        }
-    } else {
-        cube->GetDataChannel(Channel,data);
-        for (unsigned int j = 0; j <cube->GetSizeChannel()/cube->GetBytesInElements(); j++ ) {
-            value[(data[j]-minValue)/(step)]++;
-            if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                progress.setValue(ProgressMax+j*cube->GetBytesInElements());
-                if (progress.wasCanceled()) {
-                    progress.setValue(ProgressMax);
-                    delete[] data;
-                    return;
-                }
-                timer.restart();
-                QApplication::processEvents();
-            }
+    for (unsigned int i = 0; i < cube->GetLines(); i++) {
+        for (unsigned int j = 0; j < cube->GetColumns(); j++) {
+        if (data[i*cube->GetColumns()+j] < LeftBoundary) data[i*cube->GetColumns()+j]=LeftBoundary;
+        if (data[i*cube->GetColumns()+j] > RightBoundary) data[i*cube->GetColumns()+j]=RightBoundary;
+        value[(data[i*cube->GetColumns()+j]-minValue)/(step)]++;
+        if (attr) attr->SetPoint(i,j,data[i*cube->GetColumns()+j]);
         }
     }
 
-    delete[] data;
 
     for (int k =0; k<HIST_COUNT+1; k++) {
         key[k]=minValue+k*step;
     }
-
-    progress.setValue(ProgressMax);
-
+    delete[] data;
 }
+
 
 
 template<typename T>
-void ModifyCube(HyperCube *cube, int Channel, const T& LowBoundary, const T& HighBoundary) {
-     T **data = (T**)cube->GetDataCube();
+void Gaussian(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value, T LeftBoundary, T RightBoundary, Attributes *attr =0) {
+    if (attr) attr->ClearList();
+    T *data = new T[cube->GetSizeChannel()];
+    cube->GetDataChannel(Channel,data);
+    T maxValue = RightBoundary;
+    T minValue = LeftBoundary;
 
-     QTime timer;
-     timer.start () ;
+    /*T maxValue = *std::max_element(data,data+cube->GetSizeChannel());
+    T minValue = *std::min_element(data,data+cube->GetSizeChannel());*/
+    //T step = (maxValue-minValue)/HIST_COUNT + 1;
+    double sigma = 0;
+    double  mu = 0;
 
-    if (Channel<0) {
-        QProgressDialog progress("Подождите, пожалуйста", "Отменить", 0, cube->GetSizeCube());
-        progress.setWindowModality(Qt::WindowModal);
-        for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
-            for (unsigned int j = 0; j < cube->GetSizeChannel()/cube->GetBytesInElements(); j++){
-                if (data[i][j]<LowBoundary) data[i][j] = LowBoundary;
-                if (data[i][j]>HighBoundary) data[i][j] =  HighBoundary;
-                if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                    progress.setValue(i*cube->GetSizeChannel() + j*cube->GetBytesInElements());
-                    if (progress.wasCanceled()) {
-                        progress.setValue(cube->GetSizeCube());
 
-                        return;
-                    }
-                    timer.restart();
-                    QApplication::processEvents();
-                }
-            }
+    mu = minValue+(maxValue-minValue)/2;
+    sigma = (maxValue-minValue)/3;
+
+    double *temp_data = new double[cube->GetSizeChannel()];
+
+
+    for (unsigned int j = 0; j <cube->GetSizeChannel(); j++ ) {
+        temp_data[j] = data[j] * (1.0/(sigma*sqrt(2*M_PI)))*exp(-(double)pow(data[j]-mu,2)/(2*pow(sigma,2)));
+    };
+
+
+    double maxVal = *std::max_element(temp_data,temp_data+cube->GetSizeChannel());
+    double minVal = *std::min_element(temp_data,temp_data+cube->GetSizeChannel());
+
+    for (unsigned int i = 0; i < cube->GetLines(); i++) {
+        for (unsigned int j = 0; j < cube->GetColumns(); j++) {
+
+        data[i*cube->GetColumns()+j] = (maxValue - minValue ) * (temp_data[i*cube->GetColumns()+j] - minVal) / (maxVal-minVal)+minValue;
+        if (attr) attr->SetPoint(i,j,data[i*cube->GetColumns()+j]);
         }
-
-    } else {
-        QProgressDialog progress("Подождите, пожалуйста", "Отменить", 0, cube->GetSizeChannel());
-        progress.setWindowModality(Qt::WindowModal);
-            for (unsigned int j = 0; j < cube->GetSizeChannel()/cube->GetBytesInElements(); j++){
-                if (data[Channel][j] < LowBoundary) data[Channel][j] = LowBoundary;
-                if (data[Channel][j] > HighBoundary) data[Channel][j] = HighBoundary;
-                if (timer.elapsed() > PROGRESS_PERIOD_UPDATE) {
-                    progress.setValue(j*cube->GetBytesInElements());
-                    if (progress.wasCanceled()) {
-                        progress.setValue(cube->GetSizeCube());
-                        return;
-                    }
-                    timer.restart();
-                    QApplication::processEvents();
-                }
-            }
-
     }
 
 
+    double step = (maxValue-minValue)/HIST_COUNT+1;
+
+    for (unsigned int j = 0; j <cube->GetSizeChannel(); j++ ) {
+        if (((data[j]-minValue)/step) < 0) continue;
+        if (((data[j]-minValue)/step) > value.size()-1) continue;
+        value[(data[j]-minValue)/step]++;
+    };
+
+
+    for (int k =0; k<HIST_COUNT+1; k++) {
+        key[k]=minValue+k*step;
+    }
+    delete[] data;
+    delete[] temp_data;
 
 }
+
+
 
 
 #endif // TEMPLATEHISTPLOT

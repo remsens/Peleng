@@ -774,12 +774,16 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        contextMenu->addAction("Спектральный срез", this, SLOT(createLinePlotterSlot()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"), "Спектральный срез", this, SLOT(createLinePlotterSlot()));
 
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         contextMenu->addAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this, SLOT(addSpectr()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
+    {
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB коррекция", this, SLOT(ActionRGBCorrectionToogled()));
     }
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
@@ -818,6 +822,11 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         contextMenu->setEnabled(false);
     }
+}
+
+void GLWidget::ActionRGBCorrectionToogled()
+{
+    m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pHyperCube, m_attributes);
 }
 
 void GLWidget::NoiseGolayAlgExecute()
