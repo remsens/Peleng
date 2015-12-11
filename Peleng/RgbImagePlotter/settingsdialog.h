@@ -29,6 +29,7 @@ public:
 
 
 
+
 private slots:
     void on_radioButton_clicked(bool checked);
 
@@ -52,13 +53,15 @@ private slots:
 
     void on_Ch3ComboBox_activated(int index);
 
-
+    void accept();
 
 private:
     qint32 TypeOfMethod;
     QString FileName;
     qint32 TypeOfStdProfile;
     qint32 rCh, gCh, bCh;
+    HyperCube *pCube;
+    QList<double> list;
 
     Ui::SettingsDialog *ui;
 
