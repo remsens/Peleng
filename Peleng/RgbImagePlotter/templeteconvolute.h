@@ -38,7 +38,7 @@ void RgbChannelPlot(HyperCube *cube, qint32 rCh, qint32 gCh, qint32 bCh, QImage 
     maxR=maxG=maxB=0;
     T** data = (T**)cube->GetDataCube();
 
-    for (unsigned int j = 0; j < cube->GetSizeChannel()/cube->GetBytesInElements(); j++){
+    for (unsigned int j = 0; j < cube->GetSizeChannel()/*cube->GetBytesInElements()*/; j++){
         if (data[rCh][j]>=maxR) maxR=data[rCh][j];
         if (data[gCh][j]>=maxG) maxG=data[gCh][j];
         if (data[bCh][j]>=maxB) maxB=data[bCh][j];
@@ -97,7 +97,7 @@ void RgbProfilePlot(HyperCube *cube, RgbProfile &profile,QImage &image) {
 
 
 
-    for (unsigned int j = 0; j < cube->GetSizeChannel()/cube->GetBytesInElements(); j++){
+    for (unsigned int j = 0; j < cube->GetSizeChannel()/*cube->GetBytesInElements()*/; j++){
         RSignal[j] = GSignal[j] = BSignal[j] = 0;
 
         for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
