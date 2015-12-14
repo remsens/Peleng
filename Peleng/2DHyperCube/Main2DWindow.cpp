@@ -1,6 +1,6 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
-
+#include "../Library/GenericExc.h"
 #include <QMessageBox>
 
 int cmp2(const void *a, const void *b);
@@ -152,8 +152,8 @@ void Main2DWindow::updateData()
     initArrChanLimits();
     fillChanList();
     int minCMap, maxCMap;
-    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap);
-    drawHeatMap(m_initChanel,minCMap, maxCMap);
+    findMinMaxforColorMap(minCMap, maxCMap);
+    drawHeatMap(minCMap, maxCMap);
 }
 
 void Main2DWindow::dataCubeResize()
@@ -234,13 +234,14 @@ void Main2DWindow::needToResize(bool res)
 void Main2DWindow::setInitChanel(u::uint32 initChanel)
 {
     m_initChanel = initChanel;
+    m_pCube->GetDataChannel(m_initChanel,m_tempChanel);
     ui->listWidget->item(m_initChanel)->setSelected(true);
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
     int minCMap, maxCMap;
-    findMinMaxforColorMap(m_initChanel,minCMap, maxCMap,0.04, 0.98);
-    drawHeatMap(m_initChanel,minCMap, maxCMap);
+    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
+    drawHeatMap(minCMap, maxCMap);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
@@ -325,28 +326,24 @@ void Main2DWindow::initArrChanLimits()
     }
 }
 
-void Main2DWindow::drawHeatMap(int chan, int minCMap, int maxCMap)
+void Main2DWindow::drawHeatMap(int minCMap, int maxCMap)
 {
-
-    qint16 *dat =  new qint16[rows * cols];
-    m_pCube->GetDataChannel(chan,dat);
     for (int x=0; x < rows; ++x) {
         for (int y=0; y < cols; ++y) {
-            colorMap->data()->setCell(x, y,dat[x * cols + y] );
+            colorMap->data()->setCell(x, y,m_tempChanel[x * cols + y] );
         }
     }
     ui->customPlot->rescaleAxes();
     colorMap->setInterpolate(m_interplolate);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     ui->customPlot->replot();
-    delete dat;
 }
 
 
 
 
 
-void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
+void Main2DWindow::findMinMaxforColorMap(int &minCMap, int &maxCMap,float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
     minCMap =  32767;
@@ -385,13 +382,13 @@ void Main2DWindow::updateViewchan(int chan)
     if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
         int minCMap, maxCMap;
-        findMinMaxforColorMap(chan,minCMap, maxCMap,0.04, 0.98);
+        findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
 
         ChnlLimits[chan][0] = minCMap;
         ChnlLimits[chan][1] = maxCMap;
     }
 
-    drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+    drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
 
 
 }
@@ -404,7 +401,7 @@ void Main2DWindow::leftBorderContrast(int left)
     {
         int chan = ui->listWidget->currentRow();
         ChnlLimits[chan][0] = left;
-        drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+        drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
     }
 }
 
@@ -414,7 +411,7 @@ void Main2DWindow::rightBorderContrast(int right)
     {
         int chan = ui->listWidget->currentRow();
         ChnlLimits[chan][1] = right;
-        drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+        drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
     }
 }
 
@@ -481,10 +478,9 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
     int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
     int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
-    int chan = ui->listWidget->currentRow();
     if (x >= 0 && x < rows && y >= 0 && y < cols)
     {
-        qint16 bright = data[chan][x * cols + y];
+        qint16 bright = m_tempChanel[x * cols + y];
         pStatusBarLabel->setText("X: " + QString().setNum(x) + "    Y: " + QString().setNum(y) + "    Значение:" + QString().setNum(bright));
     }
     else
@@ -554,24 +550,20 @@ void Main2DWindow::setInitSliders(int chan)
     flagSlidersEnabledForSlots = false;
     int min =  32767;
     int max = -32767;
-    qint16 *dataTemp = new qint16[rows*cols];
-    for (int j = 0; j<rows*cols; ++j)
-        dataTemp[j]=data[chan][j];
+
     for (int i = 0; i < rows*cols; ++i)
     {
-       if(dataTemp[i] < min)
-           min = dataTemp[i];
-       if(dataTemp[i] > max)
-           max = dataTemp[i];
+       if(m_tempChanel[i] < min)
+           min = m_tempChanel[i];
+       if(m_tempChanel[i] > max)
+           max = m_tempChanel[i];
     }
-
     ui->SliderContrastMin->setMinimum(min);
     ui->SliderContrastMin->setMaximum(max);
     ui->SliderContrastMin->setValue(ChnlLimits[chan][0]);
     ui->SliderContrastMax->setMinimum(min);
     ui->SliderContrastMax->setMaximum(max);
     ui->SliderContrastMax->setValue(ChnlLimits[chan][1]);
-    delete[] dataTemp;
     flagSlidersEnabledForSlots = true;
 }
 

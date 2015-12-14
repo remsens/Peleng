@@ -36,7 +36,7 @@ public slots:
     //! @param chan - номер канала
     //! @param minCMap - значение в канале,которому будет соответствовать белый цвет
     //! @param maxCMap - значение в канале,которому будет соответствовать черный цвет
-    void drawHeatMap(int chan, int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
+    void drawHeatMap(int minCMap, int maxCMap);// переименовать или создать еще ф-ию, из которой вызывать эту //мб убрать из слотов
 
     //! Слот отрисовки,вызывающий drawHeatMap и работающий с ChnlLimits
     //! @param chan - номер канала
@@ -95,7 +95,7 @@ private slots:
     void OnActionMedian5Triggered();
     void OnActionMedian7Triggered();
 private:
-    void findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
+    void findMinMaxforColorMap(int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
     void createMenus();
     void Noise();
 private:
