@@ -101,7 +101,7 @@ void RgbProfilePlot(HyperCube *cube, RgbProfile &profile,QImage &image) {
         RSignal[j] = GSignal[j] = BSignal[j] = 0;
 
         for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
-            if (data[i][j]>0) {
+            if (data[i][j]>0 && data[i][j]< 6000) { // TODO
                 RSignal[j] += data[i][j] * RProfile[i];
                 GSignal[j] += data[i][j] * GProfile[i];
                 BSignal[j] += data[i][j] * BProfile[i];
