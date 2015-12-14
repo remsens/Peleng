@@ -282,7 +282,7 @@ void Main2DWindow::setInitCustomplotSettings()
 void Main2DWindow::setTempChannel(u::cptr *chanData)
 {
     try {
-         memcpy(m_tempChanel, (qint16*)chanData, rows*cols*sizeof(qint16));
+         memcpy(m_tempChanel, chanData, rows*cols*m_pCube->GetBytesInElements());
     } catch (...) {
         throw GenericExc("Неудалось копировать в темповый канал", -1);
     }
@@ -348,13 +348,19 @@ void Main2DWindow::findMinMaxforColorMap(int &minCMap, int &maxCMap,float thresh
 {
     minCMap =  32767;
     maxCMap = -32767;
-
+    qint16 *dataTemp = new qint16[rows*cols];
+    try {
+         memcpy(dataTemp, m_tempChanel, rows*cols*sizeof(qint16));
+    } catch (...) {
+        throw GenericExc("Неудалось копировать в темповый канал", -1);
+    }
     QElapsedTimer timer3;
     timer3.start();
-    qsort(m_tempChanel,cols*rows,sizeof(qint16),cmp2);
+    qsort(dataTemp,cols*rows,sizeof(qint16),cmp2);
     qDebug()<<"сортировка"<<timer3.elapsed()<< " мс";
-    minCMap = m_tempChanel[int(rows*cols*thresholdLow)];
-    maxCMap = m_tempChanel[int(rows*cols*thresholdHigh)];
+    minCMap = dataTemp[int(rows*cols*thresholdLow)];
+    maxCMap = dataTemp[int(rows*cols*thresholdHigh)];
+    delete[] dataTemp;
 }
 
 int cmp2(const void *a, const void *b)
@@ -470,7 +476,7 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
         m_dataY = y;
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
-    qDebug()<<"x "<<m_dataX<<"y "<<m_dataY;
+
 }
 
 
