@@ -28,6 +28,8 @@ public:
     //! Функция выделения памяти и инициализации нулями массива ChnlLimits
     void initArrChanLimits();
     void setInitCustomplotSettings();
+    //! Функция задания временного канала гиперкуба
+    void setTempChannel(u::cptr* chanData);
 
 public slots:
     //! Слот отрисовки данных канала гиперкуба
@@ -80,13 +82,9 @@ private slots:
     void startIsClicked(uint dataX, uint dataY);//нажато "Начало" из контекстного меню
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
-
     void createLinePlotterSlot();
-
-
     void prepareToHist();
     void addSpectr();
-
     void contextMenuRequest(QPoint point);
 
     //! Слот для установки слайдеров при переключении канала
@@ -124,6 +122,7 @@ private:
     u::uint32 m_initChanel;
     QCPColorMap *colorMap;
     qint16 **data;
+    qint16 *m_tempChanel;
     int rows, cols, chnls;
     int m_dataX, m_dataY;
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
@@ -140,6 +139,7 @@ private:
 
     bool m_needToUpdate;
     bool m_canDelete;
+    bool flagGetTempChannelFromCube;//!< флаг, определяющий, будет ли обновляться m_tempChanel клику на новый канал в листе
 
 };
 

@@ -19,6 +19,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     , flagDoubleClicked(false)
     , m_pCube(cube)
     , m_attributes(attr)
+    , flagGetTempChannelFromCube(true)
 
 
 {
@@ -92,7 +93,6 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
 Main2DWindow::~Main2DWindow()
 {
-    qDebug() << "Go to ~2D";
     if (pContextMenu) delete pContextMenu;
     if (m_medianFilter) delete m_medianFilter;
     if (m_filters) delete m_filters;
@@ -101,11 +101,9 @@ Main2DWindow::~Main2DWindow()
     {
         delete [] ChnlLimits[i];
     }
-    qDebug() << "delete chnlLimits[i]";
     delete [] ChnlLimits;
-    qDebug() << "delete ChnlLimits";
+    delete[] m_tempChanel;
     delete ui;
-    qDebug() << "finish ~2D";
     delete polyMngr;
 }
 
@@ -252,6 +250,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     cols = m_pCube->GetColumns();
     chnls = m_pCube->GetCountofChannels();
     data = (qint16**)ptrCube->GetDataCube();
+    m_tempChanel = new qint16[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
 
@@ -277,6 +276,15 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->rescaleDataRange(true);
+}
+
+void Main2DWindow::setTempChannel(u::cptr *chanData)
+{
+    try {
+         memcpy(m_tempChanel, (qint16*)chanData, rows*cols*sizeof(qint16));
+    } catch (...) {
+        throw GenericExc("Неудалось копировать в темповый канал", -1);
+    }
 }
 
 void Main2DWindow::fillChanList()
@@ -343,16 +351,13 @@ void Main2DWindow::findMinMaxforColorMap(int chan, int &minCMap, int &maxCMap,fl
 {
     minCMap =  32767;
     maxCMap = -32767;
-    qint16 *dataTemp = new qint16[rows*cols];
 
-    m_pCube->GetDataChannel(chan, dataTemp);
     QElapsedTimer timer3;
     timer3.start();
-    qsort(dataTemp,cols*rows,sizeof(qint16),cmp2);
+    qsort(m_tempChanel,cols*rows,sizeof(qint16),cmp2);
     qDebug()<<"сортировка"<<timer3.elapsed()<< " мс";
-    minCMap = dataTemp[int(rows*cols*thresholdLow)];
-    maxCMap = dataTemp[int(rows*cols*thresholdHigh)];
-    delete[] dataTemp;
+    minCMap = m_tempChanel[int(rows*cols*thresholdLow)];
+    maxCMap = m_tempChanel[int(rows*cols*thresholdHigh)];
 }
 
 int cmp2(const void *a, const void *b)
@@ -369,6 +374,14 @@ int cmp2(const void *a, const void *b)
 
 void Main2DWindow::updateViewchan(int chan)
 {
+    if(flagGetTempChannelFromCube)
+    {
+        try {
+             memcpy(m_tempChanel, data[chan], rows*cols*sizeof(qint16));
+        } catch (...) {
+            throw GenericExc("Неудалось копировать в темповый канал", -1);
+        }
+    }
     if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
         int minCMap, maxCMap;
@@ -379,6 +392,7 @@ void Main2DWindow::updateViewchan(int chan)
     }
 
     drawHeatMap(chan,ChnlLimits[chan][0], ChnlLimits[chan][1]);
+
 
 }
 
