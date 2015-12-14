@@ -2,6 +2,9 @@
 #include "ui_settingsdialog.h"
 
 #include <QFileDialog>
+#include <QCloseEvent>
+#include <QDebug>
+#include <QMessageBox>
 
 SettingsDialog::SettingsDialog(HyperCube *cube, QWidget *parent) :
     QDialog(parent),
@@ -13,6 +16,8 @@ SettingsDialog::SettingsDialog(HyperCube *cube, QWidget *parent) :
     ui->Ch1ComboBox->setCurrentIndex(0);
     ui->Ch2ComboBox->setCurrentIndex(1);
     ui->Ch3ComboBox->setCurrentIndex(2);*/
+
+    pCube=cube;
 
     FileName= "";
     TypeOfStdProfile =0;
@@ -26,7 +31,7 @@ SettingsDialog::SettingsDialog(HyperCube *cube, QWidget *parent) :
     bCh = ui->Ch1ComboBox->currentIndex();*/
 
     ui->setupUi(this);
-    QList<double> list = cube->GetListOfChannels();
+    list = cube->GetListOfChannels();
     for (int i = 0; i < list.size(); i++) {
         ui->Ch1ComboBox->addItem(QString("%1 - %2").arg(i+1).arg(list[i]));
         ui->Ch2ComboBox->addItem(QString("%1 - %2").arg(i+1).arg(list[i]));
@@ -38,6 +43,24 @@ SettingsDialog::~SettingsDialog()
 {
     delete ui;
 }
+
+
+void SettingsDialog::accept()
+{
+
+     if ( (list.size()) && (list[0]>800)) {
+
+         QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. минимальная длина волны %1").arg(list[0]) );
+         this->rejected();
+     } else if ( (list.size()) && (list[list.size()-1]<400)) {
+         QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. максимальная длина волны %1").arg(list[list.size()-1]) );
+         this->rejected();
+     }
+     else {
+         QDialog::accept();
+     }
+}
+
 
 void SettingsDialog::on_radioButton_clicked(bool checked)
 {

@@ -30,6 +30,12 @@ public:
 
     void resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2);
     bool cantDelete();
+    int getCh1(){return Ch1;}
+    int getCh2(){return Ch2;}
+    int getR1(){return R1;}
+    int getR2(){return R2;}
+    int getC1(){return C1;}
+    int getC2(){return C2;}
 
 public slots:
 
