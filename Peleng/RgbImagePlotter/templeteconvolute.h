@@ -38,7 +38,8 @@ void RgbChannelPlot(HyperCube *cube, qint32 rCh, qint32 gCh, qint32 bCh, QImage 
     maxR=maxG=maxB=0;
     T** data = (T**)cube->GetDataCube();
 
-    for (unsigned int j = 0; j < cube->GetSizeChannel(); j++){
+    for (unsigned int j = 0; j < cube->GetSizeChannel()/*cube->GetBytesInElements()*/; j++){
+        if ((data[rCh][j]<0) || (data[gCh][j]<0) || (data[bCh][j]<0) || (data[rCh][j]>8000) || (data[gCh][j]>8000) || (data[bCh][j]>8000)) continue;
         if (data[rCh][j]>=maxR) maxR=data[rCh][j];
         if (data[gCh][j]>=maxG) maxG=data[gCh][j];
         if (data[bCh][j]>=maxB) maxB=data[bCh][j];
@@ -48,7 +49,7 @@ void RgbChannelPlot(HyperCube *cube, qint32 rCh, qint32 gCh, qint32 bCh, QImage 
 
     for (unsigned int i = 0; i < cube->GetLines(); i++){
         for (unsigned int j = 0; j < cube->GetColumns(); j++){
-
+            if ((data[rCh][j]<0) || (data[gCh][j]<0) || (data[bCh][j]<0) || (data[rCh][j]>8000) || (data[gCh][j]>8000) || (data[bCh][j]>8000)) continue;
             image.setPixel(i,j,qRgb((char)(data[rCh][i*cube->GetColumns()+j]/maxR*255) ,(char)(data[gCh][i*cube->GetColumns()+j]/maxG*255),(char)(data[bCh][i*cube->GetColumns()+j]/maxB*255)));
 
         }
@@ -81,10 +82,13 @@ void RgbProfilePlot(HyperCube *cube, RgbProfile &profile,QImage &image) {
 
 
 
+    QList<double> tempList = cube->GetListOfChannels();
+
     for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
         RProfile[i]= LineInterpolation(wl[i], ProfileWl, ProfileRChannel,ProfileSize);
         GProfile[i]= LineInterpolation(wl[i], ProfileWl, ProfileGChannel,ProfileSize);
         BProfile[i]= LineInterpolation(wl[i], ProfileWl, ProfileBChannel,ProfileSize);
+        //qDebug() << tempList[i] << " " << RProfile[i] << " " << GProfile[i] << " " << BProfile[i];
     }
 
 
@@ -97,11 +101,11 @@ void RgbProfilePlot(HyperCube *cube, RgbProfile &profile,QImage &image) {
 
 
 
-    for (unsigned int j = 0; j < cube->GetSizeChannel(); j++){
+    for (unsigned int j = 0; j < cube->GetSizeChannel()/*cube->GetBytesInElements()*/; j++){
         RSignal[j] = GSignal[j] = BSignal[j] = 0;
 
         for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
-            if (data[i][j]>0 && data[i][j]< 6000) { // TODO
+            if ((data[i][j]>0) && (data[i][j]<8000)) {
                 RSignal[j] += data[i][j] * RProfile[i];
                 GSignal[j] += data[i][j] * GProfile[i];
                 BSignal[j] += data[i][j] * BProfile[i];
