@@ -35,7 +35,84 @@ public:
             return false;
         }
     }
+
 private:
+    double coeff_quadr_5_left_pixels_0_row[5] = {0.8857, 0.2571, -0.0857, -0.1429, 0.0857};
+    double coeff_quadr_5_left_pixels_1_row[5] = {0.2571, 0.3714, 0.3429, 0.1714, -0.1429};
+    double coeff_quadr_5_right_pixels_3_row[5] = {-0.1429, 0.1714, 0.3429, 0.3714, 0.2571};
+    double coeff_quadr_5_right_pixels_4_row[5] = {0.0857, -0.1429, -0.0857, 0.2571, 0.8857};
+
+    double coeff_cubic_5_left_pixels_0_row[5] = {0.9857,    0.0571,   -0.0857,    0.0571,   -0.0143};
+    double coeff_cubic_5_left_pixels_1_row[5] = {0.0571,    0.7714,    0.3429,   -0.2286,    0.0571};
+    double coeff_cubic_5_right_pixels_3_row[5] = {0.0571,   -0.2286,    0.3429,    0.7714,    0.0571};
+    double coeff_cubic_5_right_pixels_4_row[5] = {-0.0143,    0.0571,   -0.0857,    0.0571,    0.9857};
+
+    double coeff_quadr_7_left_pixels_0_row[7] = {0.7619,    0.3571,    0.0714,   -0.0952,   -0.1429,   -0.0714,    0.1190};
+    double coeff_quadr_7_left_pixels_1_row[7] = {0.3571,    0.2857,    0.2143,    0.1429,    0.0714,   -0.0000,   -0.0714};
+    double coeff_quadr_7_left_pixels_2_row[7] = {0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714,   -0.1429};
+    double coeff_quadr_7_right_pixels_4_row[7] = {-0.1429,    0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714};
+    double coeff_quadr_7_right_pixels_5_row[7] = {-0.0714,   -0.0000,    0.0714,    0.1429,    0.2143,    0.2857,    0.3571};
+    double coeff_quadr_7_right_pixels_6_row[7] = {0.1190,   -0.0714,   -0.1429,   -0.0952,    0.0714,    0.3571,    0.7619};
+
+    double coeff_cubic_7_left_pixels_0_row[7] = {0.9286,    0.1905,   -0.0952,   -0.0952,    0.0238,    0.0952,   -0.0476};
+    double coeff_cubic_7_left_pixels_1_row[7] = {0.1905,    0.4524,    0.3810,    0.1429,   -0.0952,   -0.1667,    0.0952};
+    double coeff_cubic_7_left_pixels_2_row[7] = {-0.0952,    0.3810,    0.4524,    0.2857,    0.0476,   -0.0952,   0.0238};
+    double coeff_cubic_7_right_pixels_4_row[7] = {0.0238,   -0.0952,    0.0476,    0.2857 ,   0.4524,   0.3810,   -0.0952};
+    double coeff_cubic_7_right_pixels_5_row[7] = {0.0952,   -0.1667,   -0.0952,    0.1429 ,   0.3810 ,   0.4524,    0.1905};
+    double coeff_cubic_7_right_pixels_6_row[7] = { -0.0476,    0.0952,    0.0238 ,  -0.0952 ,  -0.0952 ,   0.1905,    0.9286};
+
+
+    double coeff_quadr_9_left_pixels_0_row[9] = {0.6606,    0.3818,    0.1636,    0.0061,   -0.0909,   -0.1273,   -0.1030,   -0.0182,    0.1273};
+    double coeff_quadr_9_left_pixels_1_row[9] = {0.3818,    0.2788,    0.1909,    0.1182,    0.0606,    0.0182,   -0.0091,   -0.0212,   -0.0182};
+    double coeff_quadr_9_left_pixels_2_row[9] = {0.1636,    0.1909,    0.2009,    0.1935,    0.1688,    0.1268,    0.0675,   -0.0091,   -0.1030};
+    double coeff_quadr_9_left_pixels_3_row[9] = {0.0061,    0.1182,    0.1935,    0.2320,    0.2338,    0.1987,    0.1268,    0.0182,   -0.1273};
+    double coeff_quadr_9_right_pixels_5_row[9] = {-0.1273,    0.0182,    0.1268,    0.1987,    0.2338,    0.2320,    0.1935,    0.1182,    0.0061};
+    double coeff_quadr_9_right_pixels_6_row[9] = {-0.1030 ,  -0.0091,    0.0675,    0.1268,    0.1688,    0.1935,    0.2009,    0.1909,    0.1636};
+    double coeff_quadr_9_right_pixels_7_row[9] = {-0.0182,   -0.0212,   -0.0091,    0.0182,    0.0606,    0.1182,    0.1909,    0.2788,    0.3818};
+    double coeff_quadr_9_right_pixels_8_row[9] = {0.1273,   -0.0182,   -0.1030,   -0.1273,   -0.0909,    0.0061,    0.1636,    0.3818,    0.6606};
+
+    double coeff_cubic_9_left_pixels_0_row[9] = {0.8586,    0.2828,   -0.0202,   -0.1212,   -0.0909,         0 ,   0.0808,    0.0808,   -0.0707};
+    double coeff_cubic_9_left_pixels_1_row[9] = {0.2828,    0.3283,    0.2828,   0.1818 ,   0.0606,   -0.0455,   -0.1010,   -0.0707,    0.0808};
+    double coeff_cubic_9_left_pixels_2_row[9] = {-0.0202,    0.2828,    0.3716,    0.3117 ,   0.1688,    0.0087,   -0.1032,   -0.1010,    0.0808};
+    double coeff_cubic_9_left_pixels_3_row[9] = {-0.1212,    0.1818,    0.3117 ,   0.3139 ,   0.2338 ,   0.1169 ,   0.0087,   -0.0455,   -0.0000};
+    double coeff_cubic_9_right_pixels_5_row[9] = {-0.0000,   -0.0455,    0.0087,    0.1169,    0.2338 ,   0.3139,    0.3117,    0.1818,   -0.1212};
+    double coeff_cubic_9_right_pixels_6_row[9] = {0.0808,   -0.1010,   -0.1032,    0.0087,    0.1688,    0.3117,    0.3716,    0.2828,   -0.0202};
+    double coeff_cubic_9_right_pixels_7_row[9] = {0.0808,   -0.0707,   -0.1010,   -0.0455,    0.0606 ,   0.1818,    0.2828,    0.3283,    0.2828};
+    double coeff_cubic_9_right_pixels_8_row[9] = {-0.0707,    0.0808,    0.0808,         0 ,  -0.0909 ,  -0.1212,   -0.0202,    0.2828,    0.8586};
+// 4-5 степень
+    double coeff_quartic_7_left_pixels_0_row[7] = {0.9870,    0.0541,   -0.0758,    0.0216,    0.0433,   -0.0411,    0.0108};
+    double coeff_quartic_7_left_pixels_1_row[7] = {0.0541,    0.7706,    0.3355,   -0.1299,   -0.1407,    0.1515,   -0.0411};
+    double coeff_quartic_7_left_pixels_2_row[7] = {-0.0758,    0.3355,    0.4589,    0.3247,    0.0541,   -0.1407,    0.0433};
+    double coeff_quartic_7_right_pixels_4_row[7] = {0.0433,   -0.1407,    0.0541,    0.3247,    0.4589,    0.3355,   -0.0758};
+    double coeff_quartic_7_right_pixels_5_row[7] = {-0.0411,    0.1515,   -0.1407,   -0.1299,    0.3355,    0.7706,    0.0541};
+    double coeff_quartic_7_right_pixels_6_row[7] = {0.0108,   -0.0411,    0.0433,    0.0216,   -0.0758,    0.0541,    0.9870};
+
+    double coeff_quintic_7_left_pixels_0_row[7] = {0.9989,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,   -0.0011};
+    double coeff_quintic_7_left_pixels_1_row[7] = {0.0065,    0.9610,    0.0974,   -0.1299,    0.0974,   -0.0390,    0.0065};
+    double coeff_quintic_7_left_pixels_2_row[7] = {-0.0162,    0.0974,    0.7565,    0.3247,   -0.2435,    0.0974,   -0.0162};
+    double coeff_quintic_7_right_pixels_4_row[7] = {-0.0162,    0.0974,   -0.2435,    0.3247,    0.7565,    0.0974,   -0.0162};
+    double coeff_quintic_7_right_pixels_5_row[7] = {0.0065,   -0.0390,   0.0974,   -0.1299,    0.0974,    0.9610,    0.0065};
+    double coeff_quintic_7_right_pixels_6_row[7] = {-0.0011,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,    0.9989};
+
+
+    double coeff_quartic_9_left_pixels_0_row[9] = {0.9565,    0.1360,   -0.0971,   -0.0583,    0.0350,    0.0629,    0.0039,   -0.0660,    0.0272};
+    double coeff_quartic_9_left_pixels_1_row[9] = {0.1360,    0.5486,    0.3982,    0.0874,  -0.1282,   -0.1399,    0.0144,    0.1496,   -0.0660};
+    double coeff_quartic_9_left_pixels_2_row[9] = {-0.0971,    0.3982,    0.4320,    0.2622,    0.0699,   -0.0408,   -0.0427,    0.0144,    0.0039};
+    double coeff_quartic_9_left_pixels_3_row[9] = {-0.0583,    0.0874,    0.2622,    0.3543,    0.3147,    0.1573,   -0.0408,   -0.1399,    0.0629};
+    double coeff_quartic_9_right_pixels_5_row[9] = {0.0629,   -0.1399,   -0.0408,    0.1573,    0.3147,    0.3543,    0.2622,    0.0874,   -0.0583};
+    double coeff_quartic_9_right_pixels_6_row[9] = {0.0039,    0.0144,   -0.0427,   -0.0408,    0.0699,    0.2622,    0.4320,    0.3982,   -0.0971};
+    double coeff_quartic_9_right_pixels_7_row[9] = {-0.0660,    0.1496,    0.0144,   -0.1399,   -0.1282,    0.0874,    0.3982,    0.5486,    0.1360};
+    double coeff_quartic_9_right_pixels_8_row[9] = {0.0272,   -0.0660,    0.0039,    0.0629,    0.0350,   -0.0583,   -0.0971,    0.1360,    0.9565};
+
+    double coeff_quintic_9_left_pixels_0_row[9] = {0.9907,    0.0420,   -0.0629,    0.0186,    0.0350,   -0.0140,   -0.0303,    0.0280,   -0.0070};
+    double coeff_quintic_9_left_pixels_1_row[9] = {0.0420,    0.8071,    0.3042,   -0.1241,   -0.1282,    0.0717,    0.1084,  -0.1090,    0.0280};
+    double coeff_quintic_9_left_pixels_2_row[9] = {-0.0629,    0.3042,    0.4662,    0.3392,    0.0699,   -0.1177,   -0.0769,    0.1084,   -0.0303};
+    double coeff_quintic_9_left_pixels_3_row[9] = {0.0186,   -0.1241,    0.3392,    0.5274,    0.3147,   -0.0157,   -0.1177,    0.0717,   -0.0140};
+    double coeff_quintic_9_right_pixels_5_row[9] = {-0.0140,    0.0717,   -0.1177,   -0.0157,    0.3147,    0.5274,    0.3392,   -0.1241,    0.0186};
+    double coeff_quintic_9_right_pixels_6_row[9] = {-0.0303,    0.1084,   -0.0769,   -0.1177,    0.0699,   0.3392,    0.4662,    0.3042,   -0.0629};
+    double coeff_quintic_9_right_pixels_7_row[9] = {0.0280,   -0.1090,    0.1084,    0.0717,   -0.1282,   -0.1241,    0.3042,    0.8071,    0.0420};
+    double coeff_quintic_9_right_pixels_8_row[9] = {-0.0070,    0.0280,   -0.0303,   -0.0140,    0.0350,    0.0186,   -0.0629,    0.0420,    0.9907};
+
     // коэффициенты для полинома x^2 и x^3, окно - 5 пикселей. Последнее значение - значение нормировки
     u::int32 coeff_quadr_cubic_5[6] = {-3, 12, 17, 12, -3, 35};
     // коэффициенты для полинома x^2 и x^3, окно - 7 пикселей. Последнее значение - значение нормировки
@@ -104,6 +181,714 @@ private:
 
     }
 
+    template <typename M>
+    void CalculateEdges(M* spectr, u::uint32 sizeSpectr, bool bSideRight)
+    {
+        u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+        u::int8 degreePolinom = BaseNoiseAlg<T>::m_attributes->GetDegreePolinom();
+        switch(maskPixels)
+        {
+            case 5:
+            {
+                switch(degreePolinom)
+                {
+                    case 2:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_quadr_5_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_quadr_5_left_pixels_1_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+
+                        } else
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_quadr_5_right_pixels_3_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_quadr_5_right_pixels_4_row[i];
+                            }
+                            spectr[sizeSpectr - 2] = tempRow0;
+                            spectr[sizeSpectr - 1] = tempRow1;
+                        }
+                        return;
+                    }
+                    case 3:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_cubic_5_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_cubic_5_left_pixels_1_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+
+                        } else
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_5_right_pixels_3_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_5_right_pixels_4_row[i];
+                            }
+                            spectr[sizeSpectr - 2] = tempRow0;
+                            spectr[sizeSpectr - 1] = tempRow1;
+                        }
+                            return;
+                      }
+                      default: return;
+                }
+            }
+            case 7:
+            {
+                switch(degreePolinom)
+                {
+                    case 2:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_quadr_7_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_quadr_7_left_pixels_1_row[i];
+                                tempRow1 += spectr[i]*coeff_quadr_7_left_pixels_2_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+                            spectr[2] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_4_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_5_row[i];
+                                tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_6_row[i];
+                            }
+                            spectr[sizeSpectr - 3] = tempRow0;
+                            spectr[sizeSpectr - 2] = tempRow1;
+                            spectr[sizeSpectr - 1] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 3:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_cubic_7_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_cubic_7_left_pixels_1_row[i];
+                                tempRow1 += spectr[i]*coeff_cubic_7_left_pixels_2_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+                            spectr[2] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_4_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_5_row[i];
+                                tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_7_right_pixels_6_row[i];
+                            }
+                            spectr[sizeSpectr - 3] = tempRow0;
+                            spectr[sizeSpectr - 2] = tempRow1;
+                            spectr[sizeSpectr - 1] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 4:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_quartic_7_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_quartic_7_left_pixels_1_row[i];
+                                tempRow1 += spectr[i]*coeff_quartic_7_left_pixels_2_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+                            spectr[2] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_7_right_pixels_4_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_7_right_pixels_5_row[i];
+                                tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_7_right_pixels_6_row[i];
+                            }
+                            spectr[sizeSpectr - 3] = tempRow0;
+                            spectr[sizeSpectr - 2] = tempRow1;
+                            spectr[sizeSpectr - 1] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 5:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[i]*coeff_quintic_7_left_pixels_0_row[i];
+                                tempRow1 += spectr[i]*coeff_quintic_7_left_pixels_1_row[i];
+                                tempRow1 += spectr[i]*coeff_quintic_7_left_pixels_2_row[i];
+                            }
+                            spectr[0] = tempRow0;
+                            spectr[1] = tempRow1;
+                            spectr[2] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_7_right_pixels_4_row[i];
+                                tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_7_right_pixels_5_row[i];
+                                tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_7_right_pixels_6_row[i];
+                            }
+                            spectr[sizeSpectr - 3] = tempRow0;
+                            spectr[sizeSpectr - 2] = tempRow1;
+                            spectr[sizeSpectr - 1] = tempRow2;
+                        }
+                        return;
+                    }
+                    default: return;
+                    }
+                return;
+            }
+            case 9:
+            {
+                switch(degreePolinom)
+                {
+                case 2:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[i]*coeff_quadr_9_left_pixels_0_row[i];
+                            tempRow1 += spectr[i]*coeff_quadr_9_left_pixels_1_row[i];
+                            tempRow1 += spectr[i]*coeff_quadr_9_left_pixels_2_row[i];
+                            tempRow2 += spectr[i]*coeff_quadr_9_left_pixels_3_row[i];
+                        }
+                        spectr[0] = tempRow0;
+                        spectr[1] = tempRow1;
+                        spectr[2] = tempRow2;
+                        spectr[3] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_5_row[i];
+                            tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_6_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_7_row[i];
+                            tempRow3 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_8_row[i];
+                        }
+                        spectr[sizeSpectr - 4] = tempRow0;
+                        spectr[sizeSpectr - 3] = tempRow1;
+                        spectr[sizeSpectr - 2] = tempRow2;
+                        spectr[sizeSpectr - 1] = tempRow3;
+                    }
+                    return;
+                }
+                case 3:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[i]*coeff_cubic_9_left_pixels_0_row[i];
+                            tempRow1 += spectr[i]*coeff_cubic_9_left_pixels_1_row[i];
+                            tempRow1 += spectr[i]*coeff_cubic_9_left_pixels_2_row[i];
+                            tempRow2 += spectr[i]*coeff_cubic_9_left_pixels_3_row[i];
+                        }
+                        spectr[0] = tempRow0;
+                        spectr[1] = tempRow1;
+                        spectr[2] = tempRow2;
+                        spectr[3] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_5_row[i];
+                            tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_6_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_7_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_cubic_9_right_pixels_8_row[i];
+                        }
+                        spectr[sizeSpectr - 4] = tempRow0;
+                        spectr[sizeSpectr - 3] = tempRow1;
+                        spectr[sizeSpectr - 2] = tempRow2;
+                        spectr[sizeSpectr - 1] = tempRow3;
+                    }
+                    return;
+                }
+                case 4:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[i]*coeff_quartic_9_left_pixels_0_row[i];
+                            tempRow1 += spectr[i]*coeff_quartic_9_left_pixels_1_row[i];
+                            tempRow1 += spectr[i]*coeff_quartic_9_left_pixels_2_row[i];
+                            tempRow2 += spectr[i]*coeff_quartic_9_left_pixels_3_row[i];
+                        }
+                        spectr[0] = tempRow0;
+                        spectr[1] = tempRow1;
+                        spectr[2] = tempRow2;
+                        spectr[3] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_9_right_pixels_5_row[i];
+                            tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_9_right_pixels_6_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_9_right_pixels_7_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quartic_9_right_pixels_8_row[i];
+                        }
+                        spectr[sizeSpectr - 4] = tempRow0;
+                        spectr[sizeSpectr - 3] = tempRow1;
+                        spectr[sizeSpectr - 2] = tempRow2;
+                        spectr[sizeSpectr - 1] = tempRow3;
+                    }
+                    return;
+                }
+                case 5:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[i]*coeff_quintic_9_left_pixels_0_row[i];
+                            tempRow1 += spectr[i]*coeff_quintic_9_left_pixels_1_row[i];
+                            tempRow1 += spectr[i]*coeff_quintic_9_left_pixels_2_row[i];
+                            tempRow2 += spectr[i]*coeff_quintic_9_left_pixels_3_row[i];
+                        }
+                        spectr[0] = tempRow0;
+                        spectr[1] = tempRow1;
+                        spectr[2] = tempRow2;
+                        spectr[3] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_9_right_pixels_5_row[i];
+                            tempRow1 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_9_right_pixels_6_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_9_right_pixels_7_row[i];
+                            tempRow2 += spectr[sizeSpectr - maskPixels + i]*coeff_quintic_9_right_pixels_8_row[i];
+                        }
+                        spectr[sizeSpectr - 4] = tempRow0;
+                        spectr[sizeSpectr - 3] = tempRow1;
+                        spectr[sizeSpectr - 2] = tempRow2;
+                        spectr[sizeSpectr - 1] = tempRow3;
+                    }
+                    return;
+                }
+                default: return;
+                }
+                return;
+            }
+        }
+    }
+
+
+
+    template <typename M>
+    void CalculateEdgesCube(M** dataCube, u::uint32 sizeSpectr, u::uint32 row, u::uint32 col, bool bSideRight)
+    {
+        u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+        u::int8 degreePolinom = BaseNoiseAlg<T>::m_attributes->GetDegreePolinom();
+        switch(maskPixels)
+        {
+            case 5:
+            {
+                switch(degreePolinom)
+                {
+                    case 2:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_5_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_5_left_pixels_1_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+
+                        } else
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quadr_5_right_pixels_3_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quadr_5_right_pixels_4_row[i];
+                            }
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow1;
+                        }
+                        return;
+                    }
+                    case 3:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_5_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_5_left_pixels_1_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+
+                        } else
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_5_right_pixels_3_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_5_right_pixels_4_row[i];
+                            }
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow1;
+                        }
+                            return;
+                      }
+                      default: return;
+                }
+            }
+            case 7:
+            {
+                switch(degreePolinom)
+                {
+                    case 2:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_7_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_7_left_pixels_1_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_7_left_pixels_2_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+                            dataCube[2][row*sizeSpectr+col] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_4_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_5_row[i];
+                                tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_6_row[i];
+                            }
+                            dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow1;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 3:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_7_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_7_left_pixels_1_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_7_left_pixels_2_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+                            dataCube[2][row*sizeSpectr+col] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_4_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_5_row[i];
+                                tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_7_right_pixels_6_row[i];
+                            }
+                            dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow1;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 4:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_7_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_7_left_pixels_1_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_7_left_pixels_2_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+                            dataCube[2][row*sizeSpectr+col] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_7_right_pixels_4_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_7_right_pixels_5_row[i];
+                                tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_7_right_pixels_6_row[i];
+                            }
+                            dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow1;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow2;
+                        }
+                        return;
+                    }
+                    case 5:
+                    {
+                        double tempRow0 = 0;
+                        double tempRow1 = 0;
+                        double tempRow2 = 0;
+                        if (!bSideRight)
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_7_left_pixels_0_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_7_left_pixels_1_row[i];
+                                tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_7_left_pixels_2_row[i];
+                            }
+                            dataCube[0][row*sizeSpectr+col] = tempRow0;
+                            dataCube[1][row*sizeSpectr+col] = tempRow1;
+                            dataCube[2][row*sizeSpectr+col] = tempRow2;
+
+                        } else
+                        {
+                            for (int i = 0; i < 7; i++)
+                            {
+                                tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_7_right_pixels_4_row[i];
+                                tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_7_right_pixels_5_row[i];
+                                tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_7_right_pixels_6_row[i];
+                            }
+                            dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow0;
+                            dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow1;
+                            dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow2;
+                        }
+                        return;
+                    }
+                    default: return;
+                    }
+                return;
+            }
+            case 9:
+            {
+                switch(degreePolinom)
+                {
+                case 2:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_9_left_pixels_0_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_9_left_pixels_1_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_9_left_pixels_2_row[i];
+                            tempRow2 += dataCube[i][row*sizeSpectr+col]*coeff_quadr_9_left_pixels_3_row[i];
+                        }
+                        dataCube[0][row*sizeSpectr+col] = tempRow0;
+                        dataCube[1][row*sizeSpectr+col] = tempRow1;
+                        dataCube[2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[3][row*sizeSpectr+col] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_5_row[i];
+                            tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_6_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_7_row[i];
+                            tempRow3 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_8_row[i];
+                        }
+                        dataCube[sizeSpectr - 4][row*sizeSpectr+col] = tempRow0;
+                        dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow1;
+                        dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow3;
+                    }
+                    return;
+                }
+                case 3:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_9_left_pixels_0_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_9_left_pixels_1_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_9_left_pixels_2_row[i];
+                            tempRow2 += dataCube[i][row*sizeSpectr+col]*coeff_cubic_9_left_pixels_3_row[i];
+                        }
+                        dataCube[0][row*sizeSpectr+col] = tempRow0;
+                        dataCube[1][row*sizeSpectr+col] = tempRow1;
+                        dataCube[2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[3][row*sizeSpectr+col] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_5_row[i];
+                            tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_6_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_7_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_cubic_9_right_pixels_8_row[i];
+                        }
+                        dataCube[sizeSpectr - 4][row*sizeSpectr+col] = tempRow0;
+                        dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow1;
+                        dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow3;
+                    }
+                    return;
+                }
+                case 4:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_9_left_pixels_0_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_9_left_pixels_1_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_9_left_pixels_2_row[i];
+                            tempRow2 += dataCube[i][row*sizeSpectr+col]*coeff_quartic_9_left_pixels_3_row[i];
+                        }
+                        dataCube[0][row*sizeSpectr+col] = tempRow0;
+                        dataCube[1][row*sizeSpectr+col] = tempRow1;
+                        dataCube[2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[3][row*sizeSpectr+col] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_9_right_pixels_5_row[i];
+                            tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_9_right_pixels_6_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_9_right_pixels_7_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quartic_9_right_pixels_8_row[i];
+                        }
+                        dataCube[sizeSpectr - 4][row*sizeSpectr+col] = tempRow0;
+                        dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow1;
+                        dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow3;
+                    }
+                    return;
+                }
+                case 5:
+                {
+                    double tempRow0 = 0;
+                    double tempRow1 = 0;
+                    double tempRow2 = 0;
+                    double tempRow3 = 0;
+                    if (!bSideRight)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_9_left_pixels_0_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_9_left_pixels_1_row[i];
+                            tempRow1 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_9_left_pixels_2_row[i];
+                            tempRow2 += dataCube[i][row*sizeSpectr+col]*coeff_quintic_9_left_pixels_3_row[i];
+                        }
+                        dataCube[0][row*sizeSpectr+col] = tempRow0;
+                        dataCube[1][row*sizeSpectr+col] = tempRow1;
+                        dataCube[2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[3][row*sizeSpectr+col] = tempRow3;
+
+                    } else
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            tempRow0 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_9_right_pixels_5_row[i];
+                            tempRow1 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_9_right_pixels_6_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_9_right_pixels_7_row[i];
+                            tempRow2 += dataCube[sizeSpectr - maskPixels + i][row*sizeSpectr+col]*coeff_quintic_9_right_pixels_8_row[i];
+                        }
+                        dataCube[sizeSpectr - 4][row*sizeSpectr+col] = tempRow0;
+                        dataCube[sizeSpectr - 3][row*sizeSpectr+col] = tempRow1;
+                        dataCube[sizeSpectr - 2][row*sizeSpectr+col] = tempRow2;
+                        dataCube[sizeSpectr - 1][row*sizeSpectr+col] = tempRow3;
+                    }
+                    return;
+                }
+                default: return;
+                }
+                return;
+            }
+        }
+    }
+
     bool ToCube()
     {
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
@@ -139,6 +924,7 @@ private:
                      //From HDF
                      return false;
                  }
+                 CalculateEdgesCube(dataCube, size, lines, col, false);
                  for (u::uint32 i = maskPixels/2; i < size - maskPixels/2; i++)
                  {
                      double temp = 0;
@@ -149,6 +935,7 @@ private:
                      T value = temp/normalization;
                      BaseNoiseAlg<T>::m_cube->SetDataBuffer(i, &value, sizeof(T), (lines*columnsCube+col)*sizeof(T));
                  }
+                 CalculateEdgesCube(dataCube, size, lines, col, true);
                  double a = lines*columnsCube + col;
                  double b = a/maxValueBar*100;
                  percent = b*100/100;
@@ -176,7 +963,9 @@ private:
         u::uint32 normalization;
         ChooseCoef(coeff, normalization);
         // проверить, меняется ли data
+        CalculateEdges<double>(spectrMas.data(), spectrMas.size(), false);
         ApplyFilterToSpectr<double>(spectrMas.data(), spectrMas.size(), coeff, normalization);
+        CalculateEdges<double>(spectrMas.data(), spectrMas.size(), true);
         delete [] coeff;
         BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);

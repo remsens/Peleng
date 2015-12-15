@@ -38,7 +38,8 @@ private:
 
 public slots:
     void callMethod(int methNumber);
-    void selectRange(const double percent);
+    void selectRange();
+    void changeRange(const int range);
     void OnCloseEvent(QQuickCloseEvent*);
 private:
     QQmlApplicationEngine* engine;
@@ -46,13 +47,12 @@ private:
     Attributes* m_attr;
     HyperCube* m_pHyperCube;
     QVector<QVector<double> > cube_map;
-    QVector<QVector<int> >    masked_map;
-    std::vector<std::vector<double> > new_map; // почему std::vector если сверху используется QVector
 
     Preview2D *preview_2d;
 
     double min_value;
     double max_value;
+    int    view_range;
 
     bool is_cubemap_emty;
 };

@@ -152,10 +152,10 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
-    QPushButton* pushButtonUpdate = new QPushButton(this);
-    pushButtonUpdate->setGeometry(0, 0, 20, 20);
-    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
-    pushButtonUpdate->show();
+//    QPushButton* pushButtonUpdate = new QPushButton(this);
+//    pushButtonUpdate->setGeometry(0, 0, 20, 20);
+//    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
+//    pushButtonUpdate->show();
 
 }
 QSize GLWidget::minimumSizeHint() const

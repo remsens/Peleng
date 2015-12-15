@@ -4,6 +4,7 @@
 SpectralDistance::SpectralDistance(QObject *parent)
 {
     is_cubemap_emty = true;
+    view_range = 10;
 }
 
 SpectralDistance::~SpectralDistance()
@@ -15,8 +16,6 @@ SpectralDistance::~SpectralDistance()
 
 void SpectralDistance::callMethod(int methNumber)
 {
-    // учесть, что может быть внешний загруженный спектр. Тогда тип double
-    // узнать, внешний загруженный спектр или нет m_attr->GetExternalSpectrFlag()
     qDebug() << methNumber;
     switch (methNumber) {
     case 0:{
@@ -49,17 +48,6 @@ void SpectralDistance::Destroy()
     {
         cube_map[i].clear();
     }
-    cube_map.clear();
-    for (int i = 0; i < masked_map.size(); i++)
-    {
-        masked_map[i].clear();
-    }
-    masked_map.clear();
-    for (uint i = 0; i < new_map.size(); i++)
-    {
-        new_map[i].clear();
-    }
-    new_map.clear();
 }
 
 void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
@@ -71,11 +59,11 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
 
     connect(window, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(OnCloseEvent(QQuickCloseEvent*)));
     connect(engine->rootObjects().value(0), SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
-    //connect(this, SIGNAL(progressPercentChanged()), engine->rootObjects().value(0), SLOT(processPercent));
+    connect(engine->rootObjects().value(0), SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
     window->show();
     m_pHyperCube = cube;
     m_attr = attr;
-    preview_2d = new Preview2D(0); // можно не удалять. удалится при закрытии
+    preview_2d = new Preview2D(0);
 }
 
 void SpectralDistance::CalcEvklidDistance(int k, int l)
@@ -84,20 +72,21 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
+
+    cube_map.clear();
     cube_map.resize(line_count);
 
     max_value = 0;
     min_value = 10000000;
-    // почему до line_count - 1?
-    for (int i=0; i < line_count - 1; i++)
+    for (int i=0; i < line_count; i++)
     {
+        cube_map[i].clear();
         cube_map[i].resize(row_count);
         for (int j=0; j < row_count - 1; j++)
         {
             double spectral_distance = 0.0;
-            if ((k==i)||(l==j))
+            if ((k==i) && (l==j))
             {
-                // если внешний спектр, то не нужна эта проверка
                 continue;
             }
             for (int z=0; z < chan_count - 1; z++)
@@ -121,7 +110,7 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
     qDebug() << "max:" << max_value;
     qDebug() << "execute time" << (GetTickCount() - execute_time) / 1000.0;
     is_cubemap_emty = false;
-    selectRange(5);
+    selectRange();
 }
 
 void SpectralDistance::CalcSpectralAngle(int k, int l)
@@ -129,6 +118,8 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
+
+    cube_map.clear();
     cube_map.resize(line_count);
 
     max_value = 0;
@@ -136,10 +127,11 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
 
     for (int i=0; i < line_count; i ++)
     {
+        cube_map[i].clear();
         cube_map[i].resize(row_count);
         for (int j=0; j < row_count; j++)
         {
-            if ((k==i)||(l==j))
+            if ((k==i)&&(l==j))
             {
                 continue;
             }
@@ -167,7 +159,7 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
     qDebug() << "min:" << min_value;
     qDebug() << "max:" << max_value;
     is_cubemap_emty = false;
-    selectRange(5);
+    selectRange();
 }
 
 void SpectralDistance::CalcSpectralCorellation(int k, int l)
@@ -175,18 +167,22 @@ void SpectralDistance::CalcSpectralCorellation(int k, int l)
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
-    cube_map.resize(line_count);
+
     max_value = 0;
     min_value = 10000000;
+
+    cube_map.clear();
+    cube_map.resize(line_count);
 
     double average_kl = averageSpectralValue(k,l);
 
     for (int i=0; i < line_count; i++)
     {
+        cube_map[i].clear();
         cube_map[i].resize(row_count);
         for (int j = 0; j < row_count; j++)
         {
-            if ((k==i)||(l==j))
+            if ((k==i) && (l==j))
             {
                 continue;
             }
@@ -215,12 +211,14 @@ void SpectralDistance::CalcSpectralCorellation(int k, int l)
     }
 
     is_cubemap_emty = false;
-    selectRange(5);
+    selectRange();
 
 }
 
 
-void SpectralDistance::selectRange(const double percent)
+
+
+void SpectralDistance::selectRange()
 {
     if (!is_cubemap_emty)
     {
@@ -228,26 +226,17 @@ void SpectralDistance::selectRange(const double percent)
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
 
-    double dist_range = min_value + (max_value - min_value)*(percent / 100.0);
+    double dist_range = min_value + (max_value - min_value)*(view_range / 100.0);
     double* view_mem = (double*)malloc(sizeof(double) * line_count*row_count);
-
-    masked_map.resize(line_count);
-    new_map.resize(line_count);
     for (int i = 0; i < cube_map.length(); i++)
     {
-        masked_map[i].resize(row_count);
-        new_map[i].resize(row_count);
         for (int j=0; j < cube_map[i].length(); j++)
         {
             if (cube_map[i][j] <= dist_range)
             {
-                masked_map[i][j] = round(cube_map[i][j]);
-                new_map[i][j] = round(cube_map[i][j]);
                 view_mem[i + cube_map.length() * j] = 255; //round(cube_map[i][j]);
             } else
             {
-                masked_map[i][j] = 0;
-                new_map[i][j] = 0;
                 view_mem[i + cube_map.length() * j] = 0;
             }
         }
@@ -255,6 +244,12 @@ void SpectralDistance::selectRange(const double percent)
     preview_2d->Plot(view_mem, line_count, row_count);
     free(view_mem);
     }
+}
+
+void SpectralDistance::changeRange(const int range)
+{
+    view_range = range;
+    selectRange();
 }
 
 double SpectralDistance::averageSpectralValue(const int _i, const int _j)

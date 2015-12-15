@@ -11,7 +11,8 @@ Preview2D::Preview2D(QWidget *parent) :
     m_ui->setupUi(this);
     m_cPlot = new QCustomPlot(this);
     m_ui->verticalLayout_2->addWidget(m_cPlot);
-
+    colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
+    m_cPlot->addPlottable(colorMap);
     //TODO
     //setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -32,13 +33,13 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const int num
     setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
     int minCMap =  32767;
     int maxCMap = -32767;
-    QCPColorMap* colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
+    //QCPColorMap* colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     colorMap->setKeyAxis(m_cPlot->xAxis);
     colorMap->setValueAxis(m_cPlot->yAxis);
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
     qDebug()<<"colorMap setSize";
-    m_cPlot->addPlottable(colorMap);
+
     for (u::int32 x = 0; x < rows; x++) {
         for (u::int32 y = 0; y < cols; y++) {
             colorMap->data()->setCell(x, y, data[x * cols + y] );
