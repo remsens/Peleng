@@ -16,7 +16,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
 
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
-    setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
+    setWindowIcon(QIcon(":/logo/IconsPlotter/Plot.png"));
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
