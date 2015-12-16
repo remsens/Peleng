@@ -760,7 +760,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
         {
-            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this, SLOT(prepareToPlotSpectr()));
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
 
         }
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))

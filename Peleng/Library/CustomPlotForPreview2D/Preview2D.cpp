@@ -14,7 +14,7 @@ Preview2D::Preview2D(QWidget *parent) :
     colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     m_cPlot->addPlottable(colorMap);
     //TODO
-    //setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.ico"));
+    //setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.png"));
     setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
