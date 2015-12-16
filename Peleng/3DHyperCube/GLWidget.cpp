@@ -1052,15 +1052,25 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
+    int dxM = event->x() - lastPos.x();
+    int dyM = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton)
-        rotateBy(8 * dy, 8 * dx, 0);
+    {
+        rotateBy(8 * dyM, 8 * dxM, 0);
+    }
+    if (event->buttons() & Qt::MidButton)
+    {
+        dx += (float)dxM/115;
+        dy -= (float)dyM/115;
+        update();
+    }
     lastPos = event->pos();
     globalPos = event->globalPos();
+
+
+
     evalDataCordsFromMouse(event->x(),event->y());
-    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
 }
 
