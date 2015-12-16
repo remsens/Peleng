@@ -152,10 +152,10 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
-    QPushButton* pushButtonUpdate = new QPushButton(this);
-    pushButtonUpdate->setGeometry(0, 0, 20, 20);
-    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
-    pushButtonUpdate->show();
+//    QPushButton* pushButtonUpdate = new QPushButton(this);
+//    pushButtonUpdate->setGeometry(0, 0, 20, 20);
+//    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
+//    pushButtonUpdate->show();
 
 }
 QSize GLWidget::minimumSizeHint() const
@@ -774,12 +774,16 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        contextMenu->addAction("Спектральный срез", this, SLOT(createLinePlotterSlot()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"), "Спектральный срез", this, SLOT(createLinePlotterSlot()));
 
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         contextMenu->addAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"), "Загрузить спектр", this, SLOT(addSpectr()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
+    {
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB коррекция", this, SLOT(ActionRGBCorrectionToogled()));
     }
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
@@ -799,17 +803,39 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
         menuNoise->addMenu(menuNoiseMedian);
 
         QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", contextMenu);
-        QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", contextMenu);
-        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
-        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
-        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
+//        QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", contextMenu);
+//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
+//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
+//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
 
-        QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", contextMenu);
-        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
-        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
+//        QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", contextMenu);
+//        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
+//        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
 
-        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
-        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+//        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
+//        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+        QMenu* menuSavitskogoGolayDegreePoligons_2 = new QMenu("Полином 2-й степени", this);
+        menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_5Toogled()));
+        menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_9Toogled()));
+
+        QMenu* menuSavitskogoGolayDegreePoligons_3 = new QMenu("Полином 3-й степени", this);
+        menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay3_5Toogled()));
+        menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay3_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay3_9Toogled()));
+
+        QMenu* menuSavitskogoGolayDegreePoligons_4 = new QMenu("Полином 4-й степени", this);
+        menuSavitskogoGolayDegreePoligons_4->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_4->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_9Toogled()));
+
+        QMenu* menuSavitskogoGolayDegreePoligons_5 = new QMenu("Полином 5-й степени", this);
+        menuSavitskogoGolayDegreePoligons_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay5_7Toogled()));
+        menuSavitskogoGolayDegreePoligons_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay5_9Toogled()));
+
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2);
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_3);
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4);
+        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_5);
         menuNoise->addMenu(menuNoiseSavGolay);
         contextMenu->addMenu(menuNoise);
     }
@@ -818,6 +844,11 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         contextMenu->setEnabled(false);
     }
+}
+
+void GLWidget::ActionRGBCorrectionToogled()
+{
+    m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pHyperCube, m_attributes);
 }
 
 void GLWidget::NoiseGolayAlgExecute()
@@ -830,41 +861,109 @@ void GLWidget::NoiseGolayAlgExecute()
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
 }
+void GLWidget::ActionNoiseSavitGolay2_5Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
 
-void GLWidget::ActionNoiseSavitGolay2_3_5Toogled()
+void GLWidget::ActionNoiseSavitGolay2_7Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay2_9Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay3_5Toogled()
 {
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(5);
     NoiseGolayAlgExecute();
 }
 
-void GLWidget::ActionNoiseSavitGolay2_3_7Toogled()
+void GLWidget::ActionNoiseSavitGolay3_7Toogled()
 {
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
 }
 
-void GLWidget::ActionNoiseSavitGolay2_3_9Toogled()
+void GLWidget::ActionNoiseSavitGolay3_9Toogled()
 {
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
 }
 
-void GLWidget::ActionNoiseSavitGolay4_5_7Toogled()
+void GLWidget::ActionNoiseSavitGolay4_7Toogled()
 {
     m_attributes->SetDegreePolinom(4);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
 }
 
-void GLWidget::ActionNoiseSavitGolay4_5_9Toogled()
+void GLWidget::ActionNoiseSavitGolay4_9Toogled()
 {
     m_attributes->SetDegreePolinom(4);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
 }
+
+void GLWidget::ActionNoiseSavitGolay5_7Toogled()
+{
+    m_attributes->SetDegreePolinom(5);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void GLWidget::ActionNoiseSavitGolay5_9Toogled()
+{
+    m_attributes->SetDegreePolinom(5);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+//void GLWidget::ActionNoiseSavitGolay2_3_5Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(5);
+//    NoiseGolayAlgExecute();
+//}
+
+//void GLWidget::ActionNoiseSavitGolay2_3_7Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(7);
+//    NoiseGolayAlgExecute();
+//}
+
+//void GLWidget::ActionNoiseSavitGolay2_3_9Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(9);
+//    NoiseGolayAlgExecute();
+//}
+
+//void GLWidget::ActionNoiseSavitGolay4_5_7Toogled()
+//{
+//    m_attributes->SetDegreePolinom(4);
+//    m_attributes->SetMaskPixelsCount(7);
+//    NoiseGolayAlgExecute();
+//}
+
+//void GLWidget::ActionNoiseSavitGolay4_5_9Toogled()
+//{
+//    m_attributes->SetDegreePolinom(4);
+//    m_attributes->SetMaskPixelsCount(9);
+//    NoiseGolayAlgExecute();
+//}
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
 {
@@ -1271,9 +1370,12 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     int min;
     int max;
     qint16 *dataTemp = new qint16[ROWS*COLS];
-    for (int i=0; i<10; ++i)           //!!! 10
+    int n = 10; // количество сортировок
+    int step = (CHNLS-1)/(n-1);
+
+    for (int i=0; i<n; ++i)
     {
-        m_pHyperCube->GetDataChannel(i,dataTemp);
+        m_pHyperCube->GetDataChannel(i*step,dataTemp);
         qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];
@@ -1281,7 +1383,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             minCMap = min;
         if (max > maxCMap )
             maxCMap = max;
-        qDebug()<<"выполнено"<<i<<"/"<<CHNLS;
+        qDebug()<<"выполнено"<<i<<"/"<<n;
     }
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;

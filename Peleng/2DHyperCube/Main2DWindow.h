@@ -63,6 +63,9 @@ public slots:
     void updateData();
     void dataCubeResize();
     void connectionsOfPlugins();
+
+    void plotFromAttributes(qint32 channel, Attributes* attr);
+
 signals:
     void signalCurrentDataXY(uint,uint);
     void CloseWindow();

@@ -20,9 +20,9 @@ QObject* RgbImagePlugin::GetObjectPointer()
 
 void RgbImagePlugin::Execute(HyperCube *cube, Attributes *attr)
 {
-
-    SettingsDialog dialog(cube) ;
+    SettingsDialog dialog(cube);
     if (dialog.exec()) {
+
 
         RgbImageWindow *rgbImageWindow = new RgbImageWindow();
 

@@ -20,6 +20,7 @@ public:
 private:
     Ui::Preview2D *m_ui;
     QCustomPlot* m_cPlot;
+    QCPColorMap* colorMap;
 };
 
 #endif // PREVIEW2D_H

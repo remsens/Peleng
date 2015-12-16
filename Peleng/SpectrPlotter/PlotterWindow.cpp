@@ -87,8 +87,11 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
     if (m_customPlot->selectedGraphs().size() > 0)
     {
         menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
-        menu->addAction("Сохранить выделенный график",this,SLOT(on_actionSave_toggled()));
         menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
+        if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+        {
+            menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
+        }
         if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
         {
             QMenu* menuNoise = new QMenu("Фильтры", this);
@@ -101,24 +104,44 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
 
             QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", this);
 
-            QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", this);
-            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
-            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
-            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
+//            QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", this);
+//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
+//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
+//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
 
-            QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", this);
-            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
-            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
+//            QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", this);
+//            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
+//            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
 
-            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
-            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+//            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
+//            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
+            QMenu* menuSavitskogoGolayDegreePoligons_2 = new QMenu("Полином 2-й степени", this);
+            menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_5Toogled()));
+            menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_9Toogled()));
+
+            QMenu* menuSavitskogoGolayDegreePoligons_3 = new QMenu("Полином 3-й степени", this);
+            menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay3_5Toogled()));
+            menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay3_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay3_9Toogled()));
+
+            QMenu* menuSavitskogoGolayDegreePoligons_4 = new QMenu("Полином 4-й степени", this);
+            menuSavitskogoGolayDegreePoligons_4->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_4->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_9Toogled()));
+
+            QMenu* menuSavitskogoGolayDegreePoligons_5 = new QMenu("Полином 5-й степени", this);
+            menuSavitskogoGolayDegreePoligons_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay5_7Toogled()));
+            menuSavitskogoGolayDegreePoligons_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay5_9Toogled()));
+
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2);
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_3);
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4);
+            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_5);
+
             menuNoise->addMenu(menuNoiseSavGolay);
             menu->addMenu(menuNoise);
         }
-        if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
-        {
-            menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
-        }
+
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
 }
@@ -163,6 +186,76 @@ void PlotterWindow::ActionNoise7MedianToggled()
 {
     m_attributes->SetMaskPixelsCount(7);
     NoiseMedianAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay2_5Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay2_7Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay2_9Toogled()
+{
+    m_attributes->SetDegreePolinom(2);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay3_5Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(5);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay3_7Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay3_9Toogled()
+{
+    m_attributes->SetDegreePolinom(3);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay4_7Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay4_9Toogled()
+{
+    m_attributes->SetDegreePolinom(4);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay5_7Toogled()
+{
+    m_attributes->SetDegreePolinom(5);
+    m_attributes->SetMaskPixelsCount(7);
+    NoiseGolayAlgExecute();
+}
+
+void PlotterWindow::ActionNoiseSavitGolay5_9Toogled()
+{
+    m_attributes->SetDegreePolinom(5);
+    m_attributes->SetMaskPixelsCount(9);
+    NoiseGolayAlgExecute();
 }
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
@@ -323,36 +416,36 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_hold = oldHold;
 }
 
-void PlotterWindow::ActionNoiseSavitGolay2_3_5Toogled()
-{
-    m_attributes->SetDegreePolinom(3);
-    m_attributes->SetMaskPixelsCount(5);
-    NoiseGolayAlgExecute();
-}
-void PlotterWindow::ActionNoiseSavitGolay2_3_7Toogled()
-{
-    m_attributes->SetDegreePolinom(3);
-    m_attributes->SetMaskPixelsCount(7);
-    NoiseGolayAlgExecute();
-}
+//void PlotterWindow::ActionNoiseSavitGolay2_3_5Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(5);
+//    NoiseGolayAlgExecute();
+//}
+//void PlotterWindow::ActionNoiseSavitGolay2_3_7Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(7);
+//    NoiseGolayAlgExecute();
+//}
 
-void PlotterWindow::ActionNoiseSavitGolay2_3_9Toogled()
-{
-    m_attributes->SetDegreePolinom(3);
-    m_attributes->SetMaskPixelsCount(9);
-    NoiseGolayAlgExecute();
-}
+//void PlotterWindow::ActionNoiseSavitGolay2_3_9Toogled()
+//{
+//    m_attributes->SetDegreePolinom(3);
+//    m_attributes->SetMaskPixelsCount(9);
+//    NoiseGolayAlgExecute();
+//}
 
-void PlotterWindow::ActionNoiseSavitGolay4_5_7Toogled()
-{
-    m_attributes->SetDegreePolinom(4);
-    m_attributes->SetMaskPixelsCount(7);
-    NoiseGolayAlgExecute();
-}
+//void PlotterWindow::ActionNoiseSavitGolay4_5_7Toogled()
+//{
+//    m_attributes->SetDegreePolinom(4);
+//    m_attributes->SetMaskPixelsCount(7);
+//    NoiseGolayAlgExecute();
+//}
 
-void PlotterWindow::ActionNoiseSavitGolay4_5_9Toogled()
-{
-    m_attributes->SetDegreePolinom(4);
-    m_attributes->SetMaskPixelsCount(9);
-    NoiseGolayAlgExecute();
-}
+//void PlotterWindow::ActionNoiseSavitGolay4_5_9Toogled()
+//{
+//    m_attributes->SetDegreePolinom(4);
+//    m_attributes->SetMaskPixelsCount(9);
+//    NoiseGolayAlgExecute();
+//}
