@@ -33,17 +33,6 @@ const QMap<QString, ProcessingPluginsInterface*> PluginsControl::GetProcessingPl
 void PluginsControl::LoadPlugins()
 {
     QDir pluginsDir(qApp->applicationDirPath());
-#if defined(Q_OS_WIN)
-    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-       // pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (pluginsDir.dirName() == "MacOS") {
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-    }
-#endif
-   // pluginsDir.cd("plugins");
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         if (!fileName.endsWith(".dll")) continue;
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
@@ -52,8 +41,8 @@ void PluginsControl::LoadPlugins()
         {
             try
             {
-               FileReadInterface*  obj = qobject_cast<FileReadInterface *>(pluginLoader.instance());
-               m_readingPluginsMap.insert(MetaData["Name"].toString(), obj);
+                FileReadInterface*  obj = qobject_cast<FileReadInterface *>(pluginLoader.instance());
+                m_readingPluginsMap.insert(MetaData["Name"].toString(), obj);
 
             }
             catch (...)
@@ -67,8 +56,8 @@ void PluginsControl::LoadPlugins()
         {
             try
             {
-               ProcessingPluginsInterface*  obj = qobject_cast<ProcessingPluginsInterface *>(pluginLoader.instance());
-               m_processingPluginsMap.insert(MetaData["Name"].toString(), obj);
+                ProcessingPluginsInterface*  obj = qobject_cast<ProcessingPluginsInterface *>(pluginLoader.instance());
+                m_processingPluginsMap.insert(MetaData["Name"].toString(), obj);
 
             }
             catch (...)

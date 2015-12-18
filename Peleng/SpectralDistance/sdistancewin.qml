@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.1
 Window
 {
     signal calcMeth(int methNumber)
+    signal rangeChanged(int range);
     function processPercent()
     {
         console.log("YES");
@@ -27,9 +28,10 @@ Window
             Layout.fillWidth: true
             id: text1
             text: qsTr("Выбор метода")
+            font.pixelSize:  22
+            font.bold: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: 33
         }
 
         ComboBox {
@@ -38,6 +40,8 @@ Window
             Layout.fillWidth: true
             width: 161
             height: 20
+            activeFocusOnPress: true
+            Layout.minimumWidth: 200
             model: ListModel{
                 ListElement {text: "Евклидово расстояние"}
                 ListElement {text: "Спектральный Угол"}
@@ -52,18 +56,25 @@ Window
             Layout.fillWidth: true
             x: 381
             y: 41
-            text: qsTr("Близость % ") + sliderHorizontal1.value
+            text: qsTr("Отличие < ") + sliderHorizontal1.value + qsTr(" %")
+            font.bold: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
-            font.pointSize: 19
+            font.pixelSize: 22
         }
 
         Slider {
             Layout.fillHeight: true
             Layout.fillWidth: true
+            value: 10
             id: sliderHorizontal1
             stepSize: 1
             maximumValue: 100
+            onValueChanged: {
+                rangeChanged(value)
+            }
+
+            //on
         }
 
 

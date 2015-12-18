@@ -55,11 +55,21 @@ public slots:
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
 
-    void ActionNoiseSavitGolay2_3_5Toogled();
-    void ActionNoiseSavitGolay2_3_7Toogled();
-    void ActionNoiseSavitGolay2_3_9Toogled();
-    void ActionNoiseSavitGolay4_5_7Toogled();
-    void ActionNoiseSavitGolay4_5_9Toogled();
+//    void ActionNoiseSavitGolay2_3_5Toogled();
+//    void ActionNoiseSavitGolay2_3_7Toogled();
+//    void ActionNoiseSavitGolay2_3_9Toogled();
+//    void ActionNoiseSavitGolay4_5_7Toogled();
+//    void ActionNoiseSavitGolay4_5_9Toogled();
+    void ActionNoiseSavitGolay2_5Toogled();
+    void ActionNoiseSavitGolay2_7Toogled();
+    void ActionNoiseSavitGolay2_9Toogled();
+    void ActionNoiseSavitGolay3_5Toogled();
+    void ActionNoiseSavitGolay3_7Toogled();
+    void ActionNoiseSavitGolay3_9Toogled();
+    void ActionNoiseSavitGolay4_7Toogled();
+    void ActionNoiseSavitGolay4_9Toogled();
+    void ActionNoiseSavitGolay5_7Toogled();
+    void ActionNoiseSavitGolay5_9Toogled();
     void ActionSpectralDistanceToogled();
     void ActionRGBCorrectionToogled();
 protected:
