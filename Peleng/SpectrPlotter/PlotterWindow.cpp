@@ -2,9 +2,10 @@
 #include "ui_PlotterWindow.h"
 
 #include <QtAlgorithms>
-#include "../Library/GenericExc.h"
 #include <QDebug>
 #include <QMessageBox>
+#include "../Library/GenericExc.h"
+
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QMainWindow(parent)
@@ -21,7 +22,12 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
     initSize = size();
-
+    dispersionText = new QCPItemText(m_customPlot);
+    vertLine = new QCPItemStraightLine(m_customPlot);
+    horizLine = new QCPItemStraightLine(m_customPlot);
+    m_customPlot->addItem(dispersionText);
+//    m_customPlot->addItem(vertLine);
+//    m_customPlot->addItem(horizLine);
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
@@ -40,6 +46,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
 }
 
 PlotterWindow::~PlotterWindow()
@@ -144,6 +151,20 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
 
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
+{
+    double x = m_customPlot->xAxis->pixelToCoord(e->x());
+    double y = m_customPlot->yAxis->pixelToCoord(e->y());
+    dispersionText->position->setCoords(x, m_customPlot->yAxis->pixelToCoord(e->y() - 10));
+    dispersionText->setText(QString("%1 , %2").arg(x).arg(y));
+    dispersionText->setFont(QFont(font().family(), 10));
+    horizLine->point1->setCoords(x,y);
+    horizLine->point2->setCoords(0,y);
+    vertLine->point1->setCoords(x,y);
+    vertLine->point2->setCoords(x,0);
+    m_customPlot->replot();
 }
 
 void PlotterWindow::removeSelectedGraph()
@@ -316,6 +337,8 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             m_customPlot->clearGraphs();
 
         m_customPlot->addGraph();
+        m_customPlot->graph()->setScatterStyle( QCPScatterStyle::ssCircle);
+        //addTracer(m_customPlot->graph());
         if (m_customPlot->graphCount() == 1) // первый график всегда черного цвета, остальные - рандомные
             m_customPlot->graph()->setPen(QPen(Qt::black));
         else
@@ -416,36 +439,16 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_hold = oldHold;
 }
 
-//void PlotterWindow::ActionNoiseSavitGolay2_3_5Toogled()
+//void PlotterWindow::addTracer(QCPGraph *graph)
 //{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(5);
-//    NoiseGolayAlgExecute();
-//}
-//void PlotterWindow::ActionNoiseSavitGolay2_3_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
-
-//void PlotterWindow::ActionNoiseSavitGolay2_3_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
+//    QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
+//    m_customPlot->addItem(phaseTracer);
+//    phaseTracer->setGraph(graph);
+//    phaseTracer->setInterpolating(true);
+//    phaseTracer->setStyle(QCPItemTracer::tsCircle);
+//    phaseTracer->setPen(QPen(Qt::red));
+//    phaseTracer->setBrush(Qt::red);
+//    phaseTracer->setSize(7);
 //}
 
-//void PlotterWindow::ActionNoiseSavitGolay4_5_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
 
-//void PlotterWindow::ActionNoiseSavitGolay4_5_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
-//}

@@ -5,7 +5,6 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
-
 namespace Ui {
 class PlotterWindow;
 }
@@ -33,9 +32,11 @@ private:
     void closeEvent(QCloseEvent *);
     void NoiseMedianAlgExecute();
     void NoiseGolayAlgExecute();
+    //void addTracer(QCPGraph *graph);
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
     void contextMenuRequest(QPoint pos);
+    void mouseMoveRequest(QMouseEvent* e);
     void removeSelectedGraph();
     void removeAllExceptSelectedGraph();
 public slots:
@@ -45,11 +46,7 @@ public slots:
     void ActionNoise5MedianToggled();
     void ActionNoise7MedianToggled();
 
-//    void ActionNoiseSavitGolay2_3_5Toogled();
-//    void ActionNoiseSavitGolay2_3_7Toogled();
-//    void ActionNoiseSavitGolay2_3_9Toogled();
-//    void ActionNoiseSavitGolay4_5_7Toogled();
-//    void ActionNoiseSavitGolay4_5_9Toogled();
+
     void ActionNoiseSavitGolay2_5Toogled();
     void ActionNoiseSavitGolay2_7Toogled();
     void ActionNoiseSavitGolay2_9Toogled();
@@ -65,6 +62,9 @@ private:
     bool m_hold;
     Ui::PlotterWindow *ui;
     QCustomPlot *m_customPlot;
+    QCPItemText *dispersionText;
+    QCPItemStraightLine *vertLine;
+    QCPItemStraightLine *horizLine;
     double minY;
     double maxY;
     QSize initSize;
