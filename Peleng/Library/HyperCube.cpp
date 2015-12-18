@@ -10,7 +10,7 @@
 
 HyperCube::HyperCube()
 {
-
+    m_dataCube = 0;
 }
 
 HyperCube::~HyperCube()
@@ -36,6 +36,7 @@ void HyperCube::SetInfoData(const InfoData& infoData) // Задать векто
         m_dataCube[i] = new u::int8[m_infoData.lines*m_infoData.samples*m_infoData.bytesType];
     }
     m_sizeCube = m_infoData.bands*m_infoData.lines*m_infoData.samples*m_infoData.bytesType;
+    qDebug() << "Create memory for cube";
 }
 
 void HyperCube::SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore) {
@@ -74,11 +75,15 @@ void HyperCube::SetDataSpectrum(u::cptr data, u::uint32 x, u::uint32 y)
 }
 
 void HyperCube::DestroyCube() {
-    for (u::uint32 i = 0; i < m_infoData.bands; i++)
-     {
-        delete [] m_dataCube[i];
-     }
-     delete [] m_dataCube;
+    if (m_dataCube != 0)
+    {
+        for (u::uint32 i = 0; i < m_infoData.bands; i++)
+         {
+            delete [] m_dataCube[i];
+         }
+         delete [] m_dataCube;
+    }
+    m_dataCube = 0;
 }
 
 u::uint32 HyperCube::GetCountofChannels()
