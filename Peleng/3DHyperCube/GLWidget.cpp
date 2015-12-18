@@ -783,7 +783,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     }
     if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
     {
-        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB коррекция", this, SLOT(ActionRGBCorrectionToogled()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB изображение", this, SLOT(ActionRGBCorrectionToogled()));
     }
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {

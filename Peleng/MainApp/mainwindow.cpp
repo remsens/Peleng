@@ -105,9 +105,10 @@ void MainWindow::LoadFile()
         if (m_pluginsControl->GetProcessingPlugins().size() > 0)
         {
 
-            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Rgb Image UI");
+            //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Rgb Image UI");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Noise Remover");
             //m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("Spectr UI");
+            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
             //Attributes::I()->SetPoint(150, 150, 200);
            // Attributes::I()->SetModeLib(1);
