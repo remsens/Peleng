@@ -69,6 +69,7 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 }
 
 u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube) {
+    qDebug() << "Start FilesOperation creating cube data for cube";
     InfoData infoData;
     infoData.bands = m_bands;
     infoData.formatType = m_dataType;
@@ -137,6 +138,7 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 		m_progress = 100;
 	}
 	fclose(pfile);
+    qDebug() << "Finish FilesOperation creating cube data for cube";
 	return true;
 }
 
@@ -295,6 +297,7 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 		fclose (pFile);
 	}
 }
+
 u::uint32 FilesOperation::ConvertStrtoInt(const char* data) {
 	try 
 	{
@@ -315,7 +318,7 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 		case 3: m_headerOffset = ConvertStrtoInt(data); break;
         case 4: m_dataType = TypeFromAvirisType(ConvertStrtoInt(data)); break;
 		case 5: 
-			{
+        {
 				if (strcmp(data, "bsq") == 0)
 				{
 					m_interleave = 0;
@@ -329,6 +332,6 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 				break;
 			case 6:
 				m_byteorder = ConvertStrtoInt(data);
-			}
+        }
 	}
 }

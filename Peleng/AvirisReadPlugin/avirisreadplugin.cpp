@@ -1,6 +1,7 @@
 #include "avirisreadplugin.h"
 
 #include "../Library/GenericExc.h"
+#include "QDebug"
 
 void AvirisReadPlugin::ExceptionLibrary()
 {
