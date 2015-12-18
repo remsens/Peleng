@@ -44,7 +44,8 @@ MainWindow::~MainWindow()
 void MainWindow::LoadFile()
 {
 
-    // TODO
+    // TODO очистка всех плагинов (закрыть все окна)
+
     if (m_pluginsControl->GetReadingPlugins().size() > 0) {
 
         cube->DestroyCube();

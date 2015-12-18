@@ -28,17 +28,14 @@ u::uint8 HyperCube::GetSizeOfFormatType() {
 
 void HyperCube::SetInfoData(const InfoData& infoData) // Задать вектор и его емкость
 {
-    qDebug() << "Start create memory for cube";
     m_infoData = infoData;
 
     m_dataCube = new u::int8*[m_infoData.bands];
     for (u::uint32 i = 0; i < m_infoData.bands; i++)
     {
         m_dataCube[i] = new u::int8[m_infoData.lines*m_infoData.samples*m_infoData.bytesType];
-        qDebug() << i;
     }
     m_sizeCube = m_infoData.bands*m_infoData.lines*m_infoData.samples*m_infoData.bytesType;
-    qDebug() << "Finish create memory for cube";
 }
 
 void HyperCube::SetDataBuffer(u::uint32 channel, u::cptr data, u::uint32 size, u::uint32 iteratorBefore) {

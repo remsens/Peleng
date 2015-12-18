@@ -69,7 +69,6 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 }
 
 u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube) {
-    qDebug() << "Start FilesOperation creating cube data for cube";
     InfoData infoData;
     infoData.bands = m_bands;
     infoData.formatType = m_dataType;
@@ -138,7 +137,6 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
 		m_progress = 100;
 	}
 	fclose(pfile);
-    qDebug() << "Finish FilesOperation creating cube data for cube";
 	return true;
 }
 
