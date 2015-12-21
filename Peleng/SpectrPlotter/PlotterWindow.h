@@ -39,6 +39,10 @@ private slots:
     void mouseMoveRequest(QMouseEvent* e);
     void removeSelectedGraph();
     void removeAllExceptSelectedGraph();
+    //! слот по клику из опций "Отображать значения под курсором"
+    void onActionValues(bool flag);
+    //! слот по клику из опций "Отображать точки графика"
+    void onActionPoints(bool flag);
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
@@ -60,9 +64,11 @@ public slots:
 
 private:
     bool m_hold;
+    bool m_valuesFlag;
+    bool m_pointsFlag;
     Ui::PlotterWindow *ui;
     QCustomPlot *m_customPlot;
-    QCPItemText *dispersionText;
+    QCPItemText *textValues;
     QCPItemStraightLine *vertLine;
     QCPItemStraightLine *horizLine;
     double minY;

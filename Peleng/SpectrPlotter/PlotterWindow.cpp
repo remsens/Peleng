@@ -21,11 +21,15 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
+    m_valuesFlag = false;
+    m_pointsFlag = false;
     initSize = size();
-    dispersionText = new QCPItemText(m_customPlot);
+    textValues = new QCPItemText(m_customPlot);
     vertLine = new QCPItemStraightLine(m_customPlot);
     horizLine = new QCPItemStraightLine(m_customPlot);
-    m_customPlot->addItem(dispersionText);
+    textValues->setVisible(false); // т.к. есть баг, что при создании item'ов они сразу отрисовываются в (0,0)
+    vertLine->setVisible(false);
+    horizLine->setVisible(false);
 //    m_customPlot->addItem(vertLine);
 //    m_customPlot->addItem(horizLine);
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
@@ -47,6 +51,8 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
+    connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
+    connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
 }
 
 PlotterWindow::~PlotterWindow()
@@ -157,14 +163,19 @@ void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
 {
     double x = m_customPlot->xAxis->pixelToCoord(e->x());
     double y = m_customPlot->yAxis->pixelToCoord(e->y());
-    dispersionText->position->setCoords(x, m_customPlot->yAxis->pixelToCoord(e->y() - 10));
-    dispersionText->setText(QString("%1 , %2").arg(x).arg(y));
-    dispersionText->setFont(QFont(font().family(), 10));
-    horizLine->point1->setCoords(x,y);
-    horizLine->point2->setCoords(0,y);
-    vertLine->point1->setCoords(x,y);
-    vertLine->point2->setCoords(x,0);
-    m_customPlot->replot();
+    if(m_valuesFlag)
+    {
+        textValues->position->setCoords(x, m_customPlot->yAxis->pixelToCoord(e->y() - 10));
+        textValues->setText(QString("x:%1 , y:%2").arg(x).arg(y));
+        textValues->setFont(QFont(font().family(), 10));
+        horizLine->point1->setCoords(x,y);
+        horizLine->point2->setCoords(0,y);
+        vertLine->point1->setCoords(x,y);
+        vertLine->point2->setCoords(x,0);
+        vertLine->setSelectable(false);
+        horizLine->setSelectable(false);
+        m_customPlot->replot();
+    }
 }
 
 void PlotterWindow::removeSelectedGraph()
@@ -189,6 +200,40 @@ void PlotterWindow::removeAllExceptSelectedGraph()
         }
         m_customPlot->replot();
     }
+}
+
+void PlotterWindow::onActionValues(bool flag)
+{
+   m_valuesFlag = flag;
+   if (flag)
+   {
+       textValues->setVisible(true);
+       vertLine->setVisible(true);
+       horizLine->setVisible(true);
+   }
+   else
+   {
+       textValues->setVisible(false);
+       vertLine->setVisible(false);
+       horizLine->setVisible(false);
+   }
+   m_customPlot->replot();
+}
+
+void PlotterWindow::onActionPoints(bool flag)
+{
+    m_pointsFlag = flag;
+    if(flag)
+    {
+        for(int i = 0; i < m_customPlot->graphCount(); i++)
+            m_customPlot->graph(i)->setScatterStyle(QCPScatterStyle::ssDisc);
+    }
+    else
+    {
+        for(int i = 0; i < m_customPlot->graphCount(); i++)
+            m_customPlot->graph(i)->setScatterStyle(QCPScatterStyle::ssNone);
+    }
+    m_customPlot->replot();
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()
@@ -337,7 +382,10 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             m_customPlot->clearGraphs();
 
         m_customPlot->addGraph();
-        m_customPlot->graph()->setScatterStyle( QCPScatterStyle::ssCircle);
+        if(m_pointsFlag)
+        {
+            m_customPlot->graph()->setScatterStyle( QCPScatterStyle::ssDisc );
+        }
         //addTracer(m_customPlot->graph());
         if (m_customPlot->graphCount() == 1) // первый график всегда черного цвета, остальные - рандомные
             m_customPlot->graph()->setPen(QPen(Qt::black));
