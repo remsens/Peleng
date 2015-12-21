@@ -26,22 +26,12 @@ public slots:
 
 
 
-//zoom
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-  //  void paintEvent(QPaintEvent *event);
 
 private slots:
     void updateSize();
-    void ZoomIn();
-    void ZoomOut();
 
 private:
-    QRect zoomRect;
-    bool drawing ;
-    Ui::RgbImageWindow *ui;
-    QPixmap mainPixmap;
-    QPainter painter;
+    Ui::RgbImageWindow *ui;    
 };
 
 #endif // RGBIMAGEWINDOW_H

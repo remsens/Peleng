@@ -89,7 +89,8 @@ void HistPlotterWidget::PlotDefault()
     ui->beforeCustomPlot->replot();
 
 
-
+    ui->leftSlider->setMinimum(ui->beforeCustomPlot->xAxis->range().lower);
+    ui->rightSlider->setMinimum(ui->beforeCustomPlot->xAxis->range().lower);
 
     ui->leftSlider->setMaximum(ui->beforeCustomPlot->xAxis->range().upper);
     ui->rightSlider->setMaximum(ui->beforeCustomPlot->xAxis->range().upper);
@@ -97,8 +98,8 @@ void HistPlotterWidget::PlotDefault()
 
 
 
-    leftLine->point1->setCoords(0,0);
-    leftLine->point2->setCoords(0,1);
+    leftLine->point1->setCoords(ui->beforeCustomPlot->xAxis->range().lower,0);
+    leftLine->point2->setCoords(ui->beforeCustomPlot->xAxis->range().lower,1);
 
     rigthLine->point1->setCoords(ui->beforeCustomPlot->xAxis->range().upper,0);
     rigthLine->point2->setCoords(ui->beforeCustomPlot->xAxis->range().upper,ui->beforeCustomPlot->yAxis->range().upper);
