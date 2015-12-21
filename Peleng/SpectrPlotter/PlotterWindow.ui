@@ -452,6 +452,8 @@
      <string>Опции</string>
     </property>
     <addaction name="actionHold"/>
+    <addaction name="actionPoints"/>
+    <addaction name="actionValues"/>
    </widget>
    <addaction name="menuSpectrum"/>
   </widget>
@@ -475,6 +477,22 @@
   <action name="action_2">
    <property name="text">
     <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="actionPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Отображать точки графика</string>
+   </property>
+  </action>
+  <action name="actionValues">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Отображать значения под курсором</string>
    </property>
   </action>
  </widget>

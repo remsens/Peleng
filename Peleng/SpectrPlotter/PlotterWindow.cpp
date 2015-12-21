@@ -2,9 +2,10 @@
 #include "ui_PlotterWindow.h"
 
 #include <QtAlgorithms>
-#include "../Library/GenericExc.h"
 #include <QDebug>
 #include <QMessageBox>
+#include "../Library/GenericExc.h"
+
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QMainWindow(parent)
@@ -20,8 +21,17 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     ui->setupUi(this);
     m_customPlot = (QCustomPlot*) ui->PlotWidget;
     m_hold = false;
+    m_valuesFlag = false;
+    m_pointsFlag = false;
     initSize = size();
-
+    textValues = new QCPItemText(m_customPlot);
+    vertLine = new QCPItemStraightLine(m_customPlot);
+    horizLine = new QCPItemStraightLine(m_customPlot);
+    textValues->setVisible(false); // т.к. есть баг, что при создании item'ов они сразу отрисовываются в (0,0)
+    vertLine->setVisible(false);
+    horizLine->setVisible(false);
+//    m_customPlot->addItem(vertLine);
+//    m_customPlot->addItem(horizLine);
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
@@ -40,6 +50,9 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
+    connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
+    connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
 }
 
 PlotterWindow::~PlotterWindow()
@@ -146,6 +159,25 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
     menu->popup(m_customPlot->mapToGlobal(pos));
 }
 
+void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
+{
+    double x = m_customPlot->xAxis->pixelToCoord(e->x());
+    double y = m_customPlot->yAxis->pixelToCoord(e->y());
+    if(m_valuesFlag)
+    {
+        textValues->position->setCoords(x, m_customPlot->yAxis->pixelToCoord(e->y() - 10));
+        textValues->setText(QString("x:%1 , y:%2").arg(x).arg(y));
+        textValues->setFont(QFont(font().family(), 10));
+        horizLine->point1->setCoords(x,y);
+        horizLine->point2->setCoords(0,y);
+        vertLine->point1->setCoords(x,y);
+        vertLine->point2->setCoords(x,0);
+        vertLine->setSelectable(false);
+        horizLine->setSelectable(false);
+        m_customPlot->replot();
+    }
+}
+
 void PlotterWindow::removeSelectedGraph()
 {
     if (m_customPlot->selectedGraphs().size() > 0)
@@ -168,6 +200,40 @@ void PlotterWindow::removeAllExceptSelectedGraph()
         }
         m_customPlot->replot();
     }
+}
+
+void PlotterWindow::onActionValues(bool flag)
+{
+   m_valuesFlag = flag;
+   if (flag)
+   {
+       textValues->setVisible(true);
+       vertLine->setVisible(true);
+       horizLine->setVisible(true);
+   }
+   else
+   {
+       textValues->setVisible(false);
+       vertLine->setVisible(false);
+       horizLine->setVisible(false);
+   }
+   m_customPlot->replot();
+}
+
+void PlotterWindow::onActionPoints(bool flag)
+{
+    m_pointsFlag = flag;
+    if(flag)
+    {
+        for(int i = 0; i < m_customPlot->graphCount(); i++)
+            m_customPlot->graph(i)->setScatterStyle(QCPScatterStyle::ssDisc);
+    }
+    else
+    {
+        for(int i = 0; i < m_customPlot->graphCount(); i++)
+            m_customPlot->graph(i)->setScatterStyle(QCPScatterStyle::ssNone);
+    }
+    m_customPlot->replot();
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()
@@ -316,6 +382,11 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             m_customPlot->clearGraphs();
 
         m_customPlot->addGraph();
+        if(m_pointsFlag)
+        {
+            m_customPlot->graph()->setScatterStyle( QCPScatterStyle::ssDisc );
+        }
+        //addTracer(m_customPlot->graph());
         if (m_customPlot->graphCount() == 1) // первый график всегда черного цвета, остальные - рандомные
             m_customPlot->graph()->setPen(QPen(Qt::black));
         else
@@ -416,36 +487,16 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_hold = oldHold;
 }
 
-//void PlotterWindow::ActionNoiseSavitGolay2_3_5Toogled()
+//void PlotterWindow::addTracer(QCPGraph *graph)
 //{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(5);
-//    NoiseGolayAlgExecute();
-//}
-//void PlotterWindow::ActionNoiseSavitGolay2_3_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
-
-//void PlotterWindow::ActionNoiseSavitGolay2_3_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
+//    QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
+//    m_customPlot->addItem(phaseTracer);
+//    phaseTracer->setGraph(graph);
+//    phaseTracer->setInterpolating(true);
+//    phaseTracer->setStyle(QCPItemTracer::tsCircle);
+//    phaseTracer->setPen(QPen(Qt::red));
+//    phaseTracer->setBrush(Qt::red);
+//    phaseTracer->setSize(7);
 //}
 
-//void PlotterWindow::ActionNoiseSavitGolay4_5_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
 
-//void PlotterWindow::ActionNoiseSavitGolay4_5_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
-//}
