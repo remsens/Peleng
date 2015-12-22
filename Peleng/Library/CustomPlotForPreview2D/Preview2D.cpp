@@ -23,30 +23,25 @@ Preview2D::~Preview2D()
     delete m_ui;
 }
 
-void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
+void Preview2D::Plot(double* data, const int rows, const int cols, const QString& title)
 {
-    qDebug() << "start Plot Noise";
     if(rows>cols)
          this->resize(this->width(), this->width() * cols / rows);
     else
         this->resize(this->width() * rows / cols, this->width() );
-    setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
+    setWindowTitle(title);
     int minCMap =  32767;
     int maxCMap = -32767;
-    //QCPColorMap* colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     colorMap->setKeyAxis(m_cPlot->xAxis);
     colorMap->setValueAxis(m_cPlot->yAxis);
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-    qDebug()<<"colorMap setSize";
-
     for (u::int32 x = 0; x < rows; x++) {
         for (u::int32 y = 0; y < cols; y++) {
             colorMap->data()->setCell(x, y, data[x * cols + y] );
         }
     }
     qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
-    qDebug()<<"qsort";
     minCMap = data[int(rows*cols*0.02)];
     maxCMap = data[int(rows*cols*0.98)];
     m_cPlot->rescaleAxes();
@@ -58,6 +53,4 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const int num
     m_cPlot->setInteraction(QCP::iRangeDrag,true);
     m_cPlot->replot();
     this->show();
-    qDebug() << "finish plot noise";;
-
-}
+ }

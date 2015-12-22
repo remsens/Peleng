@@ -69,15 +69,8 @@ public:
             }
         }
         Preview2D* previewWindow = new Preview2D();
-
-        ///////////
-
-
-        //Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
-
-
-        ///////////
-        previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+        QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+        previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
         delete [] dataChannel;
         qDebug() << "finish noise";
     }
@@ -85,7 +78,6 @@ public:
 
     bool ToCube()
     {
-        // предварительная оценка времени:
         QIcon icon(":/NoiseRemover/icons/NoiseRemover.png");
         u::uint32 channels = BaseNoiseAlg<T>::m_cube->GetCountofChannels();
         QProgressDialog* progressBar = new QProgressDialog();
@@ -115,7 +107,6 @@ public:
                      {
                          if (progressBar->wasCanceled())
                          {
-                              //progressBar->setValue(100);
                               delete progressBar;
                               //From HDF
                               return false;
@@ -139,7 +130,7 @@ public:
             delete progressBar;
         }
 
-        //delete progressBar;
+        delete progressBar;
         delete [] arrWindow;
         return true;
     }
