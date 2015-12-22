@@ -7,7 +7,7 @@
 
 #include "../Library/GenericExc.h"
 #include <QString>
-#include <QDebug>
+#include <qDebug>
 
 FilesOperation::FilesOperation()
 {
@@ -68,7 +68,186 @@ u::uint32 FilesOperation::GetFileSize(const std::string& fileName) {
 	return size;
 }
 
+u::logic FilesOperation::ReadBSQ(const std::string& fileName, HyperCube* cube)
+{
+    u::uint32 chunk_size = m_samples*m_lines*GetNumberOfBytesFromData(m_dataType);
+    m_progress = 0;
+    FILE* pfile;
+    if ((pfile = fopen(fileName.c_str(), "rb")) == NULL)
+    {
+        throw GenericExc("Невозможно открыть файл данных");
+        return false;
+    }
+    for (u::uint32 i = 0; i < m_bands; i++)
+    {
+        if (m_break)
+        {
+            qDebug() << "break";
+            break;
+        }
+        u::int8* tempbuf = new u::int8[chunk_size];
+
+        if (fread(tempbuf, sizeof(u::int8), chunk_size, pfile))
+        {
+            cube->SetDataBuffer(i, tempbuf, 0);
+            m_progress = i*100/m_bands;
+        } else
+        {
+            throw GenericExc("Ошибка чтения данных из файла");
+            return false;
+        }
+    }
+    fclose(pfile);
+    return true;
+}
+
+u::logic FilesOperation::ReadBIL(const std::string& fileName, HyperCube* cube)
+{
+    u::uint32 chunk_size = m_samples*GetNumberOfBytesFromData(m_dataType)*256;
+    u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
+    u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
+    u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
+    FILE* pfile;
+    if ((pfile = fopen(fileName.c_str(), "rb")) == NULL)
+    {
+        throw GenericExc("Невозможно открыть файл данных");
+        return false;
+    }
+    for (u::uint32 i = 0; i < bcnt; i++)
+    {
+        if (m_break)
+        {
+            qDebug() << "break";
+            break;
+        }
+        u::int8* tempbuf = new u::int8[chunk_size];
+        if (!fread(tempbuf, sizeof(char), chunk_size, pfile))
+        {
+            throw GenericExc("Ошибка чтения данных из файла");
+            return false;
+        }
+        for (int j = 0; j < 256; j++) {
+            u::uint32 k = 0;
+            while (k < m_bands)
+            {
+                cube->SetDataBuffer(k, tempbuf + (j*m_samples*sizeEl), chunk_size, i*256*sizeEl);
+                k++;
+            }
+        }
+        delete [] tempbuf;
+        m_progress = (double)((double)i/bcnt)*100;
+    }
+    if (ost != 0) {
+        u::uint8* tempbuf = new u::uint8[ost];
+        fread(tempbuf, sizeof(u::int8*), ost, pfile);
+//        for (u::uint32 j = 0; j < ost/(m_bands); j++) {
+//            u::uint32 k = 0;
+//            while (k < m_bands)
+//            {
+//                cube->SetDataBuffer(k, tempbuf + (j*m_samples*sizeEl), , bcnt*1024*sizeEl + j*sizeEl);
+//                k++;
+//            }
+//        }
+//        delete [] tempbuf;
+        m_progress = 100;
+    }
+    fclose(pfile);
+    return true;
+}
+
+u::logic FilesOperation::ReadBIP(const std::string& fileName, HyperCube* cube)
+{
+    u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
+    u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
+    u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
+    u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
+    m_progress = 0;
+    FILE* pfile;
+    if ((pfile = fopen(fileName.c_str(), "rb")) == NULL)
+    {
+        throw GenericExc("Невозможно открыть файл данных");
+        return false;
+    }
+    for (u::uint32 i = 0; i < bcnt; i++)
+    {
+        if (!m_break)
+        {
+            if (!feof(pfile))
+            {
+                try
+                {
+                    u::int8* tempbuf = new u::int8[chunk_size];
+                    if (!fread(tempbuf, sizeof(char), chunk_size, pfile))
+                    {
+                        throw GenericExc("Ошибка чтения данных из файла");
+                        return false;
+                    }
+                    for (int j = 0; j < 1024; j++) {
+                        u::uint32 k = 0;
+                        while (k < m_bands*sizeEl)
+                        {
+                            cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
+                            k += sizeEl;
+                        }
+                    }
+                    delete [] tempbuf;
+                    m_progress = (double)((double)i/bcnt)*100;
+                } catch (...)
+                {
+                    qDebug() << "exc";
+                    throw GenericExc("Ошибка чтения данных из файла");
+                    return false;
+                }
+            }
+        } else
+        {
+            qDebug() << "break";
+            break;
+        }
+    }
+    if (ost != 0) {
+        u::uint8* tempbuf = new u::uint8[ost];
+        fread(tempbuf, sizeof(char), ost, pfile);
+        for (u::uint32 j = 0; j < ost/(m_bands*sizeEl); j++) {
+            u::uint32 k = 0;
+            while (k < m_bands*sizeEl)
+            {
+                cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
+                k += sizeEl;
+            }
+        }
+        delete [] tempbuf;
+        m_progress = 100;
+    }
+    fclose(pfile);
+    return true;
+}
+
 u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube) {
+    if (m_bands <= 1)
+    {
+        throw GenericExc("Неправильное значения количества каналов гиперкуба");
+        return false;
+    } else if (m_lines <=1 )
+    {
+        throw GenericExc("Неправильное значения количества строк гиперкуба");
+        return false;
+    } else if (m_samples <= 1)
+    {
+        throw GenericExc("Неправильное значения количества столбцов гиперкуба");
+        return false;
+    } else if (m_dataType == 0)
+    {
+        throw GenericExc("Неизвестный тип данных");
+        return false;
+    } else if (m_listChannel.size() != m_bands)
+    {
+        m_listChannel.clear();
+        for (u::uint32 i = 0; i < m_bands; i++)
+        {
+            m_listChannel.push_back(i);
+        }
+    }
     InfoData infoData;
     infoData.bands = m_bands;
     infoData.formatType = m_dataType;
@@ -77,67 +256,15 @@ u::logic FilesOperation::CreateCube(const std::string& fileName, HyperCube* cube
     infoData.listChannels = m_listChannel;
     infoData.samples = m_samples;
     cube->SetInfoData(infoData);
+    // по умолчанию
+    switch (m_interleave) {
+        case 0: return ReadBSQ(fileName, cube);
+        case 1: return ReadBIL(fileName, cube);
+        case 2: return ReadBIP(fileName, cube);
+    default:
+        return false;
+    }
 
-	u::uint32 chunk_size = m_bands*GetNumberOfBytesFromData(m_dataType)*1024;
-	u::uint32 sizeEl = GetNumberOfBytesFromData(m_dataType);
-	u::uint32 bcnt = m_samples*m_lines*m_bands*sizeEl / chunk_size;
-    u::uint32 ost = m_samples*m_lines*m_bands *sizeEl % chunk_size;
-	m_progress = 0;
-	FILE* pfile;
-	if ((pfile = fopen(fileName.c_str(), "rb")) == NULL) 
-	{
-        throw GenericExc("Невозможно открыть файл данных");
-		return false;
-	}
-    for (u::uint32 i = 0; i < bcnt; i++)
-	{
-		if (!m_break) 
-		{
-			if (!feof(pfile)) 
-			{
-				try 
-				{
-                    u::int8* tempbuf = new u::int8[chunk_size];
-					fread(tempbuf, sizeof(char), chunk_size, pfile);
-					for (int j = 0; j < 1024; j++) {
-						u::uint32 k = 0;
-						while (k < m_bands*sizeEl)
-						{
-                            cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
-                            k += sizeEl;
-						}
-					}
-					delete [] tempbuf;
-					m_progress = (double)((double)i/bcnt)*100;
-				} catch (...) 
-				{
-                    qDebug() << "exc";
-                    throw GenericExc("Ошибка чтения данных из файла");
-					return false;
-				}
-			}
-		} else 
-        {
-            qDebug() << "break";
-            break;
-		}
-	}
-	if (ost != 0) {
-		u::uint8* tempbuf = new u::uint8[ost];
-		fread(tempbuf, sizeof(char), ost, pfile);
-        for (u::uint32 j = 0; j < ost/(m_bands*sizeEl); j++) {
-			u::uint32 k = 0;
-			while (k < m_bands*sizeEl)
-			{
-                cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
-				k += sizeEl;
-			}
-		}
-		delete [] tempbuf;
-		m_progress = 100;
-	}
-	fclose(pfile);
-	return true;
 }
 
 u::uint32 FilesOperation::GetNumberOfBytesFromData(u::int32 format) {
@@ -326,7 +453,9 @@ void FilesOperation::SetData(int parameter_id, const char* data) {
 				} else if(strcmp(data, "bip") == 0) 
 				{
 					m_interleave = 2;
-				}
+                } else {
+                    m_interleave = 0;
+                }
 				break;
 			case 6:
 				m_byteorder = ConvertStrtoInt(data);
