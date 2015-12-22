@@ -29,7 +29,7 @@ public:
     void initArrChanLimits();
     void setInitCustomplotSettings();
     //! Функция задания временного канала гиперкуба
-    void setTempChannel(u::cptr* chanData);
+    void setTempChannel(u::ptr chanData);
 
 public slots:
     //! Слот отрисовки данных канала гиперкуба

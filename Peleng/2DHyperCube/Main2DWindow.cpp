@@ -61,6 +61,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
+        setTempChannel((u::ptr)data[m_attributes->GetPointsList().at(0).z]);
     }
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
@@ -201,10 +202,19 @@ void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
     for (int i=0; i < points.size(); ++i) {
             colorMap->data()->setCell(points.at(i).x, points.at(i).y,points.at(i).z );
     }
-    ui->customPlot->rescaleAxes();
-   // qDebug() << attr->GetPointsList().at(0).z;
+//    ui->customPlot->rescaleAxes();
+//   // qDebug() << attr->GetPointsList().at(0).z;
+//    ui->customPlot->replot();
+    for (int i=0; i < points.size(); ++i)
+    {
+        m_tempChanel[ points.at(i).x * cols + points.at(i).y] = points.at(i).z;
+    }
 
-    ui->customPlot->replot();
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
+    drawHeatMap(minCMap, maxCMap);
+
+
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -279,13 +289,23 @@ void Main2DWindow::setInitCustomplotSettings()
     colorMap->rescaleDataRange(true);
 }
 
-void Main2DWindow::setTempChannel(u::cptr *chanData)
+void Main2DWindow::setTempChannel(u::ptr chanData)
 {
     try {
          memcpy(m_tempChanel, chanData, rows*cols*m_pCube->GetBytesInElements());
+         //m_attributes->SetTempChanel(m_tempChanel,rows,cols);
+         m_attributes->ClearList();
+         for (int x=0; x < rows; ++x) {
+             for (int y=0; y < cols; ++y) {
+                 m_attributes->SetPoint(x,y,m_tempChanel[x * cols + y]);
+             }
+         }
+
     } catch (...) {
         throw GenericExc("Неудалось копировать в темповый канал", -1);
     }
+
+
 }
 
 void Main2DWindow::fillChanList()
@@ -379,11 +399,7 @@ void Main2DWindow::updateViewchan(int chan)
 {
     if(flagGetTempChannelFromCube)
     {
-        try {
-             memcpy(m_tempChanel, data[chan], rows*cols*sizeof(qint16));
-        } catch (...) {
-            throw GenericExc("Неудалось копировать в темповый канал", -1);
-        }
+        setTempChannel((u::ptr)data[chan]);//data[chan]
     }
     if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
