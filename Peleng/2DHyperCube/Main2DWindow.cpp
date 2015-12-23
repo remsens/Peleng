@@ -483,7 +483,7 @@ void Main2DWindow::createMenus()
     pContextMenu->setStyleSheet("border: 0px solid black;");
     pPlotAction = new QAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this);
 
-    pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"),"Спектральный срез", this);
+    pPlotLineAction = new QAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"),"Пространственный срез", this);
     pPlotHistAction = new QAction(QIcon(":/icons2Dcube/icons/histogram.png"),"Гистограмма",this);
     pAddSpectr = new QAction(QIcon(":/IconsCube/iconsCube/CreateSpectr.png"),"Загрузить спектр",this);
     m_filters = new QMenu();

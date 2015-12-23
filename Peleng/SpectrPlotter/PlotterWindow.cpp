@@ -110,24 +110,14 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             QMenu* menuNoise = new QMenu("Фильтры", this);
 
             QMenu* menuNoiseMedian = new QMenu("Медианный фильтр", this);
-            menuNoiseMedian->addAction("Медианный 3х3", this, SLOT(ActionNoise3MedianToggled()));
-            menuNoiseMedian->addAction("Медианный 5х5", this, SLOT(ActionNoise5MedianToggled()));
-            menuNoiseMedian->addAction("Медианный 7х7", this, SLOT(ActionNoise7MedianToggled()));
+            menuNoiseMedian->addAction("Маска: 3 пикселя", this, SLOT(ActionNoise3MedianToggled()));
+            menuNoiseMedian->addAction("Маска: 5 пикселей", this, SLOT(ActionNoise5MedianToggled()));
+            menuNoiseMedian->addAction("Маска: 7 пикселей", this, SLOT(ActionNoise7MedianToggled()));
             menuNoise->addMenu(menuNoiseMedian);
 
             QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", this);
 
-//            QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", this);
-//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
-//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
-//            menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
 
-//            QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", this);
-//            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
-//            menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
-
-//            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
-//            menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
             QMenu* menuSavitskogoGolayDegreePoligons_2 = new QMenu("Полином 2-й степени", this);
             menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_5Toogled()));
             menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_7Toogled()));
@@ -486,17 +476,5 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }
-
-//void PlotterWindow::addTracer(QCPGraph *graph)
-//{
-//    QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
-//    m_customPlot->addItem(phaseTracer);
-//    phaseTracer->setGraph(graph);
-//    phaseTracer->setInterpolating(true);
-//    phaseTracer->setStyle(QCPItemTracer::tsCircle);
-//    phaseTracer->setPen(QPen(Qt::red));
-//    phaseTracer->setBrush(Qt::red);
-//    phaseTracer->setSize(7);
-//}
 
 

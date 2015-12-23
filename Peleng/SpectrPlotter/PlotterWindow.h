@@ -32,7 +32,6 @@ private:
     void closeEvent(QCloseEvent *);
     void NoiseMedianAlgExecute();
     void NoiseGolayAlgExecute();
-    //void addTracer(QCPGraph *graph);
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
     void contextMenuRequest(QPoint pos);
