@@ -30,7 +30,7 @@ HistPlotterWidget::HistPlotterWidget(HyperCube *cube, Attributes *attr, QWidget 
     PlotDefault();
 
     ui->sumBoundaryChBox->setChecked(true);
-    this->sumBoundary();
+    this->sumBoundary(true);//------------------------------ + true
 
 
 }
@@ -59,11 +59,11 @@ void HistPlotterWidget::PlotDefault()
 {
 
 
-    if (m_attributes->GetPointsList().size())
-    {
-        Channel = m_attributes->GetPointsList().at(0).z;
-    }
-
+//    if (m_attributes->GetPointsList().size())
+//    {
+//        Channel = m_attributes->GetPointsList().at(0).z;
+//    }
+    Channel = 0; //на всякий случай
 
 
     if (m_cube->GetSizeChannel()-1  < Channel) Channel = m_cube->GetSizeChannel()-1;
@@ -128,15 +128,15 @@ void HistPlotterWidget::on_rightSlider_sliderMoved(int position)
 
 void HistPlotterWidget::on_leftSlider_valueChanged(int value)
 {
-    if (ui->sumBoundaryChBox->isChecked()) sumBoundary();
-    else if (ui->gaussChBox->isChecked())  Gauss();
+    if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
+    else if (ui->gaussChBox->isChecked())  Gauss(true);
 
 }
 
 void HistPlotterWidget::on_rightSlider_valueChanged(int value)
 {
-    if (ui->sumBoundaryChBox->isChecked()) sumBoundary();
-    else if (ui->gaussChBox->isChecked())  Gauss();
+    if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
+    else if (ui->gaussChBox->isChecked())  Gauss(true);
 
 }
 

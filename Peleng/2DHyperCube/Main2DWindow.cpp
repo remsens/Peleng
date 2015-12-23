@@ -731,8 +731,8 @@ void Main2DWindow::prepareToHist()
 {
     if (!m_needToUpdate)
     {
-        m_attributes->ClearList();
-        m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
+//        m_attributes->ClearList();
+//        m_attributes->SetPoint(0, 0, ui->listWidget->currentRow());
         m_attributes->GetAvailablePlugins().value("Hist UI")->Execute(m_pCube, m_attributes);
     } else
     {
