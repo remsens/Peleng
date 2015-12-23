@@ -760,7 +760,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         if (m_attributes->GetAvailablePlugins().contains("Spectr UI"))
         {
-            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.ico"),"Спектр",this, SLOT(prepareToPlotSpectr()));
+            contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
 
         }
         if (m_attributes->GetAvailablePlugins().contains("2DCube UI"))
@@ -774,7 +774,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     }
     if (m_attributes->GetAvailablePlugins().contains("Line Plotter UI"))
     {
-        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"), "Спектральный срез", this, SLOT(createLinePlotterSlot()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Line Plotter.png"), "Пространственный срез", this, SLOT(createLinePlotterSlot()));
 
     }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
@@ -783,7 +783,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     }
     if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
     {
-        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB коррекция", this, SLOT(ActionRGBCorrectionToogled()));
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB изображение", this, SLOT(ActionRGBCorrectionToogled()));
     }
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
@@ -803,17 +803,7 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
         menuNoise->addMenu(menuNoiseMedian);
 
         QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", contextMenu);
-//        QMenu* menuSavitskogoGolayDegreePoligons_2_3 = new QMenu("Квадратичный/кубический полином", contextMenu);
-//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_5Toogled()));
-//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_7Toogled()));
-//        menuSavitskogoGolayDegreePoligons_2_3->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay2_3_9Toogled()));
 
-//        QMenu* menuSavitskogoGolayDegreePoligons_4_5 = new QMenu("Полином четвертой/пятой степени", contextMenu);
-//        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_7Toogled()));
-//        menuSavitskogoGolayDegreePoligons_4_5->addAction("Маска: 9 пикселей", this, SLOT(ActionNoiseSavitGolay4_5_9Toogled()));
-
-//        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_2_3);
-//        menuNoiseSavGolay->addMenu(menuSavitskogoGolayDegreePoligons_4_5);
         QMenu* menuSavitskogoGolayDegreePoligons_2 = new QMenu("Полином 2-й степени", this);
         menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_5Toogled()));
         menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 7 пикселей", this, SLOT(ActionNoiseSavitGolay2_7Toogled()));
@@ -930,40 +920,7 @@ void GLWidget::ActionNoiseSavitGolay5_9Toogled()
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
 }
-//void GLWidget::ActionNoiseSavitGolay2_3_5Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(5);
-//    NoiseGolayAlgExecute();
-//}
 
-//void GLWidget::ActionNoiseSavitGolay2_3_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
-
-//void GLWidget::ActionNoiseSavitGolay2_3_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(3);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
-//}
-
-//void GLWidget::ActionNoiseSavitGolay4_5_7Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(7);
-//    NoiseGolayAlgExecute();
-//}
-
-//void GLWidget::ActionNoiseSavitGolay4_5_9Toogled()
-//{
-//    m_attributes->SetDegreePolinom(4);
-//    m_attributes->SetMaskPixelsCount(9);
-//    NoiseGolayAlgExecute();
-//}
 
 void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
 {
@@ -1052,15 +1009,25 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
+    int dxM = event->x() - lastPos.x();
+    int dyM = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton)
-        rotateBy(8 * dy, 8 * dx, 0);
+    {
+        rotateBy(8 * dyM, 8 * dxM, 0);
+    }
+    if (event->buttons() & Qt::MidButton)
+    {
+        dx += (float)dxM/115;
+        dy -= (float)dyM/115;
+        update();
+    }
     lastPos = event->pos();
     globalPos = event->globalPos();
+
+
+
     evalDataCordsFromMouse(event->x(),event->y());
-    //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
     emit drawLabel(event->globalPos().x(),event->globalPos().y(),strForLbl);
 }
 

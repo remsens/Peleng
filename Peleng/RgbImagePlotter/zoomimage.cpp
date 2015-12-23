@@ -44,34 +44,45 @@ void ZoomImage::mousePressEvent(QMouseEvent *event)
 {
 
     if (currentOperation == ZOOM)  {
-        zoomRect.setTopLeft(QPoint(event->x(),event->y())/*+pixmap()->rect().topLeft()*/);
+        zoomRect.setTopLeft(QPoint(event->x(),event->y())+pixmap()->rect().topLeft());
     }
-    else if (currentOperation == MOVE)  {
-        startPoint = event->pos();
-        startLeft = currentRect.topLeft();
+    else if (currentOperation == MOVE) {
+        startPoint=event->pos();
     }
+
 }
 
 void ZoomImage::mouseMoveEvent(QMouseEvent *event)
 {
 
     if (currentOperation == ZOOM)  {
-        zoomRect.setBottomRight(QPoint(event->x(),event->y())/*+pixmap()->rect().topLeft()*/);
+        zoomRect.setBottomRight(QPoint(event->x(),event->y()));
         repaint();
     }
     else if (currentOperation == MOVE) {
-        setCursor(QCursor(Qt::ClosedHandCursor));
-        QPoint newPoint = (startPoint-event->pos())*scaled;
 
-        QRect temp;
-        temp.setTopLeft(currentRect.topLeft()+scaled*zoomRect.topLeft());
-        temp.setBottomRight(currentRect.topLeft()+scaled*zoomRect.bottomRight());
-      //  qDebug() << temp.bottom() << " " << temp.right() << " " << temp.top() << " " << temp.left();
-       /* if ((temp.left() > 50) && (temp.right() < mainPixmap.width()-50) &&
-            (temp.top() > 50) && (temp.bottom() < mainPixmap.height()-50)){*/
-            currentRect.moveTo(startLeft+newPoint);
+
+
+
+        setCursor(QCursor(Qt::ClosedHandCursor));
+        QPoint newPoint = (startPoint-event->pos());
+        if (newPoint.x()) newPoint.setX(abs(newPoint.x())/newPoint.x());
+        if (newPoint.y()) newPoint.setY(abs(newPoint.y())/newPoint.y());
+
+        startPoint=event->pos();
+
+        QPoint newTopLeft = currentRect.topLeft()+newPoint;
+        QPoint newRigthButton = currentRect.bottomRight()+newPoint;
+
+
+
+        if ((newTopLeft.x()>0) && (newTopLeft.y()>0) && (newRigthButton.x()) < mainPixmap.width() &&
+            (newRigthButton.y() < mainPixmap.height())) {
+
+            currentRect.moveTo(currentRect.topLeft()+newPoint);
             move();
-        //}
+        }
+
     }
 
 
@@ -80,14 +91,16 @@ void ZoomImage::mouseMoveEvent(QMouseEvent *event)
 
 
 void ZoomImage::zoom()
-{
-
+{    
+    if (zoomRect.width()<30) zoomRect.setWidth(30);
+    if (zoomRect.height()<30) zoomRect.setHeight(30);
     currentRect.setTopLeft(currentRect.topLeft()+scaled*zoomRect.topLeft());
-    currentRect.setBottomRight(currentRect.topLeft()+scaled*zoomRect.bottomRight());
+    currentRect.setBottomRight(currentRect.topLeft()+scaled*zoomRect.bottomRight()-scaled*zoomRect.topLeft());
+
     scaled *= zoomRect.width() / scaledTo();
     setPixmap(mainPixmap.copy(currentRect).scaledToWidth(scaledTo()));
 
-    //qDebug() << currentRect;
+
     repaint();
     emit this->updateSize();
 }
@@ -112,10 +125,16 @@ double ZoomImage::scaledTo()
 {
     qint32 preferedHeight, preferedWeight;
     QRect rec = QApplication::desktop()->screenGeometry();
-    preferedHeight = rec.height()*0.6;
-    preferedWeight = rec.width()*0.6;
+    preferedHeight = rec.height()*0.4;
+    preferedWeight = rec.width()*0.4;
     qint32 scaledTo=preferedWeight;
-    if (currentRect.height() >preferedWeight) scaledTo = preferedHeight;
+
+    double ImageRatio = (double)currentRect.width()/currentRect.height(); // соотношение размеров
+    double temp = (double)preferedWeight / currentRect.width();
+
+
+    //qDebug() << preferedHeight << " " << preferedWeight << " " << currentRect.height();
+    if (currentRect.height()*temp > preferedHeight) scaledTo = preferedHeight*ImageRatio;
 
     return scaledTo;
 

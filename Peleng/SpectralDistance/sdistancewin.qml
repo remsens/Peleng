@@ -56,7 +56,7 @@ Window
             Layout.fillWidth: true
             x: 381
             y: 41
-            text: qsTr("Близость % ") + sliderHorizontal1.value
+            text: qsTr("Отличие < ") + sliderHorizontal1.value + qsTr(" %")
             font.bold: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter

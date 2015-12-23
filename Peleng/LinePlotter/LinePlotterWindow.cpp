@@ -9,7 +9,7 @@ LinePlotterWindow::LinePlotterWindow(Attributes* attr, QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     setupUI();
-    setWindowIcon(QIcon(":/IconsCube/iconsCube/PlotterLogo.ico"));
+    setWindowIcon(QIcon(":/IconsLine/iconsLine/Line Plotter.png"));
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
@@ -107,7 +107,7 @@ void LinePlotterWindow::setupUI()
     m_customPlot->setObjectName(QStringLiteral("PlotWidget"));
     verticalLayout->addWidget(m_customPlot);
     this->setCentralWidget(centralWidget);
-    this->setWindowTitle("Яркость вдоль прямой");
+    this->setWindowTitle("Пространственный срез");
     this->resize(518,360);
     QPalette palette;
     QBrush brush1(QColor(255, 255, 255, 255));

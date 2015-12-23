@@ -5,7 +5,6 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
-
 namespace Ui {
 class PlotterWindow;
 }
@@ -36,8 +35,13 @@ private:
 private slots:
     void graphClicked(QCPAbstractPlottable *plottable);
     void contextMenuRequest(QPoint pos);
+    void mouseMoveRequest(QMouseEvent* e);
     void removeSelectedGraph();
     void removeAllExceptSelectedGraph();
+    //! слот по клику из опций "Отображать значения под курсором"
+    void onActionValues(bool flag);
+    //! слот по клику из опций "Отображать точки графика"
+    void onActionPoints(bool flag);
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
@@ -45,11 +49,7 @@ public slots:
     void ActionNoise5MedianToggled();
     void ActionNoise7MedianToggled();
 
-//    void ActionNoiseSavitGolay2_3_5Toogled();
-//    void ActionNoiseSavitGolay2_3_7Toogled();
-//    void ActionNoiseSavitGolay2_3_9Toogled();
-//    void ActionNoiseSavitGolay4_5_7Toogled();
-//    void ActionNoiseSavitGolay4_5_9Toogled();
+
     void ActionNoiseSavitGolay2_5Toogled();
     void ActionNoiseSavitGolay2_7Toogled();
     void ActionNoiseSavitGolay2_9Toogled();
@@ -63,8 +63,13 @@ public slots:
 
 private:
     bool m_hold;
+    bool m_valuesFlag;
+    bool m_pointsFlag;
     Ui::PlotterWindow *ui;
     QCustomPlot *m_customPlot;
+    QCPItemText *textValues;
+    QCPItemStraightLine *vertLine;
+    QCPItemStraightLine *horizLine;
     double minY;
     double maxY;
     QSize initSize;

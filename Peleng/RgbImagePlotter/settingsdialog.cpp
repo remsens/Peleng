@@ -94,7 +94,7 @@ void SettingsDialog::on_findFileBtn_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
                                                     "",
-                                                    tr("csv файл с профилями (*.txt, *.csv, *.dat)"));
+                                                    tr("csv файл с профилями (*.txt *.csv *.dat)"));
     ui->FileEdit->setText(fileName);
     FileName = fileName;
 }
