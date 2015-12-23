@@ -128,13 +128,15 @@ void HistPlotterWidget::on_rightSlider_sliderMoved(int position)
 
 void HistPlotterWidget::on_leftSlider_valueChanged(int value)
 {
+    if (value > ui->rightSlider->value()-4) ui->leftSlider->setValue(ui->rightSlider->value()-5);
     if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
-    else if (ui->gaussChBox->isChecked())  Gauss(true);
+    else if (ui->gaussChBox->isChecked())  Gauss(true);    
 
 }
 
 void HistPlotterWidget::on_rightSlider_valueChanged(int value)
 {
+    if (value < ui->leftSlider->value()+4) ui->rightSlider->setValue(ui->leftSlider->value()+5);
     if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
     else if (ui->gaussChBox->isChecked())  Gauss(true);
 
@@ -149,21 +151,21 @@ void HistPlotterWidget::sumBoundary(bool updateAttributes)
     qint32 rightBoundary = rigthLine->point1->coords().x();
 
 
-    Attributes *attr = 0;
-    if (updateAttributes) attr=m_attributes;
+    /*Attributes *attr = 0;
+    if (updateAttributes) attr=m_attributes;*/
 
     switch (m_cube->GetFormatType()) {
-        case type_int8: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT, key, value, attr, leftBoundary, rightBoundary); break;
-        case type_uint8: SumBoundary<quint8>(m_cube,Channel,HIST_COUNT, key, value, attr, leftBoundary, rightBoundary); break;
-        case type_int16: SumBoundary<qint16>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_uint16: SumBoundary<quint16>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_int32: SumBoundary<qint32>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_uint32: SumBoundary<quint32>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_int64: SumBoundary<qint64>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_uint64: SumBoundary<quint64>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_float: SumBoundary<float>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        case type_double: SumBoundary<double>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
-        default: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT,key, value, attr, leftBoundary, rightBoundary); break;
+        case type_int8: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_uint8: SumBoundary<quint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_int16: SumBoundary<qint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_uint16: SumBoundary<quint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_int32: SumBoundary<qint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_uint32: SumBoundary<quint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_int64: SumBoundary<qint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_uint64: SumBoundary<quint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_float: SumBoundary<float>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        case type_double: SumBoundary<double>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+        default: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
     }
     bars2->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();
@@ -181,21 +183,21 @@ void HistPlotterWidget::Gauss(bool updateAttributes) {
     qint32 x = leftLine->point1->coords().x();
     qint32 y = rigthLine->point1->coords().x();
 
-    Attributes *attr = 0;
-    if (updateAttributes) attr=m_attributes;
+    /*Attributes *attr = 0;                                                                  // ВИТЯ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (updateAttributes) attr=m_attributes;                                             // ВИТЯ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
     switch (m_cube->GetFormatType()) {
-        case type_int8: Gaussian<qint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, attr); break;
-        case type_uint8: Gaussian<quint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, attr); break;
-        case type_int16: Gaussian<qint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_uint16: Gaussian<quint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_int32: Gaussian<qint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_uint32: Gaussian<quint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_int64: Gaussian<qint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_uint64: Gaussian<quint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_float: Gaussian<float>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        case type_double: Gaussian<double>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
-        default: Gaussian<qint8>(m_cube,Channel,HIST_COUNT,key, value, x, y, attr); break;
+        case type_int8: Gaussian<qint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, m_attributes); break;
+        case type_uint8: Gaussian<quint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, m_attributes); break;
+        case type_int16: Gaussian<qint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_uint16: Gaussian<quint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_int32: Gaussian<qint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_uint32: Gaussian<quint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_int64: Gaussian<qint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_uint64: Gaussian<quint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_float: Gaussian<float>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        case type_double: Gaussian<double>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+        default: Gaussian<qint8>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
     }
     bars2->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();

@@ -16,11 +16,12 @@ void SumBoundary(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>&
     //if (attr) attr->ClearList(); //мб эти проверки не нужны?
     T *data = new T[cube->GetSizeChannel()];
     //-----начало
-    QList<Point> points = attr->GetPointsList();
+    /*QList<Point> points = attr->GetPointsList();
     for (int i=0; i < points.size(); ++i)
     {
-        data[ points.at(i).x * cube->GetColumns() + points.at(i).y] = points.at(i).z;
-    }
+        data[ points.at(i).x * cube->GetColumns() + points.at(i).y] = attr;
+    }*/
+    memcpy(data,attr->GetTempChanel(),cube->GetSizeChannel()*cube->GetSizeOfFormatType());
     attr->ClearList();
     //-----конец
     //cube->GetDataChannel(Channel,data);
@@ -53,11 +54,13 @@ void SumBoundary(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>&
 
 template<typename T>
 void Gaussian(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value, T LeftBoundary, T RightBoundary, Attributes *attr =0) {
-    if (attr) attr->ClearList();
+
     T *data = new T[cube->GetSizeChannel()];
-    cube->GetDataChannel(Channel,data);
+    memcpy(data,attr->GetTempChanel(),cube->GetSizeChannel()*cube->GetSizeOfFormatType());
+   // cube->GetDataChannel(Channel,data);
     T maxValue = RightBoundary;
     T minValue = LeftBoundary;
+    if (attr) attr->ClearList();
 
     /*T maxValue = *std::max_element(data,data+cube->GetSizeChannel());
     T minValue = *std::min_element(data,data+cube->GetSizeChannel());*/

@@ -198,8 +198,13 @@ void Main2DWindow::connectionsOfPlugins()
 void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
 {
 
+    quint32 minCMap= 2147483647;
+    quint32 maxCMap= 0;
+
     QList<Point> points = attr->GetPointsList();
     for (int i=0; i < points.size(); ++i) {
+            if (maxCMap <= points.at(i).z ) maxCMap = points.at(i).z;
+            if (minCMap >= points.at(i).z ) minCMap = points.at(i).z;
             colorMap->data()->setCell(points.at(i).x, points.at(i).y,points.at(i).z );
     }
 //    ui->customPlot->rescaleAxes();
@@ -210,9 +215,16 @@ void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
         m_tempChanel[ points.at(i).x * cols + points.at(i).y] = points.at(i).z;
     }
 
-    int minCMap, maxCMap;
+    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
+        ui->customPlot->rescaleAxes();
+
+
+        ui->customPlot->replot();
+
+
+    /*int minCMap, maxCMap;
     findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
-    drawHeatMap(minCMap, maxCMap);
+    drawHeatMap(minCMap, maxCMap);*/
 
 
 }
@@ -293,7 +305,7 @@ void Main2DWindow::setTempChannel(u::ptr chanData)
 {
     try {
          memcpy(m_tempChanel, chanData, rows*cols*m_pCube->GetBytesInElements());
-         //m_attributes->SetTempChanel(m_tempChanel,rows,cols);
+         m_attributes->SetTempChanel(m_tempChanel,rows,cols);
          m_attributes->ClearList();
          for (int x=0; x < rows; ++x) {
              for (int y=0; y < cols; ++y) {
