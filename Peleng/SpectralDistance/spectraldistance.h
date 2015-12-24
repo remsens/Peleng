@@ -57,6 +57,7 @@ private:
     int    view_range;
 
     bool is_cubemap_emty;
+    bool is_evklid_distance;
 };
 
 #endif // SPECTRALDISTANCE_H

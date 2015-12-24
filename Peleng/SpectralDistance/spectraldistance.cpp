@@ -7,6 +7,7 @@ SpectralDistance::SpectralDistance(QObject *parent)
     view_range = 10;
     engine = NULL;
     preview_2d = NULL;
+    is_evklid_distance = false;
 }
 
 SpectralDistance::~SpectralDistance()
@@ -85,6 +86,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
 
 void SpectralDistance::CalcEvklidDistance(int k, int l)
 {
+    is_evklid_distance = true;
     int execute_time = GetTickCount();
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
@@ -132,6 +134,7 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
 
 void SpectralDistance::CalcSpectralAngle(int k, int l)
 {
+    is_evklid_distance = false;
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
@@ -181,6 +184,7 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
 
 void SpectralDistance::CalcSpectralCorellation(int k, int l)
 {
+    is_evklid_distance = false;
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
@@ -215,7 +219,7 @@ void SpectralDistance::CalcSpectralCorellation(int k, int l)
                 local_val2 += pow(data_ptr[j*line_count + i] - average_ij, 2);
                 local_val3 += pow(data_ptr[l*line_count + k] - average_kl, 2);
             }
-            cube_map[i][j] = local_val1 / (sqrt(local_val2) * sqrt(local_val3));
+            cube_map[i][j] = 1.0 - (local_val1 / (sqrt(local_val2) * sqrt(local_val3)));
             if (cube_map[i][j] > max_value)
             {
                 max_value = cube_map[i][j];
@@ -249,12 +253,24 @@ void SpectralDistance::selectRange()
         {
             for (int j=0; j < cube_map[i].length(); j++)
             {
-                if (cube_map[i][j] <= dist_range)
+                if (is_evklid_distance)
                 {
-                    view_mem[i + cube_map.length() * j] = 255; //round(cube_map[i][j]);
+                    if (cube_map[i][j] <= dist_range)
+                    {
+                        view_mem[i + cube_map.length() * j] = 255;
+                    } else
+                    {
+                        view_mem[i + cube_map.length() * j] = 0;
+                    }
                 } else
                 {
-                    view_mem[i + cube_map.length() * j] = 0;
+                    if (cube_map[i][j] >= dist_range)
+                    {
+                        view_mem[i + cube_map.length() * j] = 255;
+                    } else
+                    {
+                        view_mem[i + cube_map.length() * j] = 0;
+                    }
                 }
             }
         }
