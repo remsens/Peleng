@@ -16,7 +16,7 @@ public:
     FilesOperation();
 
 	//! Деструктор
-	~FilesOperation();
+    virtual ~FilesOperation();
 
 	//! Функция загрузки файла-заголовка
 	//! @param headerName - путь к файлу
@@ -57,6 +57,9 @@ private:
 	u::uint32 ConvertStrtoInt(const char* data);
 	u::uint32 GetFileSize(const std::string& fileName);
     u::logic CreateCube(const std::string& fileName, HyperCube* cube);
+    u::logic ReadBSQ(const std::string& fileName, HyperCube* cube);
+    u::logic ReadBIL(const std::string& fileName, HyperCube* cube);
+    u::logic ReadBIP(const std::string& fileName, HyperCube* cube);
 
 private:
 	u::uint32 m_sizeBlock;

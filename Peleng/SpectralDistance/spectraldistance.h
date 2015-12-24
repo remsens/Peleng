@@ -35,6 +35,8 @@ private:
     void CalcSpectralCorellation(int k, int l); //k = row, l = column
     double averageSpectralValue(const int _i, const int _j);
     void Destroy();
+private slots:
+    void onClosePreview();
 
 public slots:
     void callMethod(int methNumber);

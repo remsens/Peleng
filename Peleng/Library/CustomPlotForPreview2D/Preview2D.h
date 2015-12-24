@@ -15,8 +15,8 @@ public:
     explicit Preview2D(QWidget *parent = 0);
     virtual ~Preview2D();
 
-    void Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel = 0);
-
+    void Plot(double* data, const int rows, const int cols, const QString& title = QString());
+    void plotPointsOn2D(QVector<double> x, QVector<double> y);
 private:
     Ui::Preview2D *m_ui;
     QCustomPlot* m_cPlot;

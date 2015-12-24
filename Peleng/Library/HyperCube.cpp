@@ -10,7 +10,7 @@
 
 HyperCube::HyperCube()
 {
-
+    m_dataCube = 0;
 }
 
 HyperCube::~HyperCube()
@@ -74,11 +74,15 @@ void HyperCube::SetDataSpectrum(u::cptr data, u::uint32 x, u::uint32 y)
 }
 
 void HyperCube::DestroyCube() {
-    for (u::uint32 i = 0; i < m_infoData.bands; i++)
-     {
-        delete [] m_dataCube[i];
-     }
-     delete [] m_dataCube;
+    if (m_dataCube != 0)
+    {
+        for (u::uint32 i = 0; i < m_infoData.bands; i++)
+         {
+            delete [] m_dataCube[i];
+         }
+         delete [] m_dataCube;
+    }
+    m_dataCube = 0;
 }
 
 u::uint32 HyperCube::GetCountofChannels()

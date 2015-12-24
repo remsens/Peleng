@@ -70,6 +70,10 @@ public:
     // только для алгоритма Савитского-Голау
     void SetDegreePolinom(u::uint8 degree);
     u::uint8 GetDegreePolinom() const;
+
+    //2D куб - Гистограмма
+    void SetTempChanel(u::ptr pChan, u::uint32 rows, u::int32 cols);
+    u::ptr GetTempChanel();
 private:
     Attributes();
     Attributes(const Attributes&);
@@ -94,6 +98,9 @@ private:
     int m_maskPixelsCount;
     bool m_applyToAllCube;
     u::uint8 m_degreePolinom;
+    u::ptr m_tempChan; //! указатель на временный канал из 2D модуля
+    u::uint32 m_rowsInTempChan;//! кол-во строк во временном канале из 2D модуля
+    u::uint32 m_colsInTempChan;//! кол-во столбцов во временном канале из 2D модуля
 };
 
 #endif // ATTRIBUTES_H

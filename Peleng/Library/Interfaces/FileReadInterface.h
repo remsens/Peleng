@@ -11,6 +11,7 @@
 class FileReadInterface {
 
 public:
+    virtual void CreateContext() = 0;
     virtual void ReadCubeFromFile(QString& fileName, HyperCube* cube) = 0;
     virtual int getProgress() = 0;
     virtual QString getFormatDescription()=0;    

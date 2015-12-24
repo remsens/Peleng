@@ -23,30 +23,25 @@ Preview2D::~Preview2D()
     delete m_ui;
 }
 
-void Preview2D::Plot(double* data, const int rows, const int cols, const int numberOfActiveChannel)
+void Preview2D::Plot(double* data, const int rows, const int cols, const QString& title)
 {
-    qDebug() << "start Plot Noise";
     if(rows>cols)
          this->resize(this->width(), this->width() * cols / rows);
     else
         this->resize(this->width() * rows / cols, this->width() );
-    setWindowTitle(QString("Предпросмотр изображения канала: %1 канал").arg(numberOfActiveChannel));
+    setWindowTitle(title);
     int minCMap =  32767;
     int maxCMap = -32767;
-    //QCPColorMap* colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     colorMap->setKeyAxis(m_cPlot->xAxis);
     colorMap->setValueAxis(m_cPlot->yAxis);
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-    qDebug()<<"colorMap setSize";
-
     for (u::int32 x = 0; x < rows; x++) {
         for (u::int32 y = 0; y < cols; y++) {
             colorMap->data()->setCell(x, y, data[x * cols + y] );
         }
     }
     qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
-    qDebug()<<"qsort";
     minCMap = data[int(rows*cols*0.02)];
     maxCMap = data[int(rows*cols*0.98)];
     m_cPlot->rescaleAxes();
@@ -58,6 +53,18 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const int num
     m_cPlot->setInteraction(QCP::iRangeDrag,true);
     m_cPlot->replot();
     this->show();
-    qDebug() << "finish plot noise";;
-
+ }
+void Preview2D::plotPointsOn2D(QVector<double> x, QVector<double> y)
+{
+    m_cPlot->clearGraphs(); //удаляем предыдущий график
+    m_cPlot->addGraph();
+    m_cPlot->graph()->setData(x, y);
+    m_cPlot->graph()->setLineStyle(QCPGraph::lsNone);
+    QCPScatterStyle myScatter;
+    myScatter.setShape(QCPScatterStyle::ssCircle);
+    myScatter.setPen(QPen(Qt::red));
+    myScatter.setBrush(Qt::yellow);
+    //myScatter.setSize(5);
+    m_cPlot->graph()->setScatterStyle(myScatter);
+    m_cPlot->replot();
 }

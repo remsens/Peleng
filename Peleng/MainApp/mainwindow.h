@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    virtual ~MainWindow();
 
 
 public slots:
@@ -42,7 +42,7 @@ private:
     HyperCube* cube;
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;
-
+    bool m_canceled;
 };
 
 #endif // MAINWINDOW_H

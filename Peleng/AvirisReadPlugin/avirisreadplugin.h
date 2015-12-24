@@ -20,6 +20,7 @@ public:
     ~AvirisReadPlugin();
 
 private:
+    virtual void CreateContext();
     void ReadCubeFromFile(QString& fileName, HyperCube* cube);
     int getProgress();
     QString getFormatDescription();
