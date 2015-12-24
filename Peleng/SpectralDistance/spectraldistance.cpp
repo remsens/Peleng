@@ -241,7 +241,7 @@ void SpectralDistance::selectRange()
             }
         }
     }
-    preview_2d->Plot(view_mem, line_count, row_count);
+    preview_2d->Plot(view_mem, line_count, row_count, "Сравнение спектральных кривых");
     free(view_mem);
     }
 }

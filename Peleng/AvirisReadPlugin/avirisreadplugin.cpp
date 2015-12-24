@@ -1,6 +1,7 @@
 #include "avirisreadplugin.h"
 
 #include "../Library/GenericExc.h"
+#include "QDebug"
 
 void AvirisReadPlugin::ExceptionLibrary()
 {
@@ -26,6 +27,10 @@ AvirisReadPlugin::AvirisReadPlugin(QObject *parent) :
 {
     m_exception = new GenericExc(QObject::tr("Плагин работает без ошибок"), 0);
     m_ctx = 0;
+}
+
+void AvirisReadPlugin::CreateContext()
+{
     bool res = ReadDataLib_CreateContex(m_ctx);
     if (!res)
     {
@@ -65,8 +70,6 @@ QString AvirisReadPlugin::getFormatDescription()
 void AvirisReadPlugin::cancel()
 {
     ReadDataLib_BreakOperation(m_ctx);
-    ReadDataLib_DestroyContex(m_ctx);
-    m_ctx = 0;
 }
 
 void AvirisReadPlugin::DeleteData()

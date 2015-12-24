@@ -43,6 +43,10 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
         ui->menuSpectrum->removeAction(ui->actionHold);
         //ui->actionHold->destroyed();
     }
+    if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
+    {
+        ui->menuSpectrum->addAction("Загрузить спектр", this, SLOT(AddSpectr()));
+    }
     if (m_attributes->GetExternalSpectrFlag())
     {
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
@@ -76,6 +80,13 @@ void PlotterWindow::NoiseMedianAlgExecute()
     m_attributes->SetYUnit(m_yArr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
+}
+
+void PlotterWindow::AddSpectr()
+{
+    m_attributes->SetModeLib(1);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube , m_attributes);
 }
 
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
@@ -116,7 +127,6 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             menuNoise->addMenu(menuNoiseMedian);
 
             QMenu* menuNoiseSavGolay = new QMenu("Савитского-Голау фильтр", this);
-
 
             QMenu* menuSavitskogoGolayDegreePoligons_2 = new QMenu("Полином 2-й степени", this);
             menuSavitskogoGolayDegreePoligons_2->addAction("Маска: 5 пикселей", this, SLOT(ActionNoiseSavitGolay2_5Toogled()));
