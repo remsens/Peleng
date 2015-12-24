@@ -211,7 +211,7 @@ void GLWidget::resizeAndRedraw(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::ui
     fillCubeSides();
     makeTextures();
     paintGL();
-    update();
+    //update();
     emit redrawSliders();
     this->setEnabled(true);
     cantDeleteVar = false;
