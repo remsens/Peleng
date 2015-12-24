@@ -54,12 +54,6 @@ public slots:
     void OnActionMedian2D_3Triggered();
     void OnActionMedian2D_5Triggered();
     void OnActionMedian2D_7Triggered();
-
-//    void ActionNoiseSavitGolay2_3_5Toogled();
-//    void ActionNoiseSavitGolay2_3_7Toogled();
-//    void ActionNoiseSavitGolay2_3_9Toogled();
-//    void ActionNoiseSavitGolay4_5_7Toogled();
-//    void ActionNoiseSavitGolay4_5_9Toogled();
     void ActionNoiseSavitGolay2_5Toogled();
     void ActionNoiseSavitGolay2_7Toogled();
     void ActionNoiseSavitGolay2_9Toogled();

@@ -107,7 +107,7 @@ void LinePlotterWindow::setupUI()
     m_customPlot->setObjectName(QStringLiteral("PlotWidget"));
     verticalLayout->addWidget(m_customPlot);
     this->setCentralWidget(centralWidget);
-    this->setWindowTitle("Яркость вдоль прямой");
+    this->setWindowTitle("Пространственный срез");
     this->resize(518,360);
     QPalette palette;
     QBrush brush1(QColor(255, 255, 255, 255));
