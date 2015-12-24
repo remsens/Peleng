@@ -179,6 +179,7 @@ private:
     ContrastWindow *m_contrastTool;
     bool contrastTopconnected;
     bool contrastSidesconnected;
+    bool contexMenuEnabled;
 
 };
 

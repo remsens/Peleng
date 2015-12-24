@@ -23,6 +23,7 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , program(0)
     , m_attributes(attr)
     , m_contrastTool(NULL)
+    , contexMenuEnabled(true)
 {
     qDebug() << "enter to GL";
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -452,6 +453,7 @@ void GLWidget::finishIsClicked()
     m_z2 = m_dataZ;
     strForLineHelp = "";
     setCursor(Qt::ArrowCursor);
+    contexMenuEnabled = true;
     emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     disconnect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(finishIsClicked()));
@@ -467,6 +469,7 @@ void GLWidget::createLinePlotterSlot()
     emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXYZ(uint,uint,uint)),this,SLOT(startIsClicked()));
     this->setToolTip(strForLineHelp);
+    contexMenuEnabled = false;
 }
 
 void GLWidget::run2DCube()
@@ -656,7 +659,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     lastPos = event->pos();
     evalDataCordsFromMouse(event->x(),event->y());
     //qDebug() <<"round XYZ" <<"x:"<< m_dataX<< " y:"<< m_dataY<< " z:"<< m_dataZ << endl<<endl;
-    if (event->button() == Qt::RightButton)
+    if ((event->button() == Qt::RightButton) && (contexMenuEnabled==true))
     {
         ShowContextMenu(event->pos());
     }
