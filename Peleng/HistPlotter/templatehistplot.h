@@ -10,41 +10,50 @@
 
 
 
-template<typename T>
-void SumBoundary(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value,Attributes *attr=0,  qint32 LeftBoundary=0, qint32 RightBoundary = 0) {
 
-    //if (attr) attr->ClearList(); //мб эти проверки не нужны?
+
+template<typename T>
+void SumBoundary(HyperCube *cube, QVector<double>& key, QVector<double>& value,Attributes *attr,  qint32 LeftBoundary=0, qint32 RightBoundary = 0) {
+
+
     T *data = new T[cube->GetSizeChannel()];
-    //-----начало
-    /*QList<Point> points = attr->GetPointsList();
-    for (int i=0; i < points.size(); ++i)
-    {
-        data[ points.at(i).x * cube->GetColumns() + points.at(i).y] = attr;
-    }*/
     memcpy(data,attr->GetTempChanel(),cube->GetSizeChannel()*cube->GetSizeOfFormatType());
     attr->ClearList();
-    //-----конец
-    //cube->GetDataChannel(Channel,data);
 
     T maxValue = *std::max_element(data,data+cube->GetSizeChannel());
     T minValue = *std::min_element(data,data+cube->GetSizeChannel());
 
+    quint32 HistCount = 100;
+
+
     if (LeftBoundary==0) LeftBoundary = minValue;
     if (RightBoundary==0) RightBoundary = maxValue;
 
-    T step = (maxValue-minValue)/HIST_COUNT + 1;
+    if ((maxValue-minValue) < HistCount) {
+        HistCount = maxValue-minValue;
+    }
+
+    key.resize(HistCount+1);
+    value.resize(HistCount+1);
+
+
+    double step = (double)(maxValue-minValue)/(HistCount);
+
+
 
     for (unsigned int i = 0; i < cube->GetLines(); i++) {
         for (unsigned int j = 0; j < cube->GetColumns(); j++) {
         if (data[i*cube->GetColumns()+j] < LeftBoundary) data[i*cube->GetColumns()+j]=LeftBoundary;
         if (data[i*cube->GetColumns()+j] > RightBoundary) data[i*cube->GetColumns()+j]=RightBoundary;
-        value[(data[i*cube->GetColumns()+j]-minValue)/(step)]++;
+        value[(data[i*cube->GetColumns()+j]-minValue)/step]++;
         if (attr) attr->SetPoint(i,j,data[i*cube->GetColumns()+j]);
         }
     }
 
 
-    for (int k =0; k<HIST_COUNT+1; k++) {
+
+
+    for (int k =0; k<HistCount+1; k++) {
         key[k]=minValue+k*step;
     }
     delete[] data;
@@ -53,18 +62,17 @@ void SumBoundary(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>&
 
 
 template<typename T>
-void Gaussian(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& key, QVector<double>& value, T LeftBoundary, T RightBoundary, Attributes *attr =0) {
+void Gaussian(HyperCube *cube, QVector<double>& key, QVector<double>& value, T LeftBoundary, T RightBoundary, Attributes *attr) {
 
     T *data = new T[cube->GetSizeChannel()];
     memcpy(data,attr->GetTempChanel(),cube->GetSizeChannel()*cube->GetSizeOfFormatType());
-   // cube->GetDataChannel(Channel,data);
+
+
     T maxValue = RightBoundary;
     T minValue = LeftBoundary;
+
     if (attr) attr->ClearList();
 
-    /*T maxValue = *std::max_element(data,data+cube->GetSizeChannel());
-    T minValue = *std::min_element(data,data+cube->GetSizeChannel());*/
-    //T step = (maxValue-minValue)/HIST_COUNT + 1;
     double sigma = 0;
     double  mu = 0;
 
@@ -85,23 +93,31 @@ void Gaussian(HyperCube *cube, int Channel,  int HIST_COUNT, QVector<double>& ke
 
     for (unsigned int i = 0; i < cube->GetLines(); i++) {
         for (unsigned int j = 0; j < cube->GetColumns(); j++) {
-
-        data[i*cube->GetColumns()+j] = (maxValue - minValue ) * (temp_data[i*cube->GetColumns()+j] - minVal) / (maxVal-minVal)+minValue;
-        if (attr) attr->SetPoint(i,j,data[i*cube->GetColumns()+j]);
+            data[i*cube->GetColumns()+j] = (maxValue - minValue ) * (temp_data[i*cube->GetColumns()+j] - minVal) / (maxVal-minVal)+minValue;
+            if (attr) attr->SetPoint(i,j,data[i*cube->GetColumns()+j]);
         }
     }
 
 
-    double step = (maxValue-minValue)/HIST_COUNT+1;
+    qint32 HistCount=100;
+
+    if (maxValue-minValue < HistCount) {
+        HistCount = maxValue-minValue;
+    }
+
+
+    key.resize(HistCount+1);
+    value.resize(HistCount+1);
+
+
+    double step = (double)(maxValue-minValue)/HistCount;
 
     for (unsigned int j = 0; j <cube->GetSizeChannel(); j++ ) {
-        if (((data[j]-minValue)/step) < 0) continue;
-        if (((data[j]-minValue)/step) > value.size()-1) continue;
         value[(data[j]-minValue)/step]++;
     };
 
 
-    for (int k =0; k<HIST_COUNT+1; k++) {
+    for (int k =0; k<HistCount+1; k++) {
         key[k]=minValue+k*step;
     }
     delete[] data;
