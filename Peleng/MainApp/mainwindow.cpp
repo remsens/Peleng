@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
       ui->setupUi(this);
       setWindowIcon(QIcon(":/logo/icons/PelengIcon.png"));
-      setAttribute(Qt::WA_DeleteOnClose, true);
+      setAttribute(Qt::WA_DeleteOnClose, false);
       cube = new HyperCube();
 
       m_pluginsControl = new PluginsControl();
@@ -56,11 +56,14 @@ void MainWindow::LoadFile()
             QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
                                                      "",
                                                     FilePlugin->getFormatDescription());
-
+            if (FileName.size() == 0)
+            {
+                m_canceled = true;
+            }
 
           // Create a progress dialog.
             QProgressDialog dialog(this);
-
+            dialog.setWindowTitle("Тематик-Инфо");
             dialog.setLabelText(QString("Загрузка данных из файла"));
 
             // Create a QFutureWatcher and connect signals and slots.
@@ -95,12 +98,13 @@ void MainWindow::LoadFile()
         if (m_canceled)
         {
             cube->DestroyCube();
+            m_canceled = false;
         } else {
             if (m_pluginsControl->GetProcessingPlugins().size() > 0)
             {
                 m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
                 Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
-                cube->ResizeCube(0,223,50,1200,50,400);//чтобы не висла память
+                //cube->ResizeCube(0,223,50,1200,50,400);//чтобы не висла память
                 m_pelengPlugin->Execute(cube, Attributes::I());
             }
         }

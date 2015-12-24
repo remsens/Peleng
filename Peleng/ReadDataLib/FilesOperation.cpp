@@ -89,13 +89,14 @@ u::logic FilesOperation::ReadBSQ(const std::string& fileName, HyperCube* cube)
 
         if (fread(tempbuf, sizeof(u::int8), chunk_size, pfile))
         {
-            cube->SetDataBuffer(i, tempbuf, 0);
+            cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
             m_progress = i*100/m_bands;
         } else
         {
             throw GenericExc("Ошибка чтения данных из файла");
             return false;
         }
+        delete [] tempbuf;
     }
     fclose(pfile);
     return true;
