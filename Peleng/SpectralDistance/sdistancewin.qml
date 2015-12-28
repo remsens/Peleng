@@ -56,7 +56,7 @@ Window
             Layout.fillWidth: true
             x: 381
             y: 41
-            text: qsTr("Минимальная \nграница \nсхожести") + sliderHorizontal1.value + qsTr(" %")
+            text: qsTr("Схожесть спектров \n") + sliderHorizontal1.value + qsTr(" - 100%")
             style: Text.Normal
             font.italic: false
             font.bold: true
