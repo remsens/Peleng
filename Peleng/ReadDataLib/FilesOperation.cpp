@@ -4,9 +4,10 @@
 #include <fstream>
 #include <istream>
 #include <string>
-
+#include <locale>
 #include "../Library/GenericExc.h"
 #include <QString>
+#include <QFile>
 #include <qDebug>
 
 FilesOperation::FilesOperation()
@@ -303,7 +304,7 @@ u::uint32 FilesOperation::TypeFromAvirisType(u::int32 format)
 
 void FilesOperation::ParseHeaderFile(std::string headername)
 {
-	FILE * pFile;
+    FILE * pFile;
 	typedef const char* Str;
 	Str str[8][2];
 	str[0][0] = "samples";		str[0][1] = "";
@@ -314,18 +315,18 @@ void FilesOperation::ParseHeaderFile(std::string headername)
 	str[5][0] = "interleave";	str[5][1] = "";
 	str[6][0] = "byte";			str[6][1] = "order";
 	str[7][0] = "wavelength";	str[7][1] = "=";
-
-	pFile = fopen (headername.c_str() , "r");
-	if (pFile == NULL) 
-	{
+    //std::string utfHeader = QString::fromStdString(headername).toUtf8().toStdString();
+    pFile = fopen (headername.c_str() , "r");
+    if (pFile == NULL)
+    {
         throw GenericExc("Невозможно открыть файл заголовок");
-	}
-	else
+    }
+    else
 	{
 		char strOut[400]; int i = 0; int j = 0;
-		while ( ! feof (pFile) )
+        while ( ! feof (pFile) )
 		{
-			fscanf (pFile, "%s", strOut);
+            fscanf (pFile, "%s", strOut);
 			if (strcmp(strOut, str[i][j]) == 0)
 			{
 				j++;
