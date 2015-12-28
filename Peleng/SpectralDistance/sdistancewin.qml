@@ -85,7 +85,7 @@ Window
             Layout.fillHeight: true
             Layout.fillWidth: true
             id: button1
-            text: qsTr("Расчитать")
+            text: qsTr("Рассчитать")
             onClicked: {
                 //callMethod(method_box.currentIndex);
                 calcMeth(method_box.currentIndex);
