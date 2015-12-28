@@ -12,13 +12,13 @@ Window
         console.log("YES");
     }
 
-    width: 800
-    height: 50
+    width: 230
+    height: 200
     visible: true
     flags: Qt.Dialog
     title: "спектральные расстояния"
 
-    RowLayout {
+    ColumnLayout {
 
         id: rowLayout1
         anchors.fill: parent
@@ -41,9 +41,9 @@ Window
             width: 161
             height: 20
             activeFocusOnPress: true
-            Layout.minimumWidth: 200
+
             model: ListModel{
-                ListElement {text: "Евклидово расстояние"}
+                ListElement {text: "Евклидово расстояние";}
                 ListElement {text: "Спектральный Угол"}
                 ListElement {text: "Спектральная корреляция"}
             }
@@ -56,7 +56,9 @@ Window
             Layout.fillWidth: true
             x: 381
             y: 41
-            text: qsTr("Отличие < ") + sliderHorizontal1.value + qsTr(" %")
+            text: qsTr("Минимальная \nграница \nсхожести") + sliderHorizontal1.value + qsTr(" %")
+            style: Text.Normal
+            font.italic: false
             font.bold: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -83,7 +85,7 @@ Window
             Layout.fillHeight: true
             Layout.fillWidth: true
             id: button1
-            text: qsTr("Расчитать")
+            text: qsTr("Рассчитать")
             onClicked: {
                 //callMethod(method_box.currentIndex);
                 calcMeth(method_box.currentIndex);
