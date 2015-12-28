@@ -104,7 +104,13 @@ void MainWindow::LoadFile()
             {
                 m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
                 Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
-                cube->ResizeCube(0,223,1000,2200,50,400);//чтобы не висла память
+                if(cube->GetLines() > 2300)
+                {
+                    if(cube->GetColumns() > 400)
+                        cube->ResizeCube(0,cube->GetCountofChannels()-1,1000,2200,50,400);//чтобы не висла память
+                    else
+                        cube->ResizeCube(0,cube->GetCountofChannels()-1,1000,2200,0,cube->GetColumns()-1);
+                }
                 m_pelengPlugin->Execute(cube, Attributes::I());
             }
         }
