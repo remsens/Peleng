@@ -162,7 +162,7 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
-    qDebug()<<"flag"<<specialDrawResize;
+
     this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
     this->show();
     emit StartOperation(false);
