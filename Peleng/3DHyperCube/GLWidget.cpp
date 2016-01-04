@@ -1106,7 +1106,6 @@ void GLWidget::makeTextures()
     textures[2] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[1],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //
     textures[3] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_CO[0],nCHNLS,nCOLS,minCMapSides,maxCMapSides).transformed(rtt270)); //наполовину видная грань
     textures[5] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[1],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270));
-
 }
 
 void GLWidget::makeObject()
@@ -1297,19 +1296,19 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
 QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
-    QCustomPlot customPlot;
-    customPlot.yAxis->setTicks(false);
-    customPlot.xAxis->setTicks(false);
-    customPlot.xAxis->setTickLabels(false);
-    customPlot.yAxis->setTickLabels(false);
-    customPlot.xAxis->setVisible(false);
-    customPlot.yAxis->setVisible(false);
-    customPlot.axisRect()->setAutoMargins(QCP::msNone);
-    customPlot.axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
-    QCPColorMap *colorMap = new QCPColorMap(customPlot.xAxis, customPlot.yAxis);
-    colorMap->setKeyAxis(customPlot.xAxis);
-    colorMap->setValueAxis(customPlot.yAxis);
-    customPlot.addPlottable(colorMap);
+    QCustomPlot *customPlot = new QCustomPlot();
+    customPlot->yAxis->setTicks(false);
+    customPlot->xAxis->setTicks(false);
+    customPlot->xAxis->setTickLabels(false);
+    customPlot->yAxis->setTickLabels(false);
+    customPlot->xAxis->setVisible(false);
+    customPlot->yAxis->setVisible(false);
+    customPlot->axisRect()->setAutoMargins(QCP::msNone);
+    customPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
+    QCPColorMap *colorMap = new QCPColorMap(customPlot->xAxis, customPlot->yAxis);
+    colorMap->setKeyAxis(customPlot->xAxis);
+    colorMap->setValueAxis(customPlot->yAxis);
+    customPlot->addPlottable(colorMap);
     colorMap->data()->setSize(dim1, dim2);
     colorMap->data()->setRange(QCPRange(0, dim1-1), QCPRange(0, dim2-1));
     for (int x=0; x<dim1; ++x) {
@@ -1317,18 +1316,20 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minC
             colorMap->data()->setCell(x, y, sidesData[x][y]);
         }
     }
-    customPlot.rescaleAxes();
+    customPlot->rescaleAxes();
     if (gray == true)
         colorMap->setGradient(QCPColorGradient::gpGrayscale);
     else
         colorMap->setGradient(QCPColorGradient::gpSpectrum);
     colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minContrast,maxContrast));
-    customPlot.rescaleAxes();
-    customPlot.replot();
-    QPixmap pixmap = customPlot.toPixmap(dim1,dim2);
-    QImage Q_image = pixmap.toImage();
-
+    customPlot->rescaleAxes();
+    customPlot->replot();
+    QPixmap *pixmap = new QPixmap();
+    *pixmap = customPlot->toPixmap(dim1,dim2);
+    QImage Q_image = pixmap->toImage();
+    delete customPlot;
+    delete pixmap;
     return Q_image;
 }
 
