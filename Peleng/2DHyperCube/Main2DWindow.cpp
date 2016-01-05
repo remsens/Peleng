@@ -242,9 +242,9 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
-    drawHeatMap(minCMap, maxCMap);
+//    int minCMap, maxCMap;
+//    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
+//    drawHeatMap(minCMap, maxCMap);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
