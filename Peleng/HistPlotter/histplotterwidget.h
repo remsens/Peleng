@@ -55,6 +55,9 @@ private:
     Ui::HistPlotterWidget *ui;
     QCPBars *bars, *bars2;
 
+
+    double *data;
+
     quint32 Channel;
     HyperCube *m_cube;
     Attributes* m_attributes;

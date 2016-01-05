@@ -33,7 +33,6 @@ HEADERS  += \
     ../Library/Utils/typeconvertor.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
-    templatehistplot.h \
     histplotterwidget.h
 
 DISTFILES += \
