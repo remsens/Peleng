@@ -227,7 +227,7 @@ void HistPlotterWidget::Gauss() {
 
 
 
-    memcpy(data,m_attributes->GetTempChanel(),m_cube->GetSizeChannel()*m_cube->GetSizeOfFormatType());
+    memcpy(data,m_attributes->GetTempChanel(),m_cube->GetLines()*m_cube->GetColumns()*sizeof(double));
 
 
     double maxValue = rightBoundary;
