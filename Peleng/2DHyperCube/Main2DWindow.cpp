@@ -199,11 +199,15 @@ void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
 {
 
     int minCMap, maxCMap;
-    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
-    int chan = ui->listWidget->currentRow();
-    ChnlLimits[chan][0] = minCMap;
-    ChnlLimits[chan][1] = maxCMap;
-    drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
+    findMinMaxforColorMap(minCMap, maxCMap,0,1);
+    drawHeatMap(minCMap, maxCMap);
+    qDebug()<<minCMap<<" max:"<<maxCMap;
+    disconnect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),this,SLOT(leftBorderContrast(int)));
+    disconnect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),this,SLOT(rightBorderContrast(int)));
+    ui->SliderContrastMin->setValue(minCMap);
+    ui->SliderContrastMax->setValue(maxCMap);
+    connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
+    connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -356,15 +360,15 @@ void Main2DWindow::findMinMaxforColorMap(int &minCMap, int &maxCMap,float thresh
     timer3.start();
     qsort(dataTemp,cols*rows,sizeof(double),cmp2);
     qDebug()<<"сортировка"<<timer3.elapsed()<< " мс";
-    minCMap = dataTemp[int(rows*cols*thresholdLow)];
-    maxCMap = dataTemp[int(rows*cols*thresholdHigh)];
+    minCMap = dataTemp[int((rows*cols-1)*thresholdLow)];
+    maxCMap = dataTemp[int((rows*cols-1)*thresholdHigh)];
     delete[] dataTemp;
 }
 
 int cmp2(const void *a, const void *b)
 {
-    const qint16 *pa = (const qint16*)a;
-    const qint16 *pb = (const qint16*)b;
+    const double *pa = (const double*)a;
+    const double *pb = (const double*)b;
     if (*pa < *pb)
         return -1;
     else if (*pa > *pb)
