@@ -186,7 +186,7 @@ void Main2DWindow::connectionsOfPlugins()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
-    connect(m_attributes->GetAvailablePlugins().value("Hist UI")->GetObjectPointer(), SIGNAL(replotChannel(qint32, Attributes*)), this, SLOT(plotFromAttributes(qint32, Attributes*)));
+    connect(m_attributes->GetAvailablePlugins().value("Hist UI")->GetObjectPointer(), SIGNAL(ReplotSignal(Attributes*)), this, SLOT(plotFromAttributes(Attributes*)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
@@ -195,7 +195,7 @@ void Main2DWindow::connectionsOfPlugins()
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToResize(bool)));
 }
 
-void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
+void Main2DWindow::plotFromAttributes(Attributes *attr)
 {
 
     int minCMap, maxCMap;

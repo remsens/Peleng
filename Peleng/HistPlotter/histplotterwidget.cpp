@@ -5,7 +5,7 @@
 
 
 HistPlotterWidget::HistPlotterWidget(HyperCube *cube, Attributes *attr, QWidget *parent) :
-    QDialog(parent),  m_cube(cube), bars2(0),
+    QDialog(parent),  m_cube(cube), BarsAfter(0),
     m_attributes(attr),
     ui(new Ui::HistPlotterWidget)
 {
@@ -13,19 +13,19 @@ HistPlotterWidget::HistPlotterWidget(HyperCube *cube, Attributes *attr, QWidget 
 
     data = new double[m_cube->GetLines()*m_cube->GetColumns()*sizeof(double)];
 
-    leftLine = new QCPItemStraightLine(ui->beforeCustomPlot);
+    leftLine = new QCPItemStraightLine(ui->beforeCustomPlot); // Удаляется при удалении ui->beforeCustomPlot
     ui->beforeCustomPlot->addItem(leftLine);
 
-    rigthLine = new QCPItemStraightLine(ui->beforeCustomPlot);
+    rigthLine = new QCPItemStraightLine(ui->beforeCustomPlot);// Удаляется при удалении ui->beforeCustomPlot
     ui->beforeCustomPlot->addItem(rigthLine);
 
 
-    bars = new QCPBars( ui->beforeCustomPlot->xAxis,  ui->beforeCustomPlot->yAxis);
-    ui->beforeCustomPlot->addPlottable(bars);
+    BarsBefore = new QCPBars( ui->beforeCustomPlot->xAxis,  ui->beforeCustomPlot->yAxis);
+    ui->beforeCustomPlot->addPlottable(BarsBefore);
     ui->beforeCustomPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
 
-    bars2 = new QCPBars( ui->afterCustomPlot->xAxis,  ui->afterCustomPlot->yAxis);
-    ui->afterCustomPlot->addPlottable(bars2);
+    BarsAfter = new QCPBars( ui->afterCustomPlot->xAxis,  ui->afterCustomPlot->yAxis);
+    ui->afterCustomPlot->addPlottable(BarsAfter);
     ui->afterCustomPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
 
     PlotDefault();
@@ -95,7 +95,7 @@ void HistPlotterWidget::PlotDefault()
     }
 
 
-    bars->setData(key,value);
+    BarsBefore->setData(key,value);
 
 
 
@@ -159,8 +159,8 @@ void HistPlotterWidget::on_rightSlider_valueChanged(int value)
 
 void HistPlotterWidget::sumBoundary()
 {
-    if (bars2) {
-        bars2->data()->clear();
+    if (BarsAfter) {
+        BarsAfter->data()->clear();
 
     qint32 leftBoundary = leftLine->point1->coords().x();
     qint32 rightBoundary = rigthLine->point1->coords().x();
@@ -198,14 +198,12 @@ void HistPlotterWidget::sumBoundary()
     }
 
 
-
-
     for (int k =0; k<HistCount+1; k++) {
         key[k]=minValue+k*step;
     }
 
 
-    bars2->setData(key,value);
+    BarsAfter->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();
     ui->afterCustomPlot->xAxis->setRange(leftBoundary,rightBoundary);
     ui->afterCustomPlot->yAxis->setTickLabels(false);
@@ -215,8 +213,8 @@ void HistPlotterWidget::sumBoundary()
 
 
 void HistPlotterWidget::Gauss() {
-    if (bars2) {
-        bars2->data()->clear();
+    if (BarsAfter) {
+        BarsAfter->data()->clear();
 
 
     qint32 leftBoundary = leftLine->point1->coords().x();
@@ -288,7 +286,7 @@ void HistPlotterWidget::Gauss() {
 
 
 
-    bars2->setData(key,value);
+    BarsAfter->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();
    ui->afterCustomPlot->xAxis->setRange(leftBoundary, rightBoundary);
     ui->afterCustomPlot->yAxis->setTickLabels(false);

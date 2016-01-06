@@ -19,7 +19,7 @@ public:
 
 
 signals:
-    void replotChannel(qint32 channel, Attributes* attr);
+    void ReplotSignal(Attributes* attr);
 
 
 public:
@@ -29,8 +29,7 @@ public:
 public slots:
     void OnClose(HistPlotterWidget* w);
 
-private slots:
-    void sendAttr(qint32 channel, Attributes* attr);
+
 
 private:
     QList<HistPlotterWidget*> m_listWindows;

@@ -34,10 +34,6 @@ void HistPlugin::OnClose(HistPlotterWidget* w)
     }
 }
 
-void HistPlugin::sendAttr(qint32 channel, Attributes *attr)
-{
-    emit this->replotChannel(channel,attr);
-}
 
 void HistPlugin::Execute(HyperCube *cube, Attributes *attr)
 {
@@ -48,18 +44,8 @@ void HistPlugin::Execute(HyperCube *cube, Attributes *attr)
     HistPlotterWidget *ContrastPlotter = new HistPlotterWidget(cube,attr);
     m_listWindows.append(ContrastPlotter);
     if (ContrastPlotter->exec()==QDialog::Accepted) {
-        emit this->replotChannel(0,attr);
+        emit this->ReplotSignal(attr);
         qDebug() << "update plot 2d";
     };
     //ContrastPlotter->Plot();
-
-
-
-  /*  HistPlotter *plotter= new HistPlotter(cube, attr);//TODO
-    connect(plotter, SIGNAL(Close(HistPlotter*)), this, SLOT(OnClose(HistPlotter*)));
-    connect(plotter, SIGNAL(changeAttr(qint32, Attributes *)), this, SLOT(sendAttr(qint32, Attributes *)));
-    plotter->Plot();*/
-    //attr->SetPointsList();
-
-
 }
