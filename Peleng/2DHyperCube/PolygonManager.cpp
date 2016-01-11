@@ -294,7 +294,10 @@ void PolygonManager::onButtonSaveRegion()
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
     QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
-    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
+    if (fileName.contains(".area",Qt::CaseInsensitive))
+        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+    else
+        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
 }
 
 void PolygonManager::onButtonLoadRegion()
