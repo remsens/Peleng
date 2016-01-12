@@ -7,4 +7,7 @@
     <qresource prefix="/">
         <file>icons/NoiseRemover.png</file>
     </qresource>
+    <qresource prefix="/iconsPolyManager">
+        <file>icons/average.png</file>
+    </qresource>
 </RCC>

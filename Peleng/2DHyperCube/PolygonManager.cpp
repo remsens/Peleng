@@ -234,11 +234,10 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
     if(index.isValid())
     {
         QMenu *menu = new QMenu(this);
-        QAction* actionColor = new QAction("Выбор цвета",this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
-        menu->addAction(actionColor);
         menu->popup(QCursor::pos());
-        connect(actionColor,SIGNAL(triggered()),SLOT(pickColor()));
+        menu->addAction("Выбор цвета",this,SLOT(pickColor()));
+        menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"Средний спектр",this,SLOT(onMenuAverageSpectr()));
     }
 
 }
@@ -325,6 +324,11 @@ void PolygonManager::itemChanged(QTableWidgetItem *it)
 
     if (it->column() == 0)
         m_RegionArr[it->row()].m_name = it->text();
+
+}
+
+void PolygonManager::onMenuAverageSpectr()
+{
 
 }
 

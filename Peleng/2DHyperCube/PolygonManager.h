@@ -79,7 +79,11 @@ private slots:
     //!  слот обработчика кнопки "Загрузить область"
     void onButtonLoadRegion();
 
+    //!  слот обработки изменения item'а листвиджета.
     void itemChanged(QTableWidgetItem* it);
+
+    //!  слот обработчика выбора "Средний спектр по области" из контекстного меню
+    void onMenuAverageSpectr();
 
 
 private:
