@@ -72,7 +72,7 @@ public:
     u::uint8 GetDegreePolinom() const;
 
     //2D куб - Гистограмма
-    void SetTempChanel(double *pChan, u::uint32 rows, u::int32 cols);
+    void SetTempChanel(double *pChan);
     double *GetTempChanel();
 private:
     Attributes();
@@ -99,8 +99,6 @@ private:
     bool m_applyToAllCube;
     u::uint8 m_degreePolinom;
     double* m_tempChan; //! указатель на временный канал из 2D модуля
-    u::uint32 m_rowsInTempChan;//! кол-во строк во временном канале из 2D модуля
-    u::uint32 m_colsInTempChan;//! кол-во столбцов во временном канале из 2D модуля
 };
 
 #endif // ATTRIBUTES_H

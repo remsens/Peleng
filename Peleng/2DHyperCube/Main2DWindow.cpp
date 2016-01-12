@@ -56,7 +56,7 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
-    polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
+    polyMngr = new PolygonManager(m_pCube,m_attributes,ui->customPlot,this);
     createMenus();
     if (m_attributes->GetPointsList().size())
     {
@@ -287,7 +287,7 @@ void Main2DWindow::setTempChannel(qint16* chanData)
     for(int i = 0; i < rows; ++i)
         for(int j = 0; j < cols; ++j)
             m_tempChanel[i*cols+j] = (double)chanData[i*cols+j];
-    m_attributes->SetTempChanel(m_tempChanel,rows,cols);
+    m_attributes->SetTempChanel(m_tempChanel);
 }
 
 void Main2DWindow::fillChanList()

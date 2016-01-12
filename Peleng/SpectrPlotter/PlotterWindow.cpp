@@ -366,7 +366,8 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         QString grafName;
         if (m_attributes->GetExternalSpectrFlag())
         {
-            grafName.append(m_attributes->GetSpectrumDescription().at(0).title).append(m_attributes->GetSpectrumDescription().at(0).description);
+            if (!m_attributes->GetSpectrumDescription().isEmpty())
+                grafName.append(m_attributes->GetSpectrumDescription().at(0).title).append(m_attributes->GetSpectrumDescription().at(0).description);
         } else
         {
             grafName.append("X:");
