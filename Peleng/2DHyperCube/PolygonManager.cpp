@@ -333,7 +333,6 @@ void PolygonManager::onMenuAverageSpectr()
     //1.область как маска
     //2.считаем средний спектр по выбранной маске
 
-    //m_RegionArr[m_currIndexRegion].m_byteArr;
     int Chnls = m_cube->GetCountofChannels();
     int numSpctrs = 0;
     double* spectrSum = new double[Chnls];
@@ -372,6 +371,7 @@ void PolygonManager::onMenuAverageSpectr()
     m_attributes->SetXUnit(wawesVect);
     m_attributes->SetYUnit(averageSpectrVect);
     m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->SetExternalSpectrFormat(0);
     QList<Attributes::DescriptionSpectr> list;
     Attributes::DescriptionSpectr descriptionAverSpctr;
     descriptionAverSpctr.title = "Среднее по региону '";

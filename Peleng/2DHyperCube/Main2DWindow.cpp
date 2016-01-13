@@ -653,7 +653,6 @@ void Main2DWindow::createLinePlotterSlot()
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
     ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
-    //setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     //emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
