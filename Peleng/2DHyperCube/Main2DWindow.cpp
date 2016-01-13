@@ -652,7 +652,8 @@ void Main2DWindow::createLinePlotterSlot()
 {
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    //setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     //emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
@@ -670,7 +671,7 @@ void Main2DWindow::startIsClicked(uint dataX, uint dataY)
     //emit flagsToolTip(globalPos,"выберите конечную точку");
     QString strForLineHelp = "выберите конечную точку";
     this->setToolTip(strForLineHelp);
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
+    ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
 }
@@ -681,7 +682,7 @@ void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
     m_y2 = dataY;
     m_z2 = m_z1; //ui->listWidget->currentRow();
     QString strForLineHelp = "";
-    setCursor(Qt::ArrowCursor);
+    ui->customPlot->setCursor(Qt::ArrowCursor);
     //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2); //так было в 3d кубе
     plotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
