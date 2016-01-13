@@ -5,10 +5,6 @@
 #include "../Library/Interfaces/FileReadInterface.h"
 #include "ReadDataAviris/ReadDataLib.h"
 
-#include <QLibrary>
-#include "../Library/Types.h"
-#include "../Library/GenericExc.h"
-
 class AvirisReadPlugin : public QObject, public  FileReadInterface
 {
     Q_OBJECT
@@ -17,22 +13,10 @@ class AvirisReadPlugin : public QObject, public  FileReadInterface
 
 public:
     AvirisReadPlugin(QObject *parent = 0);
-    ~AvirisReadPlugin();
+    virtual ~AvirisReadPlugin();
 
 private:
-    virtual void CreateContext();
     void ReadCubeFromFile(QString& fileName, HyperCube* cube);
-    int getProgress();
-    QString getFormatDescription();
-    GenericExc* GetLastError();
-    void DeleteData();
-    void ExceptionLibrary();
-    void MakeException(QString errMessage, u::uint32 errCode);
-    void cancel();
-
-private:
-    u::ptr m_ctx;
-    GenericExc* m_exception;
 
 };
 
