@@ -748,6 +748,11 @@ void GLWidget::ActionSpectralDistanceToogled()
     m_attributes->ClearList();
     m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
     m_attributes->SetExternalSpectrFlag(false);
+    QVector<double> x; // потом заполнить
+    m_attributes->SetXUnit(x);
+    QVector<double> y;
+    m_pHyperCube->GetSpectrumPoint(m_dataX,m_dataY,y);
+    m_attributes->SetYUnit(y);
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
 }

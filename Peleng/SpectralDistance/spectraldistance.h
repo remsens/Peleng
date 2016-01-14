@@ -30,9 +30,9 @@ signals:
     void progressPercentChanged();
 
 private:
-    void CalcEvklidDistance(int k, int l); //k = row, l = column
-    void CalcSpectralAngle(int k, int l); //k = row, l = column
-    void CalcSpectralCorellation(int k, int l); //k = row, l = column
+    void CalcEvklidDistance(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
+    void CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
+    void CalcSpectralCorellation(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
     double averageSpectralValue(const int _i, const int _j, bool isInverted);
     void Destroy();
 private slots:
@@ -49,7 +49,8 @@ private:
     Attributes* m_attr;
     HyperCube* m_pHyperCube;
     QVector<QVector<double> > cube_map;
-
+    QVector<double> m_xArr; //x спектра, с которым сравниваем остальные
+    QVector<double> m_yArr; //y спектра, с которым сравниваем остальные
     Preview2D *preview_2d;
 
     double min_value;
