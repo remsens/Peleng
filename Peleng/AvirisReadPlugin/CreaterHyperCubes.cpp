@@ -5,13 +5,12 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QMap>
-#include <QTextStream>
+#include <QDebug>
 #include "../Library/HyperCube.h"
 #include "../Library/Types.h"
 
 CreaterHyperCubes::CreaterHyperCubes()
 {
-
 }
 
 CreaterHyperCubes::~CreaterHyperCubes()
@@ -22,32 +21,33 @@ CreaterHyperCubes::~CreaterHyperCubes()
 // Ошибки, получаемые при загрузке фалов можно сделать подробнее
 bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
 {
+    m_cancel = false;
+    m_progress = 0;
     bool res = false;
     res = parseHeaderFile(headerFilePath);
     if (!res)
     {
       QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения файла заголовка %1").arg(headerFilePath), QMessageBox::Ok);
+      return false;
     }
     QString dataFilePath;
     res = getDataFilePath(headerFilePath, dataFilePath);
     if (!res)
     {
         QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка при получении пути к файлу с данными"), QMessageBox::Ok);
+        return false;
     }
     res = setMetaDataToCube(cube);
     if (!res)
     {
-        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка записи метаданных"), QMessageBox::Ok);
+        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка метаданных или ошибка выделения памяти"), QMessageBox::Ok);
+        return false;
     }
-    res = setMemoryForDataCube(cube);
-    if (!res)
-    {
-        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка выделения памяти под данные"), QMessageBox::Ok);
-    }
-    res = readDataToCube(cube);
+    res = readDataToCube(cube, dataFilePath);
     if (!res)
     {
         QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения данных гиперкуба"), QMessageBox::Ok);
+        return false;
     }
     return res;
 }
@@ -76,80 +76,91 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     while (!file.atEnd())
     {
         readingLine = file.readLine();
-        QStringList readWords = readingLine.split(" ");
-        for (int k = 0; k < basedWords.size(); k++)
-        {
+        QStringList readWords = readingLine.split(" ", QString::SkipEmptyParts);
             if (basedWords.contains(readWords.at(0)))
             {
-                if (basedWords.value(readWords.at(0)).compare(""))
+                if (basedWords.value(readWords.at(0)).compare("") == 0)
                 {
-                    if (QString(readWords.at(0)).compare("samples"))
+
+                    if (QString(readWords.at(0)).compare("samples") == 0)
                     {
-                        m_infoData.samples = QString(readWords.at(3)).toLong(); wordsPoints++;
-                    } else if (QString(readWords.at(0)).compare("lines"))
+                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        m_infoData.samples = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("lines") == 0)
                     {
-                        m_infoData.lines = QString(readWords.at(3)).toLong(); wordsPoints++;
-                    } else if (QString(readWords.at(0)).compare("bands"))
+                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        m_infoData.lines = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("bands") == 0)
                     {
-                        m_infoData.bands = QString(readWords.at(3)).toLong();
-                    } else if (QString(readWords.at(0)).compare("interleave")) wordsPoints++;
+                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        m_infoData.bands = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("interleave") == 0)
                     {
-                        if (QString(readWords.at(3)).compare("bsq", Qt::CaseInsensitive))
+                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        if (QString(data.at(0)).compare("bsq", Qt::CaseInsensitive) == 0)
                         {
-                            m_interleave = BSQ; wordsPoints++;
-                        } else if (QString(readWords.at(3)).compare("bil", Qt::CaseInsensitive))
+                            m_interleave = BSQ; wordsPoints++; continue;
+                        } else if (QString(data.at(0)).compare("bil", Qt::CaseInsensitive) == 0)
                         {
-                            m_interleave = BIL; wordsPoints++;
-                        } else if (QString(readWords.at(3)).compare("bip",Qt::CaseInsensitive))
+                            m_interleave = BIL; wordsPoints++; continue;
+                        } else if (QString(data.at(0)).compare("bip",Qt::CaseInsensitive) == 0)
                         {
-                            m_interleave = BIP; wordsPoints++;
+                            m_interleave = BIP; wordsPoints++; continue;
                         }
                     }
-                } else if (basedWords.value(readWords.at(0)).compare(readWords.at(1)))
+                } else if (basedWords.value(readWords.at(0)).compare(readWords.at(1)) == 0)
                 {
-                    if (basedWords.key(readWords.at(0)).compare("header") && basedWords.value(readWords.at(0)).compare("offset"))
+                    if (basedWords.key(readWords.at(1)).compare("header") == 0 && basedWords.value(readWords.at(0)).compare("offset") == 0)
                     {
-                        m_headerOffset = QString(readWords.at(4)).toLong(); wordsPoints++;
-                    } else if (basedWords.key(readWords.at(0)).compare("byte") && basedWords.value(readWords.at(0)).compare("order"))
+                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        m_headerOffset = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (basedWords.key(readWords.at(1)).compare("byte") == 0 && basedWords.value(readWords.at(0)).compare("order") == 0)
                     {
-                        m_byteOrder = QString(readWords.at(4)).toLong(); wordsPoints++;
-                    } else if (basedWords.key(readWords.at(0)).compare("data") && basedWords.value(readWords.at(0)).compare("type"))
+                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        m_byteOrder = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (basedWords.key(readWords.at(1)).compare("data") == 0 && basedWords.value(readWords.at(0)).compare("type") == 0)
                     {
-                        m_infoData.formatType = TypeFromAvirisType(QString(readWords.at(4)).toLong()); wordsPoints++;
-                    } else if (basedWords.key(readWords.at(0)).compare("wavelength") && basedWords.value(readWords.at(0)).compare("="))
+                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        m_infoData.formatType = TypeFromAvirisType(QString(data.at(0)).toLong()); wordsPoints++;
+                    } else if (basedWords.key(readWords.at(1)).compare("wavelength") == 0 && basedWords.value(readWords.at(0)).compare("=") == 0)
                     {
                         readWords.erase(readWords.begin());
                         readWords.erase(readWords.begin());
                         QString w = readWords.join("");
                         readWords.clear();
-                        readWords = w.split("{");
+                        readWords = w.split("{", QString::SkipEmptyParts);
                         w = readWords.join("");
-                        readWords = w.split(",");
-                        for (u::uint32 i = 0; i < (u::uint32)readWords.size(); i++)
+                        readWords = w.split(",", QString::SkipEmptyParts);
+                        for (u::uint32 i = 0; i < (u::uint32)readWords.size() - 1; i++)
                         {
                             m_infoData.listChannels.push_back(QString(readWords.at(i)).toDouble());
                         };
-                        u::uint32 k = readWords.size();
+                        u::uint32 k = readWords.size() - 1;
                         while (k < m_infoData.bands)
                         {
                             if (!file.atEnd())
                             readingLine = file.readLine();
-                            readingLine.split("}");
+                            readWords = readingLine.split("}",QString::SkipEmptyParts);
                             readingLine = readWords.join("");
-                            readWords = readingLine.split(",}");
+                            readWords.clear();
+                            readWords = readingLine.split(",\r\n",QString::SkipEmptyParts);
+                            readingLine = readWords.join("");
+                            readWords.clear();
+                            readWords = readingLine.split(", ", QString::SkipEmptyParts);
+
                             for (u::uint32 i = 0; i < (u::uint32)readWords.size(); i++)
                             {
                                 m_infoData.listChannels.push_back(QString(readWords.at(i)).toDouble());
                                 k++;
                             };
                         }
+                        wordsPoints++; continue;
                     }
                 }
-                break;
-            }
         }
     }
-    if (wordsPoints != 7)
+    file.close();
+    if (wordsPoints != 8)
     {
         return false;
     } else {
@@ -193,11 +204,12 @@ u::uint32 CreaterHyperCubes::TypeFromAvirisType(u::int32 format)
 
 bool CreaterHyperCubes::getDataFilePath(const QString& headerFilePath, QString& dataFilePath)
 {
-    for (int i = headerFilePath.length()-1; i > 0; i--)
+    for (int i = 0; i < headerFilePath.length(); i++)
     {
         if (headerFilePath.at(i) != '.')
         {
             dataFilePath.append(headerFilePath.at(i));
+        } else {
             return true;
         }
     }
@@ -206,15 +218,120 @@ bool CreaterHyperCubes::getDataFilePath(const QString& headerFilePath, QString& 
 
 bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 {
-
+    if (m_infoData.bands <= 1)
+    {
+        return false;
+    } else if (m_infoData.lines <=1 )
+    {
+        return false;
+    } else if (m_infoData.samples <= 1)
+    {
+        return false;
+    } else if (m_infoData.formatType == 0)
+    {
+        return false;
+    } else if (m_infoData.listChannels.size() != m_infoData.bands)
+    {
+        m_infoData.listChannels.clear();
+        for (u::uint32 i = 0; i < m_infoData.bands; i++)
+        {
+            m_infoData.listChannels.push_back(i);
+        }
+    }
+    m_infoData.bytesType = GetNumberOfBytesFromData(m_infoData.formatType);
+    cube->SetInfoData(m_infoData);
+    return true;
 }
 
-bool CreaterHyperCubes::setMemoryForDataCube(HyperCube* cube)
+bool CreaterHyperCubes::readDataToCube(HyperCube* cube, const QString& fileName)
 {
-
+    switch (m_interleave) {
+        case 0: return ReadBSQ(fileName, cube);
+        case 1: return ReadBIL(fileName, cube);
+        case 2: return ReadBIP(fileName, cube);
+    default:
+        return false;
+    }
 }
 
-bool CreaterHyperCubes::readDataToCube(HyperCube* cube)
+void CreaterHyperCubes::SetCancel()
+{
+    m_cancel = true;
+}
+
+int CreaterHyperCubes::GetProgress()
+{
+    return m_progress;
+}
+
+u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 {
 
+    return false;
+}
+u::logic CreaterHyperCubes::ReadBIL(const QString& fileName, HyperCube* cube)
+{
+    return false;
+}
+
+u::logic CreaterHyperCubes::ReadBIP(const QString& fileName, HyperCube* cube)
+{
+    u::uint32 chunk_size = m_infoData.bands*m_infoData.bytesType*1024;
+    u::uint32 sizeEl = m_infoData.bytesType;
+    u::uint32 bcnt = m_infoData.samples*m_infoData.lines*m_infoData.bands*sizeEl / chunk_size;
+    u::uint32 ost = m_infoData.samples*m_infoData.lines*m_infoData.bands *sizeEl % chunk_size;
+    m_progress = 0;
+    QFile dataFile(fileName);
+    if (!dataFile.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    for (u::uint32 i = 0; i < bcnt; i++)
+    {
+        if (m_cancel)
+        {
+            return true;
+        }
+            if (!dataFile.atEnd())
+            {
+                    char* tempbuf = new char[chunk_size];
+                    if (dataFile.read(tempbuf, chunk_size) != chunk_size)
+                    {
+                        return false;
+                    }
+                    for (int j = 0; j < 1024; j++) {
+                        u::uint32 k = 0;
+                        while (k < m_infoData.bands*sizeEl)
+                        {
+                            cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_infoData.bands*sizeEl+k), sizeEl, i*1024*sizeEl + j*sizeEl);
+                            k += sizeEl;
+                        }
+                    }
+                    delete [] tempbuf;
+                    m_progress = (double)((double)i/bcnt)*100;
+            }
+    }
+    if (m_cancel)
+    {
+        return true;
+    }
+    if (ost != 0) {
+        char* tempbuf = new char[ost];
+        if (dataFile.read(tempbuf, ost) != ost)
+        {
+            return false;
+        }
+        for (u::uint32 j = 0; j < ost/(m_infoData.bands*sizeEl); j++) {
+            u::uint32 k = 0;
+            while (k < m_infoData.bands*sizeEl)
+            {
+                cube->SetDataBuffer(k/sizeEl, tempbuf + (j*m_infoData.bands*sizeEl+k), sizeEl, bcnt*1024*sizeEl + j*sizeEl);
+                k += sizeEl;
+            }
+        }
+        delete [] tempbuf;
+        m_progress = 100;
+    }
+    dataFile.close();
+    return true;
 }

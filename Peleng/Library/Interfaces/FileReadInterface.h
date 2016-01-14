@@ -11,7 +11,11 @@
 class FileReadInterface {
 
 public:
-    virtual void ReadCubeFromFile(QString& fileName, HyperCube* cube) = 0;
+    virtual void readCubeFromFile(QString& fileName, HyperCube* cube) = 0;
+    virtual QString getHeaderDescription() = 0;
+    //virtual QObject* GetObjectPointer() = 0;
+    virtual void cancel() = 0;
+    virtual int getProgress() = 0;
 };
 #define FileReadInteface_iid "by.nomrec.FileReadInterface"
 Q_DECLARE_INTERFACE(FileReadInterface, FileReadInteface_iid)
