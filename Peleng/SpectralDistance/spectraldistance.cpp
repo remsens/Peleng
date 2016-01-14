@@ -94,7 +94,6 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
 
     cube_map.clear();
     cube_map.resize(line_count);
-
     max_value = 0;
     min_value = 10000000;
     for (int i=0; i < line_count; i++)
@@ -111,7 +110,7 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
             for (int z=0; z < chan_count - 1; z++)
             {
                 short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                spectral_distance +=pow(data_ptr[j*line_count + i] - data_ptr[k * row_count + l], 2);
+                spectral_distance +=pow((double)data_ptr[j*line_count + i] - (double)data_ptr[k * row_count + l], 2);
             }
             spectral_distance = sqrt(spectral_distance);
             if (spectral_distance > max_value)
@@ -135,6 +134,7 @@ void SpectralDistance::CalcEvklidDistance(int k, int l)
 void SpectralDistance::CalcSpectralAngle(int k, int l)
 {
     is_evklid_distance = false;
+    int execute_time = GetTickCount();
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
@@ -157,9 +157,9 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
             for (int z = 0; z < chan_count; z++)
             {
                 short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                local_val1 += data_ptr[j * line_count + i] * data_ptr[k * row_count + l];
-                local_val2 += pow(data_ptr[j * line_count + i],2);
-                local_val3 += pow(data_ptr[k * row_count + l],2);
+                local_val1 += (double)data_ptr[j * line_count + i] * (double)data_ptr[k * row_count + l];
+                local_val2 += pow((double)data_ptr[j * line_count + i],2);
+                local_val3 += pow((double)data_ptr[k * row_count + l],2);
             }
             cube_map[i][j] = acos(local_val1 / (sqrt(local_val2) * sqrt(local_val3)));
             if (cube_map[i][j] > max_value)
@@ -174,6 +174,7 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
     }
     qDebug() << "min:" << min_value;
     qDebug() << "max:" << max_value;
+    qDebug() << "execute time" << (GetTickCount() - execute_time) / 1000.0;
     is_cubemap_emty = false;
     selectRange();
 }
@@ -181,6 +182,7 @@ void SpectralDistance::CalcSpectralAngle(int k, int l)
 void SpectralDistance::CalcSpectralCorellation(int k, int l)
 {
     is_evklid_distance = false;
+    int execute_time = GetTickCount();
     int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
@@ -206,10 +208,10 @@ void SpectralDistance::CalcSpectralCorellation(int k, int l)
             for (int z = 0; z < chan_count; z++)
             {
                 short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                local_val1 += (data_ptr[j*line_count + i] - average_ij) *
-                        (data_ptr[k * row_count + l] - average_kl);
-                local_val2 += pow(data_ptr[j*line_count + i] - average_ij, 2);
-                local_val3 += pow(data_ptr[k * row_count + l] - average_kl, 2);
+                local_val1 += ((double)data_ptr[j*line_count + i] - average_ij) *
+                        ((double)data_ptr[k * row_count + l] - average_kl);
+                local_val2 += pow((double)data_ptr[j*line_count + i] - average_ij, 2);
+                local_val3 += pow((double)data_ptr[k * row_count + l] - average_kl, 2);
             }
             cube_map[i][j] =  1.0 - local_val1 / (sqrt(local_val2) * sqrt(local_val3));
             if (cube_map[i][j] > max_value)
@@ -222,7 +224,7 @@ void SpectralDistance::CalcSpectralCorellation(int k, int l)
             }
         }
     }
-
+    qDebug() << "execute time" << (GetTickCount() - execute_time) / 1000.0;
     is_cubemap_emty = false;
     selectRange();
 
