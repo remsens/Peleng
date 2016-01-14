@@ -98,6 +98,7 @@ void SpectralDistance::CalcEvklidDistance(QVector<double> xArr, QVector<double> 
     cube_map.resize(line_count);
     max_value = 0;
     min_value = 10000000;
+    u::uint8 bytesInEl = m_pHyperCube->GetSizeOfFormatType();
     for (int i=0; i < line_count; i++)
     {
         cube_map[i].clear();
@@ -111,8 +112,11 @@ void SpectralDistance::CalcEvklidDistance(QVector<double> xArr, QVector<double> 
 //            }
             for (int z=0; z < chan_count - 1; z++)
             {
-                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
-                spectral_distance +=pow((double)data_ptr[j*line_count + i] - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
+                char *data_ptr =  static_cast<char*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
+                double value = 0;
+                memcpy(&value, data_ptr + (j*line_count + i)*bytesInEl, bytesInEl);
+                qDebug()<<value;
+                spectral_distance +=pow(value - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
             }
             spectral_distance = sqrt(spectral_distance);
             if (spectral_distance > max_value)
