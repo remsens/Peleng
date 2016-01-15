@@ -8,6 +8,8 @@
 #include <QDebug>
 #include "../Library/HyperCube.h"
 #include "../Library/Types.h"
+#include "CreaterHyperCubes.h"
+#include "convertdatacubetolittleendian.h"
 
 CreaterHyperCubes::CreaterHyperCubes()
 {
@@ -48,6 +50,10 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
     {
         QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения данных гиперкуба"), QMessageBox::Ok);
         return false;
+    }
+    if (m_byteOrder == 1)
+    {
+        ConvertToLittleEndian(cube);
     }
     return res;
 }
@@ -266,9 +272,35 @@ int CreaterHyperCubes::GetProgress()
 
 u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 {
-
-    return false;
+    u::uint32 chunk_size = m_infoData.samples*m_infoData.lines*GetNumberOfBytesFromData(m_infoData.formatType);
+    m_progress = 0;
+    QFile dataFile(fileName);
+    if (!dataFile.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    for (u::uint32 i = 0; i < m_infoData.bands; i++)
+    {
+        if (m_cancel)
+        {
+            return true;
+        }
+        char* tempbuf = new char[chunk_size];
+        if (!dataFile.atEnd())
+        {
+            if (dataFile.read(tempbuf, chunk_size) != chunk_size)
+            {
+                return false;
+            }
+            cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
+            m_progress = i*100/m_infoData.bands-1;
+        }
+        delete [] tempbuf;
+   }
+   dataFile.close();
+   return true;
 }
+
 u::logic CreaterHyperCubes::ReadBIL(const QString& fileName, HyperCube* cube)
 {
     return false;
@@ -308,7 +340,7 @@ u::logic CreaterHyperCubes::ReadBIP(const QString& fileName, HyperCube* cube)
                         }
                     }
                     delete [] tempbuf;
-                    m_progress = (double)((double)i/bcnt)*100;
+                    m_progress = (double)((double)i/bcnt)*100-1;
             }
     }
     if (m_cancel)
@@ -330,8 +362,27 @@ u::logic CreaterHyperCubes::ReadBIP(const QString& fileName, HyperCube* cube)
             }
         }
         delete [] tempbuf;
-        m_progress = 100;
+        m_progress = 99;
     }
     dataFile.close();
     return true;
+}
+
+void CreaterHyperCubes::ConvertToLittleEndian(HyperCube* cube)
+{
+    switch(m_infoData.formatType)
+    {
+        case type_int8:    ConvertCubeToLittleEndian<u::int8>(cube); break;
+        case type_uint8:   ConvertCubeToLittleEndian<u::uint8>(cube); break;
+        case type_int16:   ConvertCubeToLittleEndian<u::int16>(cube); break;
+        case type_uint16:  ConvertCubeToLittleEndian<u::uint16>(cube); break;
+        case type_int32:   ConvertCubeToLittleEndian<u::int32>(cube); break;
+        case type_uint32:  ConvertCubeToLittleEndian<u::uint32>(cube); break;
+        case type_int64:   ConvertCubeToLittleEndian<u::int64>(cube); break;
+        case type_uint64:  ConvertCubeToLittleEndian<u::uint64>(cube); break;
+        case type_double:  //ConvertCubeToLittleEndian<double>(cube); break;
+        case type_float:   //ConvertCubeToLittleEndian<float>(cube); break;
+        case type_2double: //ConvertCubeToLittleEndian<double>(cube); break;
+        default: break;
+    }
 }
