@@ -31,7 +31,8 @@ HEADERS += spectraldistance.h\
     ../Library/Attributes/Attributes.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
-    ../Library/QCustomPlot.h
+    ../Library/QCustomPlot.h \
+    templatefunctions.h
 
 
 

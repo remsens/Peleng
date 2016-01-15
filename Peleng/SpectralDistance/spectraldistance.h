@@ -30,9 +30,9 @@ signals:
     void progressPercentChanged();
 
 private:
-    void CalcEvklidDistance(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
-    void CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
-    void CalcSpectralCorellation(QVector<double>xArr,QVector<double>yArr); //k = row, l = column
+    void CalcEvklidDistance(const QVector<double> &xArr, const QVector<double> &yArr); //k = row, l = column
+    void CalcSpectralAngle(const QVector<double> &xArr,const QVector<double>& yArr); //k = row, l = column
+    void CalcSpectralCorellation(const QVector<double>& xArr,const QVector<double>& yArr); //k = row, l = column
     double averageSpectralValue(const int _i, const int _j, bool isInverted);
     void Destroy();
 private slots:

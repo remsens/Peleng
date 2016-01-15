@@ -1,5 +1,5 @@
 #include "spectraldistance.h"
-
+#include "templatefunctions.h"
 
 SpectralDistance::SpectralDistance(QObject *parent)
 {
@@ -86,7 +86,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
     
 }
 
-void SpectralDistance::CalcEvklidDistance(QVector<double> xArr, QVector<double> yArr)//int k, int l
+void SpectralDistance::CalcEvklidDistance(const QVector<double>& xArr, const QVector<double>& yArr)//int k, int l
 {
     is_evklid_distance = true;
     int execute_time = GetTickCount();
@@ -106,17 +106,69 @@ void SpectralDistance::CalcEvklidDistance(QVector<double> xArr, QVector<double> 
         for (int j=0; j < row_count - 1; j++)
         {
             double spectral_distance = 0.0;
-//            if ((l==i) && (k==j))
-//            {
-//                continue;
-//            }
             for (int z=0; z < chan_count - 1; z++)
             {
-                char *data_ptr =  static_cast<char*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
-                double value = 0;
-                memcpy(&value, data_ptr + (j*line_count + i)*bytesInEl, bytesInEl);
-                qDebug()<<value;
-                spectral_distance +=pow(value - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
+                switch (m_pHyperCube->GetFormatType()) {
+                case type_int8:
+                {
+                    spectral_distance += evclidFunc<u::int8>(static_cast<u::int8*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_int16:
+                {
+                    spectral_distance += evclidFunc<u::int16>(static_cast<u::int16*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_int32:
+                {
+                    spectral_distance += evclidFunc<u::int32>(static_cast<u::int32*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_int64:
+                {
+                    spectral_distance += evclidFunc<u::int64>(static_cast<u::int64*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_uint8:
+                {
+                    spectral_distance += evclidFunc<u::uint8>(static_cast<u::uint8*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_uint16:
+                {
+                    spectral_distance += evclidFunc<u::uint16>(static_cast<u::uint16*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_uint32:
+                {
+                    spectral_distance += evclidFunc<u::uint32>(static_cast<u::uint32*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_float:
+                {
+                    spectral_distance += evclidFunc<float>(static_cast<float*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                case type_double:
+                {
+                    spectral_distance += evclidFunc<double>(static_cast<double*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z));
+                    break;
+                }
+                default:
+                    break;
+                }
+//                char *data_ptr =  static_cast<char*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
+//                char datavalue[8]; char datavalueInverse[8]; memset(datavalue, 0, 8); memset(datavalueInverse, 0, 8);
+//                memcpy(datavalue, data_ptr + (j*line_count + i)*bytesInEl, bytesInEl);
+
+//                for (int i = 0; i < bytesInEl; i++)
+//                {
+//                    datavalueInverse[7-bytesInEl+i +1] = datavalue[i];
+//                }
+//                double value;
+//                memcpy(&value, datavalueInverse, 8);
+
+//                spectral_distance +=pow(value - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
             }
             spectral_distance = sqrt(spectral_distance);
             if (spectral_distance > max_value)
@@ -137,7 +189,7 @@ void SpectralDistance::CalcEvklidDistance(QVector<double> xArr, QVector<double> 
     selectRange();
 }
 
-void SpectralDistance::CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr)
+void SpectralDistance::CalcSpectralAngle(const QVector<double>& xArr,const QVector<double>& yArr)
 {
     is_evklid_distance = false;
     int execute_time = GetTickCount();
@@ -150,7 +202,7 @@ void SpectralDistance::CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr
 
     max_value = 0;
     min_value = 10000000;
-
+    u::uint8 bytesInEl = m_pHyperCube->GetSizeOfFormatType();
     for (int i=0; i < line_count; i ++)
     {
         cube_map[i].clear();
@@ -162,10 +214,59 @@ void SpectralDistance::CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr
             double local_val3 = 0;
             for (int z = 0; z < chan_count; z++)
             {
-                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                local_val1 += (double)data_ptr[j * line_count + i] * yArr.at(z);
-                local_val2 += pow((double)data_ptr[j * line_count + i],2);
-                local_val3 += pow(yArr.at(z),2);
+//                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
+//                local_val1 += (double)data_ptr[j * line_count + i] * yArr.at(z);
+//                local_val2 += pow((double)data_ptr[j * line_count + i],2);
+//                local_val3 += pow(yArr.at(z),2);
+                switch (m_pHyperCube->GetFormatType()) {
+                case type_int8:
+                {
+                    angleFunc<u::int8>(static_cast<u::int8*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_int16:
+                {
+                    angleFunc<u::int16>(static_cast<u::int16*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_int32:
+                {
+                    angleFunc<u::int32>(static_cast<u::int32*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_int64:
+                {
+                    angleFunc<u::int64>(static_cast<u::int64*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_uint8:
+                {
+                    angleFunc<u::uint8>(static_cast<u::uint8*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_uint16:
+                {
+                    angleFunc<u::uint16>(static_cast<u::uint16*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_uint32:
+                {
+                    angleFunc<u::uint32>(static_cast<u::uint32*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_float:
+                {
+                    angleFunc<float>(static_cast<float*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                case type_double:
+                {
+                    angleFunc<double>(static_cast<double*>(m_pHyperCube->GetDataCube()[z]),i,j,line_count,bytesInEl,yArr.at(z),local_val1,local_val2,local_val3);
+                    break;
+                }
+                default:
+                    break;
+                }
             }
             cube_map[i][j] = acos(local_val1 / (sqrt(local_val2) * sqrt(local_val3)));
             if (cube_map[i][j] > max_value)
@@ -185,7 +286,7 @@ void SpectralDistance::CalcSpectralAngle(QVector<double>xArr,QVector<double>yArr
     selectRange();
 }
 
-void SpectralDistance::CalcSpectralCorellation(QVector<double>xArr,QVector<double>yArr)
+void SpectralDistance::CalcSpectralCorellation(const QVector<double> &xArr, const QVector<double> &yArr)
 {
     is_evklid_distance = false;
     int execute_time = GetTickCount();
@@ -207,7 +308,7 @@ void SpectralDistance::CalcSpectralCorellation(QVector<double>xArr,QVector<doubl
     }
     double average_kl = chanel_sum / (double)chan_count;
 
-
+    u::uint8 bytesInEl = m_pHyperCube->GetSizeOfFormatType();
     for (int i=0; i < line_count; i++)
     {
         cube_map[i].clear();
