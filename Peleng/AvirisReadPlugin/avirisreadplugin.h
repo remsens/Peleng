@@ -3,11 +3,7 @@
 
 #include <QObject>
 #include "../Library/Interfaces/FileReadInterface.h"
-#include "ReadDataAviris/ReadDataLib.h"
-
-#include <QLibrary>
-#include "../Library/Types.h"
-#include "../Library/GenericExc.h"
+#include "CreaterHyperCubes.h"
 
 class AvirisReadPlugin : public QObject, public  FileReadInterface
 {
@@ -17,23 +13,15 @@ class AvirisReadPlugin : public QObject, public  FileReadInterface
 
 public:
     AvirisReadPlugin(QObject *parent = 0);
-    ~AvirisReadPlugin();
+    virtual ~AvirisReadPlugin();
 
 private:
-    virtual void CreateContext();
-    void ReadCubeFromFile(QString& fileName, HyperCube* cube);
-    int getProgress();
-    QString getFormatDescription();
-    GenericExc* GetLastError();
-    void DeleteData();
-    void ExceptionLibrary();
-    void MakeException(QString errMessage, u::uint32 errCode);
+    void readCubeFromFile(QString& fileName, HyperCube* cube);
+    QString getHeaderDescription();
     void cancel();
-
+    int getProgress();
 private:
-    u::ptr m_ctx;
-    GenericExc* m_exception;
-
+    CreaterHyperCubes* m_creater;
 };
 
 #endif // AVIRISREADPLUGIN_H
