@@ -303,7 +303,39 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 
 u::logic CreaterHyperCubes::ReadBIL(const QString& fileName, HyperCube* cube)
 {
-    return false;
+    u::uint32 chunk_size = m_infoData.bands*m_infoData.samples*m_infoData.bytesType;
+    u::uint32 sizeEl = m_infoData.bytesType;
+    u::uint32 bcnt = m_infoData.lines;
+    m_progress = 0;
+    QFile dataFile(fileName);
+    if (!dataFile.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    for (u::uint32 i = 0; i < bcnt; i++)
+    {
+        if (m_cancel)
+        {
+            return true;
+        }
+        if (!dataFile.atEnd())
+        {
+            char* tempbuf = new char[chunk_size];
+            if (dataFile.read(tempbuf, chunk_size) != chunk_size)
+            {
+                return false;
+            }
+            for (u::uint32 j = 0; j < m_infoData.bands; j++)
+            {
+                    cube->SetDataBuffer(j, tempbuf + (j*m_infoData.samples*sizeEl), m_infoData.samples*sizeEl, i*m_infoData.samples*sizeEl);
+            }
+
+            delete [] tempbuf;
+            m_progress = (double)((double)i/bcnt)*100-1;
+
+        }
+    }
+    return true;
 }
 
 u::logic CreaterHyperCubes::ReadBIP(const QString& fileName, HyperCube* cube)
