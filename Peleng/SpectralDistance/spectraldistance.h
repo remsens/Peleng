@@ -34,6 +34,7 @@ private:
     void CalcSpectralAngle(const QVector<double> &xArr,const QVector<double>& yArr); //k = row, l = column
     void CalcSpectralCorellation(const QVector<double>& xArr,const QVector<double>& yArr); //k = row, l = column
     double averageSpectralValue(const int _i, const int _j, bool isInverted);
+    double averageSpectralValue(QVector<double> yArr, int chan_count);
     void Destroy();
 private slots:
     void onClosePreview();

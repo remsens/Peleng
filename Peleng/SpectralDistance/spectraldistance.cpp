@@ -40,8 +40,8 @@ void SpectralDistance::callMethod(int methNumber)
 
 void SpectralDistance::OnCloseEvent(QQuickCloseEvent*)
 {
-      //delete window;
-      //delete engine;
+    //delete window;
+    //delete engine;
     //    Destroy();
 }
 
@@ -157,18 +157,18 @@ void SpectralDistance::CalcEvklidDistance(const QVector<double>& xArr, const QVe
                 default:
                     break;
                 }
-//                char *data_ptr =  static_cast<char*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
-//                char datavalue[8]; char datavalueInverse[8]; memset(datavalue, 0, 8); memset(datavalueInverse, 0, 8);
-//                memcpy(datavalue, data_ptr + (j*line_count + i)*bytesInEl, bytesInEl);
+                //                char *data_ptr =  static_cast<char*>(m_pHyperCube->GetDataCube()[z]); //надо указатель на char, а потом умножать на размер элемента
+                //                char datavalue[8]; char datavalueInverse[8]; memset(datavalue, 0, 8); memset(datavalueInverse, 0, 8);
+                //                memcpy(datavalue, data_ptr + (j*line_count + i)*bytesInEl, bytesInEl);
 
-//                for (int i = 0; i < bytesInEl; i++)
-//                {
-//                    datavalueInverse[7-bytesInEl+i +1] = datavalue[i];
-//                }
-//                double value;
-//                memcpy(&value, datavalueInverse, 8);
+                //                for (int i = 0; i < bytesInEl; i++)
+                //                {
+                //                    datavalueInverse[7-bytesInEl+i +1] = datavalue[i];
+                //                }
+                //                double value;
+                //                memcpy(&value, datavalueInverse, 8);
 
-//                spectral_distance +=pow(value - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
+                //                spectral_distance +=pow(value - yArr.at(z), 2);//было после минуса: (double)data_ptr[k * row_count + l]
             }
             spectral_distance = sqrt(spectral_distance);
             if (spectral_distance > max_value)
@@ -214,10 +214,10 @@ void SpectralDistance::CalcSpectralAngle(const QVector<double>& xArr,const QVect
             double local_val3 = 0;
             for (int z = 0; z < chan_count; z++)
             {
-//                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-//                local_val1 += (double)data_ptr[j * line_count + i] * yArr.at(z);
-//                local_val2 += pow((double)data_ptr[j * line_count + i],2);
-//                local_val3 += pow(yArr.at(z),2);
+                //                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
+                //                local_val1 += (double)data_ptr[j * line_count + i] * yArr.at(z);
+                //                local_val2 += pow((double)data_ptr[j * line_count + i],2);
+                //                local_val3 += pow(yArr.at(z),2);
                 switch (m_pHyperCube->GetFormatType()) {
                 case type_int8:
                 {
@@ -300,13 +300,13 @@ void SpectralDistance::CalcSpectralCorellation(const QVector<double> &xArr, cons
     cube_map.clear();
     cube_map.resize(line_count);
 
-   // double average_kl = averageSpectralValue(l,k, true);
-    double chanel_sum = 0;
-    for (int z=0; z < chan_count; z++)
-    {
-        chanel_sum += yArr.at(z);
-    }
-    double average_kl = chanel_sum / (double)chan_count;
+    double average_kl = averageSpectralValue(yArr,chan_count);
+    //    double chanel_sum = 0;
+    //    for (int z=0; z < chan_count; z++)
+    //    {
+    //        chanel_sum += yArr.at(z);
+    //    }
+    //    double average_kl = chanel_sum / (double)chan_count;
 
     u::uint8 bytesInEl = m_pHyperCube->GetSizeOfFormatType();
     for (int i=0; i < line_count; i++)
@@ -318,14 +318,72 @@ void SpectralDistance::CalcSpectralCorellation(const QVector<double> &xArr, cons
             double local_val1 = 0;
             double local_val2 = 0;
             double local_val3 = 0;
-            double average_ij = averageSpectralValue(i,j, false);
-            for (int z = 0; z < chan_count; z++)
+//            double average_ij = averageSpectralValue(i,j, false);
+//            for (int z = 0; z < chan_count; z++)
+//            {
+//                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
+//                local_val1 += ((double)data_ptr[j*line_count + i] - average_ij) *
+//                        (yArr.at(z) - average_kl);
+//                local_val2 += pow((double)data_ptr[j*line_count + i] - average_ij, 2);
+//                local_val3 += pow(yArr.at(z) - average_kl, 2);
+
+//            }
+            switch (m_pHyperCube->GetFormatType()) {
+            case type_int8:
             {
-                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                local_val1 += ((double)data_ptr[j*line_count + i] - average_ij) *
-                        (yArr.at(z) - average_kl);
-                local_val2 += pow((double)data_ptr[j*line_count + i] - average_ij, 2);
-                local_val3 += pow(yArr.at(z) - average_kl, 2);
+                corellationFunc<u::int8>((u::int8**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                         ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_int16:
+            {
+                corellationFunc<u::int16>((u::int16**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                          ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_int32:
+            {
+                corellationFunc<u::int32>((u::int32**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                          ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_int64:
+            {
+                corellationFunc<u::int64>((u::int64**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                          ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_uint8:
+            {
+                corellationFunc<u::uint8>((u::uint8**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                          ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_uint16:
+            {
+                corellationFunc<u::uint16>((u::uint16**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                           ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_uint32:
+            {
+                corellationFunc<u::uint32>((u::uint32**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                           ,local_val1, local_val2, local_val3,  yArr, average_kl);
+            }
+            case type_float:
+            {
+                corellationFunc<float>((float**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                       ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            case type_double:
+            {
+                corellationFunc<double>((double**)m_pHyperCube->GetDataCube(), i, j, chan_count,  line_count,  row_count
+                                        ,local_val1, local_val2, local_val3,  yArr, average_kl);
+                break;
+            }
+            default:
+                break;
             }
             cube_map[i][j] =  1.0 - local_val1 / (sqrt(local_val2) * sqrt(local_val3));
             if (cube_map[i][j] > max_value)
@@ -361,13 +419,13 @@ void SpectralDistance::selectRange()
         {
             for (int j=0; j < cube_map[i].length(); j++)
             {
-                    if (cube_map[i][j] <= dist_range)
-                    {
-                        view_mem[i + cube_map.length() * j] = 1;
-                    } else
-                    {
-                        view_mem[i + cube_map.length() * j] = 0;
-                    }
+                if (cube_map[i][j] <= dist_range)
+                {
+                    view_mem[i + cube_map.length() * j] = 1;
+                } else
+                {
+                    view_mem[i + cube_map.length() * j] = 0;
+                }
             }
         }
 
@@ -393,26 +451,37 @@ void SpectralDistance::changeRange(const int range)
     selectRange();
 }
 
-double SpectralDistance::averageSpectralValue(const int _i, const int _j, bool isInverted)
+//double SpectralDistance::averageSpectralValue(const int _i, const int _j, bool isInverted) //в шаблонах
+//{
+//    int chan_count = m_pHyperCube->GetCountofChannels();
+//    int line_count = m_pHyperCube->GetLines();
+//    int row_count  = m_pHyperCube->GetColumns();
+
+
+//    double chanel_sum = 0;
+//    for (int z=0; z < chan_count; z++)
+//    {
+//        short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
+//        if (isInverted)
+//        {
+//            chanel_sum += data_ptr[_j*row_count + _i];
+//        }else
+//        {
+//            chanel_sum += data_ptr[_j*line_count + _i];
+//        }
+//    }
+//    return chanel_sum / (double)chan_count;
+//}
+
+double SpectralDistance::averageSpectralValue(QVector<double> yArr, int chan_count)
 {
-    int chan_count = m_pHyperCube->GetCountofChannels();
-    int line_count = m_pHyperCube->GetLines();
-    int row_count  = m_pHyperCube->GetColumns();
-
-
     double chanel_sum = 0;
     for (int z=0; z < chan_count; z++)
     {
-        short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-        if (isInverted)
-        {
-            chanel_sum += data_ptr[_j*row_count + _i];
-        }else
-        {
-            chanel_sum += data_ptr[_j*line_count + _i];
-        }
+        chanel_sum += yArr.at(z);
     }
-    return chanel_sum / (double)chan_count;
+    double average_kl = chanel_sum / (double)chan_count;
+    return average_kl;
 }
 
 QObject *SpectralDistance::GetObjectPointer()
