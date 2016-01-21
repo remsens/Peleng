@@ -904,7 +904,7 @@ private:
 
         u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
         u::int32* coeff = new u::int32[maskPixels];
-        u::uint32 normalization;
+        u::uint32 normalization = 0;
         ChooseCoef(coeff, normalization);
         u::uint32 size = BaseNoiseAlg<T>::m_cube->GetSizeSpectrum();
         u::uint32 linesCube = BaseNoiseAlg<T>::m_cube->GetLines();

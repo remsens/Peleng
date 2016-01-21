@@ -54,3 +54,17 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const QString
     m_cPlot->replot();
     this->show();
  }
+void Preview2D::plotPointsOn2D(QVector<double> x, QVector<double> y)
+{
+    m_cPlot->clearGraphs(); //удаляем предыдущий график
+    m_cPlot->addGraph();
+    m_cPlot->graph()->setData(x, y);
+    m_cPlot->graph()->setLineStyle(QCPGraph::lsNone);
+    QCPScatterStyle myScatter;
+    myScatter.setShape(QCPScatterStyle::ssCircle);
+    myScatter.setPen(QPen(Qt::red));
+    myScatter.setBrush(Qt::yellow);
+    //myScatter.setSize(5);
+    m_cPlot->graph()->setScatterStyle(myScatter);
+    m_cPlot->replot();
+}

@@ -1,36 +1,39 @@
 #include "histplotterwidget.h"
 #include "ui_histplotterwidget.h"
 
-#include "templatehistplot.h"
 
 
 
 HistPlotterWidget::HistPlotterWidget(HyperCube *cube, Attributes *attr, QWidget *parent) :
-    QDialog(parent),  m_cube(cube), bars2(0),
+    QDialog(parent),  m_cube(cube), BarsAfter(0),
     m_attributes(attr),
     ui(new Ui::HistPlotterWidget)
 {
     ui->setupUi(this);
-    HIST_COUNT = 100;
-    leftLine = new QCPItemStraightLine(ui->beforeCustomPlot);
+
+    data = new double[m_cube->GetLines()*m_cube->GetColumns()*sizeof(double)];
+
+    leftLine = new QCPItemStraightLine(ui->beforeCustomPlot); // Удаляется при удалении ui->beforeCustomPlot
     ui->beforeCustomPlot->addItem(leftLine);
 
-    rigthLine = new QCPItemStraightLine(ui->beforeCustomPlot);
+    rigthLine = new QCPItemStraightLine(ui->beforeCustomPlot);// Удаляется при удалении ui->beforeCustomPlot
     ui->beforeCustomPlot->addItem(rigthLine);
 
 
-    bars = new QCPBars( ui->beforeCustomPlot->xAxis,  ui->beforeCustomPlot->yAxis);
-    ui->beforeCustomPlot->addPlottable(bars);
+    BarsBefore = new QCPBars( ui->beforeCustomPlot->xAxis,  ui->beforeCustomPlot->yAxis);
+    ui->beforeCustomPlot->addPlottable(BarsBefore);
     ui->beforeCustomPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
 
-    bars2 = new QCPBars( ui->afterCustomPlot->xAxis,  ui->afterCustomPlot->yAxis);
-    ui->afterCustomPlot->addPlottable(bars2);
+    BarsAfter = new QCPBars( ui->afterCustomPlot->xAxis,  ui->afterCustomPlot->yAxis);
+    ui->afterCustomPlot->addPlottable(BarsAfter);
     ui->afterCustomPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
 
     PlotDefault();
 
     ui->sumBoundaryChBox->setChecked(true);
-    this->sumBoundary(true);//------------------------------ + true
+    this->sumBoundary();
+
+
 
 
 }
@@ -38,50 +41,62 @@ HistPlotterWidget::HistPlotterWidget(HyperCube *cube, Attributes *attr, QWidget 
 HistPlotterWidget::~HistPlotterWidget()
 {
     emit Close(this);
+    delete[] data;
     delete ui;
 }
 
 void HistPlotterWidget::accept()
 {
-    if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
-    else if (ui->gaussChBox->isChecked())  Gauss(true);
+    memcpy(m_attributes->GetTempChanel(),data,m_cube->GetLines()*m_cube->GetColumns()*sizeof(double));
     QDialog::accept();
 }
 
-
-void  HistPlotterWidget::OnClose()
-{
-
-}
 
 
 void HistPlotterWidget::PlotDefault()
 {
 
+    QVector<double> key,value;
 
-//    if (m_attributes->GetPointsList().size())
-//    {
-//        Channel = m_attributes->GetPointsList().at(0).z;
-//    }
-    Channel = 0; //на всякий случай
+    memcpy(data,m_attributes->GetTempChanel(),m_cube->GetLines()*m_cube->GetColumns()*sizeof(double));
+    double maxValue = *std::max_element(data,data+m_cube->GetSizeChannel());
+    double minValue = *std::min_element(data,data+m_cube->GetSizeChannel());
 
+    double leftBoundary = minValue;
+    double rightBoundary = maxValue;
 
-    if (m_cube->GetSizeChannel()-1  < Channel) Channel = m_cube->GetSizeChannel()-1;
-    QVector<double> key(HIST_COUNT+1),value(HIST_COUNT+1);
-    switch (m_cube->GetFormatType()) {
-        case type_int8: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes); break;
-        case type_uint8: SumBoundary<quint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes); break;
-        case type_int16: SumBoundary<qint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_uint16: SumBoundary<quint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_int32: SumBoundary<qint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_uint32: SumBoundary<quint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_int64: SumBoundary<qint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_uint64: SumBoundary<quint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_float: SumBoundary<float>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        case type_double: SumBoundary<double>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
-        default: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT,key, value, m_attributes); break;
+    quint32 HistCount = 100;
+
+    if ((maxValue-minValue) < HistCount) {
+        HistCount = maxValue-minValue;
     }
-    bars->setData(key,value);
+
+    key.resize(HistCount+1);
+    value.resize(HistCount+1);
+
+
+    double step = (double)(maxValue-minValue)/(HistCount);
+
+
+
+    for (unsigned int i = 0; i < m_cube->GetLines(); i++) {
+        for (unsigned int j = 0; j < m_cube->GetColumns(); j++) {
+        if (data[i*m_cube->GetColumns()+j] < leftBoundary) data[i*m_cube->GetColumns()+j]=leftBoundary;
+        if (data[i*m_cube->GetColumns()+j] > rightBoundary) data[i*m_cube->GetColumns()+j]=rightBoundary;
+            value[(data[i*m_cube->GetColumns()+j]-minValue)/step]++;
+        }
+    }
+
+
+
+
+    for (unsigned int k =0; k<HistCount+1; k++) {
+        key[k]=minValue+k*step;
+    }
+
+
+    BarsBefore->setData(key,value);
+
 
 
     ui->beforeCustomPlot->rescaleAxes();
@@ -89,20 +104,20 @@ void HistPlotterWidget::PlotDefault()
     ui->beforeCustomPlot->replot();
 
 
-    ui->leftSlider->setMinimum(ui->beforeCustomPlot->xAxis->range().lower);
-    ui->rightSlider->setMinimum(ui->beforeCustomPlot->xAxis->range().lower);
+    ui->leftSlider->setMinimum(leftBoundary);
+    ui->rightSlider->setMinimum(leftBoundary);
 
-    ui->leftSlider->setMaximum(ui->beforeCustomPlot->xAxis->range().upper);
-    ui->rightSlider->setMaximum(ui->beforeCustomPlot->xAxis->range().upper);
-    ui->rightSlider->setValue(ui->beforeCustomPlot->xAxis->range().upper);
+    ui->leftSlider->setMaximum(rightBoundary);
+    ui->rightSlider->setMaximum(rightBoundary);
+    ui->rightSlider->setValue(rightBoundary);
 
 
 
-    leftLine->point1->setCoords(ui->beforeCustomPlot->xAxis->range().lower,0);
-    leftLine->point2->setCoords(ui->beforeCustomPlot->xAxis->range().lower,1);
+    leftLine->point1->setCoords(leftBoundary,0);
+    leftLine->point2->setCoords(leftBoundary,1);
 
-    rigthLine->point1->setCoords(ui->beforeCustomPlot->xAxis->range().upper,0);
-    rigthLine->point2->setCoords(ui->beforeCustomPlot->xAxis->range().upper,ui->beforeCustomPlot->yAxis->range().upper);
+    rigthLine->point1->setCoords(rightBoundary,0);
+    rigthLine->point2->setCoords(rightBoundary,1);
 
 
 }
@@ -129,45 +144,66 @@ void HistPlotterWidget::on_rightSlider_sliderMoved(int position)
 void HistPlotterWidget::on_leftSlider_valueChanged(int value)
 {
     if (value > ui->rightSlider->value()-4) ui->leftSlider->setValue(ui->rightSlider->value()-5);
-    if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
-    else if (ui->gaussChBox->isChecked())  Gauss(true);    
+    if (ui->sumBoundaryChBox->isChecked()) sumBoundary();
+    else if (ui->gaussChBox->isChecked())  Gauss();
 
 }
 
 void HistPlotterWidget::on_rightSlider_valueChanged(int value)
 {
     if (value < ui->leftSlider->value()+4) ui->rightSlider->setValue(ui->leftSlider->value()+5);
-    if (ui->sumBoundaryChBox->isChecked()) sumBoundary(true);
-    else if (ui->gaussChBox->isChecked())  Gauss(true);
+    if (ui->sumBoundaryChBox->isChecked()) sumBoundary();
+    else if (ui->gaussChBox->isChecked())  Gauss();
 
 }
 
-void HistPlotterWidget::sumBoundary(bool updateAttributes)
+void HistPlotterWidget::sumBoundary()
 {
-    if (bars2) {
-    bars2->data()->clear();
-    QVector<double> key(HIST_COUNT+1),value(HIST_COUNT+1);
+    if (BarsAfter) {
+        BarsAfter->data()->clear();
+
     qint32 leftBoundary = leftLine->point1->coords().x();
     qint32 rightBoundary = rigthLine->point1->coords().x();
 
+    QVector<double> key,value;
 
-    /*Attributes *attr = 0;
-    if (updateAttributes) attr=m_attributes;*/
 
-    switch (m_cube->GetFormatType()) {
-        case type_int8: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_uint8: SumBoundary<quint8>(m_cube,Channel,HIST_COUNT, key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_int16: SumBoundary<qint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_uint16: SumBoundary<quint16>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_int32: SumBoundary<qint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_uint32: SumBoundary<quint32>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_int64: SumBoundary<qint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_uint64: SumBoundary<quint64>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_float: SumBoundary<float>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        case type_double: SumBoundary<double>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
-        default: SumBoundary<qint8>(m_cube,Channel,HIST_COUNT,key, value, m_attributes, leftBoundary, rightBoundary); break;
+
+    memcpy(data,m_attributes->GetTempChanel(),m_cube->GetLines()*m_cube->GetColumns()*sizeof(double));
+
+
+    double maxValue = *std::max_element(data,data+m_cube->GetSizeChannel());
+    double minValue = *std::min_element(data,data+m_cube->GetSizeChannel());
+
+    quint32 HistCount = 100;
+
+    if ((maxValue-minValue) < HistCount) {
+        HistCount = maxValue-minValue;
     }
-    bars2->setData(key,value);
+
+    key.resize(HistCount+1);
+    value.resize(HistCount+1);
+
+
+    double step = (double)(maxValue-minValue)/(HistCount);
+
+
+
+    for (unsigned int i = 0; i < m_cube->GetLines(); i++) {
+        for (unsigned int j = 0; j < m_cube->GetColumns(); j++) {
+        if (data[i*m_cube->GetColumns()+j] < leftBoundary) data[i*m_cube->GetColumns()+j]=leftBoundary;
+        if (data[i*m_cube->GetColumns()+j] > rightBoundary) data[i*m_cube->GetColumns()+j]=rightBoundary;
+            value[(data[i*m_cube->GetColumns()+j]-minValue)/step]++;
+        }
+    }
+
+
+    for (int k =0; k<HistCount+1; k++) {
+        key[k]=minValue+k*step;
+    }
+
+
+    BarsAfter->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();
     ui->afterCustomPlot->xAxis->setRange(leftBoundary,rightBoundary);
     ui->afterCustomPlot->yAxis->setTickLabels(false);
@@ -176,32 +212,83 @@ void HistPlotterWidget::sumBoundary(bool updateAttributes)
 }
 
 
-void HistPlotterWidget::Gauss(bool updateAttributes) {
-    if (bars2) {
-    bars2->data()->clear();
-    QVector<double> key(HIST_COUNT+1),value(HIST_COUNT+1);
-    qint32 x = leftLine->point1->coords().x();
-    qint32 y = rigthLine->point1->coords().x();
+void HistPlotterWidget::Gauss() {
+    if (BarsAfter) {
+        BarsAfter->data()->clear();
 
-    /*Attributes *attr = 0;                                                                  // ВИТЯ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if (updateAttributes) attr=m_attributes;                                             // ВИТЯ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
-    switch (m_cube->GetFormatType()) {
-        case type_int8: Gaussian<qint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, m_attributes); break;
-        case type_uint8: Gaussian<quint8>(m_cube,Channel,HIST_COUNT, key, value, x, y, m_attributes); break;
-        case type_int16: Gaussian<qint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_uint16: Gaussian<quint16>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_int32: Gaussian<qint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_uint32: Gaussian<quint32>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_int64: Gaussian<qint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_uint64: Gaussian<quint64>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_float: Gaussian<float>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        case type_double: Gaussian<double>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
-        default: Gaussian<qint8>(m_cube,Channel,HIST_COUNT,key, value, x, y, m_attributes); break;
+    qint32 leftBoundary = leftLine->point1->coords().x();
+    qint32 rightBoundary = rigthLine->point1->coords().x();
+
+
+    QVector<double> key,value;
+
+
+
+    memcpy(data,m_attributes->GetTempChanel(),m_cube->GetLines()*m_cube->GetColumns()*sizeof(double));
+
+
+    double maxValue = rightBoundary;
+    double minValue = leftBoundary;
+
+
+
+    double sigma = 0;
+    double  mu = 0;
+
+
+
+
+    mu = minValue+(maxValue-minValue)/2;
+    sigma = (maxValue-minValue)/3;
+
+    double *temp_data = new double[m_cube->GetSizeChannel()];
+
+
+    for (unsigned int j = 0; j <m_cube->GetSizeChannel(); j++ ) {
+        temp_data[j] = data[j] * (1.0/(sigma*sqrt(2*M_PI)))*exp(-(double)pow(data[j]-mu,2)/(2*pow(sigma,2)));
+    };
+
+
+    double maxVal = *std::max_element(temp_data,temp_data+m_cube->GetSizeChannel());
+    double minVal = *std::min_element(temp_data,temp_data+m_cube->GetSizeChannel());
+
+    for (unsigned int i = 0; i < m_cube->GetLines(); i++) {
+        for (unsigned int j = 0; j < m_cube->GetColumns(); j++) {
+            data[i*m_cube->GetColumns()+j] = (maxValue - minValue ) * (temp_data[i*m_cube->GetColumns()+j] - minVal) / (maxVal-minVal)+minValue;
+        }
     }
-    bars2->setData(key,value);
+
+
+    qint32 HistCount=100;
+
+    if (maxValue-minValue < HistCount) {
+        HistCount = maxValue-minValue;
+    }
+
+
+    key.resize(HistCount+1);
+    value.resize(HistCount+1);
+
+
+    double step = (double)(maxValue-minValue)/HistCount;
+
+    for (unsigned int j = 0; j <m_cube->GetSizeChannel(); j++ ) {
+        value[(data[j]-minValue)/step]++;
+    };
+
+
+    for (int k =0; k<HistCount+1; k++) {
+        key[k]=minValue+k*step;
+    }
+
+    delete[] temp_data;
+
+
+
+    BarsAfter->setData(key,value);
     ui->afterCustomPlot->rescaleAxes();
-    //ui->afterCustomPlot->xAxis->setRange(ymin, ymax);
+   ui->afterCustomPlot->xAxis->setRange(leftBoundary, rightBoundary);
     ui->afterCustomPlot->yAxis->setTickLabels(false);
     ui->afterCustomPlot->replot();
     }

@@ -194,14 +194,12 @@ u::uint8 Attributes::GetDegreePolinom() const
     return m_degreePolinom;
 }
 
-void Attributes::SetTempChanel(u::ptr pChan, u::uint32 rows, u::int32 cols)
+void Attributes::SetTempChanel(double* pChan)
 {
     m_tempChan = pChan;
-    m_rowsInTempChan = rows;
-    m_colsInTempChan = cols;
 }
 
-u::ptr Attributes::GetTempChanel()
+double* Attributes::GetTempChanel()
 {
     return m_tempChan;
 }

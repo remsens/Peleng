@@ -29,9 +29,8 @@ protected:
 
 
 signals:
-    //void replot();
+
     void Close(HistPlotterWidget* obj);
-    //void changeAttr(qint32 channel, Attributes* attr);
 
 private slots:
     void on_leftSlider_sliderMoved(int position);
@@ -39,23 +38,23 @@ private slots:
     void on_leftSlider_valueChanged(int value);
     void on_rightSlider_valueChanged(int value);
 
-    void sumBoundary(bool updateAttributes=false);
-    void Gauss(bool updateAttributes=false);
+    void PlotDefault();
+    void sumBoundary();
+    void Gauss();
 
 
     void on_gaussChBox_clicked(bool checked);
-
-    void  OnClose();
-
     void on_sumBoundaryChBox_clicked(bool checked);
 
 private:
-    void PlotDefault();
+
 
     Ui::HistPlotterWidget *ui;
-    QCPBars *bars, *bars2;
+    QCPBars *BarsBefore, *BarsAfter;
 
-    int HIST_COUNT;
+
+    double *data;
+
     quint32 Channel;
     HyperCube *m_cube;
     Attributes* m_attributes;

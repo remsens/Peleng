@@ -29,12 +29,14 @@ public:
     }
 };
 
-PolygonManager::PolygonManager(int rows, int cols,
+PolygonManager::PolygonManager(HyperCube *cube, Attributes *attributes,
                                QCustomPlot *cusPlot, QWidget *parent2Dwindow) :
     QMainWindow(0)
   , ui(new Ui::PolygonManager)
-  , m_rows(rows)
-  , m_cols (cols)
+  , m_cube(cube)
+  , m_attributes(attributes)
+  , m_rows(cube->GetLines())
+  , m_cols (cube->GetColumns())
   , m_polyCreationInProcess(false)
   , m_flagDoubleClicked(false)
   , m_cusPlot(cusPlot)
@@ -234,17 +236,15 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
     if(index.isValid())
     {
         QMenu *menu = new QMenu(this);
-        QAction* actionColor = new QAction("Выбор цвета",this);
         menu->setAttribute(Qt::WA_DeleteOnClose);
-        menu->addAction(actionColor);
         menu->popup(QCursor::pos());
-        connect(actionColor,SIGNAL(triggered()),SLOT(pickColor()));
+        menu->addAction("Выбор цвета",this,SLOT(pickColor()));
+        menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"Средний спектр",this,SLOT(onMenuAverageSpectr()));
     }
 
 }
-void PolygonManager::pickColor() // должен возвращать цвет
+void PolygonManager::pickColor()
 {
-    QColorDialog dialog;
     QColor color = QColorDialog::getColor(Qt::white);
     ui->tableWidget->selectedItems().at(1)->setBackgroundColor(color);
     m_RegionArr[m_currIndexRegion].m_color = color;
@@ -294,7 +294,10 @@ void PolygonManager::onButtonSaveRegion()
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
     QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
-    saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
+    if (fileName.contains(".area",Qt::CaseInsensitive))
+        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+    else
+        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
 }
 
 void PolygonManager::onButtonLoadRegion()
@@ -323,6 +326,59 @@ void PolygonManager::itemChanged(QTableWidgetItem *it)
     if (it->column() == 0)
         m_RegionArr[it->row()].m_name = it->text();
 
+}
+
+void PolygonManager::onMenuAverageSpectr()
+{
+    //1.область как маска
+    //2.считаем средний спектр по выбранной маске
+
+    int Chnls = m_cube->GetCountofChannels();
+    int numSpctrs = 0;
+    double* spectrSum = new double[Chnls];
+    for (int i = 0; i < Chnls; ++i)
+    {
+        spectrSum[i] = 0;
+    }
+    for(int i = 0; i < m_rows; ++i)
+    {
+        for(int j = 0; j < m_cols; ++j)
+        {
+            if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+            {
+                numSpctrs++;
+                qint16* spectr = new qint16[Chnls];
+                m_cube->GetSpectrumPoint(i, j,spectr); // записали в pSpectrValues из гиперкуба
+                for (int k = 0; k < Chnls; ++k)
+                {
+                    spectrSum[k] += (double)spectr[k];
+                }
+                delete[] spectr;
+            }
+        }
+    }
+    std::vector<double> vector(spectrSum, spectrSum + Chnls);
+    delete[] spectrSum;
+    QVector<double> averageSpectrVect = QVector<double>::fromStdVector(vector);
+    for(int i = 0; i < Chnls; ++i)
+        averageSpectrVect[i] /= numSpctrs;
+    QList<double> Wawes;
+    Wawes.append(m_cube->GetListOfChannels());
+    QVector<double> wawesVect;
+    for (int i = 0; i < Chnls; ++i )
+       wawesVect.push_back(Wawes[i]);
+
+    m_attributes->SetXUnit(wawesVect);
+    m_attributes->SetYUnit(averageSpectrVect);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->SetExternalSpectrFormat(0);
+    QList<Attributes::DescriptionSpectr> list;
+    Attributes::DescriptionSpectr descriptionAverSpctr;
+    descriptionAverSpctr.title = "Среднее по региону '";
+    descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
+    list.append(descriptionAverSpctr);
+    m_attributes->SetDescriptionSpectr(list);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
 }
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)

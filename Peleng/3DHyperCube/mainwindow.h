@@ -38,7 +38,10 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
-
+private slots:
+    //! для исправления бага с opengl отрисовкой после ресайза для слайдера x2
+    void X1chngd(int num);
+    void X2chngd(int num);
 private:
     void setSlidersSettings();
 
@@ -48,7 +51,8 @@ private:
     HyperCube* hyperCube;
     QLabel* pBrLabel;
     Attributes* m_attr;
-
+    bool x1Chngd;//! для исправления бага с opengl отрисовкой после ресайза для слайдера x2
+    bool x2Chngd;
 };
 
 #endif // MAINWINDOW_H

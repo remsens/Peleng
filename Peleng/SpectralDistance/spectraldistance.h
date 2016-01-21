@@ -33,8 +33,10 @@ private:
     void CalcEvklidDistance(int k, int l); //k = row, l = column
     void CalcSpectralAngle(int k, int l); //k = row, l = column
     void CalcSpectralCorellation(int k, int l); //k = row, l = column
-    double averageSpectralValue(const int _i, const int _j);
+    double averageSpectralValue(const int _i, const int _j, bool isInverted);
     void Destroy();
+private slots:
+    void onClosePreview();
 
 public slots:
     void callMethod(int methNumber);
@@ -55,6 +57,7 @@ private:
     int    view_range;
 
     bool is_cubemap_emty;
+    bool is_evklid_distance;
 };
 
 #endif // SPECTRALDISTANCE_H

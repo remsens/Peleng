@@ -56,12 +56,12 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setHyperCube(cube);
     initArrChanLimits();
     fillChanList();
-    polyMngr = new PolygonManager(rows,cols,ui->customPlot,this);
+    polyMngr = new PolygonManager(m_pCube,m_attributes,ui->customPlot,this);
     createMenus();
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
-        setTempChannel((u::ptr)data[m_attributes->GetPointsList().at(0).z]);
+        setTempChannel(data[m_initChanel]);
     }
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
@@ -186,7 +186,7 @@ void Main2DWindow::connectionsOfPlugins()
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
     connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->listWidget, SLOT(setEnabled(bool)));
-    connect(m_attributes->GetAvailablePlugins().value("Hist UI")->GetObjectPointer(), SIGNAL(replotChannel(qint32, Attributes*)), this, SLOT(plotFromAttributes(qint32, Attributes*)));
+    connect(m_attributes->GetAvailablePlugins().value("Hist UI")->GetObjectPointer(), SIGNAL(ReplotSignal(Attributes*)), this, SLOT(plotFromAttributes(Attributes*)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(StartOperation(bool)), ui->menubar, SLOT(setEnabled(bool)));
@@ -195,38 +195,19 @@ void Main2DWindow::connectionsOfPlugins()
     connect (m_attributes->GetAvailablePlugins().value("3DCube UI")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToResize(bool)));
 }
 
-void Main2DWindow::plotFromAttributes(qint32 channel, Attributes *attr)
+void Main2DWindow::plotFromAttributes(Attributes *attr)
 {
 
-    quint32 minCMap= 2147483647;
-    quint32 maxCMap= 0;
-
-    QList<Point> points = attr->GetPointsList();
-    for (int i=0; i < points.size(); ++i) {
-            if (maxCMap <= points.at(i).z ) maxCMap = points.at(i).z;
-            if (minCMap >= points.at(i).z ) minCMap = points.at(i).z;
-            colorMap->data()->setCell(points.at(i).x, points.at(i).y,points.at(i).z );
-    }
-//    ui->customPlot->rescaleAxes();
-//   // qDebug() << attr->GetPointsList().at(0).z;
-//    ui->customPlot->replot();
-    for (int i=0; i < points.size(); ++i)
-    {
-        m_tempChanel[ points.at(i).x * cols + points.at(i).y] = points.at(i).z;
-    }
-
-    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-        ui->customPlot->rescaleAxes();
-
-
-        ui->customPlot->replot();
-
-
-    /*int minCMap, maxCMap;
-    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
-    drawHeatMap(minCMap, maxCMap);*/
-
-
+    int minCMap, maxCMap;
+    findMinMaxforColorMap(minCMap, maxCMap,0,1);
+    drawHeatMap(minCMap, maxCMap);
+    qDebug()<<minCMap<<" max:"<<maxCMap;
+    disconnect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),this,SLOT(leftBorderContrast(int)));
+    disconnect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),this,SLOT(rightBorderContrast(int)));
+    ui->SliderContrastMin->setValue(minCMap);
+    ui->SliderContrastMax->setValue(maxCMap);
+    connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
+    connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
 }
 
 void Main2DWindow::needToUpdate(bool res)
@@ -261,9 +242,9 @@ void Main2DWindow::setInitChanel(u::uint32 initChanel)
     ui->listWidget->setFocus();
     ui->listWidget->scrollToItem(ui->listWidget->item(m_initChanel));
     //или update
-    int minCMap, maxCMap;
-    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
-    drawHeatMap(minCMap, maxCMap);
+//    int minCMap, maxCMap;
+//    findMinMaxforColorMap(minCMap, maxCMap,0.04, 0.98);
+//    drawHeatMap(minCMap, maxCMap);
 }
 
 void Main2DWindow::setHyperCube(HyperCube *ptrCube)
@@ -273,7 +254,7 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     cols = m_pCube->GetColumns();
     chnls = m_pCube->GetCountofChannels();
     data = (qint16**)ptrCube->GetDataCube();
-    m_tempChanel = new qint16[rows*cols];
+    m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
 
@@ -301,23 +282,12 @@ void Main2DWindow::setInitCustomplotSettings()
     colorMap->rescaleDataRange(true);
 }
 
-void Main2DWindow::setTempChannel(u::ptr chanData)
+void Main2DWindow::setTempChannel(qint16* chanData)
 {
-    try {
-         memcpy(m_tempChanel, chanData, rows*cols*m_pCube->GetBytesInElements());
-         m_attributes->SetTempChanel(m_tempChanel,rows,cols);
-         m_attributes->ClearList();
-         for (int x=0; x < rows; ++x) {
-             for (int y=0; y < cols; ++y) {
-                 m_attributes->SetPoint(x,y,m_tempChanel[x * cols + y]);
-             }
-         }
-
-    } catch (...) {
-        throw GenericExc("Неудалось копировать в темповый канал", -1);
-    }
-
-
+    for(int i = 0; i < rows; ++i)
+        for(int j = 0; j < cols; ++j)
+            m_tempChanel[i*cols+j] = (double)chanData[i*cols+j];
+    m_attributes->SetTempChanel(m_tempChanel);
 }
 
 void Main2DWindow::fillChanList()
@@ -380,25 +350,25 @@ void Main2DWindow::findMinMaxforColorMap(int &minCMap, int &maxCMap,float thresh
 {
     minCMap =  32767;
     maxCMap = -32767;
-    qint16 *dataTemp = new qint16[rows*cols];
+    double *dataTemp = new double[rows*cols];
     try {
-         memcpy(dataTemp, m_tempChanel, rows*cols*sizeof(qint16));
+         memcpy(dataTemp, m_tempChanel, rows*cols*sizeof(double));
     } catch (...) {
         throw GenericExc("Неудалось копировать в темповый канал", -1);
     }
     QElapsedTimer timer3;
     timer3.start();
-    qsort(dataTemp,cols*rows,sizeof(qint16),cmp2);
+    qsort(dataTemp,cols*rows,sizeof(double),cmp2);
     qDebug()<<"сортировка"<<timer3.elapsed()<< " мс";
-    minCMap = dataTemp[int(rows*cols*thresholdLow)];
-    maxCMap = dataTemp[int(rows*cols*thresholdHigh)];
+    minCMap = dataTemp[int((rows*cols-1)*thresholdLow)];
+    maxCMap = dataTemp[int((rows*cols-1)*thresholdHigh)];
     delete[] dataTemp;
 }
 
 int cmp2(const void *a, const void *b)
 {
-    const qint16 *pa = (const qint16*)a;
-    const qint16 *pb = (const qint16*)b;
+    const double *pa = (const double*)a;
+    const double *pb = (const double*)b;
     if (*pa < *pb)
         return -1;
     else if (*pa > *pb)
@@ -411,7 +381,7 @@ void Main2DWindow::updateViewchan(int chan)
 {
     if(flagGetTempChannelFromCube)
     {
-        setTempChannel((u::ptr)data[chan]);//data[chan]
+        setTempChannel(data[chan]);//data[chan]
     }
     if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
@@ -514,7 +484,7 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
     int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
     if (x >= 0 && x < rows && y >= 0 && y < cols)
     {
-        qint16 bright = m_tempChanel[x * cols + y];
+        double bright = m_tempChanel[x * cols + y];
         pStatusBarLabel->setText("X: " + QString().setNum(x) + "    Y: " + QString().setNum(y) + "    Значение:" + QString().setNum(bright));
     }
     else
@@ -588,9 +558,9 @@ void Main2DWindow::setInitSliders(int chan)
     for (int i = 0; i < rows*cols; ++i)
     {
        if(m_tempChanel[i] < min)
-           min = m_tempChanel[i];
+           min = (int)m_tempChanel[i];
        if(m_tempChanel[i] > max)
-           max = m_tempChanel[i];
+           max = (int)m_tempChanel[i];
     }
     ui->SliderContrastMin->setMinimum(min);
     ui->SliderContrastMin->setMaximum(max);
@@ -682,7 +652,7 @@ void Main2DWindow::createLinePlotterSlot()
 {
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
+    ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     //emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
@@ -700,7 +670,7 @@ void Main2DWindow::startIsClicked(uint dataX, uint dataY)
     //emit flagsToolTip(globalPos,"выберите конечную точку");
     QString strForLineHelp = "выберите конечную точку";
     this->setToolTip(strForLineHelp);
-    setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
+    ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
 }
@@ -711,7 +681,7 @@ void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
     m_y2 = dataY;
     m_z2 = m_z1; //ui->listWidget->currentRow();
     QString strForLineHelp = "";
-    setCursor(Qt::ArrowCursor);
+    ui->customPlot->setCursor(Qt::ArrowCursor);
     //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2); //так было в 3d кубе
     plotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));

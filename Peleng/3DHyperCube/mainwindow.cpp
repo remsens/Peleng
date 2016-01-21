@@ -5,17 +5,19 @@
 
 MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
     QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , hyperCube(cube)
-    , m_attr(attr)
+  , ui(new Ui::MainWindow)
+  , hyperCube(cube)
+  , m_attr(attr)
+  , x1Chngd(false)
+  , x2Chngd(false)
 {
-     setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
-     setAttribute(Qt::WA_DeleteOnClose, true);
-     QFont font;
-     font.setPixelSize(16);
-     font.setBold(true);
-     QToolTip::setFont(font);
-     connectionsOfPlugins();
+    setWindowIcon(QIcon(":/IconsCube/iconsCube/HyperCube3D.png"));
+    setAttribute(Qt::WA_DeleteOnClose, true);
+    QFont font;
+    font.setPixelSize(16);
+    font.setBold(true);
+    QToolTip::setFont(font);
+    connectionsOfPlugins();
 }
 
 
@@ -35,6 +37,22 @@ void MainWindow::closeEvent(QCloseEvent *e)
     {
         emit Close(this);
     }
+}
+
+void MainWindow::X1chngd(int num)
+{
+    if(num != 0)
+        x1Chngd = true;
+    else
+        x1Chngd = false;
+}
+
+void MainWindow::X2chngd(int num)
+{
+    if(num != hyperCube->GetLines()-1)
+        x2Chngd = true;
+    else
+        x2Chngd = false;
 }
 
 
@@ -111,6 +129,9 @@ void MainWindow::processData()
     QObject::connect(ui->horizontalScrollBar_Y1, SIGNAL(valueChanged(int)), widgetHyperCube, SLOT(sliderY1ValueChanged(int)));
     QObject::connect(ui->horizontalScrollBar_Y2, SIGNAL(valueChanged(int)), widgetHyperCube, SLOT(sliderY2ValueChanged(int)));
 
+    QObject::connect(ui->horizontalScrollBar_X1, SIGNAL(valueChanged(int)), this, SLOT(X1chngd(int)));
+    QObject::connect(ui->horizontalScrollBar_X2, SIGNAL(valueChanged(int)), this, SLOT(X2chngd(int)));
+
 }
 
 void MainWindow::resizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
@@ -141,6 +162,7 @@ void MainWindow::cubeResized()
 
 void MainWindow::prepareToResizeCube()
 {
+
     this->setWindowFlags ( Qt::CustomizeWindowHint | Qt::WindowTitleHint);//вариант 2
     this->show();
     emit StartOperation(false);
@@ -148,12 +170,6 @@ void MainWindow::prepareToResizeCube()
     this->setWindowTitle("Пожалуйста, подождите");
     this->setEnabled(false);
     QApplication::processEvents();
-//    int Ch1 =  ui->horizontalScrollBar_Ch1->value();
-//    int Ch2 =  ui->horizontalScrollBar_Ch2->value();
-//    int R1 =  ui->horizontalScrollBar_X1->value();
-//    int R2 =  ui->horizontalScrollBar_X2->value();
-//    int C1 =  ui->horizontalScrollBar_Y1->value();
-//    int C2 =  ui->horizontalScrollBar_Y2->value();
     int Ch1 = widgetHyperCube->getCh1();
     int Ch2 = widgetHyperCube->getCh2();
     int C1 = widgetHyperCube->getC1();
@@ -162,6 +178,13 @@ void MainWindow::prepareToResizeCube()
     int R2 = widgetHyperCube->getR2();
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
     this->setEnabled(true);
+    if (x1Chngd == false && x2Chngd == true)
+    {
+        emit ui->horizontalScrollBar_X2->valueChanged(ui->horizontalScrollBar_X2->value());
+    }
+    x1Chngd = false;
+    x2Chngd = false;
+    // emit ui->horizontalScrollBar_X2->valueChanged(ui->horizontalScrollBar_X2->value());
     this->setWindowTitle(title);
     emit FinishOperation(true);
     this->setWindowFlags (this->windowFlags()  & ~Qt::CustomizeWindowHint &~Qt::WindowTitleHint);//вариант 2

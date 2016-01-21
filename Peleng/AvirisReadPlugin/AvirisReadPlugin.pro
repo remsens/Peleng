@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
+QT       += core
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = AvirisReadPlugin
 TEMPLATE = lib
@@ -16,11 +18,17 @@ CONFIG += plugin
 DEFINES += AVIRISREADPLUGIN_LIBRARY
 
 SOURCES += avirisreadplugin.cpp \
+    CreaterHyperCubes.cpp \
+    ../Library/HyperCube.cpp \
     ../Library/GenericExc.cpp
 
 HEADERS += avirisreadplugin.h \
     ../Library/Interfaces/FileReadInterface.h \
-    ../Library/GenericExc.h
+    CreaterHyperCubes.h \
+    ../Library/HyperCube.h \
+    ../Library/Types.h \
+    ../Library/GenericExc.h \
+    ConvertDataCubeToLittleEndian.h
 
 unix {
     target.path = /usr/lib
@@ -30,9 +38,3 @@ unix {
 DISTFILES += \
     AvirisReadPlugin.json
 
-INCLUDEPATH += $$PWD/../Library
-DEPENDPATH += $$PWD/../Library
-
-INCLUDEPATH += $$PWD/ReadDataAviris
-DEPENDPATH += $$PWD/ReadDataAviris
-LIBS += $$OUT_PWD/ReadDataLib.dll

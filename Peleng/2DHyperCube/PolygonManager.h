@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include "../Library/QCustomPlot.h"
 #include "Region.h"
-
+#include "../Library/HyperCube.h"
+#include "../Library/Attributes/Attributes.h"
 namespace Ui {
 class PolygonManager;
 }
@@ -14,7 +15,7 @@ class PolygonManager : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit PolygonManager(int rows, int cols,
+    explicit PolygonManager(HyperCube *cube,Attributes* attributes,
                             QCustomPlot *cusPlot, QWidget *parent2Dwindow);
     ~PolygonManager();
     //! функция,завершающая создание полигона
@@ -79,11 +80,17 @@ private slots:
     //!  слот обработчика кнопки "Загрузить область"
     void onButtonLoadRegion();
 
+    //!  слот обработки изменения item'а листвиджета.
     void itemChanged(QTableWidgetItem* it);
+
+    //!  слот обработчика выбора "Средний спектр по области" из контекстного меню
+    void onMenuAverageSpectr();
 
 
 private:
     Ui::PolygonManager *ui;
+    HyperCube *m_cube;
+    Attributes* m_attributes;
     int m_rows;
     int m_cols;
     bool m_polyCreationInProcess;
@@ -92,7 +99,7 @@ private:
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
     QVector<QPolygon> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
     QVector<Region> m_RegionArr;
-    int m_currIndexRegion;// или QModelIndex
+    int m_currIndexRegion;// номер текущей (выделенной в списке) области
 };
 
 #endif // POLYGONMANAGER_H

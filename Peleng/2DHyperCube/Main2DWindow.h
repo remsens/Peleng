@@ -29,7 +29,7 @@ public:
     void initArrChanLimits();
     void setInitCustomplotSettings();
     //! Функция задания временного канала гиперкуба
-    void setTempChannel(u::ptr chanData);
+    void setTempChannel(qint16 *chanData);
 
 public slots:
     //! Слот отрисовки данных канала гиперкуба
@@ -66,7 +66,7 @@ public slots:
     void dataCubeResize();
     void connectionsOfPlugins();
 
-    void plotFromAttributes(qint32 channel, Attributes* attr);
+    void plotFromAttributes(Attributes* attr);
 
 signals:
     void signalCurrentDataXY(uint,uint);
@@ -122,7 +122,7 @@ private:
     u::uint32 m_initChanel;
     QCPColorMap *colorMap;
     qint16 **data;
-    qint16 *m_tempChanel;
+    double *m_tempChanel;
     int rows, cols, chnls;
     int m_dataX, m_dataY;
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
