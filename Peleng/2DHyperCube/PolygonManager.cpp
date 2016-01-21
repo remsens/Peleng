@@ -387,21 +387,40 @@ void PolygonManager::onMenuStandardDeviation()
     QVector<double> buf;
     QVector<double> std(Chnls,0); //СКО
     qint16** data = (qint16**)m_cube->GetDataCube();
-    for (int k = 0; k < Chnls; ++k)
+    QVector<QPoint> ijArr;
+
+    for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
     {
-        for(int i = 0; i < m_rows; ++i)
+        for(int j = 0; j < m_cols; ++j)
         {
-            for(int j = 0; j < m_cols; ++j)
+            if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
             {
-                if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
-                {
-                   buf.append(data[k][i*m_cols + j]);
-                }
+                ijArr.append(QPoint(i,j));
             }
         }
+    }
+    for (int k = 0; k < Chnls; ++k)
+    {
+        foreach(QPoint p,ijArr)
+            buf.append(data[k][p.x()*m_cols + p.y()]);
         std[k] = sqrt(calcStandardDeviation(buf));
         buf.clear();
     }
+//    for (int k = 0; k < Chnls; ++k)
+//    {
+//        for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
+//        {
+//            for(int j = 0; j < m_cols; ++j)
+//            {
+//                if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+//                {
+//                   buf.append(data[k][i*m_cols + j]);
+//                }
+//            }
+//        }
+//        std[k] = sqrt(calcStandardDeviation(buf));
+//        buf.clear();
+//    }
 
 
     QList<double> Wawes;
