@@ -87,7 +87,10 @@ private slots:
     void onMenuAverageSpectr();
 
     //!  слот обработчика выбора "Дисперсия по области" из контекстного меню
-    void onMenuDispersion();
+    void onMenuStandardDeviation();
+
+    //! расчет  СКО случайной величины Х
+    double calcStandardDeviation(QVector<double> X);
 
 
 private:
