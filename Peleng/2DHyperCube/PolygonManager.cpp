@@ -240,6 +240,7 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
         menu->popup(QCursor::pos());
         menu->addAction("Выбор цвета",this,SLOT(pickColor()));
         menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"Средний спектр",this,SLOT(onMenuAverageSpectr()));
+        menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"Дисперсия",this,SLOT(onMenuDispersion()));
     }
 
 }

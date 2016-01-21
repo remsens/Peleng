@@ -86,6 +86,9 @@ private slots:
     //!  слот обработчика выбора "Средний спектр по области" из контекстного меню
     void onMenuAverageSpectr();
 
+    //!  слот обработчика выбора "Дисперсия по области" из контекстного меню
+    void onMenuDispersion();
+
 
 private:
     Ui::PolygonManager *ui;
