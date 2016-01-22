@@ -44,6 +44,8 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const QString
     qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
     minCMap = data[int(rows*cols*0.02)];
     maxCMap = data[int(rows*cols*0.98)];
+//    minCMap = data[0];
+//    maxCMap = data[(rows-1)*(cols-1)];
     m_cPlot->rescaleAxes();
     colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
