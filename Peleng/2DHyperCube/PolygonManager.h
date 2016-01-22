@@ -86,6 +86,12 @@ private slots:
     //!  слот обработчика выбора "Средний спектр по области" из контекстного меню
     void onMenuAverageSpectr();
 
+    //!  слот обработчика выбора "Дисперсия по области" из контекстного меню
+    void onMenuStandardDeviation();
+
+    //! расчет  СКО случайной величины Х
+    double calcStandardDeviation(QVector<double> X);
+
 
 private:
     Ui::PolygonManager *ui;

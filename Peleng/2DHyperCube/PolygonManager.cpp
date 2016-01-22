@@ -240,6 +240,7 @@ void PolygonManager::tableContextMenuRequest(QPoint pos)
         menu->popup(QCursor::pos());
         menu->addAction("Выбор цвета",this,SLOT(pickColor()));
         menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"Средний спектр",this,SLOT(onMenuAverageSpectr()));
+        menu->addAction(QIcon(":/iconsPolyManager/icons/average.png"),"СКО",this,SLOT(onMenuStandardDeviation()));
     }
 
 }
@@ -367,7 +368,6 @@ void PolygonManager::onMenuAverageSpectr()
     QVector<double> wawesVect;
     for (int i = 0; i < Chnls; ++i )
        wawesVect.push_back(Wawes[i]);
-
     m_attributes->SetXUnit(wawesVect);
     m_attributes->SetYUnit(averageSpectrVect);
     m_attributes->SetExternalSpectrFlag(true);
@@ -379,6 +379,83 @@ void PolygonManager::onMenuAverageSpectr()
     list.append(descriptionAverSpctr);
     m_attributes->SetDescriptionSpectr(list);
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
+}
+
+void PolygonManager::onMenuStandardDeviation()
+{
+    int Chnls = m_cube->GetCountofChannels();
+    QVector<double> buf;
+    QVector<double> std(Chnls,0); //СКО
+    qint16** data = (qint16**)m_cube->GetDataCube();
+    QVector<QPoint> ijArr;
+
+    for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
+    {
+        for(int j = 0; j < m_cols; ++j)
+        {
+            if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+            {
+                ijArr.append(QPoint(i,j));
+            }
+        }
+    }
+    for (int k = 0; k < Chnls; ++k)
+    {
+        foreach(QPoint p,ijArr)
+            buf.append(data[k][p.x()*m_cols + p.y()]);
+        std[k] = sqrt(calcStandardDeviation(buf));
+        buf.clear();
+    }
+//    for (int k = 0; k < Chnls; ++k)
+//    {
+//        for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
+//        {
+//            for(int j = 0; j < m_cols; ++j)
+//            {
+//                if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+//                {
+//                   buf.append(data[k][i*m_cols + j]);
+//                }
+//            }
+//        }
+//        std[k] = sqrt(calcStandardDeviation(buf));
+//        buf.clear();
+//    }
+
+
+    QList<double> Wawes;
+    Wawes.append(m_cube->GetListOfChannels());
+    QVector<double> wawesVect;
+    for (int i = 0; i < Chnls; ++i )
+       wawesVect.push_back(Wawes[i]);
+    m_attributes->SetXUnit(wawesVect);
+    m_attributes->SetYUnit(std);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->SetExternalSpectrFormat(0);
+    QList<Attributes::DescriptionSpectr> list;
+    Attributes::DescriptionSpectr descriptionAverSpctr;
+    descriptionAverSpctr.title = "СКО по региону '";
+    descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
+    list.append(descriptionAverSpctr);
+    m_attributes->SetDescriptionSpectr(list);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
+
+
+}
+
+double PolygonManager::calcStandardDeviation(QVector<double> X)
+{
+    double mean=0.0, std=0.0;
+    int n = X.length();
+    for(int i=0; i<n;++i)
+    {
+        mean += X.at(i);
+    }
+    mean = mean/n;
+    for(int i=0; i<n;++i)
+        std += (X.at(i)-mean)*(X.at(i)-mean);
+
+    return std / n;
 }
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
