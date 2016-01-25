@@ -559,6 +559,8 @@ void GLWidget::repaintTopWithContrast(int min, int max)
     textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,min,max,true).mirrored(false,true));// верхняя грань с фото
     textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,min,max,true)); //нижняя грань с фото
     update();
+    minCMap = min;
+    maxCMap = max;
 }
 
 void GLWidget::plotSpectr(uint x, uint y, uint z)
