@@ -164,6 +164,7 @@ void Main2DWindow::dataCubeResize()
         delete [] ChnlLimits[i];
     }
     delete [] ChnlLimits;
+    delete[] m_tempChanel;
     setHyperCube(m_pCube);
     polyMngr->setRows(rows);
     polyMngr->setCols(cols);
