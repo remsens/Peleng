@@ -35,8 +35,8 @@ public:
 
         } else
         {
-            ToWindow();
-            //ToWindowLaplas();
+            //ToWindow();
+            ToWindowLaplas();
             //ToWindowUolles();
             //ToWindowMedianLaplas();
             return false;
