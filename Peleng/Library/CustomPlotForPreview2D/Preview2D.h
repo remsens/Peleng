@@ -17,6 +17,11 @@ public:
 
     void Plot(double* data, const int rows, const int cols, const QString& title = QString());
     void plotPointsOn2D(QVector<double> x, QVector<double> y);
+
+private slots:
+    void on_SliderMin_valueChanged(int value);
+    void on_SliderMax_valueChanged(int value);
+
 private:
     Ui::Preview2D *m_ui;
     QCustomPlot* m_cPlot;
