@@ -35,14 +35,15 @@ public:
 
         } else
         {
-            //ToWindow();
-            ToWindowLaplas();
-           // ToWindowUolles();
+            ToWindow();
+            //ToWindowLaplas();
+            //ToWindowUolles();
+            //ToWindowMedianLaplas();
             return false;
         }
 
     }
-    void ToWindowLaplas()//Лапласс
+    void ToWindowMedianLaplas()//Лапласс + медианный
     {
 
         qDebug() << "start borders";
@@ -55,8 +56,26 @@ public:
         data.clear();
         data.resize(0);
         u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
+        u::uint32 pixlWindow = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines() - pixlWindow; i++)
+        {
+            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns() - pixlWindow; j++)
+            {
+                double* arrWindow = new double [pixlWindow*pixlWindow];
+
+                for (u::uint32 k = 0; k < pixlWindow; k++)
+                {
+                   memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(double)*pixlWindow);
+                }
+                qsort(arrWindow, pixlWindow*pixlWindow, sizeof(double), Compare::CompareVariables<double>);
+                dataChannelNew[(i+pixlWindow/2) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow*pixlWindow/2];
+                delete [] arrWindow;
+            }
+        }
+        //dataChannelNew теперь входной массив для метода Лапласа
+        memcpy(dataChannel, dataChannelNew, BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double));
         // выделение границ (Лаплас)
-        u::uint32 pixlWindow = 3;// BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+        pixlWindow = 3;// BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
 //        int mtr[3][3] = { -1, -2, -1,
 //                          -2, 12, -2,
 //                          -1, -2, -1};
@@ -80,6 +99,67 @@ public:
                 tempSum = 0;
             }
         }
+        //---складываем с исходным
+        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines(); i++)
+        {
+            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns(); j++)
+            {
+                dataChannelNew[i*columns + j] = dataChannelNew[i*columns + j] + dataChannel[i*columns + j];
+            }
+        }
+        //---
+        Preview2D* previewWindow = new Preview2D();
+        QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
+        previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
+        delete [] dataChannel;
+        qDebug() << "finish borders";
+    }
+    void ToWindowLaplas()//Лапласс
+    {
+
+        qDebug() << "start borders";
+        double* dataChannel = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
+        double* dataChannelNew = new double[BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double)];
+        QVector<double> data; data.resize(BaseNoiseAlg<T>::m_cube->GetSizeChannel());
+        BaseNoiseAlg<T>::m_cube->GetDataChannel(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z, data);
+        memcpy(dataChannel, data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double));
+        memcpy(dataChannelNew,data.data(), BaseNoiseAlg<T>::m_cube->GetSizeChannel()*sizeof(double));
+        data.clear();
+        data.resize(0);
+        u::uint32 columns = BaseNoiseAlg<T>::m_cube->GetColumns();
+        int pixlWindow = 3;// BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
+//        int mtr[3][3] = { -1, -2, -1,
+//                          -2, 12, -2,
+//                          -1, -2, -1};
+        double mtr[3][3] = { 0, -1, 0,
+                          -1, 4, -1,
+                          0, -1, 0};
+
+        double tempSum = 0;
+        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines() - pixlWindow; i++)
+        {
+            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns() - pixlWindow; j++)
+            {
+                for (int k = 0; k < pixlWindow; ++k)
+                {
+                    for(int m = 0; m < pixlWindow; ++m)
+                    {
+                        tempSum += dataChannel[(i + k) * columns + j + m] * mtr[k][m];
+                    }
+                }
+                dataChannelNew[(i + (pixlWindow-1)/2) * columns + j + (pixlWindow-1)/2] = tempSum;
+                tempSum = 0;
+            }
+        }
+        //---складываем с исходным
+        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines(); i++)
+        {
+            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns(); j++)
+            {
+                dataChannelNew[i*columns + j] = dataChannelNew[i*columns + j] + dataChannel[i*columns + j];
+            }
+        }
+        //---
         Preview2D* previewWindow = new Preview2D();
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
@@ -128,6 +208,15 @@ public:
 
             }
         }
+//        //---складываем с исходным
+//        for (u::uint32 i = 0; i < BaseNoiseAlg<T>::m_cube->GetLines(); i++)
+//        {
+//            for (u::uint32 j = 0; j < BaseNoiseAlg<T>::m_cube->GetColumns(); j++)
+//            {
+//                dataChannelNew[i*columns + j] = dataChannelNew[i*columns + j] + 500000*dataChannel[i*columns + j];
+//            }
+//        }
+//        //---
         Preview2D* previewWindow = new Preview2D();
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
@@ -160,7 +249,7 @@ public:
                    memcpy(arrWindow + k*pixlWindow, dataChannel +((i+k)*(columns) + j), sizeof(double)*pixlWindow);
                 }
                 qsort(arrWindow, pixlWindow*pixlWindow, sizeof(double), Compare::CompareVariables<double>);
-                //dataChannelNew[(i+pixlWindow/2) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow*pixlWindow/2];
+                dataChannelNew[(i+pixlWindow/2) * (columns) + j +pixlWindow/2] = arrWindow [pixlWindow*pixlWindow/2];
                 delete [] arrWindow;
             }
         }
