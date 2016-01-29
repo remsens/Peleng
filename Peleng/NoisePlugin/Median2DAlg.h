@@ -112,6 +112,7 @@ public:
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
         delete [] dataChannel;
+        delete [] dataChannelNew;
         qDebug() << "finish borders";
     }
     void ToWindowLaplas()//Лапласс
@@ -164,6 +165,7 @@ public:
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
         delete [] dataChannel;
+        delete [] dataChannelNew;
         qDebug() << "finish borders";
     }
     void ToWindowUolles()//Уоллес
@@ -221,6 +223,7 @@ public:
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
         delete [] dataChannel;
+        delete [] dataChannelNew;
         qDebug() << "finish Uoles";
     }
     void ToWindow()
@@ -257,6 +260,7 @@ public:
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
         previewWindow->Plot(dataChannelNew, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
         delete [] dataChannel;
+        delete [] dataChannelNew;
         qDebug() << "finish noise";
     }
 
