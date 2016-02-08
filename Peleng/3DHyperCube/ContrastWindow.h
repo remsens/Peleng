@@ -16,7 +16,7 @@ public:
     ~ContrastWindow();
     void setMinMax(int absMin, int absMax,int initMin, int initMax);
 signals:
-    minMaxChanged(int,int);
+    void minMaxChanged(int,int);
 private slots:
     void minChngdSlot(int val);
     void maxChngdSlot(int val);

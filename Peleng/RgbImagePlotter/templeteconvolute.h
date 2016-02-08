@@ -76,13 +76,13 @@ void RgbProfilePlot(HyperCube *cube, RgbProfile &profile,QImage &image) {
     int ProfileSize = profile.getWl()->size();
     T** data = (T**)cube->GetDataCube();
 
-    double RProfile[cube->GetCountofChannels()];
-    double GProfile[cube->GetCountofChannels()];
-    double BProfile[cube->GetCountofChannels()];
+    double* RProfile = new double[cube->GetCountofChannels()];
+    double* GProfile = new double[cube->GetCountofChannels()];
+    double* BProfile = new double[cube->GetCountofChannels()];
 
 
 
-    QList<double> tempList = cube->GetListOfChannels();
+    //QList<double> tempList = cube->GetListOfChannels();
 
     for (unsigned int i = 0; i < cube->GetCountofChannels(); i++) {
         RProfile[i]= LineInterpolation(wl[i], ProfileWl, ProfileRChannel,ProfileSize);

@@ -5,8 +5,10 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QApplication>
+#include <array>
 #include "../Library/Types.h"
 #include "../Library/Utils/Compare.h"
+
 
 template <typename T>
 class SavitskiGolay1DAlg : public BaseNoiseAlg<T>
@@ -15,7 +17,7 @@ public:
     SavitskiGolay1DAlg(HyperCube* cube, Attributes* attr)
         :BaseNoiseAlg<T>(cube, attr)
     {
-
+        InitialiseCoeff();
     }
     virtual ~SavitskiGolay1DAlg()
     {
@@ -37,92 +39,182 @@ public:
     }
 
 private:
-    double coeff_quadr_5_left_pixels_0_row[5] = {0.8857, 0.2571, -0.0857, -0.1429, 0.0857};
-    double coeff_quadr_5_left_pixels_1_row[5] = {0.2571, 0.3714, 0.3429, 0.1714, -0.1429};
-    double coeff_quadr_5_right_pixels_3_row[5] = {-0.1429, 0.1714, 0.3429, 0.3714, 0.2571};
-    double coeff_quadr_5_right_pixels_4_row[5] = {0.0857, -0.1429, -0.0857, 0.2571, 0.8857};
+    void InitialiseCoeff()
+    {
+        coeff_quadr_5_left_pixels_0_row = {0.8857, 0.2571, -0.0857, -0.1429, 0.0857};
+        coeff_quadr_5_left_pixels_1_row = {0.2571, 0.3714, 0.3429, 0.1714, -0.1429};
+        coeff_quadr_5_right_pixels_3_row = {-0.1429, 0.1714, 0.3429, 0.3714, 0.2571};
+        coeff_quadr_5_right_pixels_4_row = {0.0857, -0.1429, -0.0857, 0.2571, 0.8857};
 
-    double coeff_cubic_5_left_pixels_0_row[5] = {0.9857,    0.0571,   -0.0857,    0.0571,   -0.0143};
-    double coeff_cubic_5_left_pixels_1_row[5] = {0.0571,    0.7714,    0.3429,   -0.2286,    0.0571};
-    double coeff_cubic_5_right_pixels_3_row[5] = {0.0571,   -0.2286,    0.3429,    0.7714,    0.0571};
-    double coeff_cubic_5_right_pixels_4_row[5] = {-0.0143,    0.0571,   -0.0857,    0.0571,    0.9857};
+        coeff_cubic_5_left_pixels_0_row = {0.9857,    0.0571,   -0.0857,    0.0571,   -0.0143};
+        coeff_cubic_5_left_pixels_1_row = {0.0571,    0.7714,    0.3429,   -0.2286,    0.0571};
+        coeff_cubic_5_right_pixels_3_row = {0.0571,   -0.2286,    0.3429,    0.7714,    0.0571};
+        coeff_cubic_5_right_pixels_4_row = {-0.0143,    0.0571,   -0.0857,    0.0571,    0.9857};
 
-    double coeff_quadr_7_left_pixels_0_row[7] = {0.7619,    0.3571,    0.0714,   -0.0952,   -0.1429,   -0.0714,    0.1190};
-    double coeff_quadr_7_left_pixels_1_row[7] = {0.3571,    0.2857,    0.2143,    0.1429,    0.0714,   -0.0000,   -0.0714};
-    double coeff_quadr_7_left_pixels_2_row[7] = {0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714,   -0.1429};
-    double coeff_quadr_7_right_pixels_4_row[7] = {-0.1429,    0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714};
-    double coeff_quadr_7_right_pixels_5_row[7] = {-0.0714,   -0.0000,    0.0714,    0.1429,    0.2143,    0.2857,    0.3571};
-    double coeff_quadr_7_right_pixels_6_row[7] = {0.1190,   -0.0714,   -0.1429,   -0.0952,    0.0714,    0.3571,    0.7619};
+        coeff_quadr_7_left_pixels_0_row = {0.7619,    0.3571,    0.0714,   -0.0952,   -0.1429,   -0.0714,    0.1190};
+        coeff_quadr_7_left_pixels_1_row = {0.3571,    0.2857,    0.2143,    0.1429,    0.0714,   -0.0000,   -0.0714};
+        coeff_quadr_7_left_pixels_2_row = {0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714,   -0.1429};
+        coeff_quadr_7_right_pixels_4_row = {-0.1429,    0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714};
+        coeff_quadr_7_right_pixels_5_row = {-0.0714,   -0.0000,    0.0714,    0.1429,    0.2143,    0.2857,    0.3571};
+        coeff_quadr_7_right_pixels_6_row = {0.1190,   -0.0714,   -0.1429,   -0.0952,    0.0714,    0.3571,    0.7619};
 
-    double coeff_cubic_7_left_pixels_0_row[7] = {0.9286,    0.1905,   -0.0952,   -0.0952,    0.0238,    0.0952,   -0.0476};
-    double coeff_cubic_7_left_pixels_1_row[7] = {0.1905,    0.4524,    0.3810,    0.1429,   -0.0952,   -0.1667,    0.0952};
-    double coeff_cubic_7_left_pixels_2_row[7] = {-0.0952,    0.3810,    0.4524,    0.2857,    0.0476,   -0.0952,   0.0238};
-    double coeff_cubic_7_right_pixels_4_row[7] = {0.0238,   -0.0952,    0.0476,    0.2857 ,   0.4524,   0.3810,   -0.0952};
-    double coeff_cubic_7_right_pixels_5_row[7] = {0.0952,   -0.1667,   -0.0952,    0.1429 ,   0.3810 ,   0.4524,    0.1905};
-    double coeff_cubic_7_right_pixels_6_row[7] = { -0.0476,    0.0952,    0.0238 ,  -0.0952 ,  -0.0952 ,   0.1905,    0.9286};
+        coeff_cubic_7_left_pixels_0_row = {0.9286,    0.1905,   -0.0952,   -0.0952,    0.0238,    0.0952,   -0.0476};
+        coeff_cubic_7_left_pixels_1_row = {0.1905,    0.4524,    0.3810,    0.1429,   -0.0952,   -0.1667,    0.0952};
+        coeff_cubic_7_left_pixels_2_row = {-0.0952,    0.3810,    0.4524,    0.2857,    0.0476,   -0.0952,   0.0238};
+        coeff_cubic_7_right_pixels_4_row = {0.0238,   -0.0952,    0.0476,    0.2857 ,   0.4524,   0.3810,   -0.0952};
+        coeff_cubic_7_right_pixels_5_row = {0.0952,   -0.1667,   -0.0952,    0.1429 ,   0.3810 ,   0.4524,    0.1905};
+        coeff_cubic_7_right_pixels_6_row = { -0.0476,    0.0952,    0.0238 ,  -0.0952 ,  -0.0952 ,   0.1905,    0.9286};
 
 
-    double coeff_quadr_9_left_pixels_0_row[9] = {0.6606,    0.3818,    0.1636,    0.0061,   -0.0909,   -0.1273,   -0.1030,   -0.0182,    0.1273};
-    double coeff_quadr_9_left_pixels_1_row[9] = {0.3818,    0.2788,    0.1909,    0.1182,    0.0606,    0.0182,   -0.0091,   -0.0212,   -0.0182};
-    double coeff_quadr_9_left_pixels_2_row[9] = {0.1636,    0.1909,    0.2009,    0.1935,    0.1688,    0.1268,    0.0675,   -0.0091,   -0.1030};
-    double coeff_quadr_9_left_pixels_3_row[9] = {0.0061,    0.1182,    0.1935,    0.2320,    0.2338,    0.1987,    0.1268,    0.0182,   -0.1273};
-    double coeff_quadr_9_right_pixels_5_row[9] = {-0.1273,    0.0182,    0.1268,    0.1987,    0.2338,    0.2320,    0.1935,    0.1182,    0.0061};
-    double coeff_quadr_9_right_pixels_6_row[9] = {-0.1030 ,  -0.0091,    0.0675,    0.1268,    0.1688,    0.1935,    0.2009,    0.1909,    0.1636};
-    double coeff_quadr_9_right_pixels_7_row[9] = {-0.0182,   -0.0212,   -0.0091,    0.0182,    0.0606,    0.1182,    0.1909,    0.2788,    0.3818};
-    double coeff_quadr_9_right_pixels_8_row[9] = {0.1273,   -0.0182,   -0.1030,   -0.1273,   -0.0909,    0.0061,    0.1636,    0.3818,    0.6606};
+        coeff_quadr_9_left_pixels_0_row = {0.6606,    0.3818,    0.1636,    0.0061,   -0.0909,   -0.1273,   -0.1030,   -0.0182,    0.1273};
+        coeff_quadr_9_left_pixels_1_row = {0.3818,    0.2788,    0.1909,    0.1182,    0.0606,    0.0182,   -0.0091,   -0.0212,   -0.0182};
+        coeff_quadr_9_left_pixels_2_row = {0.1636,    0.1909,    0.2009,    0.1935,    0.1688,    0.1268,    0.0675,   -0.0091,   -0.1030};
+        coeff_quadr_9_left_pixels_3_row = {0.0061,    0.1182,    0.1935,    0.2320,    0.2338,    0.1987,    0.1268,    0.0182,   -0.1273};
+        coeff_quadr_9_right_pixels_5_row = {-0.1273,    0.0182,    0.1268,    0.1987,    0.2338,    0.2320,    0.1935,    0.1182,    0.0061};
+        coeff_quadr_9_right_pixels_6_row = {-0.1030 ,  -0.0091,    0.0675,    0.1268,    0.1688,    0.1935,    0.2009,    0.1909,    0.1636};
+        coeff_quadr_9_right_pixels_7_row = {-0.0182,   -0.0212,   -0.0091,    0.0182,    0.0606,    0.1182,    0.1909,    0.2788,    0.3818};
+        coeff_quadr_9_right_pixels_8_row = {0.1273,   -0.0182,   -0.1030,   -0.1273,   -0.0909,    0.0061,    0.1636,    0.3818,    0.6606};
 
-    double coeff_cubic_9_left_pixels_0_row[9] = {0.8586,    0.2828,   -0.0202,   -0.1212,   -0.0909,         0 ,   0.0808,    0.0808,   -0.0707};
-    double coeff_cubic_9_left_pixels_1_row[9] = {0.2828,    0.3283,    0.2828,   0.1818 ,   0.0606,   -0.0455,   -0.1010,   -0.0707,    0.0808};
-    double coeff_cubic_9_left_pixels_2_row[9] = {-0.0202,    0.2828,    0.3716,    0.3117 ,   0.1688,    0.0087,   -0.1032,   -0.1010,    0.0808};
-    double coeff_cubic_9_left_pixels_3_row[9] = {-0.1212,    0.1818,    0.3117 ,   0.3139 ,   0.2338 ,   0.1169 ,   0.0087,   -0.0455,   -0.0000};
-    double coeff_cubic_9_right_pixels_5_row[9] = {-0.0000,   -0.0455,    0.0087,    0.1169,    0.2338 ,   0.3139,    0.3117,    0.1818,   -0.1212};
-    double coeff_cubic_9_right_pixels_6_row[9] = {0.0808,   -0.1010,   -0.1032,    0.0087,    0.1688,    0.3117,    0.3716,    0.2828,   -0.0202};
-    double coeff_cubic_9_right_pixels_7_row[9] = {0.0808,   -0.0707,   -0.1010,   -0.0455,    0.0606 ,   0.1818,    0.2828,    0.3283,    0.2828};
-    double coeff_cubic_9_right_pixels_8_row[9] = {-0.0707,    0.0808,    0.0808,         0 ,  -0.0909 ,  -0.1212,   -0.0202,    0.2828,    0.8586};
+        coeff_cubic_9_left_pixels_0_row = {0.8586,    0.2828,   -0.0202,   -0.1212,   -0.0909,         0 ,   0.0808,    0.0808,   -0.0707};
+        coeff_cubic_9_left_pixels_1_row = {0.2828,    0.3283,    0.2828,   0.1818 ,   0.0606,   -0.0455,   -0.1010,   -0.0707,    0.0808};
+        coeff_cubic_9_left_pixels_2_row = {-0.0202,    0.2828,    0.3716,    0.3117 ,   0.1688,    0.0087,   -0.1032,   -0.1010,    0.0808};
+        coeff_cubic_9_left_pixels_3_row = {-0.1212,    0.1818,    0.3117 ,   0.3139 ,   0.2338 ,   0.1169 ,   0.0087,   -0.0455,   -0.0000};
+        coeff_cubic_9_right_pixels_5_row = {-0.0000,   -0.0455,    0.0087,    0.1169,    0.2338 ,   0.3139,    0.3117,    0.1818,   -0.1212};
+        coeff_cubic_9_right_pixels_6_row = {0.0808,   -0.1010,   -0.1032,    0.0087,    0.1688,    0.3117,    0.3716,    0.2828,   -0.0202};
+        coeff_cubic_9_right_pixels_7_row = {0.0808,   -0.0707,   -0.1010,   -0.0455,    0.0606 ,   0.1818,    0.2828,    0.3283,    0.2828};
+        coeff_cubic_9_right_pixels_8_row = {-0.0707,    0.0808,    0.0808,         0 ,  -0.0909 ,  -0.1212,   -0.0202,    0.2828,    0.8586};
+    // 4-5 степень
+        coeff_quartic_7_left_pixels_0_row = {0.9870,    0.0541,   -0.0758,    0.0216,    0.0433,   -0.0411,    0.0108};
+        coeff_quartic_7_left_pixels_1_row = {0.0541,    0.7706,    0.3355,   -0.1299,   -0.1407,    0.1515,   -0.0411};
+        coeff_quartic_7_left_pixels_2_row = {-0.0758,    0.3355,    0.4589,    0.3247,    0.0541,   -0.1407,    0.0433};
+        coeff_quartic_7_right_pixels_4_row = {0.0433,   -0.1407,    0.0541,    0.3247,    0.4589,    0.3355,   -0.0758};
+        coeff_quartic_7_right_pixels_5_row = {-0.0411,    0.1515,   -0.1407,   -0.1299,    0.3355,    0.7706,    0.0541};
+        coeff_quartic_7_right_pixels_6_row = {0.0108,   -0.0411,    0.0433,    0.0216,   -0.0758,    0.0541,    0.9870};
+
+        coeff_quintic_7_left_pixels_0_row = {0.9989,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,   -0.0011};
+        coeff_quintic_7_left_pixels_1_row = {0.0065,    0.9610,    0.0974,   -0.1299,    0.0974,   -0.0390,    0.0065};
+        coeff_quintic_7_left_pixels_2_row = {-0.0162,    0.0974,    0.7565,    0.3247,   -0.2435,    0.0974,   -0.0162};
+        coeff_quintic_7_right_pixels_4_row = {-0.0162,    0.0974,   -0.2435,    0.3247,    0.7565,    0.0974,   -0.0162};
+        coeff_quintic_7_right_pixels_5_row = {0.0065,   -0.0390,   0.0974,   -0.1299,    0.0974,    0.9610,    0.0065};
+        coeff_quintic_7_right_pixels_6_row = {-0.0011,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,    0.9989};
+
+
+        coeff_quartic_9_left_pixels_0_row = {0.9565,    0.1360,   -0.0971,   -0.0583,    0.0350,    0.0629,    0.0039,   -0.0660,    0.0272};
+        coeff_quartic_9_left_pixels_1_row = {0.1360,    0.5486,    0.3982,    0.0874,  -0.1282,   -0.1399,    0.0144,    0.1496,   -0.0660};
+        coeff_quartic_9_left_pixels_2_row = {-0.0971,    0.3982,    0.4320,    0.2622,    0.0699,   -0.0408,   -0.0427,    0.0144,    0.0039};
+        coeff_quartic_9_left_pixels_3_row = {-0.0583,    0.0874,    0.2622,    0.3543,    0.3147,    0.1573,   -0.0408,   -0.1399,    0.0629};
+        coeff_quartic_9_right_pixels_5_row = {0.0629,   -0.1399,   -0.0408,    0.1573,    0.3147,    0.3543,    0.2622,    0.0874,   -0.0583};
+        coeff_quartic_9_right_pixels_6_row = {0.0039,    0.0144,   -0.0427,   -0.0408,    0.0699,    0.2622,    0.4320,    0.3982,   -0.0971};
+        coeff_quartic_9_right_pixels_7_row = {-0.0660,    0.1496,    0.0144,   -0.1399,   -0.1282,    0.0874,    0.3982,    0.5486,    0.1360};
+        coeff_quartic_9_right_pixels_8_row = {0.0272,   -0.0660,    0.0039,    0.0629,    0.0350,   -0.0583,   -0.0971,    0.1360,    0.9565};
+
+        coeff_quintic_9_left_pixels_0_row = {0.9907,    0.0420,   -0.0629,    0.0186,    0.0350,   -0.0140,   -0.0303,    0.0280,   -0.0070};
+        coeff_quintic_9_left_pixels_1_row = {0.0420,    0.8071,    0.3042,   -0.1241,   -0.1282,    0.0717,    0.1084,  -0.1090,    0.0280};
+        coeff_quintic_9_left_pixels_2_row = {-0.0629,    0.3042,    0.4662,    0.3392,    0.0699,   -0.1177,   -0.0769,    0.1084,   -0.0303};
+        coeff_quintic_9_left_pixels_3_row = {0.0186,   -0.1241,    0.3392,    0.5274,    0.3147,   -0.0157,   -0.1177,    0.0717,   -0.0140};
+        coeff_quintic_9_right_pixels_5_row = {-0.0140,    0.0717,   -0.1177,   -0.0157,    0.3147,    0.5274,    0.3392,   -0.1241,    0.0186};
+        coeff_quintic_9_right_pixels_6_row = {-0.0303,    0.1084,   -0.0769,   -0.1177,    0.0699,   0.3392,    0.4662,    0.3042,   -0.0629};
+        coeff_quintic_9_right_pixels_7_row = {0.0280,   -0.1090,    0.1084,    0.0717,   -0.1282,   -0.1241,    0.3042,    0.8071,    0.0420};
+        coeff_quintic_9_right_pixels_8_row = {-0.0070,    0.0280,   -0.0303,   -0.0140,    0.0350,    0.0186,   -0.0629,    0.0420,    0.9907};
+
+        // коэффициенты для полинома x^2 и x^3, окно - 5 пикселей. Последнее значение - значение нормировки
+        coeff_quadr_cubic_5 = {-3, 12, 17, 12, -3, 35};
+        // коэффициенты для полинома x^2 и x^3, окно - 7 пикселей. Последнее значение - значение нормировки
+        coeff_quadr_cubic_7 = {-2, 3, 6, 7, 6, 3, -2, 21};
+        // коэффициенты для полинома x^2 и x^3, окно - 9 пикселей. Последнее значение - значение нормировки
+        coeff_quadr_cubic_9 = {-21, 14, 39, 54, 59, 54, 39, 14, -21, 231};
+        // коэффициенты для полинома x^4 и x^5, окно - 7 пикселей. Последнее значение - значение нормировки
+        coeff_quartic_quintic_7 = {5, -30, 75, 131, 75, -30, 5, 231};
+        // коэффициенты для полинома x^4 и x^5, окно - 9 пикселей. Последнее значение - значение нормировки
+        coeff_quartic_quintic_9 = {15, -55, 30, 135, 179, 135, 30, -55, 15, 429};
+    }
+
+private:
+    std::array <double, 5> coeff_quadr_5_left_pixels_0_row;
+    std::array <double, 5> coeff_quadr_5_left_pixels_1_row;// = {0.2571, 0.3714, 0.3429, 0.1714, -0.1429};
+    std::array <double, 5> coeff_quadr_5_right_pixels_3_row;// = {-0.1429, 0.1714, 0.3429, 0.3714, 0.2571};
+    std::array <double, 5> coeff_quadr_5_right_pixels_4_row;// = {0.0857, -0.1429, -0.0857, 0.2571, 0.8857};
+
+    std::array <double, 5> coeff_cubic_5_left_pixels_0_row;// = {0.9857,    0.0571,   -0.0857,    0.0571,   -0.0143};
+    std::array <double, 5> coeff_cubic_5_left_pixels_1_row;// = {0.0571,    0.7714,    0.3429,   -0.2286,    0.0571};
+    std::array <double, 5> coeff_cubic_5_right_pixels_3_row;// = {0.0571,   -0.2286,    0.3429,    0.7714,    0.0571};
+    std::array <double, 5> coeff_cubic_5_right_pixels_4_row;// = {-0.0143,    0.0571,   -0.0857,    0.0571,    0.9857};
+
+    std::array <double, 7> coeff_quadr_7_left_pixels_0_row;// = {0.7619,    0.3571,    0.0714,   -0.0952,   -0.1429,   -0.0714,    0.1190};
+    std::array <double, 7> coeff_quadr_7_left_pixels_1_row;// = {0.3571,    0.2857,    0.2143,    0.1429,    0.0714,   -0.0000,   -0.0714};
+    std::array <double, 7> coeff_quadr_7_left_pixels_2_row;// = {0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714,   -0.1429};
+    std::array <double, 7> coeff_quadr_7_right_pixels_4_row;// = {-0.1429,    0.0714,    0.2143,    0.2857,    0.2857,    0.2143,    0.0714};
+    std::array <double, 7> coeff_quadr_7_right_pixels_5_row;// = {-0.0714,   -0.0000,    0.0714,    0.1429,    0.2143,    0.2857,    0.3571};
+    std::array <double, 7> coeff_quadr_7_right_pixels_6_row;// = {0.1190,   -0.0714,   -0.1429,   -0.0952,    0.0714,    0.3571,    0.7619};
+
+    std::array <double, 7> coeff_cubic_7_left_pixels_0_row;// = {0.9286,    0.1905,   -0.0952,   -0.0952,    0.0238,    0.0952,   -0.0476};
+    std::array <double, 7> coeff_cubic_7_left_pixels_1_row;// = {0.1905,    0.4524,    0.3810,    0.1429,   -0.0952,   -0.1667,    0.0952};
+    std::array <double, 7> coeff_cubic_7_left_pixels_2_row;// = {-0.0952,    0.3810,    0.4524,    0.2857,    0.0476,   -0.0952,   0.0238};
+    std::array <double, 7> coeff_cubic_7_right_pixels_4_row;// = {0.0238,   -0.0952,    0.0476,    0.2857 ,   0.4524,   0.3810,   -0.0952};
+    std::array <double, 7> coeff_cubic_7_right_pixels_5_row;// = {0.0952,   -0.1667,   -0.0952,    0.1429 ,   0.3810 ,   0.4524,    0.1905};
+    std::array <double, 7> coeff_cubic_7_right_pixels_6_row;// = { -0.0476,    0.0952,    0.0238 ,  -0.0952 ,  -0.0952 ,   0.1905,    0.9286};
+
+    std::array <double, 9> coeff_quadr_9_left_pixels_0_row;// = {0.6606,    0.3818,    0.1636,    0.0061,   -0.0909,   -0.1273,   -0.1030,   -0.0182,    0.1273};
+    std::array <double, 9> coeff_quadr_9_left_pixels_1_row;// = {0.3818,    0.2788,    0.1909,    0.1182,    0.0606,    0.0182,   -0.0091,   -0.0212,   -0.0182};
+    std::array <double, 9> coeff_quadr_9_left_pixels_2_row;// = {0.1636,    0.1909,    0.2009,    0.1935,    0.1688,    0.1268,    0.0675,   -0.0091,   -0.1030};
+    std::array <double, 9> coeff_quadr_9_left_pixels_3_row;// = {0.0061,    0.1182,    0.1935,    0.2320,    0.2338,    0.1987,    0.1268,    0.0182,   -0.1273};
+    std::array <double, 9> coeff_quadr_9_right_pixels_5_row;// = {-0.1273,    0.0182,    0.1268,    0.1987,    0.2338,    0.2320,    0.1935,    0.1182,    0.0061};
+    std::array <double, 9> coeff_quadr_9_right_pixels_6_row;// = {-0.1030 ,  -0.0091,    0.0675,    0.1268,    0.1688,    0.1935,    0.2009,    0.1909,    0.1636};
+    std::array <double, 9> coeff_quadr_9_right_pixels_7_row;// = {-0.0182,   -0.0212,   -0.0091,    0.0182,    0.0606,    0.1182,    0.1909,    0.2788,    0.3818};
+    std::array <double, 9> coeff_quadr_9_right_pixels_8_row;// = {0.1273,   -0.0182,   -0.1030,   -0.1273,   -0.0909,    0.0061,    0.1636,    0.3818,    0.6606};
+
+    std::array <double, 9> coeff_cubic_9_left_pixels_0_row;// = {0.8586,    0.2828,   -0.0202,   -0.1212,   -0.0909,         0 ,   0.0808,    0.0808,   -0.0707};
+    std::array <double, 9> coeff_cubic_9_left_pixels_1_row;// = {0.2828,    0.3283,    0.2828,   0.1818 ,   0.0606,   -0.0455,   -0.1010,   -0.0707,    0.0808};
+    std::array <double, 9> coeff_cubic_9_left_pixels_2_row;// = {-0.0202,    0.2828,    0.3716,    0.3117 ,   0.1688,    0.0087,   -0.1032,   -0.1010,    0.0808};
+    std::array <double, 9> coeff_cubic_9_left_pixels_3_row;// = {-0.1212,    0.1818,    0.3117 ,   0.3139 ,   0.2338 ,   0.1169 ,   0.0087,   -0.0455,   -0.0000};
+    std::array <double, 9> coeff_cubic_9_right_pixels_5_row;// = {-0.0000,   -0.0455,    0.0087,    0.1169,    0.2338 ,   0.3139,    0.3117,    0.1818,   -0.1212};
+    std::array <double, 9> coeff_cubic_9_right_pixels_6_row;// = {0.0808,   -0.1010,   -0.1032,    0.0087,    0.1688,    0.3117,    0.3716,    0.2828,   -0.0202};
+    std::array <double, 9> coeff_cubic_9_right_pixels_7_row;// = {0.0808,   -0.0707,   -0.1010,   -0.0455,    0.0606 ,   0.1818,    0.2828,    0.3283,    0.2828};
+    std::array <double, 9> coeff_cubic_9_right_pixels_8_row;// = {-0.0707,    0.0808,    0.0808,         0 ,  -0.0909 ,  -0.1212,   -0.0202,    0.2828,    0.8586};
 // 4-5 степень
-    double coeff_quartic_7_left_pixels_0_row[7] = {0.9870,    0.0541,   -0.0758,    0.0216,    0.0433,   -0.0411,    0.0108};
-    double coeff_quartic_7_left_pixels_1_row[7] = {0.0541,    0.7706,    0.3355,   -0.1299,   -0.1407,    0.1515,   -0.0411};
-    double coeff_quartic_7_left_pixels_2_row[7] = {-0.0758,    0.3355,    0.4589,    0.3247,    0.0541,   -0.1407,    0.0433};
-    double coeff_quartic_7_right_pixels_4_row[7] = {0.0433,   -0.1407,    0.0541,    0.3247,    0.4589,    0.3355,   -0.0758};
-    double coeff_quartic_7_right_pixels_5_row[7] = {-0.0411,    0.1515,   -0.1407,   -0.1299,    0.3355,    0.7706,    0.0541};
-    double coeff_quartic_7_right_pixels_6_row[7] = {0.0108,   -0.0411,    0.0433,    0.0216,   -0.0758,    0.0541,    0.9870};
+    std::array <double, 7> coeff_quartic_7_left_pixels_0_row;// = {0.9870,    0.0541,   -0.0758,    0.0216,    0.0433,   -0.0411,    0.0108};
+    std::array <double, 7> coeff_quartic_7_left_pixels_1_row;// = {0.0541,    0.7706,    0.3355,   -0.1299,   -0.1407,    0.1515,   -0.0411};
+    std::array <double, 7> coeff_quartic_7_left_pixels_2_row;// = {-0.0758,    0.3355,    0.4589,    0.3247,    0.0541,   -0.1407,    0.0433};
+    std::array <double, 7> coeff_quartic_7_right_pixels_4_row;// = {0.0433,   -0.1407,    0.0541,    0.3247,    0.4589,    0.3355,   -0.0758};
+    std::array <double, 7> coeff_quartic_7_right_pixels_5_row;// = {-0.0411,    0.1515,   -0.1407,   -0.1299,    0.3355,    0.7706,    0.0541};
+    std::array <double, 7> coeff_quartic_7_right_pixels_6_row;// = {0.0108,   -0.0411,    0.0433,    0.0216,   -0.0758,    0.0541,    0.9870};
 
-    double coeff_quintic_7_left_pixels_0_row[7] = {0.9989,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,   -0.0011};
-    double coeff_quintic_7_left_pixels_1_row[7] = {0.0065,    0.9610,    0.0974,   -0.1299,    0.0974,   -0.0390,    0.0065};
-    double coeff_quintic_7_left_pixels_2_row[7] = {-0.0162,    0.0974,    0.7565,    0.3247,   -0.2435,    0.0974,   -0.0162};
-    double coeff_quintic_7_right_pixels_4_row[7] = {-0.0162,    0.0974,   -0.2435,    0.3247,    0.7565,    0.0974,   -0.0162};
-    double coeff_quintic_7_right_pixels_5_row[7] = {0.0065,   -0.0390,   0.0974,   -0.1299,    0.0974,    0.9610,    0.0065};
-    double coeff_quintic_7_right_pixels_6_row[7] = {-0.0011,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,    0.9989};
+    std::array <double, 7> coeff_quintic_7_left_pixels_0_row;// = {0.9989,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,   -0.0011};
+    std::array <double, 7> coeff_quintic_7_left_pixels_1_row;// = {0.0065,    0.9610,    0.0974,   -0.1299,    0.0974,   -0.0390,    0.0065};
+    std::array <double, 7> coeff_quintic_7_left_pixels_2_row;// = {-0.0162,    0.0974,    0.7565,    0.3247,   -0.2435,    0.0974,   -0.0162};
+    std::array <double, 7> coeff_quintic_7_right_pixels_4_row;// = {-0.0162,    0.0974,   -0.2435,    0.3247,    0.7565,    0.0974,   -0.0162};
+    std::array <double, 7> coeff_quintic_7_right_pixels_5_row;// = {0.0065,   -0.0390,   0.0974,   -0.1299,    0.0974,    0.9610,    0.0065};
+    std::array <double, 7> coeff_quintic_7_right_pixels_6_row;// = {-0.0011,    0.0065,   -0.0162,    0.0216,   -0.0162,    0.0065,    0.9989};
 
 
-    double coeff_quartic_9_left_pixels_0_row[9] = {0.9565,    0.1360,   -0.0971,   -0.0583,    0.0350,    0.0629,    0.0039,   -0.0660,    0.0272};
-    double coeff_quartic_9_left_pixels_1_row[9] = {0.1360,    0.5486,    0.3982,    0.0874,  -0.1282,   -0.1399,    0.0144,    0.1496,   -0.0660};
-    double coeff_quartic_9_left_pixels_2_row[9] = {-0.0971,    0.3982,    0.4320,    0.2622,    0.0699,   -0.0408,   -0.0427,    0.0144,    0.0039};
-    double coeff_quartic_9_left_pixels_3_row[9] = {-0.0583,    0.0874,    0.2622,    0.3543,    0.3147,    0.1573,   -0.0408,   -0.1399,    0.0629};
-    double coeff_quartic_9_right_pixels_5_row[9] = {0.0629,   -0.1399,   -0.0408,    0.1573,    0.3147,    0.3543,    0.2622,    0.0874,   -0.0583};
-    double coeff_quartic_9_right_pixels_6_row[9] = {0.0039,    0.0144,   -0.0427,   -0.0408,    0.0699,    0.2622,    0.4320,    0.3982,   -0.0971};
-    double coeff_quartic_9_right_pixels_7_row[9] = {-0.0660,    0.1496,    0.0144,   -0.1399,   -0.1282,    0.0874,    0.3982,    0.5486,    0.1360};
-    double coeff_quartic_9_right_pixels_8_row[9] = {0.0272,   -0.0660,    0.0039,    0.0629,    0.0350,   -0.0583,   -0.0971,    0.1360,    0.9565};
+    std::array <double, 9> coeff_quartic_9_left_pixels_0_row;// = {0.9565,    0.1360,   -0.0971,   -0.0583,    0.0350,    0.0629,    0.0039,   -0.0660,    0.0272};
+    std::array <double, 9> coeff_quartic_9_left_pixels_1_row;// = {0.1360,    0.5486,    0.3982,    0.0874,  -0.1282,   -0.1399,    0.0144,    0.1496,   -0.0660};
+    std::array <double, 9> coeff_quartic_9_left_pixels_2_row;// = {-0.0971,    0.3982,    0.4320,    0.2622,    0.0699,   -0.0408,   -0.0427,    0.0144,    0.0039};
+    std::array <double, 9> coeff_quartic_9_left_pixels_3_row;// = {-0.0583,    0.0874,    0.2622,    0.3543,    0.3147,    0.1573,   -0.0408,   -0.1399,    0.0629};
+    std::array <double, 9> coeff_quartic_9_right_pixels_5_row;// = {0.0629,   -0.1399,   -0.0408,    0.1573,    0.3147,    0.3543,    0.2622,    0.0874,   -0.0583};
+    std::array <double, 9> coeff_quartic_9_right_pixels_6_row;// = {0.0039,    0.0144,   -0.0427,   -0.0408,    0.0699,    0.2622,    0.4320,    0.3982,   -0.0971};
+    std::array <double, 9> coeff_quartic_9_right_pixels_7_row;// = {-0.0660,    0.1496,    0.0144,   -0.1399,   -0.1282,    0.0874,    0.3982,    0.5486,    0.1360};
+    std::array <double, 9> coeff_quartic_9_right_pixels_8_row;// = {0.0272,   -0.0660,    0.0039,    0.0629,    0.0350,   -0.0583,   -0.0971,    0.1360,    0.9565};
 
-    double coeff_quintic_9_left_pixels_0_row[9] = {0.9907,    0.0420,   -0.0629,    0.0186,    0.0350,   -0.0140,   -0.0303,    0.0280,   -0.0070};
-    double coeff_quintic_9_left_pixels_1_row[9] = {0.0420,    0.8071,    0.3042,   -0.1241,   -0.1282,    0.0717,    0.1084,  -0.1090,    0.0280};
-    double coeff_quintic_9_left_pixels_2_row[9] = {-0.0629,    0.3042,    0.4662,    0.3392,    0.0699,   -0.1177,   -0.0769,    0.1084,   -0.0303};
-    double coeff_quintic_9_left_pixels_3_row[9] = {0.0186,   -0.1241,    0.3392,    0.5274,    0.3147,   -0.0157,   -0.1177,    0.0717,   -0.0140};
-    double coeff_quintic_9_right_pixels_5_row[9] = {-0.0140,    0.0717,   -0.1177,   -0.0157,    0.3147,    0.5274,    0.3392,   -0.1241,    0.0186};
-    double coeff_quintic_9_right_pixels_6_row[9] = {-0.0303,    0.1084,   -0.0769,   -0.1177,    0.0699,   0.3392,    0.4662,    0.3042,   -0.0629};
-    double coeff_quintic_9_right_pixels_7_row[9] = {0.0280,   -0.1090,    0.1084,    0.0717,   -0.1282,   -0.1241,    0.3042,    0.8071,    0.0420};
-    double coeff_quintic_9_right_pixels_8_row[9] = {-0.0070,    0.0280,   -0.0303,   -0.0140,    0.0350,    0.0186,   -0.0629,    0.0420,    0.9907};
+    std::array <double, 9> coeff_quintic_9_left_pixels_0_row;// = {0.9907,    0.0420,   -0.0629,    0.0186,    0.0350,   -0.0140,   -0.0303,    0.0280,   -0.0070};
+    std::array <double, 9> coeff_quintic_9_left_pixels_1_row;// = {0.0420,    0.8071,    0.3042,   -0.1241,   -0.1282,    0.0717,    0.1084,  -0.1090,    0.0280};
+    std::array <double, 9> coeff_quintic_9_left_pixels_2_row;// = {-0.0629,    0.3042,    0.4662,    0.3392,    0.0699,   -0.1177,   -0.0769,    0.1084,   -0.0303};
+    std::array <double, 9> coeff_quintic_9_left_pixels_3_row;// = {0.0186,   -0.1241,    0.3392,    0.5274,    0.3147,   -0.0157,   -0.1177,    0.0717,   -0.0140};
+    std::array <double, 9> coeff_quintic_9_right_pixels_5_row;// = {-0.0140,    0.0717,   -0.1177,   -0.0157,    0.3147,    0.5274,    0.3392,   -0.1241,    0.0186};
+    std::array <double, 9> coeff_quintic_9_right_pixels_6_row;// = {-0.0303,    0.1084,   -0.0769,   -0.1177,    0.0699,   0.3392,    0.4662,    0.3042,   -0.0629};
+    std::array <double, 9> coeff_quintic_9_right_pixels_7_row;// = {0.0280,   -0.1090,    0.1084,    0.0717,   -0.1282,   -0.1241,    0.3042,    0.8071,    0.0420};
+    std::array <double, 9> coeff_quintic_9_right_pixels_8_row;// = {-0.0070,    0.0280,   -0.0303,   -0.0140,    0.0350,    0.0186,   -0.0629,    0.0420,    0.9907};
 
     // коэффициенты для полинома x^2 и x^3, окно - 5 пикселей. Последнее значение - значение нормировки
-    u::int32 coeff_quadr_cubic_5[6] = {-3, 12, 17, 12, -3, 35};
+    std::array <u::int32, 6> coeff_quadr_cubic_5;// = {-3, 12, 17, 12, -3, 35};
     // коэффициенты для полинома x^2 и x^3, окно - 7 пикселей. Последнее значение - значение нормировки
-    u::int32 coeff_quadr_cubic_7[8] = {-2, 3, 6, 7, 6, 3, -2, 21};
+    std::array <u::int32, 8> coeff_quadr_cubic_7;// = {-2, 3, 6, 7, 6, 3, -2, 21};
     // коэффициенты для полинома x^2 и x^3, окно - 9 пикселей. Последнее значение - значение нормировки
-    u::int32 coeff_quadr_cubic_9[10] = {-21, 14, 39, 54, 59, 54, 39, 14, -21, 231};
+    std::array <u::int32, 10> coeff_quadr_cubic_9;// = {-21, 14, 39, 54, 59, 54, 39, 14, -21, 231};
     // коэффициенты для полинома x^4 и x^5, окно - 7 пикселей. Последнее значение - значение нормировки
-    u::int32 coeff_quartic_quintic_7[8] = {5, -30, 75, 131, 75, -30, 5, 231};
+    std::array <u::int32, 8> coeff_quartic_quintic_7;// = {5, -30, 75, 131, 75, -30, 5, 231};
     // коэффициенты для полинома x^4 и x^5, окно - 9 пикселей. Последнее значение - значение нормировки
-    u::int32 coeff_quartic_quintic_9[10] = {15, -55, 30, 135, 179, 135, 30, -55, 15, 429};
+    std::array <u::int32, 10> coeff_quartic_quintic_9;// = {15, -55, 30, 135, 179, 135, 30, -55, 15, 429};
 
 private:
 
@@ -133,7 +225,7 @@ private:
         {
             case 5:
             {
-             memcpy(coeff, coeff_quadr_cubic_5,  maskPixels*sizeof(u::int32));
+             memcpy(coeff, coeff_quadr_cubic_5.data(),  maskPixels*sizeof(u::int32));
              normalization = coeff_quadr_cubic_5[maskPixels]; break;
             }
 
@@ -142,9 +234,9 @@ private:
                 switch(BaseNoiseAlg<T>::m_attributes->GetDegreePolinom())
                 {
                     case 2:
-                    case 3: { memcpy(coeff, coeff_quadr_cubic_7,  maskPixels*sizeof(u::int32)); normalization = coeff_quadr_cubic_7[maskPixels]; break; }
+                    case 3: { memcpy(coeff, coeff_quadr_cubic_7.data(),  maskPixels*sizeof(u::int32)); normalization = coeff_quadr_cubic_7[maskPixels]; break; }
                     case 4:
-                    case 5:{ memcpy(coeff, coeff_quartic_quintic_7,  maskPixels*sizeof(u::int32)); normalization = coeff_quartic_quintic_7[maskPixels]; break; }
+                    case 5:{ memcpy(coeff, coeff_quartic_quintic_7.data(),  maskPixels*sizeof(u::int32)); normalization = coeff_quartic_quintic_7[maskPixels]; break; }
                     default: break;
                 }
                 break;
@@ -154,9 +246,9 @@ private:
                 switch(BaseNoiseAlg<T>::m_attributes->GetDegreePolinom())
                 {
                     case 2:
-                    case 3: { memcpy(coeff, coeff_quadr_cubic_9,  maskPixels*sizeof(u::int32)); normalization = coeff_quadr_cubic_9[maskPixels]; break; }
+                    case 3: { memcpy(coeff, coeff_quadr_cubic_9.data(),  maskPixels*sizeof(u::int32)); normalization = coeff_quadr_cubic_9[maskPixels]; break; }
                     case 4:
-                    case 5:{ memcpy(coeff, coeff_quartic_quintic_9,  maskPixels*sizeof(u::int32)); normalization = coeff_quartic_quintic_9[maskPixels]; break; }
+                    case 5:{ memcpy(coeff, coeff_quartic_quintic_9.data(),  maskPixels*sizeof(u::int32)); normalization = coeff_quartic_quintic_9[maskPixels]; break; }
                     default:  break;
                 }
                 break;

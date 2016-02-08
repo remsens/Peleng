@@ -9,7 +9,7 @@ public:
     virtual ~Compare();
 
     template<typename T>
-    static CompareVariables(const void *a, const void *b)
+    static int CompareVariables(const void *a, const void *b)
     {
         const T *pa = (const T*)a;
         const T *pb = (const T*)b;

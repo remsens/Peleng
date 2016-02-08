@@ -149,8 +149,9 @@ QByteArray PolygonManager::byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray ar
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(arr1[i*m_cols+j] == 0x01  ||  arr2[i*m_cols+j] == 0x01)
-                byteArr[i*m_cols+j] = 0x01;
+            if(arr1.at(i*m_cols+j) == 0x01  ||  arr2.at(i*m_cols+j) == 0x01)
+                byteArr.remove(i*m_cols+j, 1);
+                byteArr.insert(i*m_cols+j, 0x01);
         }
     }
     return byteArr;
@@ -203,7 +204,7 @@ QImage PolygonManager::imageFromByteMask(QByteArray byteArr, QColor color)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(byteArr[i*m_cols+j] == 0x01)
+            if(byteArr.at(i*m_cols+j) == 0x01)
             {
                 mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
             }
@@ -345,7 +346,7 @@ void PolygonManager::onMenuAverageSpectr()
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+            if(m_RegionArr[m_currIndexRegion].m_byteArr.at(i*m_cols+j) == 0x01)
             {
                 numSpctrs++;
                 qint16* spectr = new qint16[Chnls];
@@ -393,7 +394,7 @@ void PolygonManager::onMenuStandardDeviation()
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
+            if(m_RegionArr[m_currIndexRegion].m_byteArr.at(i*m_cols+j) == 0x01)
             {
                 ijArr.append(QPoint(i,j));
             }
