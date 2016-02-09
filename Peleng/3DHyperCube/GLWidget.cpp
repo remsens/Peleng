@@ -5,9 +5,9 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-
 #include "../HistPlotter/histplugin.h"
 
+//#define DEBUG
 
 using namespace std;
 
@@ -25,7 +25,9 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     , m_contrastTool(NULL)
     , contexMenuEnabled(true)
 {
+#ifdef DEBUG
     qDebug() << "enter to GL";
+#endif
     setAttribute(Qt::WA_DeleteOnClose, true);
     nSca = 1;
     dx = 0.0f; dy = 0.0f;
@@ -33,26 +35,26 @@ GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
     m_pHyperCube = ptrCube;
     kT = float(ROWS)/float(COLS);
     float coordsTemp[6][4][3] = {
-                             { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
-                             { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
-                             { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
-                             { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
-                             { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
-                             { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
-                            };
+        { { +kT, -1, -1 }, { -kT, -1, -1 }, { -kT, +1, -1 }, { +kT, +1, -1 } },
+        { { +kT, +1, -1 }, { -kT, +1, -1 }, { -kT, +1, +1 }, { +kT, +1, +1 } },
+        { { +kT, -1, +1 }, { +kT, -1, -1 }, { +kT, +1, -1 }, { +kT, +1, +1 } },
+        { { -kT, -1, -1 }, { -kT, -1, +1 }, { -kT, +1, +1 }, { -kT, +1, -1 } },
+        { { +kT, -1, +1 }, { -kT, -1, +1 }, { -kT, -1, -1 }, { +kT, -1, -1 } },
+        { { -kT, -1, +1 }, { +kT, -1, +1 }, { +kT, +1, +1 }, { -kT, +1, +1 } }
+    };
     for(int i=0;i<6;++i) //или memcpy
         for(int j=0;j<4;++j)
             for(int k=0;k<3;++k)
                 coords[i][j][k] = coordsTemp[i][j][k];
 
-//    for(int i=0;i<6;++i)
-//        for(int j=0;j<4;++j)
-//        {
-//            if (coords[i][j][0] == 1)
-//                coords[i][j][0] = kT;
-//            else
-//                coords[i][j][0] = -kT;
-//        }
+    //    for(int i=0;i<6;++i)
+    //        for(int j=0;j<4;++j)
+    //        {
+    //            if (coords[i][j][0] == 1)
+    //                coords[i][j][0] = kT;
+    //            else
+    //                coords[i][j][0] = -kT;
+    //        }
     Ch1 = 0, Ch2 = (CHNLS-1), R1 = 0, R2 = (ROWS-1), C1 = 0, C2 = (COLS-1);
     prevChN = CHNLS, prevRowsN = ROWS;
     findMinMaxforColorMap(0.02,0.95);
@@ -84,7 +86,9 @@ GLWidget::~GLWidget()
     SidesDestructor();
     doneCurrent();
     delete m_contrastTool;
+#ifdef DEBUG
     qDebug() << "finish delete GLwidget";
+#endif
 }
 
 bool GLWidget::cantDelete()
@@ -153,10 +157,10 @@ void GLWidget::initializeGL()
 
     program->bind();
     program->setUniformValue("texture", 0);
-//    QPushButton* pushButtonUpdate = new QPushButton(this);
-//    pushButtonUpdate->setGeometry(0, 0, 20, 20);
-//    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
-//    pushButtonUpdate->show();
+    //    QPushButton* pushButtonUpdate = new QPushButton(this);
+    //    pushButtonUpdate->setGeometry(0, 0, 20, 20);
+    //    connect(pushButtonUpdate, SIGNAL(clicked(bool)), this, SLOT(updateCube()));
+    //    pushButtonUpdate->show();
 
 }
 QSize GLWidget::minimumSizeHint() const
@@ -851,7 +855,7 @@ void GLWidget::NoiseGolayAlgExecute()
     cantDeleteVar = true;
     m_attributes->SetNoiseAlg(Savitski_Golay1D);
     m_attributes->SetApplyToAllCube(true);
-   // connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
+    // connect(m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(StartOperation(bool)), pContextMenu, SLOT(setEnabled(bool)));
     connect (m_attributes->GetAvailablePlugins().value("Noise Remover")->GetObjectPointer(), SIGNAL(FinishOperation(bool)), this, SLOT(needToUpdate(bool)));
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
@@ -1112,11 +1116,11 @@ void GLWidget::makeTextures()
 
 void GLWidget::makeObject()
 {
-//        QImage Qimage =from2Dmass2QImage(sidesDataRO_CO[0],ROWS,COLS,true);
-//        QFile file("D:/Work/MY.jpg");
-//        file.open(QIODevice::WriteOnly);
-//        Qimage.save(&file,"JPG");
-//        file.close();
+    //        QImage Qimage =from2Dmass2QImage(sidesDataRO_CO[0],ROWS,COLS,true);
+    //        QFile file("D:/Work/MY.jpg");
+    //        file.open(QIODevice::WriteOnly);
+    //        Qimage.save(&file,"JPG");
+    //        file.close();
     QVector<GLfloat> vertData;
     for (int i = 0; i < 6; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -1356,7 +1360,9 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
             minCMap = min;
         if (max > maxCMap )
             maxCMap = max;
+#ifdef DEBUG
         qDebug()<<"выполнено"<<i<<"/"<<n;
+#endif
     }
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;
