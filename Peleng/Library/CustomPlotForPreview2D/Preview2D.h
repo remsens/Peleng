@@ -22,6 +22,8 @@ private slots:
     void ShowContextMenu(const QPoint pos);
     void prepareToPlotSpectr();
     void mousePressOnColorMap(QMouseEvent* e);
+    void on_SliderMin_valueChanged(int value);
+    void on_SliderMax_valueChanged(int value);
 private:
     Ui::Preview2D *m_ui;
     QCustomPlot* m_cPlot;
