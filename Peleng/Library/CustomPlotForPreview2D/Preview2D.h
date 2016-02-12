@@ -17,10 +17,16 @@ public:
 
     void Plot(double* data, const int rows, const int cols, const QString& title = QString());
     void plotPointsOn2D(QVector<double> x, QVector<double> y);
+
+private slots:
+    void ShowContextMenu(const QPoint pos);
+    void prepareToPlotSpectr();
+    void mousePressOnColorMap(QMouseEvent* e);
 private:
     Ui::Preview2D *m_ui;
     QCustomPlot* m_cPlot;
     QCPColorMap* colorMap;
+    int m_dataX, m_dataY;
 };
 
 #endif // PREVIEW2D_H
