@@ -3,7 +3,7 @@
 
 #include "../Library/Utils/Compare.h"
 #include "../Library/Types.h"
-#include "../Library/Attributes/Attributes.h"
+
 Preview2D::Preview2D(QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::Preview2D)
@@ -13,8 +13,9 @@ Preview2D::Preview2D(QWidget *parent) :
     m_ui->verticalLayout_2->addWidget(m_cPlot);
     colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     m_cPlot->addPlottable(colorMap);
+    m_cPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_cPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
-    connect(m_cPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(ShowContextMenu(QPoint)));
+    connect(m_cPlot,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(ShowContextMenu(QPoint)));
  	m_cPlot->yAxis->setTicks(false);
     m_cPlot->xAxis->setTicks(false);
     m_cPlot->xAxis->setVisible(false);
@@ -33,6 +34,8 @@ Preview2D::~Preview2D()
 
 void Preview2D::Plot(double* data, const int rows, const int cols, const QString& title)
 {
+    m_rows = rows;
+    m_cols = cols;
     if(rows>cols)
          this->resize(this->width(), this->width() * cols / rows + m_ui->frameSliders->height());
     else
@@ -93,16 +96,13 @@ void Preview2D::plotPointsOn2D(QVector<double> x, QVector<double> y)
     m_cPlot->replot();
 }
 
-void Preview2D::ShowContextMenu(const QPoint pos)
+void Preview2D::ShowContextMenu(QPoint pos)
 {
+    qDebug()<<"entered ShowContextMenu";
     QMenu* contextMenu = new QMenu(this);
     contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
     contextMenu->setStyleSheet("border: 0px solid black;");
-    if ( Attributes::I()->GetAvailablePlugins().contains("Spectr UI"))
-    {
-        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
-
-    }
+    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
     int x = m_cPlot->xAxis->pixelToCoord(pos.x());
     int y = m_cPlot->yAxis->pixelToCoord(pos.y());
     qDebug()<<"ShowContextMenu x = "<<x;
@@ -119,8 +119,19 @@ void Preview2D::mousePressOnColorMap(QMouseEvent *e)
 {
     int x = m_cPlot->xAxis->pixelToCoord(e->pos().x());
     int y = m_cPlot->yAxis->pixelToCoord(e->pos().y());
-    qDebug()<<"mousePressOnColorMap x = "<<x;
-    qDebug()<<"mousePressOnColorMap y = "<<y;
+    if(x<0)
+        m_dataX = 0;
+    else if(x>m_rows)
+        m_dataX = m_rows-1;
+    else
+        m_dataX = x;
+
+    if(y<0)
+        m_dataY = 0;
+    else if(y>m_cols)
+        m_dataY = m_cols-1;
+    else
+        m_dataY = y;
 
 }
 /*

@@ -19,7 +19,7 @@ public:
     void plotPointsOn2D(QVector<double> x, QVector<double> y);
 
 private slots:
-    void ShowContextMenu(const QPoint pos);
+    void ShowContextMenu(QPoint pos);
     void prepareToPlotSpectr();
     void mousePressOnColorMap(QMouseEvent* e);
     void on_SliderMin_valueChanged(int value);
@@ -29,6 +29,7 @@ private:
     QCustomPlot* m_cPlot;
     QCPColorMap* colorMap;
     int m_dataX, m_dataY;
+    int m_rows, m_cols;
 };
 
 #endif // PREVIEW2D_H
