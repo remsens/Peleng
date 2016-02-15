@@ -6,6 +6,7 @@ TEMPLATE = lib
 DLLDESTDIR = ../../Debug/MainApp/debug
 DEFINES += SPECTRALDISTANCE_LIBRARY
 CONFIG += plugin
+CONFIG += c++11
 unix {
     target.path = /usr/lib
     INSTALLS += target

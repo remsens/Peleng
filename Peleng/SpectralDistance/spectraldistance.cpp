@@ -260,7 +260,7 @@ void SpectralDistance::selectRange()
             preview_2d = new Preview2D(0);
             connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
         }
-        preview_2d->Plot(view_mem, line_count, row_count, "Сравнение спектральных кривых");
+        preview_2d->Plot(view_mem, line_count, row_count, "Сравнение спектральных кривых",m_pHyperCube,m_attr);
         QVector<double> x;
         QVector<double> y;
         x.append(m_attr->GetPointsList().at(0).x);

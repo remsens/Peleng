@@ -32,10 +32,12 @@ Preview2D::~Preview2D()
     delete m_ui;
 }
 
-void Preview2D::Plot(double* data, const int rows, const int cols, const QString& title)
+void Preview2D::Plot(double* data, const int rows, const int cols, const QString& title, HyperCube *cube, Attributes *attr)
 {
     m_rows = rows;
     m_cols = cols;
+    m_cube = cube;
+    m_attr = attr;
     if(rows>cols)
          this->resize(this->width(), this->width() * cols / rows + m_ui->frameSliders->height());
     else
@@ -102,7 +104,8 @@ void Preview2D::ShowContextMenu(QPoint pos)
     QMenu* contextMenu = new QMenu(this);
     contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
     contextMenu->setStyleSheet("border: 0px solid black;");
-    contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
+    if(m_cube != nullptr && m_attr != nullptr)
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
     int x = m_cPlot->xAxis->pixelToCoord(pos.x());
     int y = m_cPlot->yAxis->pixelToCoord(pos.y());
     qDebug()<<"ShowContextMenu x = "<<x;
@@ -112,7 +115,10 @@ void Preview2D::ShowContextMenu(QPoint pos)
 
 void Preview2D::prepareToPlotSpectr()
 {
-
+    m_attr->ClearList();
+    m_attr->SetPoint(m_dataX, m_dataY, 0);
+    m_attr->SetExternalSpectrFlag(false);
+    m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
 }
 
 void Preview2D::mousePressOnColorMap(QMouseEvent *e)

@@ -70,7 +70,7 @@ public:
         }
         Preview2D* previewWindow = new Preview2D();
         QString title = QString("Предпросмотр изображения канала: %1 канал").arg(BaseNoiseAlg<T>::m_attributes->GetPointsList().at(0).z);
-        previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title);
+        previewWindow->Plot(dataChannel, BaseNoiseAlg<T>::m_cube->GetLines(), BaseNoiseAlg<T>::m_cube->GetColumns(), title,BaseNoiseAlg<T>::m_cube,BaseNoiseAlg<T>::m_attributes);
         delete [] dataChannel;
         qDebug() << "finish noise";
     }
