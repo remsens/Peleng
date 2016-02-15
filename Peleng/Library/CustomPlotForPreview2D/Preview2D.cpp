@@ -61,10 +61,6 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const QString
     qsort(data, rows*cols, sizeof(double), Compare::CompareVariables<double>);
     minCMap = data[int( (rows*cols-1) * 0.02)];
     maxCMap = data[int( (rows*cols-1) * 0.98)];
-    qDebug()<<data[0];
-    qDebug()<<minCMap;
-    qDebug()<<m_ui->SliderMin->value();
-    qDebug()<<m_ui->SliderMax->value();
     m_cPlot->rescaleAxes();
     colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
@@ -100,7 +96,6 @@ void Preview2D::plotPointsOn2D(QVector<double> x, QVector<double> y)
 
 void Preview2D::ShowContextMenu(QPoint pos)
 {
-    qDebug()<<"entered ShowContextMenu";
     QMenu* contextMenu = new QMenu(this);
     contextMenu->setAttribute(Qt::WA_DeleteOnClose, true);
     contextMenu->setStyleSheet("border: 0px solid black;");
@@ -108,8 +103,6 @@ void Preview2D::ShowContextMenu(QPoint pos)
         contextMenu->addAction(QIcon(":/IconsCube/iconsCube/Plot.png"),"Спектр",this, SLOT(prepareToPlotSpectr()));
     int x = m_cPlot->xAxis->pixelToCoord(pos.x());
     int y = m_cPlot->yAxis->pixelToCoord(pos.y());
-    qDebug()<<"ShowContextMenu x = "<<x;
-    qDebug()<<"ShowContextMenu y = "<<y;
     contextMenu->popup(m_cPlot->mapToGlobal(pos));
 }
 
