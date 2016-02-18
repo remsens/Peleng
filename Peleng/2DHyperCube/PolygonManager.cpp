@@ -150,8 +150,7 @@ QByteArray PolygonManager::byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray ar
         for(int j = 0; j < m_cols; ++j)
         {
             if(arr1.at(i*m_cols+j) == 0x01  ||  arr2.at(i*m_cols+j) == 0x01)
-                byteArr.remove(i*m_cols+j, 1);
-                byteArr.insert(i*m_cols+j, 0x01);
+                byteArr[i*m_cols+j] = 0x01;
         }
     }
     return byteArr;
