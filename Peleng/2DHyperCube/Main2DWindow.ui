@@ -93,10 +93,13 @@
        <item>
         <widget class="QFrame" name="frameCustomPlot">
          <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+          <enum>QFrame::NoFrame</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>1</number>
          </property>
          <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,999,0" columnstretch="0,999,0" rowminimumheight="0,0,0" columnminimumwidth="0,0,0">
           <property name="sizeConstraint">

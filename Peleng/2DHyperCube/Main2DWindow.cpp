@@ -21,7 +21,6 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     , m_attributes(attr)
     , flagGetTempChannelFromCube(true)
 
-
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     if( m_attributes->GetPointsList().size() > 0)
@@ -111,19 +110,35 @@ Main2DWindow::~Main2DWindow()
 void Main2DWindow::resizeEvent(QResizeEvent *e)
 {
     QSize framesize =  ui->frameCustomPlot->size();
+    double kFrame = (double)framesize.width() / (double)framesize.height();
     double RowsToCols = (double)rows / (double)cols;
     if(RowsToCols > 1)
     {
         //ui->customPlot->setFixedSize(framesize.width()*0.95 , framesize.width() / RowsToCols*0.95);
         //ui->customPlot->setMinimumHeight(framesize.width() / RowsToCols*0.95);
-        ui->customPlot->resize(framesize.width() , framesize.width() / RowsToCols);
-        ui->customPlot->move(0,framesize.height()/2 - ui->customPlot->height()/2 );
-    }
+        if (kFrame > RowsToCols)
+        {
+            ui->customPlot->resize(framesize.width() / (kFrame/RowsToCols) , framesize.width() / (kFrame/RowsToCols) / RowsToCols);
+            ui->customPlot->move(framesize.width()/2 - ui->customPlot->width()/2,framesize.height()/2 - ui->customPlot->height()/2 );
+        }
         else
+        {
+            ui->customPlot->resize(framesize.width() , framesize.width() / RowsToCols);
+            ui->customPlot->move(0,framesize.height()/2 - ui->customPlot->height()/2 );
+        }
+    }
+    else
     {
-        //ui->customPlot->setFixedSize(framesize.height() * RowsToCols*0.95, framesize.height()*0.95);
-        ui->customPlot->resize(framesize.height() * RowsToCols, framesize.height());
-        ui->customPlot->move(framesize.width()/2 - ui->customPlot->width()/2,0);
+        if (kFrame < RowsToCols)
+        {
+            ui->customPlot->resize(framesize.height() * RowsToCols * (kFrame/RowsToCols), framesize.height() * (kFrame/RowsToCols));
+            ui->customPlot->move(framesize.width()/2 - ui->customPlot->width()/2,framesize.height()/2 - ui->customPlot->height()/2 );
+        }
+        else
+        {
+            ui->customPlot->resize(framesize.height() * RowsToCols, framesize.height());
+            ui->customPlot->move(framesize.width()/2 - ui->customPlot->width()/2,0);
+        }
     }
 }
 
@@ -164,6 +179,7 @@ void Main2DWindow::dataCubeResize()
         delete [] ChnlLimits[i];
     }
     delete [] ChnlLimits;
+    delete[] m_tempChanel;
     setHyperCube(m_pCube);
     polyMngr->setRows(rows);
     polyMngr->setCols(cols);
