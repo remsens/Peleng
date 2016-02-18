@@ -79,6 +79,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     basedWords.insert("wavelength", "="); //7
     QString readingLine("");
     u::uint8 wordsPoints = 0;
+
     while (!file.atEnd())
     {
         readingLine = file.readLine();

@@ -22,7 +22,6 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/Attributes/Attributes.cpp \
     AlgFactory.cpp \
-    Median1DAlg.cpp \
     ../Library/QCustomPlot.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
     ../Library/Utils/Compare.cpp \
