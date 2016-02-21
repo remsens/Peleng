@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QTextCodec>
 #include "../Library/GenericExc.h"
-
+#include "../Library/MathOperations/Interpolation.h"
 AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QWidget(parent)
     , m_ui(new Ui::AddSpectr)
@@ -208,6 +208,30 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         QMessageBox::information(this, "Информация о загруженном спектре", toMessageBox);
         if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
         {
+            QVector<double> xForTest = m_attr->GetXUnits();
+            QVector<double> yForTest = m_attr->GetYUnits();
+            if (m_cube->GetListOfChannels().count() > 0)//если нет длин волн, то порядковые номера
+            {
+                QVector<double> Ynew(m_cube->GetListOfChannels().count());
+                QVector<double> xForInt = m_attr->GetXUnits();
+                QVector<double> yForInt = m_attr->GetYUnits();
+                for(double &it : xForInt) // приводим к нм
+                    it = it*1000;
+
+                QVector<double> xForIntOrder;
+                QVector<double> yForIntOrder;
+                for(int i = 0; i < xForInt.count(); ++i)
+                    xForIntOrder.append(xForInt.at(xForInt.count() - 1 - i));
+                for(int i = 0; i < yForInt.count(); ++i)
+                    yForIntOrder.append(yForInt.at(yForInt.count() - 1 - i));
+                interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
+                QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
+                m_attr->SetXUnit(xtemp);
+                m_attr->SetYUnit(Ynew);
+                m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
+            }
+            m_attr->SetXUnit(xForTest);
+            m_attr->SetYUnit(yForTest);
             m_attr->SetExternalSpectrFlag(true);
             m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
         }

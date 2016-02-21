@@ -1,31 +1,41 @@
-#include <QObject>
-#include <QVector>
+#include "Interpolation.h"
+#include <qdebug>
 
-double lerp(double x0, double x1, double y0, double y1, double x) //возвращает y, соответствующий иксу. x0 < x < x1
+double lerp(const double &x0, const double &x1, const double &y0, const double &y1, const double &x) //возвращает y, соответствующий иксу. x0 < x < x1
 {
   return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 }
 
-bool interpolate(const QVector<double> &Xin, const QVector<double> &Yin, const QVector<double> &Xout, QVector<double> &Yout)
+bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVector<double> &Xnew, QVector<double> &Ynew)
 {
     int i=0;
     int j=0;
-
-
-
     //поменять местами ин и оут
-    while (j < Xin.length() && i < Xout.length())
+    while (i < X.length() && j < Xnew.length())
     {
-        if(Xout.at(i) < Xin.at(j) && Xout.at(i+1) > Xin.at(j))
+        if(X.at(i) <= Xnew.at(j) &&  Xnew.at(j) <= X.at(i+1) )
         {
-            Yout[j] = lerp(Xout.at(i), Xout.at(i+1), Yout.at(i), Yout.at(i+1), Xin.at(j));
+            Ynew[j] = lerp(X.at(i), X.at(i+1), Y.at(i), Y.at(i+1), Xnew.at(j));
+            ++j;
+        }
+        else if (X.at(i) <= Xnew.at(j) &&  Xnew.at(j) >= X.at(i+1))
+            ++i;
+        else if (X.at(i) > Xnew.at(j) &&  Xnew.at(j) < X.at(i+1)) // что-то тут неправильно
+        {
+            Ynew[j] = 0;
             ++j;
         }
         else
-        {
-            ++i;
-        }
+            qDebug()<<"unexpected 'if' case";
+
     }
 
     return true;
+}
+
+
+bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QList<double> &Xnew, QVector<double> &Ynew)
+{
+    QVector<double> XnewVec = Xnew.toVector();
+    interpolate(X, Y, XnewVec , Ynew);
 }

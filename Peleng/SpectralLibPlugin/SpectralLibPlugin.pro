@@ -10,6 +10,7 @@ Release:     DLLDESTDIR = ../../Release/MainApp/release
 
 DEFINES += SPECTRAL_LIBRARY
 CONFIG += plugin
+CONFIG += c++11
 unix {
     target.path = /usr/lib
     INSTALLS += target
