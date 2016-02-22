@@ -220,15 +220,30 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
 
                 QVector<double> xForIntOrder;
                 QVector<double> yForIntOrder;
-                for(int i = 0; i < xForInt.count(); ++i)
-                    xForIntOrder.append(xForInt.at(xForInt.count() - 1 - i));
-                for(int i = 0; i < yForInt.count(); ++i)
-                    yForIntOrder.append(yForInt.at(yForInt.count() - 1 - i));
-                interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
-                QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
-                m_attr->SetXUnit(xtemp);
-                m_attr->SetYUnit(Ynew);
-                m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
+                bool isIntrpl = false;
+                if (xForInt.first() > xForInt.last())
+                {
+                    for(int i = 0; i < xForInt.count(); ++i)
+                        xForIntOrder.append(xForInt.at(xForInt.count() - 1 - i));
+                    for(int i = 0; i < yForInt.count(); ++i)
+                        yForIntOrder.append(yForInt.at(yForInt.count() - 1 - i));
+                    isIntrpl = interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
+                }
+                else
+                    isIntrpl = interpolate(xForInt, yForInt, m_cube->GetListOfChannels(),Ynew);
+
+                if(isIntrpl)
+                {
+                    QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
+                    m_attr->SetXUnit(xtemp);
+                    m_attr->SetYUnit(Ynew);
+                    m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
+                }
+                else
+                {
+                    QMessageBox::critical(this, "Ошибка", "err","ошибка при интреполяции");
+                }
+
             }
             m_attr->SetXUnit(xForTest);
             m_attr->SetYUnit(yForTest);

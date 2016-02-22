@@ -377,7 +377,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         }
 
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
-
+        //m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);//так можно сделать зум по одной оси
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
             m_customPlot->clearGraphs();

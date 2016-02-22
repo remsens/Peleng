@@ -9,9 +9,9 @@
 //! @param Ynew - интерполированные значения отсчетов Xnew
 //! @return - ф-ия завершилась успешно или нет
 bool interpolate(const QVector<double> & X, const QVector<double> & Y,
-                 const QVector<double> & Xnew, QVector<double> & Ynew);
+                 const QVector<double> & XnewUnsortd, QVector<double> & Ynew);
 bool interpolate(const QVector<double> & X, const QVector<double> & Y,
-                 const QList<double> & Xnew, QVector<double> & Ynew);
+                 const QList<double> & XnewUnsrtd, QVector<double> & Ynew);
 
 #endif // INTERPOLATION
 
