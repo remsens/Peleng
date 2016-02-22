@@ -461,6 +461,19 @@ void PlotterWindow::resizeEvent(QResizeEvent *event)
     m_customPlot->replot();
 }
 
+void PlotterWindow::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Shift)
+        m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);
+    if(event->key() == Qt::Key_Control)
+        m_customPlot->axisRect()->setRangeZoom(Qt::Vertical);
+}
+
+void PlotterWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
+}
+
 void PlotterWindow::on_actionHold_toggled(bool value)
 {
     m_hold = value;

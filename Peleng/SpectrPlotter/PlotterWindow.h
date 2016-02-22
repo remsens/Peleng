@@ -24,6 +24,8 @@ public:
     void chooseStep();
 protected:
     void resizeEvent(QResizeEvent * event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 
 signals:
