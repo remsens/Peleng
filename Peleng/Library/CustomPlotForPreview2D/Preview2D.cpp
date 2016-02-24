@@ -23,7 +23,7 @@ Preview2D::Preview2D(QWidget *parent) :
     m_cPlot->axisRect()->setAutoMargins(QCP::msNone);
     m_cPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
     //TODO
-    //setWindowIcon(QIcon(":/logo/IconsPlotter/PlotterLogo.png"));
+    setWindowIcon(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"));
     setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
