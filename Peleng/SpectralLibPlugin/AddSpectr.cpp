@@ -180,7 +180,7 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                     double x = data.at(0).toDouble()*multiplier;
                     double y = data.at(1).toDouble();
                     m_attr->SetXUnit(x);
-                    qDebug() << x;
+                    //qDebug() << x;
                     m_attr->SetYUnit(y);
                 }
             }
@@ -243,9 +243,9 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                 if(isIntrpl)
                 {
                     QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
-                    m_attr->SetXUnit(xtemp);
-                    m_attr->SetYUnit(Ynew);
-                    m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
+//                    m_attr->SetXUnit(xtemp);
+//                    m_attr->SetYUnit(Ynew);
+//                    m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
                 }
                 else
                 {

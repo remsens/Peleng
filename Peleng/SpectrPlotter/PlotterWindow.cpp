@@ -50,8 +50,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     }
     if (m_attributes->GetExternalSpectrFlag())
     {
-        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
-        connect(ui->actionInterplol,SIGNAL(toggled(bool)),this, SLOT(onActionInterplol()));
+        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());    
     }
     else
          ui->menuSpectrum->removeAction(ui->actionInterplol);
@@ -62,6 +61,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
+    connect(ui->actionInterplol,SIGNAL(triggered()),this, SLOT(onActionInterplol()));
 
 }
 
@@ -244,14 +244,31 @@ void PlotterWindow::onActionPoints(bool flag)
 
 void PlotterWindow::onActionInterplol()
 {
-    QVector<double> Ynew(m_cube->GetListOfChannels().count());
+    qDebug()<<"run onActionInterplol";
+    QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
+    QVector<double> xForIntOrder;
+    QVector<double> yForIntOrder;
+    bool isIntrpl = false;
+    if (m_xArr.first() > m_xArr.last())
+    {
+        for(int i = 0; i < m_xArr.count(); ++i)
+            xForIntOrder.append(m_xArr.at(m_xArr.count() - 1 - i));
+        for(int i = 0; i < m_yArr.count(); ++i)
+            yForIntOrder.append(m_yArr.at(m_yArr.count() - 1 - i));
+        isIntrpl = interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
+    }
+    else
+        isIntrpl = interpolate(m_xArr, m_yArr, m_cube->GetListOfChannels(),Ynew);
 
-    QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
-    m_attributes->SetXUnit(xtemp);
-    m_attributes->SetYUnit(Ynew);
-    m_attributes->SetExternalSpectrFlag(false);
-    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
-
+    if(isIntrpl)
+    {
+        QVector<double> xCube = m_cube->GetListOfChannels().toVector();
+        m_attributes->SetXUnit(xCube);
+        m_attributes->SetYUnit(Ynew);
+        m_attributes->SetExternalSpectrFlag(true);
+        m_attributes->SetExternalSpectrFormat(0);
+        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes );
+    }
 
 
 
