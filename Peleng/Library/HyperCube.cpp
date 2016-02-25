@@ -235,6 +235,15 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
     }
 }
 
+void HyperCube::UpdateListWaves(QList<double>& wavelength)
+{
+    m_infoData.listChannels.clear();
+    for (u::uint32 i = 0; i < m_infoData.bands; i++)
+    {
+        m_infoData.listChannels.push_back(wavelength.at(i));
+    }
+}
+
 void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)
 {
     InfoData newInfoData;

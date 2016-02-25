@@ -65,6 +65,7 @@ public:
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
 
+    void UpdateListWaves(QList<double>& wavelength);
     //! Функция получения числа каналов
     //! @return - число каналов гиперкуба
     u::uint32 GetCountofChannels();
