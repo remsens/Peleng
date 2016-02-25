@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "../Library/GenericExc.h"
+#include "../Library/MathOperations/interpolation.h"
 
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -50,13 +51,18 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     if (m_attributes->GetExternalSpectrFlag())
     {
         m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
+        connect(ui->actionInterplol,SIGNAL(toggled(bool)),this, SLOT(onActionInterplol()));
     }
+    else
+         ui->menuSpectrum->removeAction(ui->actionInterplol);
+
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
+
 }
 
 PlotterWindow::~PlotterWindow()
@@ -234,6 +240,21 @@ void PlotterWindow::onActionPoints(bool flag)
             m_customPlot->graph(i)->setScatterStyle(QCPScatterStyle::ssNone);
     }
     m_customPlot->replot();
+}
+
+void PlotterWindow::onActionInterplol()
+{
+    QVector<double> Ynew(m_cube->GetListOfChannels().count());
+
+    QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
+    m_attributes->SetXUnit(xtemp);
+    m_attributes->SetYUnit(Ynew);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
+
+
+
+
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()

@@ -454,6 +454,7 @@
     <addaction name="actionHold"/>
     <addaction name="actionPoints"/>
     <addaction name="actionValues"/>
+    <addaction name="actionInterplol"/>
    </widget>
    <addaction name="menuSpectrum"/>
   </widget>
@@ -493,6 +494,11 @@
    </property>
    <property name="text">
     <string>Отображать значения под курсором</string>
+   </property>
+  </action>
+  <action name="actionInterplol">
+   <property name="text">
+    <string>Привести к длинам волн гиперкуба</string>
    </property>
   </action>
  </widget>

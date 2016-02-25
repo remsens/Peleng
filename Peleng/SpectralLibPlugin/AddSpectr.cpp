@@ -215,8 +215,9 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                 QVector<double> Ynew(m_cube->GetListOfChannels().count());
                 QVector<double> xForInt = m_attr->GetXUnits();
                 QVector<double> yForInt = m_attr->GetYUnits();
-                for(double &it : xForInt) // приводим к нм
-                    it = it*1000;
+                if(xForInt.first() < 10)
+                    for(double &it : xForInt) // приводим к нм
+                        it = it*1000;
 
                 QVector<double> xForIntOrder;
                 QVector<double> yForIntOrder;

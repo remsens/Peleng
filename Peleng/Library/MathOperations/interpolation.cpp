@@ -11,8 +11,8 @@ bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVect
     int i=0;
     int j=0;
 
-    QVector<double> Xnew(XnewUnsrtd) ;
-    qSort(Xnew);
+    QVector<double> Xnew(XnewUnsrtd) ;//потом убрать
+    qSort(Xnew);//потом убрать
 
 
     while (i < X.length() && j < Xnew.length())
