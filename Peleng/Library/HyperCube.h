@@ -144,7 +144,6 @@ public:
 
 
 private:
-   // QVector<QVector<u::int8> > m_vectorCube; //[bands][samples*lines]
     u::int8** m_dataCube; //!< двумерный массив данных гиперкуба
     u::uint32 m_sizeCube; //!< размер куба
     InfoData m_infoData; //!< метаданные куба

@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextCodec>
+#include <QDebug>
 #include "../Library/GenericExc.h"
 #include "../Library/MathOperations/Interpolation.h"
 AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -94,6 +95,7 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         bool startData = false;
         // костыль, чтобы отличать класс от подкласса
         // bool classTitle = false;
+        u::uint32 multiplier = 1;
         while (!m_inStream->atEnd())
         {
             QString line = m_inStream->readLine();
@@ -117,6 +119,10 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                 {
                     if (line.contains(possibleTitles.at(i), Qt::CaseInsensitive))
                     {
+                        if (line.contains("micrometers", Qt::CaseInsensitive) && line.contains("X Units",Qt::CaseInsensitive))
+                        {
+                            multiplier = 1000;
+                        }
                         if (line.at(0) != possibleTitles.at(i)[0])
                         {
                             i++;
@@ -171,9 +177,10 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                     throw GenericExc(tr("Неизвестный формат данных"));
                 } else
                 {
-                    double x = data.at(0).toDouble();
+                    double x = data.at(0).toDouble()*multiplier;
                     double y = data.at(1).toDouble();
                     m_attr->SetXUnit(x);
+                    qDebug() << x;
                     m_attr->SetYUnit(y);
                 }
             }
