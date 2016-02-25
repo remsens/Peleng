@@ -378,7 +378,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             Wawes.append(m_cube->GetListOfChannels());
             for (quint16 i = 0; i < Chnls; ++i )
             {
-               m_xArr.push_back(Wawes[i]);
+               m_xArr.push_back(Wawes.at(i));
                m_yArr.push_back(pSpectrValues[i]);
             }
             delete [] pSpectrValues;

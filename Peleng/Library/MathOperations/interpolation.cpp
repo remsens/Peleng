@@ -3,7 +3,12 @@
 
 double lerp(const double &x0, const double &x1, const double &y0, const double &y1, const double &x) //возвращает y, соответствующий иксу. x0 < x < x1
 {
-  return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+  if (x == x0) // нужно из-за ошибок округления
+      return y0;
+  else if (x == x1)
+      return y1;
+  else
+    return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 }
 
 bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVector<double> &Xnew, QVector<double> &Ynew)
@@ -23,16 +28,16 @@ bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVect
             ++i;
         else if (X.at(i) > Xnew.at(j) &&  Xnew.at(j) < X.at(i+1)) // что-то тут неправильно
         {
-            if(i>5 && j>5)
-            {
-                qDebug()<<"X.at(i-2) = "<<X.at(i-2);
-                qDebug()<<"X.at(i-1) = "<<X.at(i-1);
-                qDebug()<<"X.at(i) = "<<X.at(i);
-                qDebug()<<"X.at(i+1) = "<<X.at(i+1);
-                qDebug()<<"Xnew.at(j-1) = "<<Xnew.at(j-1);
-                qDebug()<<"Xnew.at(j) = "<<Xnew.at(j);
-                qDebug()<<"Xnew.at(j+1) = "<<Xnew.at(j+1)<<endl;
-            }
+//            if(i>5 && j>5)
+//            {
+//                qDebug()<<"X.at(i-2) = "<<X.at(i-2);
+//                qDebug()<<"X.at(i-1) = "<<X.at(i-1);
+//                qDebug()<<"X.at(i) = "<<X.at(i);
+//                qDebug()<<"X.at(i+1) = "<<X.at(i+1);
+//                qDebug()<<"Xnew.at(j-1) = "<<Xnew.at(j-1);
+//                qDebug()<<"Xnew.at(j) = "<<Xnew.at(j);
+//                qDebug()<<"Xnew.at(j+1) = "<<Xnew.at(j+1)<<endl;
+//            }
             Ynew[j] = 0;
             ++j;
         }
