@@ -6,15 +6,12 @@ double lerp(const double &x0, const double &x1, const double &y0, const double &
   return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
 }
 
-bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVector<double> &XnewUnsrtd, QVector<double> &Ynew)
+bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVector<double> &Xnew, QVector<double> &Ynew)
 {
     int i=0;
     int j=0;
-
-    QVector<double> Xnew(XnewUnsrtd) ;//потом убрать
-    qSort(Xnew);//потом убрать
-
-
+//    QVector<double> Xnew(XnewUnsrtd) ;//потом убрать
+//    qSort(Xnew);//потом убрать
     while (i < X.length() && j < Xnew.length())
     {
         if(X.at(i) <= Xnew.at(j) &&  Xnew.at(j) <= X.at(i+1) )

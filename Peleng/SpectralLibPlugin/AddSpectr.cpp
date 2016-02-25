@@ -197,6 +197,20 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         {
             throw GenericExc(tr("Неизвестный формат данных"));
         }
+
+        // в некоторых внешних библиотеках длины волн упорядочены по убыванию. Исправляем это
+        QVector<double> xForIntOrder;
+        QVector<double> yForIntOrder;
+        if (m_attr->GetXUnits().first() > m_attr->GetXUnits().last())
+        {
+            for(int i = 0; i < m_attr->GetXUnits().count(); ++i)
+                xForIntOrder.append(m_attr->GetXUnits().at(m_attr->GetXUnits().count() - 1 - i));
+            for(int i = 0; i < m_attr->GetYUnits().count(); ++i)
+                yForIntOrder.append(m_attr->GetYUnits().at(m_attr->GetYUnits().count() - 1 - i));
+
+            m_attr->SetXUnit(xForIntOrder);
+            m_attr->SetYUnit(yForIntOrder);
+        }
         // сформировать одну строку
         // QMessageBox;
         QString toMessageBox;
@@ -215,46 +229,45 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
         QMessageBox::information(this, "Информация о загруженном спектре", toMessageBox);
         if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
         {
-            QVector<double> xForTest = m_attr->GetXUnits();
-            QVector<double> yForTest = m_attr->GetYUnits();
-            if (m_cube->GetListOfChannels().count() > 0)//если нет длин волн, то порядковые номера
-            {
-                QVector<double> Ynew(m_cube->GetListOfChannels().count());
-                QVector<double> xForInt = m_attr->GetXUnits();
-                QVector<double> yForInt = m_attr->GetYUnits();
-                if(xForInt.first() < 10)
-                    for(double &it : xForInt) // приводим к нм
-                        it = it*1000;
+//            QVector<double> xForTest = m_attr->GetXUnits();
+//            QVector<double> yForTest = m_attr->GetYUnits();
+//            if (m_cube->GetListOfChannels().count() > 0)//если нет длин волн, то порядковые номера
+//            {
+//                QVector<double> Ynew(m_cube->GetListOfChannels().count());
+//                QVector<double> xForInt = m_attr->GetXUnits();
+//                QVector<double> yForInt = m_attr->GetYUnits();
+//                if(xForInt.first() < 10)
+//                    for(double &it : xForInt) // приводим к нм
+//                        it = it*1000;
 
-                QVector<double> xForIntOrder;
-                QVector<double> yForIntOrder;
-                bool isIntrpl = false;
-                if (xForInt.first() > xForInt.last())
-                {
-                    for(int i = 0; i < xForInt.count(); ++i)
-                        xForIntOrder.append(xForInt.at(xForInt.count() - 1 - i));
-                    for(int i = 0; i < yForInt.count(); ++i)
-                        yForIntOrder.append(yForInt.at(yForInt.count() - 1 - i));
-                    isIntrpl = interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
-                }
-                else
-                    isIntrpl = interpolate(xForInt, yForInt, m_cube->GetListOfChannels(),Ynew);
+//                QVector<double> xForIntOrder;
+//                QVector<double> yForIntOrder;
+//                bool isIntrpl = false;
+//                if (xForInt.first() > xForInt.last())
+//                {
+//                    for(int i = 0; i < xForInt.count(); ++i)
+//                        xForIntOrder.append(xForInt.at(xForInt.count() - 1 - i));
+//                    for(int i = 0; i < yForInt.count(); ++i)
+//                        yForIntOrder.append(yForInt.at(yForInt.count() - 1 - i));
+//                    isIntrpl = interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
+//                }
+//                else
+//                    isIntrpl = interpolate(xForInt, yForInt, m_cube->GetListOfChannels(),Ynew);
 
-                if(isIntrpl)
-                {
-                    QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
+//                if(isIntrpl)
+//                {
+//                    QVector<double> xtemp = m_cube->GetListOfChannels().toVector();
 //                    m_attr->SetXUnit(xtemp);
 //                    m_attr->SetYUnit(Ynew);
 //                    m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attr );
-                }
-                else
-                {
-                    QMessageBox::critical(this, "Ошибка", "err","ошибка при интреполяции");
-                }
-
-            }
-            m_attr->SetXUnit(xForTest);
-            m_attr->SetYUnit(yForTest);
+//                }
+//                else
+//                {
+//                    QMessageBox::critical(this, "Ошибка", "err","ошибка при интреполяции");
+//                }
+//            }
+//            m_attr->SetXUnit(xForTest);
+//            m_attr->SetYUnit(yForTest);
             m_attr->SetExternalSpectrFlag(true);
             m_attr->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attr);
         }

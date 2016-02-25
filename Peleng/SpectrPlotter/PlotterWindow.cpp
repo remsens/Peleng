@@ -244,22 +244,15 @@ void PlotterWindow::onActionPoints(bool flag)
 
 void PlotterWindow::onActionInterplol()
 {
-    qDebug()<<"run onActionInterplol";
     QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
-    QVector<double> xForIntOrder;
-    QVector<double> yForIntOrder;
     bool isIntrpl = false;
-    if (m_xArr.first() > m_xArr.last())
+    try
     {
-        for(int i = 0; i < m_xArr.count(); ++i)
-            xForIntOrder.append(m_xArr.at(m_xArr.count() - 1 - i));
-        for(int i = 0; i < m_yArr.count(); ++i)
-            yForIntOrder.append(m_yArr.at(m_yArr.count() - 1 - i));
-        isIntrpl = interpolate(xForIntOrder, yForIntOrder, m_cube->GetListOfChannels(),Ynew);
-    }
-    else
         isIntrpl = interpolate(m_xArr, m_yArr, m_cube->GetListOfChannels(),Ynew);
-
+    }catch(...)
+    {
+        QMessageBox::critical(this, "Ошибка", "Ошибка при интерполяции спектра");
+    }
     if(isIntrpl)
     {
         QVector<double> xCube = m_cube->GetListOfChannels().toVector();
@@ -269,9 +262,6 @@ void PlotterWindow::onActionInterplol()
         m_attributes->SetExternalSpectrFormat(0);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes );
     }
-
-
-
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()
