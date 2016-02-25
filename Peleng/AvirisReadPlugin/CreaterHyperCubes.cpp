@@ -451,11 +451,6 @@ void CreaterHyperCubes::SortByWavelength(HyperCube* cube)
             i--;
         }
     }
-    cube->GetListOfChannels().clear();
-    for (u::uint8 i = 0; i < countOfWavelenghts; i++)
-    {
-        cube->GetListOfChannels().push_back(listWavelenth.at(i));
-        qDebug() << listWavelenth.at(i);
-    }
+    cube->UpdateListWaves(listWavelenth);
 
 }
