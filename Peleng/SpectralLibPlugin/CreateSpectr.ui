@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>454</width>
-    <height>505</height>
+    <width>499</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,121 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
+   <item row="0" column="0" colspan="2">
+    <widget class="QFrame" name="frame_2">
+     <property name="minimumSize">
+      <size>
+       <width>60</width>
+       <height>73</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="maximumSize">
+         <size>
+          <width>42</width>
+          <height>42</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="resources.qrc">:/pic/icons/attantion.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Внимание! Названия полей в файл запишутся на английском языке,
+ в соответствии со стандартом.
+ При необходимости перевода на английский язык,
+ нажмите на кнопку &quot;Перевод&quot;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_3">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <spacer name="horizontalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonTranslate">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Перевод названий полей&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/pic/icons/translate.png</normaloff>:/pic/icons/translate.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
     <widget class="QLabel" name="label_name">
      <property name="font">
       <font>
@@ -33,10 +147,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="2" column="1">
     <widget class="QLineEdit" name="lineEdit_name"/>
    </item>
-   <item row="1" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label_type">
      <property name="font">
       <font>
@@ -48,10 +162,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="3" column="1">
     <widget class="QLineEdit" name="lineEdit_type"/>
    </item>
-   <item row="2" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_class">
      <property name="font">
       <font>
@@ -63,10 +177,10 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="4" column="1">
     <widget class="QLineEdit" name="lineEdit_class"/>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_subclass">
      <property name="font">
       <font>
@@ -78,10 +192,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="5" column="1">
     <widget class="QLineEdit" name="lineEdit_subclass"/>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_owner">
      <property name="font">
       <font>
@@ -93,10 +207,10 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="6" column="1">
     <widget class="QLineEdit" name="lineEdit_owner"/>
    </item>
-   <item row="5" column="0">
+   <item row="7" column="0">
     <widget class="QLabel" name="label_origin">
      <property name="font">
       <font>
@@ -108,10 +222,10 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="1">
     <widget class="QLineEdit" name="lineEdit_origin"/>
    </item>
-   <item row="6" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="label_description">
      <property name="font">
       <font>
@@ -123,10 +237,10 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="8" column="1">
     <widget class="QLineEdit" name="lineEdit_description"/>
    </item>
-   <item row="7" column="0">
+   <item row="9" column="0">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -139,7 +253,7 @@
      </property>
     </spacer>
    </item>
-   <item row="7" column="1">
+   <item row="9" column="1">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -152,7 +266,7 @@
      </property>
     </spacer>
    </item>
-   <item row="8" column="0">
+   <item row="10" column="0">
     <spacer name="horizontalSpacer_3">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -165,7 +279,7 @@
      </property>
     </spacer>
    </item>
-   <item row="8" column="1">
+   <item row="10" column="1">
     <spacer name="horizontalSpacer_4">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -178,7 +292,7 @@
      </property>
     </spacer>
    </item>
-   <item row="9" column="0">
+   <item row="11" column="0">
     <spacer name="horizontalSpacer_5">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -191,7 +305,7 @@
      </property>
     </spacer>
    </item>
-   <item row="9" column="1">
+   <item row="11" column="1">
     <spacer name="horizontalSpacer_6">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -204,7 +318,7 @@
      </property>
     </spacer>
    </item>
-   <item row="10" column="0">
+   <item row="12" column="0">
     <widget class="QLabel" name="label_measurements">
      <property name="font">
       <font>
@@ -216,10 +330,10 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="12" column="1">
     <widget class="QLineEdit" name="lineEdit_measurements"/>
    </item>
-   <item row="11" column="0">
+   <item row="13" column="0">
     <widget class="QLabel" name="label_firstColumn">
      <property name="font">
       <font>
@@ -231,14 +345,14 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
+   <item row="13" column="1">
     <widget class="QLineEdit" name="lineEdit_firstColumn">
      <property name="text">
-      <string>Длина волны</string>
+      <string/>
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
+   <item row="14" column="0">
     <widget class="QLabel" name="label_secondColumn">
      <property name="font">
       <font>
@@ -250,10 +364,10 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
+   <item row="14" column="1">
     <widget class="QLineEdit" name="lineEdit_secondColumn"/>
    </item>
-   <item row="13" column="0">
+   <item row="15" column="0">
     <widget class="QLabel" name="label_addInfo">
      <property name="font">
       <font>
@@ -265,10 +379,23 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="15" column="1">
     <widget class="QLineEdit" name="lineEdit_addInfo"/>
    </item>
-   <item row="15" column="0">
+   <item row="16" column="0">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="17" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -281,7 +408,7 @@
      </property>
     </spacer>
    </item>
-   <item row="16" column="0">
+   <item row="18" column="0">
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -294,7 +421,7 @@
      </property>
     </spacer>
    </item>
-   <item row="16" column="1">
+   <item row="18" column="1">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -345,20 +472,32 @@
      </layout>
     </widget>
    </item>
-   <item row="14" column="0">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
+  <zorder>label_name</zorder>
+  <zorder>lineEdit_name</zorder>
+  <zorder>label_type</zorder>
+  <zorder>lineEdit_type</zorder>
+  <zorder>label_class</zorder>
+  <zorder>lineEdit_class</zorder>
+  <zorder>label_subclass</zorder>
+  <zorder>lineEdit_subclass</zorder>
+  <zorder>label_owner</zorder>
+  <zorder>lineEdit_owner</zorder>
+  <zorder>label_origin</zorder>
+  <zorder>lineEdit_origin</zorder>
+  <zorder>label_description</zorder>
+  <zorder>lineEdit_description</zorder>
+  <zorder>label_measurements</zorder>
+  <zorder>lineEdit_measurements</zorder>
+  <zorder>label_firstColumn</zorder>
+  <zorder>lineEdit_firstColumn</zorder>
+  <zorder>label_secondColumn</zorder>
+  <zorder>lineEdit_secondColumn</zorder>
+  <zorder>label_addInfo</zorder>
+  <zorder>lineEdit_addInfo</zorder>
+  <zorder>label_2</zorder>
+  <zorder>frame</zorder>
+  <zorder>frame_2</zorder>
  </widget>
  <resources>
   <include location="resources.qrc"/>

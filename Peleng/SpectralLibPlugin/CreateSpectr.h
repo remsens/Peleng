@@ -18,12 +18,16 @@ public:
     virtual ~CreateSpectr();
 
 public slots:
-    void SaveSpectr();
+    void OnPushButtonSaveSpectr();
+    void OnPushButtonTranslateClicked();
 
 private:
     Ui::CreateSpectr *m_ui;
     HyperCube* m_cube;
     Attributes* m_attributes;
+    QStringList m_headers_russian;
+    QStringList m_headers_english;
+    bool m_bEnglish;
 };
 
 #endif // CREATESPECTR_H

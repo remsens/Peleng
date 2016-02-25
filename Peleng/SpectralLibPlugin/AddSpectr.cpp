@@ -181,6 +181,7 @@ void AddSpectr::ParseFile(QStringList &possibleTitles, QFile &fileIn)
                     double y = data.at(1).toDouble();
                     m_attr->SetXUnit(x);
                     qDebug() << x;
+
                     m_attr->SetYUnit(y);
                 }
             }
