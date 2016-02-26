@@ -163,6 +163,20 @@ void AddSpectr::ParseFile()
         {
             throw GenericExc(QObject::tr("Неизвестный формат данных"));
         }
+
+        // в некоторых внешних библиотеках длины волн упорядочены по убыванию. Исправляем это
+        QVector<double> xForIntOrder;
+        QVector<double> yForIntOrder;
+        if (m_attr->GetXUnits().first() > m_attr->GetXUnits().last())
+        {
+            for(int i = 0; i < m_attr->GetXUnits().count(); ++i)
+                xForIntOrder.append(m_attr->GetXUnits().at(m_attr->GetXUnits().count() - 1 - i));
+            for(int i = 0; i < m_attr->GetYUnits().count(); ++i)
+                yForIntOrder.append(m_attr->GetYUnits().at(m_attr->GetYUnits().count() - 1 - i));
+
+            m_attr->SetXUnit(xForIntOrder);
+            m_attr->SetYUnit(yForIntOrder);
+        }
         // сформировать одну строку
         // QMessageBox;
         QString toMessageBox;

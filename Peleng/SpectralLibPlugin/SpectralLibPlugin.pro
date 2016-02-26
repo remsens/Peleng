@@ -10,6 +10,7 @@ Release:     DLLDESTDIR = ../../Release/MainApp/release
 
 DEFINES += SPECTRAL_LIBRARY
 CONFIG += plugin
+CONFIG += c++11
 unix {
     target.path = /usr/lib
     INSTALLS += target
@@ -27,7 +28,8 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     ../Library/GenericExc.h \
     ../Library/Types.h \
-    AddSpectr.h
+    AddSpectr.h \
+    ../Library/MathOperations/Interpolation.h
 
 SOURCES += \
     SpectralLibPlugin.cpp \
@@ -35,7 +37,8 @@ SOURCES += \
     ../Library/HyperCube.cpp \
     ../Library/Attributes/Attributes.cpp \
     ../Library/GenericExc.cpp \
-    AddSpectr.cpp
+    AddSpectr.cpp \
+    ../Library/MathOperations/Interpolation.cpp
 
 FORMS += \
     CreateSpectr.ui

@@ -29,7 +29,8 @@ SOURCES +=\
     ../Library/QCustomPlot.cpp \
     SpectrPlugin.cpp \
     PlotterWindow.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    ../Library/MathOperations/interpolation.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -39,7 +40,8 @@ HEADERS  += \
     SpectrPlugin.h \
     PlotterWindow.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    ../Library/MathOperations/interpolation.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library

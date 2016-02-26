@@ -65,6 +65,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
         engine = new QQmlApplicationEngine(this);
         engine->load(QUrl("qrc:/sdistancewin.qml"));
         window = qobject_cast<QQuickWindow*>(engine->rootObjects().value(0));
+        window->setIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
         connect(window, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(OnCloseEvent(QQuickCloseEvent*)));
         connect(engine->rootObjects().value(0), SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
         connect(engine->rootObjects().value(0), SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
