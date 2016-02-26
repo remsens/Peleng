@@ -38,18 +38,7 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
         {
             if (m_windowList.at(i)->getIsHold())
             {
-                if (attr->GetExternalSpectrFlag() && attr->GetFormatExternalSpectr() == 0)
-                {
-
-                     m_windowList.at(i)->plotSpectr();
-                } else if (attr->GetExternalSpectrFlag() && attr->GetFormatExternalSpectr() == 1)
-                {
-                    plot = false;
-                    break;
-                } else
-                {
-                    m_windowList.at(i)->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
-                }
+                m_windowList.at(i)->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
                 plot = true;
             }
         }

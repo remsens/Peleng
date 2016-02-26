@@ -51,8 +51,8 @@ public:
     //SpectrPlotter
     void SetExternalSpectrFlag(bool externalSpectr);
     bool GetExternalSpectrFlag() const;
-    void SetExternalSpectrFormat(int format);
-    int  GetFormatExternalSpectr() const;
+    //void SetExternalSpectrFormat(int format);
+    //int  GetFormatExternalSpectr() const;
 
     // общее
     const QList<Point>& GetPointsList() const;
@@ -92,7 +92,7 @@ private:
     QList<DescriptionSpectr> m_descriptionSpectr;
 
     bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
-    int m_formatExternalSpectr; // 0 - peleng; 1 - aster
+    //int m_formatExternalSpectr; // 0 - peleng; 1 - aster
 
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
     int m_maskPixelsCount;

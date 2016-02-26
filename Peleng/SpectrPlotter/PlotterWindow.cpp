@@ -38,11 +38,6 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
-    if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
-    {
-        ui->menuSpectrum->removeAction(ui->actionHold);
-        //ui->actionHold->destroyed();
-    }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         ui->menuSpectrum->addAction("Загрузить спектр", this, SLOT(AddSpectr()));
@@ -406,30 +401,20 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         m_customPlot->yAxis->setRange(minY,maxY);
         if (m_attributes->GetExternalSpectrFlag())
         {
-            switch (m_attributes->GetFormatExternalSpectr())
-            {
-                case 1: {
-                    // aster
-                    for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
-                    {
-                        if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
-                        {
-                            m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                        } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
-                        {
-                            m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                        }
-                    }
-                    break;
-                }
-                default: {
-                   m_customPlot->xAxis->setLabel("Длина волны, нм");
-                   m_customPlot->yAxis->setLabel("Яркость");
-                   break;
-                }
-            }
-        } else
+             for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
+             {
+                  if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
+                  {
+                      m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                  } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
+                  {
+                      m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                  }
+              }
+        }
+        else
         {
+            // проверять, проведена атмосферная коррекция, или нет
             m_customPlot->xAxis->setLabel("Длина волны, нм");
             m_customPlot->yAxis->setLabel("Яркость");
         }

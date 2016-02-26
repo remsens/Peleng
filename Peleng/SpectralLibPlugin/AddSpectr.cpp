@@ -1,11 +1,11 @@
 #include "AddSpectr.h"
-#include "ui_AddSpectr.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextCodec>
 #include <QDebug>
 #include <QObject>
+#include <QIcon>
 #include "../Library/GenericExc.h"
 
 AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr)
@@ -42,7 +42,7 @@ void AddSpectr::ParseFile()
     possibleTitles.append("Last X Value:");
     possibleTitles.append("Number of X Values:");
     possibleTitles.append("Additional Information:");
-    m_attr->SetExternalSpectrFormat(1);
+    //m_attr->SetExternalSpectrFormat(1);
     QString filePath = QFileDialog::getOpenFileName();
     QFile fileIn(filePath);
     m_inStream = new QTextStream(&fileIn);
