@@ -38,8 +38,7 @@ SOURCES += \
     AddSpectr.cpp
 
 FORMS += \
-    CreateSpectr.ui \
-    AddSpectr.ui
+    CreateSpectr.ui
 
 RESOURCES += \
     resources.qrc

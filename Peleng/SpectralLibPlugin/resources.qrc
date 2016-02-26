@@ -6,5 +6,6 @@
         <file>icons/import.png</file>
         <file>icons/attantion.png</file>
         <file>icons/translate.png</file>
+        <file>icons/information.png</file>
     </qresource>
 </RCC>
