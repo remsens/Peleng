@@ -74,17 +74,17 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_headers_russian.append("Второй столбец");
     m_headers_russian.append("Дополнительная информация");
 
-    m_headers_english.append("Name:");
-    m_headers_english.append("Type:");
-    m_headers_english.append("Class:");
-    m_headers_english.append("Subclass:");
-    m_headers_english.append("Owner:");
-    m_headers_english.append("Origin:");
-    m_headers_english.append("Description:");
-    m_headers_english.append("Measurement:");
-    m_headers_english.append("First Column:");
-    m_headers_english.append("Second Column:");
-    m_headers_english.append("Additional Information:");
+    m_headers_english.append("Name");
+    m_headers_english.append("Type");
+    m_headers_english.append("Class");
+    m_headers_english.append("Subclass");
+    m_headers_english.append("Owner");
+    m_headers_english.append("Origin");
+    m_headers_english.append("Description");
+    m_headers_english.append("Measurement");
+    m_headers_english.append("X Units");
+    m_headers_english.append("Y Units");
+    m_headers_english.append("Additional Information");
     m_bEnglish = false;
 }
 

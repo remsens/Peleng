@@ -454,7 +454,6 @@
     <addaction name="actionHold"/>
     <addaction name="actionPoints"/>
     <addaction name="actionValues"/>
-    <addaction name="actionInterplol"/>
    </widget>
    <addaction name="menuSpectrum"/>
   </widget>
