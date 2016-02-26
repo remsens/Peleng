@@ -72,7 +72,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
     }
     if(preview_2d == NULL)
     {
-        preview_2d = new Preview2D(0);
+        preview_2d = new Preview2D(false);
         connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
     }
     //window->setIcon();
@@ -258,7 +258,7 @@ void SpectralDistance::selectRange()
 
         if(preview_2d == NULL)
         {
-            preview_2d = new Preview2D(0);
+            preview_2d = new Preview2D(false);
             connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
         }
         preview_2d->Plot(view_mem, line_count, row_count, "Сравнение спектральных кривых",m_pHyperCube,m_attr);

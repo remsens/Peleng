@@ -14,7 +14,7 @@ class Preview2D : public QWidget
     Q_OBJECT
 
 public:
-    explicit Preview2D(QWidget *parent = 0);
+    explicit Preview2D(bool needSliders = true,QWidget *parent = 0);
     virtual ~Preview2D();
 
     void Plot(double* data, const int rows, const int cols, const QString& title = QString()

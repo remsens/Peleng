@@ -4,11 +4,15 @@
 #include "../Library/Utils/Compare.h"
 #include "../Library/Types.h"
 
-Preview2D::Preview2D(QWidget *parent) :
+Preview2D::Preview2D(bool needSliders, QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::Preview2D)
 {
     m_ui->setupUi(this);
+    if(!needSliders)
+    {
+        m_ui->frameSliders->hide();
+    }
     m_cPlot = new QCustomPlot(this);
     m_ui->verticalLayout_2->addWidget(m_cPlot);
     colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
