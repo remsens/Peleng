@@ -254,7 +254,7 @@ void PlotterWindow::onActionInterplol()
         m_attributes->SetXUnit(xCube);
         m_attributes->SetYUnit(Ynew);
         m_attributes->SetExternalSpectrFlag(true);
-        m_attributes->SetExternalSpectrFormat(0);
+        //m_attributes->SetExternalSpectrFormat(0);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes );
     }
 }
