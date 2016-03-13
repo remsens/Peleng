@@ -26,6 +26,8 @@ public:
 
 public slots:
     void LoadFile();
+    void CreateFileProject();
+    void takeProjectFile(QString path);
 
 signals:
     void progressValueChanged(int);
@@ -34,7 +36,8 @@ private slots:
     void updateProgress();
     void cancelOperation();
 
-
+private:
+    void ShowFileProject();
 private:
     Ui::MainWindow *ui;
     FileReadInterface* FilePlugin;
@@ -43,6 +46,7 @@ private:
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;
     bool m_canceled;
+    QString m_fileProjectName;
 };
 
 #endif // MAINWINDOW_H

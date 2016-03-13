@@ -23,6 +23,18 @@ public:
     static void Destroy();
     virtual ~Attributes();
 
+    // пути к каталогам
+    void SetTempPath(QString& path);
+    QString GetTempPath() const;
+    // путь к спектральным библиотекам
+    void SetSpectralLibPath(QString& path);
+    QString GetSpectralLibPath() const;
+
+    // шаг итерации.
+    void IncrementStep();
+    void DecrementStep();
+    u::uint32 GetStep() const;
+
     // общее
     void SetPointsList(const Point &point);
     void SetPoint(u::uint32 x, u::uint32 y, u::uint32 z);
@@ -83,6 +95,9 @@ private:
     static Attributes* m_instance;
 
 private:
+    QString m_tempDir;
+    QString m_spectralLibDir;
+    u::uint32 m_step;
     QList<Point> m_pointsList;
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
 

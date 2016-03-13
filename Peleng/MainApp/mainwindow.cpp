@@ -11,7 +11,7 @@
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/ProcessingPluginLoader.h"
 #include "../Library/Attributes/Attributes.h"
-
+#include "FileProjectWindow.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
       connect(ui->OpenFileAction, SIGNAL(triggered()),SLOT(LoadFile()));
       connect(ui->ExitAction, SIGNAL(triggered()), this, SLOT(close()));
+      connect(ui->CreateProjectAction, SIGNAL(triggered()), this, SLOT(CreateFileProject()));
       m_canceled = false;
 }
 
@@ -116,6 +117,20 @@ void MainWindow::LoadFile()
     }
 }
 
+void MainWindow::CreateFileProject()
+{
+    FileProjectWindow* fileProject = new FileProjectWindow(Attributes::I());
+    QObject::connect(fileProject, SIGNAL(SendProjectFilePath(QString)), this, SLOT(takeProjectFile(QString)));
+    fileProject->setModal(true);
+    fileProject->show();
+
+}
+
+void MainWindow::takeProjectFile(QString path)
+{
+    m_fileProjectName = path;
+    ShowFileProject();
+}
 
 void MainWindow::updateProgress()
 {
@@ -129,4 +144,7 @@ void MainWindow::cancelOperation()
      m_canceled = true;
 }
 
-
+void MainWindow::ShowFileProject()
+{
+    ui->label->setText(m_fileProjectName);
+}

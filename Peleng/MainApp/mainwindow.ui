@@ -14,7 +14,15 @@
    <string>Тематик-Инфо версия 0.1</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout"/>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -30,6 +38,7 @@
      <string>Файл</string>
     </property>
     <addaction name="OpenFileAction"/>
+    <addaction name="CreateProjectAction"/>
     <addaction name="ExitAction"/>
    </widget>
    <addaction name="menu"/>
@@ -49,7 +58,7 @@
      <normaloff>:/icon/tab/icons/Open Folder-50.png</normaloff>:/icon/tab/icons/Open Folder-50.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть</string>
+    <string>Открыть проект</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -86,6 +95,11 @@
    </property>
    <property name="text">
     <string>Построить график канала</string>
+   </property>
+  </action>
+  <action name="CreateProjectAction">
+   <property name="text">
+    <string>Создать проект</string>
    </property>
   </action>
  </widget>

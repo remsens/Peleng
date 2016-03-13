@@ -4,6 +4,8 @@
         <file>icons/Exit-50.png</file>
         <file>icons/Data Sheet-50.png</file>
         <file>icons/Heat Map-50.png</file>
+        <file>icons/folder_open.png</file>
+        <file>icons/create.png</file>
     </qresource>
     <qresource prefix="/logo">
         <file>icons/PelengIcon.png</file>

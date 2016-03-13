@@ -4,13 +4,13 @@ Attributes* Attributes::m_instance = NULL;
 
 Attributes::Attributes()
 {
-
+    m_step = 0;
 }
 Attributes* Attributes::I()
 {
     if (!m_instance)
     {
-        m_instance = new Attributes;
+        m_instance = new Attributes();
     }
     return m_instance;
 }
@@ -20,12 +20,46 @@ Attributes* Attributes::I()
      if (m_instance)
      {
          delete m_instance;
+         m_instance = NULL;
      }
  }
 
 Attributes::~Attributes()
 {
 
+}
+
+// пути к каталогам
+void Attributes::SetTempPath(QString& path)
+{
+    m_tempDir = path;
+}
+QString Attributes::GetTempPath() const
+{
+    return m_tempDir;
+}
+// путь к спектральным библиотекам
+void Attributes::SetSpectralLibPath(QString& path)
+{
+    m_spectralLibDir = path;
+}
+
+QString Attributes::GetSpectralLibPath() const
+{
+    return m_spectralLibDir;
+}
+
+void Attributes::IncrementStep()
+{
+    m_step++;
+}
+void Attributes::DecrementStep()
+{
+    m_step--;
+}
+u::uint32 Attributes::GetStep() const
+{
+    return m_step;
 }
 
 void Attributes::SetModeLib(bool value)
