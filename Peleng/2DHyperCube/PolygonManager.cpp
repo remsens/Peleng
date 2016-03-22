@@ -371,7 +371,6 @@ void PolygonManager::onMenuAverageSpectr()
     m_attributes->SetXUnit(wawesVect);
     m_attributes->SetYUnit(averageSpectrVect);
     m_attributes->SetExternalSpectrFlag(true);
-    m_attributes->SetExternalSpectrFormat(0);
     QList<Attributes::DescriptionSpectr> list;
     Attributes::DescriptionSpectr descriptionAverSpctr;
     descriptionAverSpctr.title = "Среднее по региону '";
@@ -431,7 +430,6 @@ void PolygonManager::onMenuStandardDeviation()
     m_attributes->SetXUnit(wawesVect);
     m_attributes->SetYUnit(std);
     m_attributes->SetExternalSpectrFlag(true);
-    m_attributes->SetExternalSpectrFormat(0);
     QList<Attributes::DescriptionSpectr> list;
     Attributes::DescriptionSpectr descriptionAverSpctr;
     descriptionAverSpctr.title = "СКО по региону '";

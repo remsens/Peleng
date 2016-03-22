@@ -144,15 +144,15 @@ bool Attributes::GetExternalSpectrFlag() const
     return m_externalSpectr;
 }
 
-int  Attributes::GetFormatExternalSpectr() const
-{
-    return m_formatExternalSpectr;
-}
+//int  Attributes::GetFormatExternalSpectr() const
+//{
+//    return m_formatExternalSpectr;
+//}
 
-void Attributes::SetExternalSpectrFormat(int format)
-{
-    m_formatExternalSpectr = format;
-}
+//void Attributes::SetExternalSpectrFormat(int format)
+//{
+//    m_formatExternalSpectr = format;
+//}
 
 void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
 {

@@ -72,7 +72,7 @@ private:
         spectrMas.clear();
         BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
-        BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFormat(0);
+        //BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFormat(0);
         QString descr = QString(" медианный фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
         BaseNoiseAlg<T>::m_attributes->SetDescriptionItem("Устранение шумов:", descr);
         BaseNoiseAlg<T>::m_attributes->SetXUnit(XUnits);

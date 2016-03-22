@@ -24,6 +24,8 @@ public:
     void chooseStep();
 protected:
     void resizeEvent(QResizeEvent * event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 
 signals:
@@ -42,6 +44,8 @@ private slots:
     void onActionValues(bool flag);
     //! слот по клику из опций "Отображать точки графика"
     void onActionPoints(bool flag);
+    //! слот по клику из опций "привестик длинам волн гиперкуба"
+    void onActionInterplol();
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();

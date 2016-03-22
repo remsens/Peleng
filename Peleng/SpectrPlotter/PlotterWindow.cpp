@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "../Library/GenericExc.h"
+#include "../Library/MathOperations/interpolation.h"
 
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -38,25 +39,25 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     panim->setEndValue(1);
     panim->setEasingCurve(QEasingCurve::InCirc);
     panim->start(QAbstractAnimation::DeleteWhenStopped);
-    if (m_attributes->GetFormatExternalSpectr() != 0 && m_attributes->GetExternalSpectrFlag())
-    {
-        ui->menuSpectrum->removeAction(ui->actionHold);
-        //ui->actionHold->destroyed();
-    }
     if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
     {
         ui->menuSpectrum->addAction("Загрузить спектр", this, SLOT(AddSpectr()));
     }
     if (m_attributes->GetExternalSpectrFlag())
     {
-        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());
+        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());    
     }
+    else
+         ui->menuSpectrum->removeAction(ui->actionInterplol);
+
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
+    connect(ui->actionInterplol,SIGNAL(triggered()),this, SLOT(onActionInterplol()));
+
 }
 
 PlotterWindow::~PlotterWindow()
@@ -236,6 +237,28 @@ void PlotterWindow::onActionPoints(bool flag)
     m_customPlot->replot();
 }
 
+void PlotterWindow::onActionInterplol()
+{
+    QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
+    bool isIntrpl = false;
+    try
+    {
+        isIntrpl = interpolate(m_xArr, m_yArr, m_cube->GetListOfChannels(),Ynew);
+    }catch(...)
+    {
+        QMessageBox::critical(this, "Ошибка", "Ошибка при интерполяции спектра");
+    }
+    if(isIntrpl)
+    {
+        QVector<double> xCube = m_cube->GetListOfChannels().toVector();
+        m_attributes->SetXUnit(xCube);
+        m_attributes->SetYUnit(Ynew);
+        m_attributes->SetExternalSpectrFlag(true);
+        //m_attributes->SetExternalSpectrFormat(0);
+        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes );
+    }
+}
+
 void PlotterWindow::ActionNoise3MedianToggled()
 {
     m_attributes->SetMaskPixelsCount(3);
@@ -350,7 +373,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             Wawes.append(m_cube->GetListOfChannels());
             for (quint16 i = 0; i < Chnls; ++i )
             {
-               m_xArr.push_back(Wawes[i]);
+               m_xArr.push_back(Wawes.at(i));
                m_yArr.push_back(pSpectrValues[i]);
             }
             delete [] pSpectrValues;
@@ -377,7 +400,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         }
 
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
-
+        //m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);//так можно сделать зум по одной оси
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
             m_customPlot->clearGraphs();
@@ -406,30 +429,20 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         m_customPlot->yAxis->setRange(minY,maxY);
         if (m_attributes->GetExternalSpectrFlag())
         {
-            switch (m_attributes->GetFormatExternalSpectr())
-            {
-                case 1: {
-                    // aster
-                    for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
-                    {
-                        if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
-                        {
-                            m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                        } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
-                        {
-                            m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                        }
-                    }
-                    break;
-                }
-                default: {
-                   m_customPlot->xAxis->setLabel("Длина волны, нм");
-                   m_customPlot->yAxis->setLabel("Яркость");
-                   break;
-                }
-            }
-        } else
+             for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
+             {
+                  if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
+                  {
+                      m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                  } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
+                  {
+                      m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
+                  }
+              }
+        }
+        else
         {
+            // проверять, проведена атмосферная коррекция, или нет
             m_customPlot->xAxis->setLabel("Длина волны, нм");
             m_customPlot->yAxis->setLabel("Яркость");
         }
@@ -459,6 +472,19 @@ void PlotterWindow::resizeEvent(QResizeEvent *event)
     m_customPlot->xAxis->setAutoTickCount(TickCountX);
     m_customPlot->yAxis->setAutoTickCount(TickCountY);
     m_customPlot->replot();
+}
+
+void PlotterWindow::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Shift)
+        m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);
+    if(event->key() == Qt::Key_Control)
+        m_customPlot->axisRect()->setRangeZoom(Qt::Vertical);
+}
+
+void PlotterWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
 }
 
 void PlotterWindow::on_actionHold_toggled(bool value)

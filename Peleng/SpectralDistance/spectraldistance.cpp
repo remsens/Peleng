@@ -65,13 +65,14 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
         engine = new QQmlApplicationEngine(this);
         engine->load(QUrl("qrc:/sdistancewin.qml"));
         window = qobject_cast<QQuickWindow*>(engine->rootObjects().value(0));
+        window->setIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
         connect(window, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(OnCloseEvent(QQuickCloseEvent*)));
         connect(engine->rootObjects().value(0), SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
         connect(engine->rootObjects().value(0), SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
     }
     if(preview_2d == NULL)
     {
-        preview_2d = new Preview2D(0);
+        preview_2d = new Preview2D(false);
         connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
     }
     //window->setIcon();
@@ -257,7 +258,7 @@ void SpectralDistance::selectRange()
 
         if(preview_2d == NULL)
         {
-            preview_2d = new Preview2D(0);
+            preview_2d = new Preview2D(false);
             connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
         }
         preview_2d->Plot(view_mem, line_count, row_count, "Сравнение спектральных кривых",m_pHyperCube,m_attr);

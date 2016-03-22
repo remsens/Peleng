@@ -55,7 +55,9 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
     {
         ConvertToLittleEndian(cube);
     }
+    SortByWavelength(cube);
     return res;
+
 }
 
 bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
@@ -418,4 +420,37 @@ void CreaterHyperCubes::ConvertToLittleEndian(HyperCube* cube)
         case type_2double: //ConvertCubeToLittleEndian<double>(cube); break;
         default: break;
     }
+}
+
+void CreaterHyperCubes::SortByWavelength(HyperCube* cube)
+{
+    u::uint32 countOfWavelenghts = cube->GetCountofChannels();
+    QList<double> listWavelenth = cube->GetListOfChannels();
+    for (u::uint32 i = 0; i < countOfWavelenghts; i++)
+    {
+        u::uint32 min_index = i;
+        for (u::uint32 j = i; j < countOfWavelenghts; j++)
+        {
+            if (listWavelenth.at(j) < listWavelenth.at(i))
+            {
+                min_index = j;
+            }
+        }
+        if (i != min_index)
+        {
+            // меняем местами массивы
+            u::int8* tempChannel = new u::int8[cube->GetSizeChannel()*cube->GetBytesInElements()];
+            cube->GetDataChannel(min_index, tempChannel);
+            cube->SetDataChannel(cube->GetDataCube()[i], min_index);
+            cube->SetDataChannel(tempChannel, i);
+            delete [] tempChannel;
+            // меняем местами длины волн в списке
+            double temp = listWavelenth.at(min_index);
+            listWavelenth[min_index] = listWavelenth.at(i);
+            listWavelenth[i] = temp;
+            i--;
+        }
+    }
+    cube->UpdateListWaves(listWavelenth);
+
 }
