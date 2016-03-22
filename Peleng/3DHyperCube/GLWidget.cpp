@@ -498,7 +498,7 @@ void GLWidget::contrastSides()
     }
 
     m_contrastTool->setMinMax(absMin,absMax,minCMapSides,maxCMapSides);
-
+    m_contrastTool->setWindowTitle("Контрастирование боковых граней");
     m_contrastTool->show();
     m_contrastTool->raise();
     m_contrastTool->showNormal();
@@ -518,6 +518,7 @@ void GLWidget::contrastTopSide()
         disconnect(m_contrastTool,SIGNAL(minMaxChanged(int,int)),this,SLOT(repaintSidesWithContrast(int,int)));
     }
     m_contrastTool->setMinMax(absMin,absMax,minCMap,maxCMap);
+    m_contrastTool->setWindowTitle("Контрастирование верхних граней");
     m_contrastTool->show();
     m_contrastTool->raise();
     m_contrastTool->showNormal();
