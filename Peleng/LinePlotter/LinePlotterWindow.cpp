@@ -1,6 +1,6 @@
 #include "LinePlotterWindow.h"
 #include "qmath.h"
-
+#include "../Library/GenericExc.h"
 
 
 LinePlotterWindow::LinePlotterWindow(Attributes* attr, QWidget *parent)
@@ -33,9 +33,10 @@ void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint 
     m_customPlot->clearGraphs(); // только 1 график на виджете
     uint k = 1;
     int length = round (qSqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1)) / k);
-    if (length == 0)
+    if (length == 0 || length == 1)
     {
-        qDebug()<<"длина среза = 0";
+        qDebug()<<"выберите точки, расположенные дальше друг от друга";
+        throw(GenericExc("Точки должны быть расположены дальше друг от друга"));
         return;
     }
     int* cordXarr = new int[length];
@@ -92,6 +93,8 @@ void LinePlotterWindow::plotSpectrLine(HyperCube *pCube, uint x1, uint x2, uint 
     m_customPlot->legend->setVisible(true);
     m_customPlot->graph()->setName("Начало(X=" + QString::number(x1) +", Y="+ QString::number(y1) +", Z="+ QString::number(z1) + ")"
                                    +" Конец(X=" + QString::number(x2) +", Y="+ QString::number(y2) +", Z="+ QString::number(z2) + ")");
+    m_customPlot->xAxis->setLabel("Интервалы разбиения прямой");
+    m_customPlot->yAxis->setLabel("Яркость");
     m_customPlot->replot();
 }
 

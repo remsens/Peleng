@@ -281,14 +281,14 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
 void Main2DWindow::setInitCustomplotSettings()
 {
     colorMap = new QCPColorMap(ui->customPlot->xAxis, ui->customPlot->yAxis);
-    ui->customPlot->yAxis->setTicks(false);
-    ui->customPlot->xAxis->setTicks(false);
-    ui->customPlot->xAxis->setTickLabels(false);
-    ui->customPlot->yAxis->setTickLabels(false);
-    ui->customPlot->xAxis->setVisible(false);
-    ui->customPlot->yAxis->setVisible(false);
-    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
-    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
+//    ui->customPlot->yAxis->setTicks(false);
+//    ui->customPlot->xAxis->setTicks(false);
+//    ui->customPlot->xAxis->setTickLabels(false);
+//    ui->customPlot->yAxis->setTickLabels(false);
+//    ui->customPlot->xAxis->setVisible(false);
+//    ui->customPlot->yAxis->setVisible(false);
+//    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
+//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
     colorMap->setKeyAxis(ui->customPlot->xAxis);
     colorMap->setValueAxis(ui->customPlot->yAxis);
     ui->customPlot->addPlottable(colorMap);
@@ -407,6 +407,13 @@ void Main2DWindow::updateViewchan(int chan)
         ChnlLimits[chan][0] = minCMap;
         ChnlLimits[chan][1] = maxCMap;
     }
+//    for(auto line:m_lines)
+//        delete line;
+    foreach(QCPItemLine* line, m_lines)
+    {
+        ui->customPlot->removeItem(line);
+    }
+    m_lines.clear();
 
     drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
 
@@ -473,21 +480,21 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
         flagDoubleClicked  = false;
         return;
     }
-    int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
-    int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
+    double x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
+    double y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
     if(x<0)
         m_dataX = 0;
     else if(x>rows)
         m_dataX = rows-1;
     else
-        m_dataX = x;
+        m_dataX = qRound(x);
 
     if(y<0)
         m_dataY = 0;
     else if(y>cols)
         m_dataY = cols-1;
     else
-        m_dataY = y;
+        m_dataY = qRound(y);
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
 
@@ -496,12 +503,12 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
 void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
-    int x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
-    int y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
+    double x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
+    double y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
     if (x >= 0 && x < rows && y >= 0 && y < cols)
     {
-        double bright = m_tempChanel[x * cols + y];
-        pStatusBarLabel->setText("X: " + QString().setNum(x) + "    Y: " + QString().setNum(y) + "    Значение:" + QString().setNum(bright));
+        double bright = m_tempChanel[qRound(x) * cols + qRound(y)];
+        pStatusBarLabel->setText("X: " + QString().setNum(qRound(x)) + "    Y: " + QString().setNum(qRound(y)) + "    Значение:" + QString().setNum(bright));
     }
     else
         pStatusBarLabel->setText("");
@@ -669,7 +676,6 @@ void Main2DWindow::createLinePlotterSlot()
     linePlotterIsActive = true;
     QString strForLineHelp = "Выберите начальную точку";
     ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
-    //emit flagsToolTip(globalPos,"выберите начальную точку");
     connect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     pContextMenu->hide();
     this->setToolTip(strForLineHelp);
@@ -683,7 +689,6 @@ void Main2DWindow::startIsClicked(uint dataX, uint dataY)
     m_x1 = dataX;
     m_y1 = dataY;
     m_z1 = ui->listWidget->currentRow();
-    //emit flagsToolTip(globalPos,"выберите конечную точку");
     QString strForLineHelp = "выберите конечную точку";
     this->setToolTip(strForLineHelp);
     ui->customPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/finish_flag.png"),10,29));
@@ -698,22 +703,27 @@ void Main2DWindow::finishIsClicked(uint dataX, uint dataY)
     m_z2 = m_z1; //ui->listWidget->currentRow();
     QString strForLineHelp = "";
     ui->customPlot->setCursor(Qt::ArrowCursor);
-    //emit signalPlotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2); //так было в 3d кубе
     plotAlongLine(m_x1, m_x2, m_y1, m_y2, m_z1, m_z2);
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(startIsClicked(uint,uint)));
     disconnect(this,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(finishIsClicked(uint,uint)));
     this->setToolTip(strForLineHelp);
-    //emit flagsToolTip(globalPos,"");
+
 }
 
 void Main2DWindow::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2)
 {
     if (!m_needToUpdate)
-    {
-        m_attributes->ClearList();
-        m_attributes->SetPoint(x1, y1, z1);
-        m_attributes->SetPoint(x2, y2, z2);
-        m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
+    { 
+
+        try{
+            m_attributes->ClearList();
+            m_attributes->SetPoint(x1, y1, z1);
+            m_attributes->SetPoint(x2, y2, z2);
+            m_attributes->GetAvailablePlugins().value("Line Plotter UI")->Execute(m_pCube, m_attributes);
+            drawLine(QPoint(x1,y1),QPoint(x2,y2));
+        }catch(GenericExc e){
+            QMessageBox::warning(this,"Предупреждение", e.GetWhat());
+        }
     } else
     {
         int answer = QMessageBox::question(this, "Обновление", "Необходимо обновить данные. Обновить?", "Да", "Нет", QString(), 0, 1);
@@ -723,6 +733,17 @@ void Main2DWindow::plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, ui
             m_needToUpdate = false;
         }
     }
+}
+
+void Main2DWindow::drawLine(QPoint p1, QPoint p2)
+{
+    QCPItemLine *line = new QCPItemLine(ui->customPlot);
+    line->start->setCoords(p1);
+    line->end->setCoords(p2);
+    line->setPen(QPen(Qt::red));
+    ui->customPlot->addItem(line);
+    ui->customPlot->replot();
+    m_lines.append(line);
 }
 
 void Main2DWindow::prepareToHist()
