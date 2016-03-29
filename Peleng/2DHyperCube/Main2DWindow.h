@@ -82,6 +82,7 @@ private slots:
     void startIsClicked(uint dataX, uint dataY);//нажато "Начало" из контекстного меню
     void finishIsClicked(uint dataX, uint dataY);
     void plotAlongLine(uint x1, uint x2, uint y1, uint y2, uint z1, uint z2);
+    void drawLine(QPoint p1, QPoint p2);
     void createLinePlotterSlot();
     void prepareToHist();
     void addSpectr();
@@ -126,7 +127,7 @@ private:
     int rows, cols, chnls;
     int m_dataX, m_dataY;
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
-
+    QVector<QCPItemLine*> m_lines; // храним линии от "Пространственных профилей"
     Attributes* m_attributes;
     bool m_interplolate;
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
