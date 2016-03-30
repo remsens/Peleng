@@ -443,7 +443,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         else
         {
             // проверять, проведена атмосферная коррекция, или нет
-            m_attributes->SetSPlotterYtitle("Яркость,ед. АЦП");
+            m_attributes->SetSPlotterYtitle("Яркость,ед. АЦП");// можно вынести хоть в mainApp. если понадобится (например после перевода СПЭЯ->коэф.отраж.), то вызвать с другим параметром в нужном месте.
             m_customPlot->xAxis->setLabel("Длина волны, нм");
             m_customPlot->yAxis->setLabel(m_attributes->GetSPlotterYtitle());
         }

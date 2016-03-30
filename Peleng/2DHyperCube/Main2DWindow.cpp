@@ -514,6 +514,12 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
         pStatusBarLabel->setText("");
 }
 
+void Main2DWindow::toggledActionInterpolation(bool flag)
+{
+    m_interplolate = flag;
+    updateViewchan(ui->listWidget->currentRow());
+}
+
 void Main2DWindow::createMenus()
 {
     pContextMenu = new QMenu();
