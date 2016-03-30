@@ -144,6 +144,16 @@ bool Attributes::GetExternalSpectrFlag() const
     return m_externalSpectr;
 }
 
+void Attributes::SetSPlotterYtitle(QString Yunits)
+{
+    m_SPlotter_Ytitle = Yunits;
+}
+
+QString Attributes::GetSPlotterYtitle() const
+{
+    return m_SPlotter_Ytitle;
+}
+
 //int  Attributes::GetFormatExternalSpectr() const
 //{
 //    return m_formatExternalSpectr;
