@@ -51,6 +51,9 @@ public:
     //SpectrPlotter
     void SetExternalSpectrFlag(bool externalSpectr);
     bool GetExternalSpectrFlag() const;
+    void SetSPlotterYtitle(QString Yunits);
+    QString GetSPlotterYtitle() const;
+
     //void SetExternalSpectrFormat(int format);
     //int  GetFormatExternalSpectr() const;
 
@@ -99,6 +102,7 @@ private:
     bool m_applyToAllCube;
     u::uint8 m_degreePolinom;
     double* m_tempChan; //! указатель на временный канал из 2D модуля
+    QString m_SPlotter_Ytitle; //! подпись по оси Y в SpectrPlotter
 };
 
 #endif // ATTRIBUTES_H
