@@ -76,7 +76,7 @@ private slots:
     void mousePressOnColorMap( QMouseEvent* e);
     //void mouseDblClickOnColorMap( QMouseEvent* e);
     void mouseMoveOnColorMap(QMouseEvent* e);
-    void toggledActionInterpolation(bool flag){m_interplolate = flag;}
+    void toggledActionInterpolation(bool flag);
     void plotSpectr(uint x, uint y);
     void prepareToPlotSpectr();
     void startIsClicked(uint dataX, uint dataY);//нажато "Начало" из контекстного меню
