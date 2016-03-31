@@ -288,7 +288,7 @@ void Main2DWindow::setInitCustomplotSettings()
 //    ui->customPlot->xAxis->setVisible(false);
 //    ui->customPlot->yAxis->setVisible(false);
 //    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
-//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
+//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,0));// -1 устраняет баг с полосой белых пикселей при 0 (0,0,0,-1) //PS: убрал, не надо
     colorMap->setKeyAxis(ui->customPlot->xAxis);
     colorMap->setValueAxis(ui->customPlot->yAxis);
     ui->customPlot->addPlottable(colorMap);
@@ -498,6 +498,8 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
 
+    if(x>=0 && x <= rows-1 && y >= 0 && y <= cols-1)
+        emit signalDoubleCordsClicked(x,y);
 }
 
 
@@ -505,10 +507,12 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
     double x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
     double y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
-    if (x >= 0 && x < rows && y >= 0 && y < cols)
+    int xInt = qRound(x);
+    int yInt = qRound(y);
+    if (xInt >= 0 && xInt < rows && yInt >= 0 && yInt < cols)
     {
-        double bright = m_tempChanel[qRound(x) * cols + qRound(y)];
-        pStatusBarLabel->setText("X: " + QString().setNum(qRound(x)) + "    Y: " + QString().setNum(qRound(y)) + "    Значение:" + QString().setNum(bright));
+        double bright = m_tempChanel[xInt * cols + yInt];
+        pStatusBarLabel->setText("X: " + QString().setNum(xInt) + "    Y: " + QString().setNum(yInt) + "    Значение:" + QString().setNum(bright));
     }
     else
         pStatusBarLabel->setText("");

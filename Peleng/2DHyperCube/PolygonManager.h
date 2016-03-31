@@ -30,10 +30,10 @@ public slots:
     void mouseDblClickOnParentColorMap( QMouseEvent *);
 private:
     //! функция отрисовки линии на customPlot
-    void drawLine(QPoint p1, QPoint p2, QColor color);
+    void drawLine(QPointF p1, QPointF p2, QColor color);
 
     //! функция создания байтовой маски из полигонов
-    QByteArray byteMaskFromPolygons(QVector<QPolygon> polygonArr);
+    QByteArray byteMaskFromPolygons(QVector<QPolygonF> polygonArr);
 
     //! функция создания байтовой маски из 2 других байтовых масок
     QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
@@ -54,7 +54,7 @@ private slots:
 
 
     //! слот добавления точки полигона по клику
-    void addPolygonPoint(uint x, uint y);
+    void addPolygonPoint(double x, double y);
 
     //! слот обработки контекстного tableWidgetа
     void tableContextMenuRequest(QPoint pos);
@@ -103,7 +103,7 @@ private:
     bool m_flagDoubleClicked;
     QCustomPlot * m_cusPlot;
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
-    QVector<QPolygon> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
+    QVector<QPolygonF> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
     QVector<Region> m_RegionArr;
     int m_currIndexRegion;// номер текущей (выделенной в списке) области
 };
