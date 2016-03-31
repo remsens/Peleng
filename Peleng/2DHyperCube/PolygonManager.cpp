@@ -60,7 +60,6 @@ PolygonManager::PolygonManager(HyperCube *cube, Attributes *attributes,
     connect(ui->buttonAddPolygon,SIGNAL(clicked()),SLOT(onButtonAddPolygon()));
     connect(ui->buttonSaveRegion,SIGNAL(clicked()),SLOT(onButtonSaveRegion()));
     connect(ui->buttonLoadregion,SIGNAL(clicked()),SLOT(onButtonLoadRegion()));
-
 }
 
 void PolygonManager::createPolygonSlot()
@@ -303,8 +302,10 @@ void PolygonManager::onButtonSaveRegion()
 
 void PolygonManager::onButtonLoadRegion()
 {
-    if (ui->tableWidget->selectedItems().isEmpty())
-        return;
+//    if (ui->tableWidget->selectedItems().isEmpty())
+//        return;
+    onButtonAddRegion(); //создаем новый регион интереса, в который загружаем данные с диска
+    ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
     try
     {
         QByteArray byteArr = loadByteMaskFromFile();
@@ -458,6 +459,18 @@ double PolygonManager::calcStandardDeviation(QVector<double> X)
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
 {
+    if(curr.row() == -1)
+    {
+        ui->buttonAddPolygon->setEnabled(false);
+        ui->buttonSaveRegion->setEnabled(false);
+        ui->buttonRemoveRegion->setEnabled(false);
+    }
+    else
+    {
+        ui->buttonAddPolygon->setEnabled(true);
+        ui->buttonSaveRegion->setEnabled(true);
+        ui->buttonRemoveRegion->setEnabled(true);
+    }
     m_currIndexRegion = curr.row();
     m_polygonArr.clear();
 }

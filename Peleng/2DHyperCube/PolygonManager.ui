@@ -40,8 +40,26 @@
       </item>
       <item row="2" column="1">
        <widget class="QPushButton" name="buttonAddPolygon">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
         <property name="text">
          <string>Добавить полигон</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -54,6 +72,9 @@
       </item>
       <item row="3" column="0">
        <widget class="QPushButton" name="buttonRemoveRegion">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Удалить регион интереса</string>
         </property>
@@ -61,6 +82,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QPushButton" name="buttonSaveRegion">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Сохранить область</string>
         </property>
