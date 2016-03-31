@@ -505,10 +505,12 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
 {
     double x = this->ui->customPlot->xAxis->pixelToCoord(e->pos().x());
     double y = this->ui->customPlot->yAxis->pixelToCoord(e->pos().y());
-    if (x >= 0 && x < rows && y >= 0 && y < cols)
+    int xInt = qRound(x);
+    int yInt = qRound(y);
+    if (xInt >= 0 && xInt < rows && yInt >= 0 && yInt < cols)
     {
-        double bright = m_tempChanel[qRound(x) * cols + qRound(y)];
-        pStatusBarLabel->setText("X: " + QString().setNum(qRound(x)) + "    Y: " + QString().setNum(qRound(y)) + "    Значение:" + QString().setNum(bright));
+        double bright = m_tempChanel[xInt * cols + yInt];
+        pStatusBarLabel->setText("X: " + QString().setNum(xInt) + "    Y: " + QString().setNum(yInt) + "    Значение:" + QString().setNum(bright));
     }
     else
         pStatusBarLabel->setText("");

@@ -79,7 +79,7 @@ void PolygonManager::createPolygonSlot()
 void PolygonManager::addPolygonPoint(uint x,uint y)
 {
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-    QPoint p(x,y);
+    QPoint p(x+0.5,y+0.5);
     if (m_polygonArr.last().size() > 0)
         drawLine(m_polygonArr.last().last(), p,  color);
     m_polygonArr.last().append(p);
@@ -125,7 +125,7 @@ QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygon> polygonArr)
         {
             foreach(QPolygon polygon, polygonArr)
             {
-                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                if(polygon.containsPoint(QPoint(i,j),Qt::WindingFill))
                 {
                     byteArr[i*m_cols+j] = 0x01;
                 }
@@ -201,7 +201,6 @@ QImage PolygonManager::imageFromByteMask(QByteArray byteArr, QColor color)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
             if(byteArr.at(i*m_cols+j) == 0x01)
             {
                 mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
