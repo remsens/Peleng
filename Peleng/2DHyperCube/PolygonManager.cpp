@@ -69,23 +69,23 @@ void PolygonManager::createPolygonSlot()
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     m_parent2D->setToolTip(strForLineHelp);
     m_cusPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
-    QPolygon polygon;
+    QPolygonF polygon;
     m_polygonArr.append(polygon);
     m_polyCreationInProcess = true;
-    connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-
+    //connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    connect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
 }
 
-void PolygonManager::addPolygonPoint(uint x,uint y)
+void PolygonManager::addPolygonPoint(double x,double y)
 {
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-    QPoint p(x+0.5,y+0.5);
+    QPointF p(x,y);
     if (m_polygonArr.last().size() > 0)
         drawLine(m_polygonArr.last().last(), p,  color);
     m_polygonArr.last().append(p);
 }
 
-void PolygonManager::drawLine(QPoint p1, QPoint p2, QColor color)
+void PolygonManager::drawLine(QPointF p1, QPointF p2, QColor color)
 {
     QCPItemLine *line = new QCPItemLine(m_cusPlot);
     m_RegionArr[m_currIndexRegion].m_lines.append(line);
@@ -102,7 +102,8 @@ void PolygonManager::mouseDblClickOnParentColorMap( QMouseEvent *)
 }
 void PolygonManager::finishPolygonCreation()
 {
-    disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+//    disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    disconnect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
     m_polyCreationInProcess = false;
     m_flagDoubleClicked = true;
@@ -116,14 +117,14 @@ void PolygonManager::finishPolygonCreation()
     m_cusPlot->replot();
 }
 
-QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygon> polygonArr)
+QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygonF> polygonArr)
 {
     QByteArray byteArr(m_rows*m_cols,0x00);
     for(int i = 0; i < m_rows; ++i)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            foreach(QPolygon polygon, polygonArr)
+            foreach(QPolygonF polygon, polygonArr)
             {
                 if(polygon.containsPoint(QPoint(i,j),Qt::WindingFill))
                 {

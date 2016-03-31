@@ -498,6 +498,8 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
 
+    if(x>=0 && x <= rows-1 && y >= 0 && y <= cols-1)
+        emit signalDoubleCordsClicked(x,y);
 }
 
 

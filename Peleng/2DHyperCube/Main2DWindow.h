@@ -70,6 +70,7 @@ public slots:
 
 signals:
     void signalCurrentDataXY(uint,uint);
+    void signalDoubleCordsClicked(double,double);
     void CloseWindow();
 
 private slots:
@@ -133,7 +134,7 @@ private:
     int **ChnlLimits;//!< двухмерный массив [chnls,2] для хранения мин. и макс. значения в канале для цветового отображения QCustomPlot (для контрастирования)
 
     bool flagSlidersEnabledForSlots;
-    QVector<QPolygon> polygonArr;
+    QVector<QPolygonF> polygonArr;
     bool flagPolygonIsCreated; //!< флаг, показывающий, что создание полигона завершено (т.е. полигон не в процессе построения)
     bool flagDoubleClicked;
     PolygonManager * polyMngr;
