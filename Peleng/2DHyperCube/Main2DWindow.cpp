@@ -288,7 +288,7 @@ void Main2DWindow::setInitCustomplotSettings()
 //    ui->customPlot->xAxis->setVisible(false);
 //    ui->customPlot->yAxis->setVisible(false);
 //    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
-//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
+//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,0));// -1 устраняет баг с полосой белых пикселей при 0 (0,0,0,-1) //PS: убрал, не надо
     colorMap->setKeyAxis(ui->customPlot->xAxis);
     colorMap->setValueAxis(ui->customPlot->yAxis);
     ui->customPlot->addPlottable(colorMap);

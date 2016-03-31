@@ -128,7 +128,6 @@ QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygon> polygonArr)
                 if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
                 {
                     byteArr[i*m_cols+j] = 0x01;
-                    //mask.setPixel(i,j,qRgba(255, 0, 0, 255));
                 }
             }
         }
@@ -202,6 +201,7 @@ QImage PolygonManager::imageFromByteMask(QByteArray byteArr, QColor color)
     {
         for(int j = 0; j < m_cols; ++j)
         {
+            mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
             if(byteArr.at(i*m_cols+j) == 0x01)
             {
                 mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
@@ -218,8 +218,10 @@ void PolygonManager::drawImage(QImage mask)
     QCPItemPixmap *pixItem = new QCPItemPixmap(m_cusPlot);
     QPixmap alphaImage(QPixmap::fromImage(mask));
     pixItem->setPixmap(alphaImage);
-    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
+    pixItem->setScaled(true,Qt::IgnoreAspectRatio,Qt::FastTransformation);
     m_cusPlot->addItem(pixItem);
+    pixItem->topLeft->setType(QCPItemPosition::ptPlotCoords );
+    pixItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
     pixItem->topLeft->setCoords(0,0);
     pixItem->bottomRight->setCoords(m_rows-1,m_cols-1);
     pixItem->setClipToAxisRect(true);
