@@ -296,7 +296,6 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->setInteraction(QCP::iRangeZoom  , true);
     colorMap->setGradient(QCPColorGradient::gpGrayscale);
     colorMap->rescaleDataRange(true);
-    //colorMap->setTightBoundary(true);
 }
 
 void Main2DWindow::setTempChannel(qint16* chanData)
