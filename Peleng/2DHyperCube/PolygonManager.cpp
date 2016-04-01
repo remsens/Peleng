@@ -222,8 +222,8 @@ void PolygonManager::drawImage(QImage mask)
     m_cusPlot->addItem(pixItem);
     pixItem->topLeft->setType(QCPItemPosition::ptPlotCoords );
     pixItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
-    pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(m_rows-1,m_cols-1);
+    pixItem->topLeft->setCoords(-0.5,-0.5);
+    pixItem->bottomRight->setCoords(m_rows-1+0.5,m_cols-1+0.5);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(m_cusPlot->axisRect());
 

@@ -281,14 +281,14 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
 void Main2DWindow::setInitCustomplotSettings()
 {
     colorMap = new QCPColorMap(ui->customPlot->xAxis, ui->customPlot->yAxis);
-//    ui->customPlot->yAxis->setTicks(false);
-//    ui->customPlot->xAxis->setTicks(false);
-//    ui->customPlot->xAxis->setTickLabels(false);
-//    ui->customPlot->yAxis->setTickLabels(false);
-//    ui->customPlot->xAxis->setVisible(false);
-//    ui->customPlot->yAxis->setVisible(false);
-//    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
-//    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,0));// -1 устраняет баг с полосой белых пикселей при 0 (0,0,0,-1) //PS: убрал, не надо
+    ui->customPlot->yAxis->setTicks(false);
+    ui->customPlot->xAxis->setTicks(false);
+    ui->customPlot->xAxis->setTickLabels(false);
+    ui->customPlot->yAxis->setTickLabels(false);
+    ui->customPlot->xAxis->setVisible(false);
+    ui->customPlot->yAxis->setVisible(false);
+    ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
+    ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,0));// -1 устраняет баг с полосой белых пикселей при 0 (0,0,0,-1) //PS: убрал, не надо
     colorMap->setKeyAxis(ui->customPlot->xAxis);
     colorMap->setValueAxis(ui->customPlot->yAxis);
     ui->customPlot->addPlottable(colorMap);
@@ -498,7 +498,7 @@ void Main2DWindow::mousePressOnColorMap(QMouseEvent *e)
 
     emit signalCurrentDataXY(m_dataX,m_dataY);//Отправляем сигнал с координатами клика
 
-    if(x>=0 && x <= rows-1 && y >= 0 && y <= cols-1)
+    //if(x>=0 && x <= rows-1 && y >= 0 && y <= cols-1)
         emit signalDoubleCordsClicked(x,y);
 }
 
