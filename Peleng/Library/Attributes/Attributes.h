@@ -30,6 +30,14 @@ public:
     void SetSpectralLibPath(QString& path);
     QString GetSpectralLibPath() const;
 
+    // путь к файлу-заголовка
+    void SetHeaderPath(QString& path);
+    QString GetHeaderPath() const;
+
+    // путь к файлу-проекта (для записи шагов)
+    void SetFilePathProject(QString& path);
+    QString GetFileProjectPath() const;
+
     // шаг итерации.
     void IncrementStep();
     void DecrementStep();
@@ -41,7 +49,7 @@ public:
     void ClearList();
     void SetAvailablePlugins(const QMap<QString, ProcessingPluginsInterface*> availablePlugins);
 
-    // фундаментальные библиотеки
+    // спектральные библиотеки
     void SetModeLib(bool value);
     bool GetModeLib() const;
     void SetXUnit(double xUnit);
@@ -63,8 +71,6 @@ public:
     //SpectrPlotter
     void SetExternalSpectrFlag(bool externalSpectr);
     bool GetExternalSpectrFlag() const;
-    //void SetExternalSpectrFormat(int format);
-    //int  GetFormatExternalSpectr() const;
 
     // общее
     const QList<Point>& GetPointsList() const;
@@ -97,6 +103,9 @@ private:
 private:
     QString m_tempDir;
     QString m_spectralLibDir;
+    QString m_headerPath;
+    QString m_fileProjectPath;
+
     u::uint32 m_step;
     QList<Point> m_pointsList;
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
@@ -107,7 +116,6 @@ private:
     QList<DescriptionSpectr> m_descriptionSpectr;
 
     bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
-    //int m_formatExternalSpectr; // 0 - peleng; 1 - aster
 
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
     int m_maskPixelsCount;

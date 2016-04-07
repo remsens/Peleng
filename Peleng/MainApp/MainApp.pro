@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     ../Library/ReadPluginLoader.cpp \
     ../Library/ProcessingPluginLoader.cpp \
     ../Library/Attributes/Attributes.cpp \
-    FileProjectWindow.cpp
+    FileProjectWindow.cpp \
+    ../Library/FileProjectFeatures.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/Types.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     ../Library/ProcessingPluginLoader.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
-    FileProjectWindow.h
+    FileProjectWindow.h \
+    ../Library/FileProjectFeatures.h
 
 
 

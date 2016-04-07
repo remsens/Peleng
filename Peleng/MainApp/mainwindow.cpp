@@ -7,12 +7,12 @@
 #include <QTimer>
 #include <QProgressDialog>
 #include <QtConcurrent/QtConcurrent>
-
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/ProcessingPluginLoader.h"
 #include "../Library/Attributes/Attributes.h"
 #include "FileProjectWindow.h"
 #include <QDebug>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -146,5 +146,71 @@ void MainWindow::cancelOperation()
 
 void MainWindow::ShowFileProject()
 {
-    ui->label->setText(m_fileProjectName);
+    Attributes::I()->SetFilePathProject(m_fileProjectName);
+    QFileInfo fileInfo(m_fileProjectName);
+    QString projectName = fileInfo.baseName();
+    QFile file(m_fileProjectName);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::critical(this, "Ошибка", "Невозможно открыть файл-проекта");
+        return;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        QMessageBox::critical(this, "Ошибка", "Ошибка чтения файла-проекта");
+        return;
+    }
+    file.close();
+    QStringList steps;
+    QDomNode n = doc.firstChild();
+    while(!n.isNull())
+    {
+        if(n.isElement())
+        {
+            QDomElement e = n.toElement();
+            QString name = e.tagName();
+            qDebug() << name;
+            if(name == "project")
+            {
+                n = n.firstChildElement();
+            } else if(name == "projectName")
+            {
+                projectName = e.text();
+                //QString name1 = e.text();
+                n = n.nextSiblingElement();
+            } else if(name == "headerPath")
+            {
+                Attributes::I()->SetHeaderPath(e.text());
+                //QString name1 = e.text();
+                n = n.nextSiblingElement();
+            } else if (name == "tempPath")
+            {
+                Attributes::I()->SetTempPath(e.text());
+                //QString name1 = e.text();
+                n = n.nextSiblingElement();
+            } else if (name == "spectralLib")
+            {
+                Attributes::I()->SetSpectralLibPath(e.text());
+                //QString name1 = e.text();
+                n = n.nextSiblingElement();
+            } else if (name == "Steps")
+            {
+                n = n.firstChildElement();
+            } else if (name == "Step")
+            {
+                //QString name1 = e.text();
+                steps.append(e.text());
+                n = n.nextSiblingElement();
+            }
+         }
+    }
+
+    setWindowTitle(projectName);
+
+    ui->listWidget_infoProject->addItem(QString("Проект: ") + projectName);
+    ui->listWidget_infoProject->addItem(QString("Путь к файлу-заголовку: " + Attributes::I()->GetHeaderPath()));
+    ui->listWidget_infoProject->addItem(QString("Путь к хранению временных файлов: " + Attributes::I()->GetTempPath()));
+    ui->listWidget_infoProject->addItem(QString("Путь к каталогу спектральных библиотек: " + Attributes::I()->GetSpectralLibPath()));
+
 }

@@ -44,9 +44,28 @@ void Attributes::SetSpectralLibPath(QString& path)
     m_spectralLibDir = path;
 }
 
+void Attributes::SetHeaderPath(QString& path)
+{
+    m_headerPath = path;
+}
+QString Attributes::GetHeaderPath() const
+{
+    return m_headerPath;
+}
+
 QString Attributes::GetSpectralLibPath() const
 {
     return m_spectralLibDir;
+}
+
+void Attributes::SetFilePathProject(QString& path)
+{
+    m_fileProjectPath = path;
+}
+
+QString Attributes::GetFileProjectPath() const
+{
+    return m_fileProjectPath;
 }
 
 void Attributes::IncrementStep()
@@ -85,7 +104,6 @@ void Attributes::SetYUnit(double yUnit)
 void Attributes::SetXUnit(QVector<double>& xUnits)
 {
     m_XUnits.clear();
-//    m_XUnits.append(xUnits);
     foreach (double x, xUnits) {
         m_XUnits.append(x);
     }
@@ -94,7 +112,6 @@ void Attributes::SetXUnit(QVector<double>& xUnits)
 void Attributes::SetYUnit(QVector<double>& yUnits)
 {
     m_YUnits.clear();
-    //m_YUnits.append(yUnits);
     foreach (double y, yUnits) {
         m_YUnits.append(y);
     }
@@ -177,16 +194,6 @@ bool Attributes::GetExternalSpectrFlag() const
 {
     return m_externalSpectr;
 }
-
-//int  Attributes::GetFormatExternalSpectr() const
-//{
-//    return m_formatExternalSpectr;
-//}
-
-//void Attributes::SetExternalSpectrFormat(int format)
-//{
-//    m_formatExternalSpectr = format;
-//}
 
 void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
 {

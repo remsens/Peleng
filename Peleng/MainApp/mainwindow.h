@@ -10,6 +10,7 @@
 #include "PluginsControl.h"
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/ProcessingPluginLoader.h"
+#include <QtXml>
 
 namespace Ui {
     class MainWindow;

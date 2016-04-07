@@ -3,6 +3,8 @@
 
 #include <QFileDialog>
 #include <QTextStream>
+#include "QXmlStreamWriter"
+#include <QMessageBox>
 
 FileProjectWindow::FileProjectWindow(Attributes* attr, QDialog *parent)
     : QDialog(parent)
@@ -46,10 +48,14 @@ void FileProjectWindow::ChooseSpectralLibDir()
 void FileProjectWindow::CreateFileProject()
 {
     m_projectName = m_ui->lineEdit_fileName->text();
-    QString fileName = m_tempDir + "/" + m_projectName + ".th";
+    QString fileName = m_tempDir + "/" + m_projectName + ".xml";
     QFile file(fileName);
     QDomDocument doc("File_Project");
-    QDomElement rootElement = doc.createElement(m_projectName);
+    QDomElement rootElement = doc.createElement("project");
+
+    QDomElement projectElement = doc.createElement("projectName");
+    QDomText projectNameText = doc.createTextNode(m_projectName);
+    projectElement.appendChild(projectNameText);
 
     QDomElement headerPathElement = doc.createElement("headerPath");
     QDomText headerPathText = doc.createTextNode(m_headerFile);
@@ -64,12 +70,22 @@ void FileProjectWindow::CreateFileProject()
     spectralLibPathElement.appendChild(spectralLibPathText);
 
     doc.appendChild(rootElement);
+    rootElement.appendChild(projectElement);
     rootElement.appendChild(headerPathElement);
     rootElement.appendChild(tempPathElement);
     rootElement.appendChild(spectralLibPathElement);
 
+    if (file.exists())
+    {
+        int n = QMessageBox::warning(this, "Предупреждение", "Файл будет перезаписан", "Yes", "No", 0, 1);
+        if (n)
+        {
+            this->close();
+            return;
+        }
+    }
     if(file.open(QIODevice::WriteOnly)) {
-        QTextStream(&file) << doc.toString();
+        QTextStream(&file) <<  doc.toString();
         file.close();
     }
     QFileInfo file1(fileName);
