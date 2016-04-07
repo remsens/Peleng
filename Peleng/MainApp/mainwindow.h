@@ -26,7 +26,9 @@ public:
 
 
 public slots:
-    void LoadFile();
+    void LoadAvirisData();
+    void OpenProject();
+    void LoadData();
     void CreateFileProject();
     void takeProjectFile(QString path);
 
@@ -39,6 +41,7 @@ private slots:
 
 private:
     void ShowFileProject();
+
 private:
     Ui::MainWindow *ui;
     FileReadInterface* FilePlugin;
