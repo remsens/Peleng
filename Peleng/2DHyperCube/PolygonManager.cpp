@@ -461,17 +461,20 @@ double PolygonManager::calcStandardDeviation(QVector<double> X)
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
 {
-    if(curr.row() == -1)
-    {
-        ui->buttonAddPolygon->setEnabled(false);
-        ui->buttonSaveRegion->setEnabled(false);
-        ui->buttonRemoveRegion->setEnabled(false);
-    }
-    else
+    if(curr.row() != -1)
     {
         ui->buttonAddPolygon->setEnabled(true);
         ui->buttonSaveRegion->setEnabled(true);
         ui->buttonRemoveRegion->setEnabled(true);
+    }
+    else
+    {
+        ui->buttonAddPolygon->setEnabled(false);
+        ui->buttonSaveRegion->setEnabled(false);
+        // дисконнект/коннект нужен чтобы исправить баг с вызовом currentRowChanged при скрытии кнопки
+        disconnect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
+        ui->buttonRemoveRegion->setEnabled(false);
+        connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
     }
     m_currIndexRegion = curr.row();
     m_polygonArr.clear();
