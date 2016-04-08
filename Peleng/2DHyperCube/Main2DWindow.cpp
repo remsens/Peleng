@@ -536,7 +536,7 @@ void Main2DWindow::createMenus()
     m_filters = new QMenu();
     m_filters->setStyleSheet("border: 0px solid black;");
     m_filters->setTitle("Фильтры");
-    m_filters->setIcon(QIcon(":/icons/NoiseRemover.png"));
+    m_filters->setIcon(QIcon(":/IconsCube/iconsCube/NoiseRemover.png"));
     m_medianFilter = new QMenu();
     m_medianFilter->setStyleSheet("border: 0px solid black;");
     m_medianFilter->setTitle("Медианный фильтр");
