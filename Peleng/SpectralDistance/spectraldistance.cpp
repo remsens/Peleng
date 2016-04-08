@@ -12,8 +12,8 @@ SpectralDistance::SpectralDistance(QObject *parent)
 
 SpectralDistance::~SpectralDistance()
 {
-    // delete window;
-    //    delete engine;
+     //delete window;
+    //  delete engine;
     //    Destroy();
 }
 
@@ -62,7 +62,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
 {
     if(engine == NULL)
     {
-        engine = new QQmlApplicationEngine(this);
+        engine = new QQmlApplicationEngine();
         engine->load(QUrl("qrc:/sdistancewin.qml"));
         window = qobject_cast<QQuickWindow*>(engine->rootObjects().value(0));
         window->setIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
