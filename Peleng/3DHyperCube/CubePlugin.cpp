@@ -51,16 +51,16 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
     qDebug() << "Зашли в плагин";
-
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
     QPixmap*pixtemp = new QPixmap(":/Splash/iconsCube/cube9.png");
-    QPixmap* pix = new QPixmap(pixtemp->scaledToHeight(800));
+    QPixmap* pix = new QPixmap(pixtemp->scaledToHeight(screenGeometry.height()*0.8));
     //QMovie *movie = new QMovie(":/Splash/iconsCube/add-loading-screen.gif");
     QLabel* labelSplash = new QLabel();
 
     labelSplash->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     labelSplash->setPixmap(*pix);
     labelSplash->setProperty("windowOpacity",0.8);
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+
     int x = (screenGeometry.width()-pix->width()) / 2;
     int y = (screenGeometry.height()-pix->height()) / 2;
     labelSplash->move(x,y);
@@ -75,7 +75,7 @@ void CubePlugin::Execute(HyperCube* cube, Attributes *attr)
     QObject::connect(w,SIGNAL(FinishOperation(bool)),this,SLOT(onFinish(bool)));
     m_listWindows.append(w);
     w->processData();
-    w->resize(1024,768);
+    w->resize(screenGeometry.width()*0.6,screenGeometry.height()*0.8);
     labelSplash->hide();
     w->show();
 
