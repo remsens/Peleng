@@ -2,15 +2,13 @@
 #define SPECTRALDISTANCE_H
 
 #include <QObject>
-#include <QQmlApplicationEngine>
-#include <QQuickWindow>
 #include <math.h>
 #include <QDebug>
 #include <windows.h>
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
 #include "../Library/CustomPlotForPreview2D/Preview2D.h"
 #include "../Library/Attributes/Attributes.h"
-
+#include "SpecDistWindow.h"
 
 class SpectralDistance : public QObject, public ProcessingPluginsInterface
 {
@@ -42,10 +40,9 @@ public slots:
     void callMethod(int methNumber);
     void selectRange();
     void changeRange(const int range);
-    void OnCloseEvent(QQuickCloseEvent*);
+
 private:
-    QQmlApplicationEngine* engine;
-    QQuickWindow *window;
+    SpecDistWindow *m_specWindow;
     Attributes* m_attr;
     HyperCube* m_pHyperCube;
     QVector<QVector<double> > cube_map;
