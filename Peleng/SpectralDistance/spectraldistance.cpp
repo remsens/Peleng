@@ -55,6 +55,7 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
     if(m_specWindow == NULL)
     {
         m_specWindow = new SpecDistWindow();
+        m_specWindow->setWindowIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
         connect(m_specWindow, SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
         connect(m_specWindow, SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
     }
@@ -63,7 +64,6 @@ void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
         preview_2d = new Preview2D(false);
         connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
     }
-    //window->setIcon();
     m_specWindow->show();
     m_specWindow->raise();
     m_specWindow->showNormal();// если окно было свернуто
