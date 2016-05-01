@@ -13,6 +13,7 @@
 #include "FileProjectWindow.h"
 #include <QDebug>
 #include <QMessageBox>
+#include "../Library/stepsdefinitions.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,6 +35,10 @@ MainWindow::MainWindow(QWidget *parent) :
       connect(ui->pushButton_loadAvirisData, SIGNAL(clicked()), this, SLOT(LoadAvirisData()));
       connect(ui->CreateProjectAction, SIGNAL(triggered()), this, SLOT(CreateFileProject()));
       m_canceled = false;
+      // тут будем хранить список шагов для перевода на русский
+      m_translatingStepsMap.insert(MEDIAN_FILTER_FOR_SPECTRA_WITH_STEP, "Медианный фильтр по спектрам с шагом ");
+      m_translatingStepsMap.insert(MEDIAN_FILTER_FOR_BANDS_WITH_STEP, "Медианный фильтр по каналам с шагом ");
+      m_translatingStepsMap.insert(SAVITSKI_GOLAY_FILTER_WITH_STEP, "Сглаживающий фильтр Савитского-Голая с шагом ");
 }
 
 
@@ -234,6 +239,7 @@ void MainWindow::cancelOperation()
 
 void MainWindow::ShowFileProject()
 {
+    ui->listWidget_infoProject->clear();
     Attributes::I()->SetFilePathProject(m_fileProjectName);
     QFileInfo fileInfo(m_fileProjectName);
     QString projectName = fileInfo.baseName();
@@ -250,7 +256,7 @@ void MainWindow::ShowFileProject()
         return;
     }
     file.close();
-    QStringList steps;
+    QList<QString> steps;
     QDomNode n = doc.firstChild();
     bool correct = false;
     while(!n.isNull())
@@ -264,12 +270,6 @@ void MainWindow::ShowFileProject()
             {
                 n = n.firstChildElement();
                 correct = true;
-            } else if(name == "projectName")
-            {
-                projectName = e.text();
-                correct = true;
-                //QString name1 = e.text();
-                n = n.nextSiblingElement();
             } else if(name == "headerPath")
             {
                 Attributes::I()->SetHeaderPath(e.text());
@@ -312,10 +312,39 @@ void MainWindow::ShowFileProject()
     }
 
     setWindowTitle(projectName);
-
-    ui->listWidget_infoProject->addItem(QString("Проект: ") + projectName);
+    ui->listWidget_infoProject->addItem(QString("Проект: " ) + projectName);
     ui->listWidget_infoProject->addItem(QString("Путь к файлу-заголовку: " + Attributes::I()->GetHeaderPath()));
     ui->listWidget_infoProject->addItem(QString("Путь к хранению временных файлов: " + Attributes::I()->GetTempPath()));
     ui->listWidget_infoProject->addItem(QString("Путь к каталогу спектральных библиотек: " + Attributes::I()->GetSpectralLibPath()));
 
+    // разбираем шаги
+    QStringList trInRussianSteps;
+    QList<QString> keys = m_translatingStepsMap.keys();
+    for (int i = 0; i < steps.size(); i++)
+    {
+        for (int j = 0; j < keys.size(); j++)
+        {
+            if (steps.at(i).contains(keys.at(j), Qt::CaseInsensitive))
+            {
+                QString temp = steps.at(i).mid(keys.at(j).size()-1, steps.at(i).size()-1 - keys.at(j).size()-1);
+                int step = trInRussianSteps.size()+1;
+                trInRussianSteps.append("Шаг " + QString::number(step) + ". " + m_translatingStepsMap.value(keys.at(j)) + temp);
+            }
+        }
+    }
+    if (trInRussianSteps.size() != steps.size())
+    {
+        ui->listWidget_infoProject->clear();
+        QMessageBox::critical(this, tr("Ошибка"), tr("Неизвестные этапы обработки гиперспектральных данных"));
+        return;
+    }
+    if (trInRussianSteps.size() != 0)
+    {
+        ui->listWidget_infoProject->addItem("Этапы обработки:");
+    }
+    foreach (QString str, trInRussianSteps)
+    {
+        ui->listWidget_infoProject->addItem(str);
+    }
 }
+

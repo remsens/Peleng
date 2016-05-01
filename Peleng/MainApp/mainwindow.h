@@ -11,6 +11,7 @@
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/ProcessingPluginLoader.h"
 #include <QtXml>
+#include <QMap>
 
 namespace Ui {
     class MainWindow;
@@ -51,6 +52,7 @@ private:
     PluginsControl* m_pluginsControl;
     bool m_canceled;
     QString m_fileProjectName;
+    QMap<QString, QString> m_translatingStepsMap;
 };
 
 #endif // MAINWINDOW_H

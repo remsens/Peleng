@@ -36,7 +36,8 @@ HEADERS  += mainwindow.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
     FileProjectWindow.h \
-    ../Library/FileProjectFeatures.h
+    ../Library/FileProjectFeatures.h \
+    ../Library/stepsdefinitions.h
 
 
 

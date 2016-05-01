@@ -53,10 +53,6 @@ void FileProjectWindow::CreateFileProject()
     QDomDocument doc("File_Project");
     QDomElement rootElement = doc.createElement("project");
 
-    QDomElement projectElement = doc.createElement("projectName");
-    QDomText projectNameText = doc.createTextNode(m_projectName);
-    projectElement.appendChild(projectNameText);
-
     QDomElement headerPathElement = doc.createElement("headerPath");
     QDomText headerPathText = doc.createTextNode(m_headerFile);
     headerPathElement.appendChild(headerPathText);
@@ -70,11 +66,10 @@ void FileProjectWindow::CreateFileProject()
     spectralLibPathElement.appendChild(spectralLibPathText);
 
     doc.appendChild(rootElement);
-    rootElement.appendChild(projectElement);
     rootElement.appendChild(headerPathElement);
     rootElement.appendChild(tempPathElement);
     rootElement.appendChild(spectralLibPathElement);
-
+    //rootElement.appendChild(stepsElement);
     if (file.exists())
     {
         int n = QMessageBox::warning(this, "Предупреждение", "Файл будет перезаписан", "Yes", "No", 0, 1);

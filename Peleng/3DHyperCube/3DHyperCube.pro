@@ -5,7 +5,7 @@ Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 QT           += core gui printsupport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets xml
 
 CONFIG += plugin
 CONFIG += c++11
@@ -25,7 +25,9 @@ HEADERS       = \
     mainwindow.h \
     ../Library/QCustomPlot.h \
     ContrastWindow.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    ../Library/FileProjectFeatures.h \
+    ../Library/stepsdefinitions.h
 
 
 SOURCES       = \
@@ -36,7 +38,8 @@ SOURCES       = \
     mainwindow.cpp \
     ../Library/QCustomPlot.cpp \
     ContrastWindow.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    ../Library/FileProjectFeatures.cpp
 
 
 
