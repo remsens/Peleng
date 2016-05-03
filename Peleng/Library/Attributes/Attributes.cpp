@@ -68,6 +68,21 @@ QString Attributes::GetFileProjectPath() const
     return m_fileProjectPath;
 }
 
+void Attributes::SetStep(const QString& stepDescription)
+{
+    m_stepsList.append(stepDescription);
+}
+
+QStringList& Attributes::GetStepsList()
+{
+    return m_stepsList;
+}
+
+void Attributes::CleasrStepsList()
+{
+    m_stepsList.clear();
+}
+
 void Attributes::IncrementStep()
 {
     m_step++;

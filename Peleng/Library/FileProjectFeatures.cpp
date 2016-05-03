@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDebug>
+#include "../Library/Attributes/Attributes.h"
 
 FileProjectFeatures::FileProjectFeatures()
 {
@@ -17,9 +18,8 @@ FileProjectFeatures::~FileProjectFeatures()
 
 }
 
-bool FileProjectFeatures::AddStep(QString& filePath, int stepTag, const QString& tagDescription, QWidget* widget)
+bool FileProjectFeatures::AddStep(const QString& filePath, QWidget* widget)
 {
-    QString stepDescription = QString("Шаг ") + QString::number(stepTag) + ". " + tagDescription;
     // начинаем читать файл
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite))
@@ -45,10 +45,13 @@ bool FileProjectFeatures::AddStep(QString& filePath, int stepTag, const QString&
                 n = n.nextSiblingElement();
             } else if (name == "Steps")
             {
-                QDomElement stepElement2 = doc.createElement("Step");
-                QDomText stepPathText2 = doc.createTextNode(stepDescription);
-                stepElement2.appendChild(stepPathText2);
-                n.appendChild(stepElement2);
+                for (int i = 0; i < Attributes::I()->GetStepsList().size(); i++)
+                {
+                    QDomElement stepElement2 = doc.createElement("Step");
+                    QDomText stepPathText2 = doc.createTextNode(Attributes::I()->GetStepsList().at(i));
+                    stepElement2.appendChild(stepPathText2);
+                    n.appendChild(stepElement2);
+                }
                 b_write = true;
                 break;
             } else
@@ -72,12 +75,14 @@ bool FileProjectFeatures::AddStep(QString& filePath, int stepTag, const QString&
                     n = n.nextSiblingElement();
                 } else if (name == "spectralLib")
                 {
-
                     QDomElement firstStepsElement = doc.createElement("Steps");
-                    QDomElement stepElement2 = doc.createElement("Step");
-                    QDomText stepPathText2 = doc.createTextNode(stepDescription);
-                    stepElement2.appendChild(stepPathText2);
-                    firstStepsElement.appendChild(stepElement2);
+                    for (int i = 0; i < Attributes::I()->GetStepsList().size(); i++)
+                    {
+                        QDomElement stepElement2 = doc.createElement("Step");
+                        QDomText stepPathText2 = doc.createTextNode(Attributes::I()->GetStepsList().at(i));
+                        stepElement2.appendChild(stepPathText2);
+                        firstStepsElement.appendChild(stepElement2);
+                    }
                     n.parentNode().appendChild(firstStepsElement);
                     break;
                 } else
@@ -94,9 +99,10 @@ bool FileProjectFeatures::AddStep(QString& filePath, int stepTag, const QString&
 }
 
 // при нажатии на кнопку назад
-bool FileProjectFeatures::DeleteStep(QString& filePath, int stepTag, QString& tagDescription, QWidget *widget)
+// возможно и не нужен
+bool FileProjectFeatures::DeleteStep(const QString& filePath, QWidget *widget)
 {
-    QString stepDescription = QString("Шаг ") + QString::number(stepTag) + ". " + tagDescription;
+    QString stepDescription;// = QString("Шаг ") + QString::number(stepTag) + ". " + tagDescription;
     // начинаем читать файл
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite))

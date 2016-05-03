@@ -10,8 +10,8 @@ public:
     FileProjectFeatures();
     virtual ~FileProjectFeatures();
 
-    static bool AddStep(QString& filePath, int stepTag, const QString& tagDescription, QWidget* widget = 0);
-    static bool DeleteStep(QString& filePath, int stepTag, QString& tagDescription, QWidget* widget = 0);
+    static bool AddStep(const QString& filePath,QWidget* widget = 0);
+    static bool DeleteStep(const QString& filePath, QWidget* widget = 0);
 };
 
 #endif // FILEPROJECTFEATURES_H

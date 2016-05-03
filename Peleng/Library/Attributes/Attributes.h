@@ -38,6 +38,11 @@ public:
     void SetFilePathProject(QString& path);
     QString GetFileProjectPath() const;
 
+    // список шагов, который хранит описания шагов до сохранения.
+    void SetStep(const QString& stepDescription);
+    QStringList& GetStepsList();
+    void CleasrStepsList();
+
     // шаг итерации.
     void IncrementStep();
     void DecrementStep();
@@ -106,6 +111,7 @@ private:
     QString m_headerPath;
     QString m_fileProjectPath;
 
+    QStringList m_stepsList;
     u::uint32 m_step;
     QList<Point> m_pointsList;
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
