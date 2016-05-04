@@ -4,17 +4,14 @@
 SpectralDistance::SpectralDistance(QObject *parent)
 {
     is_cubemap_emty = true;
-    view_range = 10;
-    engine = NULL;
+    view_range = 50;
+    m_specWindow = NULL;
     preview_2d = NULL;
     is_evklid_distance = false;
 }
 
 SpectralDistance::~SpectralDistance()
 {
-    // delete window;
-    //    delete engine;
-    //    Destroy();
 }
 
 void SpectralDistance::callMethod(int methNumber)
@@ -38,12 +35,7 @@ void SpectralDistance::callMethod(int methNumber)
     }
 }
 
-void SpectralDistance::OnCloseEvent(QQuickCloseEvent*)
-{
-      //delete window;
-      //delete engine;
-    //    Destroy();
-}
+
 
 void SpectralDistance::Destroy()
 {
@@ -60,25 +52,21 @@ void SpectralDistance::onClosePreview()
 
 void SpectralDistance::Execute(HyperCube *cube, Attributes *attr)
 {
-    if(engine == NULL)
+    if(m_specWindow == NULL)
     {
-        engine = new QQmlApplicationEngine(this);
-        engine->load(QUrl("qrc:/sdistancewin.qml"));
-        window = qobject_cast<QQuickWindow*>(engine->rootObjects().value(0));
-        window->setIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
-        connect(window, SIGNAL(closing(QQuickCloseEvent*)), this, SLOT(OnCloseEvent(QQuickCloseEvent*)));
-        connect(engine->rootObjects().value(0), SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
-        connect(engine->rootObjects().value(0), SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
+        m_specWindow = new SpecDistWindow();
+        m_specWindow->setWindowIcon(QIcon(":/IconsCube/iconsCube/distance.png"));
+        connect(m_specWindow, SIGNAL(calcMeth(int)), this, SLOT(callMethod(int)));
+        connect(m_specWindow, SIGNAL(rangeChanged(int)), this, SLOT(changeRange(int)));
     }
     if(preview_2d == NULL)
     {
         preview_2d = new Preview2D(false);
         connect(preview_2d, SIGNAL(destroyed()), this, SLOT(onClosePreview()));
     }
-    //window->setIcon();
-    window->show();
-    window->raise();
-    window->showNormal();// если окно было свернуто
+    m_specWindow->show();
+    m_specWindow->raise();
+    m_specWindow->showNormal();// если окно было свернуто
     m_pHyperCube = cube;
     m_attr = attr;
 

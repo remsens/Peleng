@@ -168,8 +168,8 @@ void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
     if(m_valuesFlag)
     {
         textValues->position->setCoords(x, m_customPlot->yAxis->pixelToCoord(e->y() - 10));
-        textValues->setText(QString("x:%1 , y:%2").arg(x).arg(y));
-        textValues->setFont(QFont(font().family(), 10));
+        textValues->setText(QString("x:%1   y:%2").arg(x).arg(y));
+        textValues->setFont(QFont(font().family(), 10,QFont::Bold));
         horizLine->point1->setCoords(x,y);
         horizLine->point2->setCoords(0,y);
         vertLine->point1->setCoords(x,y);
@@ -444,8 +444,9 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         else
         {
             // проверять, проведена атмосферная коррекция, или нет
+            m_attributes->SetSPlotterYtitle("Яркость,ед. АЦП");// можно вынести хоть в mainApp. если понадобится (например после перевода СПЭЯ->коэф.отраж.), то вызвать с другим параметром в нужном месте.
             m_customPlot->xAxis->setLabel("Длина волны, нм");
-            m_customPlot->yAxis->setLabel("Яркость");
+            m_customPlot->yAxis->setLabel(m_attributes->GetSPlotterYtitle());
         }
         m_customPlot->replot();
         autoTickCountX = m_customPlot->xAxis->autoTickCount();

@@ -60,7 +60,6 @@ PolygonManager::PolygonManager(HyperCube *cube, Attributes *attributes,
     connect(ui->buttonAddPolygon,SIGNAL(clicked()),SLOT(onButtonAddPolygon()));
     connect(ui->buttonSaveRegion,SIGNAL(clicked()),SLOT(onButtonSaveRegion()));
     connect(ui->buttonLoadregion,SIGNAL(clicked()),SLOT(onButtonLoadRegion()));
-
 }
 
 void PolygonManager::createPolygonSlot()
@@ -70,23 +69,23 @@ void PolygonManager::createPolygonSlot()
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     m_parent2D->setToolTip(strForLineHelp);
     m_cusPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
-    QPolygon polygon;
+    QPolygonF polygon;
     m_polygonArr.append(polygon);
     m_polyCreationInProcess = true;
-    connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
-
+    //connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    connect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
 }
 
-void PolygonManager::addPolygonPoint(uint x,uint y)
+void PolygonManager::addPolygonPoint(double x,double y)
 {
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-    QPoint p(x,y);
+    QPointF p(x,y);
     if (m_polygonArr.last().size() > 0)
         drawLine(m_polygonArr.last().last(), p,  color);
     m_polygonArr.last().append(p);
 }
 
-void PolygonManager::drawLine(QPoint p1, QPoint p2, QColor color)
+void PolygonManager::drawLine(QPointF p1, QPointF p2, QColor color)
 {
     QCPItemLine *line = new QCPItemLine(m_cusPlot);
     m_RegionArr[m_currIndexRegion].m_lines.append(line);
@@ -103,7 +102,8 @@ void PolygonManager::mouseDblClickOnParentColorMap( QMouseEvent *)
 }
 void PolygonManager::finishPolygonCreation()
 {
-    disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+//    disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
+    disconnect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
     m_polyCreationInProcess = false;
     m_flagDoubleClicked = true;
@@ -117,19 +117,18 @@ void PolygonManager::finishPolygonCreation()
     m_cusPlot->replot();
 }
 
-QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygon> polygonArr)
+QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygonF> polygonArr)
 {
     QByteArray byteArr(m_rows*m_cols,0x00);
     for(int i = 0; i < m_rows; ++i)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            foreach(QPolygon polygon, polygonArr)
+            foreach(QPolygonF polygon, polygonArr)
             {
-                if(polygon.containsPoint(QPoint(i,j),Qt::OddEvenFill))
+                if(polygon.containsPoint(QPoint(i,j),Qt::WindingFill))
                 {
                     byteArr[i*m_cols+j] = 0x01;
-                    //mask.setPixel(i,j,qRgba(255, 0, 0, 255));
                 }
             }
         }
@@ -219,10 +218,12 @@ void PolygonManager::drawImage(QImage mask)
     QCPItemPixmap *pixItem = new QCPItemPixmap(m_cusPlot);
     QPixmap alphaImage(QPixmap::fromImage(mask));
     pixItem->setPixmap(alphaImage);
-    pixItem->setScaled(true,Qt::KeepAspectRatio,Qt::FastTransformation);
+    pixItem->setScaled(true,Qt::IgnoreAspectRatio,Qt::FastTransformation);
     m_cusPlot->addItem(pixItem);
-    pixItem->topLeft->setCoords(0,0);
-    pixItem->bottomRight->setCoords(m_rows-1,m_cols-1);
+    pixItem->topLeft->setType(QCPItemPosition::ptPlotCoords );
+    pixItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
+    pixItem->topLeft->setCoords(-0.5,-0.5);
+    pixItem->bottomRight->setCoords(m_rows-1+0.5,m_cols-1+0.5);
     pixItem->setClipToAxisRect(true);
     pixItem->setClipAxisRect(m_cusPlot->axisRect());
 
@@ -303,8 +304,10 @@ void PolygonManager::onButtonSaveRegion()
 
 void PolygonManager::onButtonLoadRegion()
 {
-    if (ui->tableWidget->selectedItems().isEmpty())
-        return;
+//    if (ui->tableWidget->selectedItems().isEmpty())
+//        return;
+    onButtonAddRegion(); //создаем новый регион интереса, в который загружаем данные с диска
+    ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
     try
     {
         QByteArray byteArr = loadByteMaskFromFile();
@@ -458,6 +461,21 @@ double PolygonManager::calcStandardDeviation(QVector<double> X)
 
 void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
 {
+    if(curr.row() != -1)
+    {
+        ui->buttonAddPolygon->setEnabled(true);
+        ui->buttonSaveRegion->setEnabled(true);
+        ui->buttonRemoveRegion->setEnabled(true);
+    }
+    else
+    {
+        ui->buttonAddPolygon->setEnabled(false);
+        ui->buttonSaveRegion->setEnabled(false);
+        // дисконнект/коннект нужен чтобы исправить баг с вызовом currentRowChanged при скрытии кнопки
+        disconnect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
+        ui->buttonRemoveRegion->setEnabled(false);
+        connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
+    }
     m_currIndexRegion = curr.row();
     m_polygonArr.clear();
 }

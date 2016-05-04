@@ -210,6 +210,17 @@ bool Attributes::GetExternalSpectrFlag() const
     return m_externalSpectr;
 }
 
+void Attributes::SetSPlotterYtitle(QString Yunits)
+{
+    m_SPlotter_Ytitle = Yunits;
+}
+
+QString Attributes::GetSPlotterYtitle() const
+{
+    return m_SPlotter_Ytitle;
+}
+
+
 void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
 {
     m_noiseAlg = alg;

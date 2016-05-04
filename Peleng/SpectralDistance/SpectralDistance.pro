@@ -24,7 +24,8 @@ SOURCES += spectraldistance.cpp \
     ../Library/GenericExc.cpp \
     ../Library/Attributes/Attributes.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
-    ../Library/QCustomPlot.cpp
+    ../Library/QCustomPlot.cpp \
+    SpecDistWindow.cpp
 
 HEADERS += spectraldistance.h\
     ../Library/HyperCube.h \
@@ -32,7 +33,8 @@ HEADERS += spectraldistance.h\
     ../Library/Attributes/Attributes.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
-    ../Library/QCustomPlot.h
+    ../Library/QCustomPlot.h \
+    SpecDistWindow.h
 
 
 
@@ -40,6 +42,7 @@ RESOURCES += \
     qmldata.qrc
 
 FORMS += \
-    ../Library/CustomPlotForPreview2D/Preview2D.ui
+    ../Library/CustomPlotForPreview2D/Preview2D.ui \
+    SpecDistWindow.ui
 
 

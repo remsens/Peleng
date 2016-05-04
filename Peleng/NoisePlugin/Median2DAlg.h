@@ -129,8 +129,7 @@ public:
             progressBar->hide();
             delete progressBar;
         }
-
-        delete progressBar;
+        //delete progressBar;
         delete [] arrWindow;
         return true;
     }
