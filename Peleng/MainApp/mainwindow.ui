@@ -14,7 +14,59 @@
    <string>Тематик-Инфо версия 0.1</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout"/>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QWidget" name="widget_fileProjectInfo" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QListWidget" name="listWidget_infoProject">
+         <property name="minimumSize">
+          <size>
+           <width>450</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="widget_Actions" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="pushButton_loadCube">
+         <property name="text">
+          <string>Загрузить 
+ гиперкуб</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_loadAvirisData">
+         <property name="text">
+          <string>Загрузить Aviris
+ данные</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -30,6 +82,7 @@
      <string>Файл</string>
     </property>
     <addaction name="OpenFileAction"/>
+    <addaction name="CreateProjectAction"/>
     <addaction name="ExitAction"/>
    </widget>
    <addaction name="menu"/>
@@ -49,7 +102,7 @@
      <normaloff>:/icon/tab/icons/Open Folder-50.png</normaloff>:/icon/tab/icons/Open Folder-50.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть</string>
+    <string>Открыть проект</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -86,6 +139,11 @@
    </property>
    <property name="text">
     <string>Построить график канала</string>
+   </property>
+  </action>
+  <action name="CreateProjectAction">
+   <property name="text">
+    <string>Создать проект</string>
    </property>
   </action>
  </widget>

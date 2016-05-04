@@ -23,13 +23,38 @@ public:
     static void Destroy();
     virtual ~Attributes();
 
+    // пути к каталогам
+    void SetTempPath(QString& path);
+    QString GetTempPath() const;
+    // путь к спектральным библиотекам
+    void SetSpectralLibPath(QString& path);
+    QString GetSpectralLibPath() const;
+
+    // путь к файлу-заголовка
+    void SetHeaderPath(QString& path);
+    QString GetHeaderPath() const;
+
+    // путь к файлу-проекта (для записи шагов)
+    void SetFilePathProject(QString& path);
+    QString GetFileProjectPath() const;
+
+    // список шагов, который хранит описания шагов до сохранения.
+    void SetStep(const QString& stepDescription);
+    QStringList& GetStepsList();
+    void CleasrStepsList();
+
+    // шаг итерации.
+    void IncrementStep();
+    void DecrementStep();
+    u::uint32 GetStep() const;
+
     // общее
     void SetPointsList(const Point &point);
     void SetPoint(u::uint32 x, u::uint32 y, u::uint32 z);
     void ClearList();
     void SetAvailablePlugins(const QMap<QString, ProcessingPluginsInterface*> availablePlugins);
 
-    // фундаментальные библиотеки
+    // спектральные библиотеки
     void SetModeLib(bool value);
     bool GetModeLib() const;
     void SetXUnit(double xUnit);
@@ -54,8 +79,6 @@ public:
     void SetSPlotterYtitle(QString Yunits);
     QString GetSPlotterYtitle() const;
 
-    //void SetExternalSpectrFormat(int format);
-    //int  GetFormatExternalSpectr() const;
 
     // общее
     const QList<Point>& GetPointsList() const;
@@ -86,6 +109,13 @@ private:
     static Attributes* m_instance;
 
 private:
+    QString m_tempDir;
+    QString m_spectralLibDir;
+    QString m_headerPath;
+    QString m_fileProjectPath;
+
+    QStringList m_stepsList;
+    u::uint32 m_step;
     QList<Point> m_pointsList;
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
 
@@ -95,7 +125,6 @@ private:
     QList<DescriptionSpectr> m_descriptionSpectr;
 
     bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
-    //int m_formatExternalSpectr; // 0 - peleng; 1 - aster
 
     NoiseAlgorithm m_noiseAlg; //! алгоритм удаления шумов
     int m_maskPixelsCount;

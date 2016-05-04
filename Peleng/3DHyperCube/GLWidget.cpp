@@ -5,9 +5,8 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
-#include "../HistPlotter/histplugin.h"
-
-//#define DEBUG
+#include "../Library/FileProjectFeatures.h"
+#include "../Library/stepsdefinitions.h"
 
 using namespace std;
 
@@ -708,10 +707,11 @@ void GLWidget::Noise()
 
 void GLWidget::OnActionMedian1D_3Triggered()
 {
-
     m_attributes->SetNoiseAlg(Median1D);
     m_attributes->SetMaskPixelsCount(3);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_SPECTRA_WITH_STEP + QString::number(3));
 }
 
 void GLWidget::OnActionMedian1D_5Triggered()
@@ -719,6 +719,8 @@ void GLWidget::OnActionMedian1D_5Triggered()
     m_attributes->SetNoiseAlg(Median1D);
     m_attributes->SetMaskPixelsCount(5);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_SPECTRA_WITH_STEP + QString::number(5));
 }
 
 void GLWidget::OnActionMedian1D_7Triggered()
@@ -726,6 +728,8 @@ void GLWidget::OnActionMedian1D_7Triggered()
     m_attributes->SetNoiseAlg(Median1D);
     m_attributes->SetMaskPixelsCount(7);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_SPECTRA_WITH_STEP + QString::number(7));
 }
 
 void GLWidget::OnActionMedian2D_3Triggered()
@@ -733,6 +737,9 @@ void GLWidget::OnActionMedian2D_3Triggered()
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetMaskPixelsCount(3);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_BANDS_WITH_STEP + QString("3x3"));
+
 }
 
 void GLWidget::OnActionMedian2D_5Triggered()
@@ -740,6 +747,8 @@ void GLWidget::OnActionMedian2D_5Triggered()
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetMaskPixelsCount(5);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_BANDS_WITH_STEP + QString("5x5"));
 }
 
 void GLWidget::OnActionMedian2D_7Triggered()
@@ -747,6 +756,8 @@ void GLWidget::OnActionMedian2D_7Triggered()
     m_attributes->SetNoiseAlg(Median2D);
     m_attributes->SetMaskPixelsCount(7);
     Noise();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(MEDIAN_FILTER_FOR_BANDS_WITH_STEP + QString("7x7"));
 }
 
 void GLWidget::ActionSpectralDistanceToogled()
@@ -866,6 +877,8 @@ void GLWidget::ActionNoiseSavitGolay2_5Toogled()
     m_attributes->SetDegreePolinom(2);
     m_attributes->SetMaskPixelsCount(5);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("5 P(2)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay2_7Toogled()
@@ -873,6 +886,8 @@ void GLWidget::ActionNoiseSavitGolay2_7Toogled()
     m_attributes->SetDegreePolinom(2);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("7 (P2)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay2_9Toogled()
@@ -880,6 +895,8 @@ void GLWidget::ActionNoiseSavitGolay2_9Toogled()
     m_attributes->SetDegreePolinom(2);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("9 (P2)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay3_5Toogled()
@@ -887,6 +904,8 @@ void GLWidget::ActionNoiseSavitGolay3_5Toogled()
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(5);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("5 P(3)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay3_7Toogled()
@@ -894,6 +913,8 @@ void GLWidget::ActionNoiseSavitGolay3_7Toogled()
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("7 P(3)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay3_9Toogled()
@@ -901,6 +922,8 @@ void GLWidget::ActionNoiseSavitGolay3_9Toogled()
     m_attributes->SetDegreePolinom(3);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("9 P(3)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay4_7Toogled()
@@ -908,6 +931,8 @@ void GLWidget::ActionNoiseSavitGolay4_7Toogled()
     m_attributes->SetDegreePolinom(4);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("7 P(4)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay4_9Toogled()
@@ -915,6 +940,8 @@ void GLWidget::ActionNoiseSavitGolay4_9Toogled()
     m_attributes->SetDegreePolinom(4);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("9 P(4)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay5_7Toogled()
@@ -922,6 +949,8 @@ void GLWidget::ActionNoiseSavitGolay5_7Toogled()
     m_attributes->SetDegreePolinom(5);
     m_attributes->SetMaskPixelsCount(7);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("7 P(5)"));
 }
 
 void GLWidget::ActionNoiseSavitGolay5_9Toogled()
@@ -929,6 +958,8 @@ void GLWidget::ActionNoiseSavitGolay5_9Toogled()
     m_attributes->SetDegreePolinom(5);
     m_attributes->SetMaskPixelsCount(9);
     NoiseGolayAlgExecute();
+    m_attributes->IncrementStep();
+    m_attributes->SetStep(SAVITSKI_GOLAY_FILTER_WITH_STEP + QString("9 P(5)"));
 }
 
 
@@ -1105,8 +1136,6 @@ void GLWidget::makeTextures()
             textures[i]->destroy();
         }
     }
-
-
     textures[4] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[0],nROWS,nCOLS,minCMap,maxCMap,true).mirrored(false,true));// верхняя грань с фото
     textures[0] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataCH_RO[0],nCHNLS,nROWS,minCMapSides,maxCMapSides).transformed(rtt270).mirrored(true,false)); //напротив темной грани
     textures[1] =  new QOpenGLTexture(from2Dmass2QImage(sidesDataRO_CO[1],nROWS,nCOLS,minCMap,maxCMap,true)); //нижняя грань с фото

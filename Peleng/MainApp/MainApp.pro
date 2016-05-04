@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     ../Library/PluginLoader.cpp \
     ../Library/ReadPluginLoader.cpp \
     ../Library/ProcessingPluginLoader.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    FileProjectWindow.cpp \
+    ../Library/FileProjectFeatures.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/Types.h \
@@ -32,14 +34,18 @@ HEADERS  += mainwindow.h \
     ../Library/ReadPluginLoader.h \
     ../Library/ProcessingPluginLoader.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    FileProjectWindow.h \
+    ../Library/FileProjectFeatures.h \
+    ../Library/stepsdefinitions.h
 
 
 
 INCLUDEPATH += $$PWD/../Library
 DEPENDPATH += $$PWD/../Library
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    FileProjectWindow.ui
 
 RESOURCES += \
     icons.qrc
