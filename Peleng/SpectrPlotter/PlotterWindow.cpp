@@ -56,7 +56,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
-    connect(ui->actionInterplol,SIGNAL(triggered()),this, SLOT(onActionInterplol()));
+    //connect(ui->actionInterplol,SIGNAL(triggered()),this, SLOT(onActionInterplol()));
 
 }
 
@@ -113,6 +113,7 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
     {
         menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
         menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
+        menu->addAction("Интерполяция", this, SLOT(onActionInterplol()));
         if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
         {
             menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));

@@ -189,6 +189,7 @@ void AddSpectr::ParseFile()
         toMessageBox.append("\n");
         toMessageBox.append("X Units size: ");
         toMessageBox.append(QString::number(m_attr->GetXUnits().size()));
+
         toMessageBox.append("\n");
         toMessageBox.append("Y Units size: ");
         toMessageBox.append(QString::number(m_attr->GetYUnits().size()));

@@ -10,6 +10,8 @@
 #include "PluginsControl.h"
 #include "../Library/ReadPluginLoader.h"
 #include "../Library/ProcessingPluginLoader.h"
+#include <QtXml>
+#include <QMap>
 
 namespace Ui {
     class MainWindow;
@@ -25,7 +27,11 @@ public:
 
 
 public slots:
-    void LoadFile();
+    void LoadAvirisData();
+    void OpenProject();
+    void LoadData();
+    void CreateFileProject();
+    void takeProjectFile(QString path);
 
 signals:
     void progressValueChanged(int);
@@ -34,6 +40,8 @@ private slots:
     void updateProgress();
     void cancelOperation();
 
+private:
+    void ShowFileProject();
 
 private:
     Ui::MainWindow *ui;
@@ -43,6 +51,8 @@ private:
     QMenu *m_pContextMenu;
     PluginsControl* m_pluginsControl;
     bool m_canceled;
+    QString m_fileProjectName;
+    QMap<QString, QString> m_translatingStepsMap;
 };
 
 #endif // MAINWINDOW_H

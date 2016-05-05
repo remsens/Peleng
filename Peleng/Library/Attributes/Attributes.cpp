@@ -4,13 +4,13 @@ Attributes* Attributes::m_instance = NULL;
 
 Attributes::Attributes()
 {
-
+    m_step = 0;
 }
 Attributes* Attributes::I()
 {
     if (!m_instance)
     {
-        m_instance = new Attributes;
+        m_instance = new Attributes();
     }
     return m_instance;
 }
@@ -20,12 +20,80 @@ Attributes* Attributes::I()
      if (m_instance)
      {
          delete m_instance;
+         m_instance = NULL;
      }
  }
 
 Attributes::~Attributes()
 {
 
+}
+
+// пути к каталогам
+void Attributes::SetTempPath(QString& path)
+{
+    m_tempDir = path;
+}
+QString Attributes::GetTempPath() const
+{
+    return m_tempDir;
+}
+// путь к спектральным библиотекам
+void Attributes::SetSpectralLibPath(QString& path)
+{
+    m_spectralLibDir = path;
+}
+
+void Attributes::SetHeaderPath(QString& path)
+{
+    m_headerPath = path;
+}
+QString Attributes::GetHeaderPath() const
+{
+    return m_headerPath;
+}
+
+QString Attributes::GetSpectralLibPath() const
+{
+    return m_spectralLibDir;
+}
+
+void Attributes::SetFilePathProject(QString& path)
+{
+    m_fileProjectPath = path;
+}
+
+QString Attributes::GetFileProjectPath() const
+{
+    return m_fileProjectPath;
+}
+
+void Attributes::SetStep(const QString& stepDescription)
+{
+    m_stepsList.append(stepDescription);
+}
+
+QStringList& Attributes::GetStepsList()
+{
+    return m_stepsList;
+}
+
+void Attributes::CleasrStepsList()
+{
+    m_stepsList.clear();
+}
+
+void Attributes::IncrementStep()
+{
+    m_step++;
+}
+void Attributes::DecrementStep()
+{
+    m_step--;
+}
+u::uint32 Attributes::GetStep() const
+{
+    return m_step;
 }
 
 void Attributes::SetModeLib(bool value)
@@ -51,7 +119,6 @@ void Attributes::SetYUnit(double yUnit)
 void Attributes::SetXUnit(QVector<double>& xUnits)
 {
     m_XUnits.clear();
-//    m_XUnits.append(xUnits);
     foreach (double x, xUnits) {
         m_XUnits.append(x);
     }
@@ -60,7 +127,6 @@ void Attributes::SetXUnit(QVector<double>& xUnits)
 void Attributes::SetYUnit(QVector<double>& yUnits)
 {
     m_YUnits.clear();
-    //m_YUnits.append(yUnits);
     foreach (double y, yUnits) {
         m_YUnits.append(y);
     }
@@ -153,16 +219,6 @@ QString Attributes::GetSPlotterYtitle() const
 {
     return m_SPlotter_Ytitle;
 }
-
-//int  Attributes::GetFormatExternalSpectr() const
-//{
-//    return m_formatExternalSpectr;
-//}
-
-//void Attributes::SetExternalSpectrFormat(int format)
-//{
-//    m_formatExternalSpectr = format;
-//}
 
 void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
 {
