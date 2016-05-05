@@ -79,8 +79,6 @@ public:
     void SetSPlotterYtitle(QString Yunits);
     QString GetSPlotterYtitle() const;
 
-    //void SetExternalSpectrFormat(int format);
-    //int  GetFormatExternalSpectr() const;
 
     // общее
     const QList<Point>& GetPointsList() const;
