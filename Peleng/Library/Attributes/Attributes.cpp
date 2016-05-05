@@ -220,7 +220,6 @@ QString Attributes::GetSPlotterYtitle() const
     return m_SPlotter_Ytitle;
 }
 
-
 void Attributes::SetNoiseAlg(NoiseAlgorithm alg)
 {
     m_noiseAlg = alg;
