@@ -73,6 +73,23 @@ void HyperCube::SetDataSpectrum(u::cptr data, u::uint32 x, u::uint32 y)
     }
 }
 
+void HyperCube::SetGeoDataGeoTransform(double GeoTransform[])
+{
+    for(int i = 0; i < 6; ++i)
+        m_geoData.GeoTransform[i] = GeoTransform[i];
+}
+
+void HyperCube::SetGeoDataUTMzone(int zone, bool north)
+{
+    m_geoData.UTMzone = zone;
+    m_geoData.northernHemisphere = north;
+}
+
+void HyperCube::SetGeoDataGeodeticSystem(char *GeodeticSystem)
+{
+    m_geoData.GeodeticSystem = GeodeticSystem;
+}
+
 void HyperCube::DestroyCube() {
     if (m_dataCube != 0)
     {
@@ -233,6 +250,12 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
     } catch (...) {
         throw GenericExc("Неверно выделен размер под блок данных", -1);
     }
+}
+
+void HyperCube::GetGeoDataGeoTransform(double (&geo6arr)[6])
+{
+    for(int i = 0; i<6; ++i)
+        geo6arr[i] = m_geoData.GeoTransform[i];
 }
 
 void HyperCube::UpdateListWaves(QList<double>& wavelength)

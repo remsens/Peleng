@@ -11,8 +11,7 @@ GeoTiff::GeoTiff()
 
 
 bool GeoTiff::save(char *dstName, HyperCube *cube)
-{
-
+{  
     int nX = cube->GetLines();//2449
     int nY = cube->GetColumns();//792
     int nZ = cube->GetCountofChannels();
@@ -42,12 +41,27 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
                           abyRaster, nY, nX, GDT_Int16, 0, 0 );
     }
     //установка метаданных
-    double adfGeoTransform[6] = { 444720, 30, 0, 3751320, 0, -30 };
+//    cube->m_geoData.GeoTransform[0] = 444720;
+//    cube->m_geoData.GeoTransform[1] = 30;
+//    cube->m_geoData.GeoTransform[2] = 0;
+//    cube->m_geoData.GeoTransform[3] = 3751320;
+//    cube->m_geoData.GeoTransform[4] = 0;
+//    cube->m_geoData.GeoTransform[5] = -30;
+//    cube->m_geoData.GeodeticSystem = "NAD27";
+//    cube->m_geoData.UTMzone = 11;
+//    cube->m_geoData.northernHemisphere = true;
+    double arr[6] = { 444720, 30, 0, 3751320, 0, -30 };
+    cube->SetGeoDataGeoTransform(arr);
+    cube->SetGeoDataUTMzone(11,true);
+    cube->SetGeoDataGeodeticSystem("NAD27");
+
     OGRSpatialReference oSRS;
     char *pszSRS_WKT = NULL;
-    poDstDS->SetGeoTransform( adfGeoTransform );
-    oSRS.SetUTM( 11, TRUE );
-    oSRS.SetWellKnownGeogCS( "NAD27" );
+    double transform[6];
+    cube->GetGeoDataGeoTransform(transform);
+    poDstDS->SetGeoTransform( transform );
+    oSRS.SetUTM( cube->GetGeoDataUTMzone(), cube->GetGeoDataUTMzoneNorth() );
+    oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeodeticSystem() );
     oSRS.exportToWkt( &pszSRS_WKT );
     poDstDS->SetProjection( pszSRS_WKT );
     CPLFree( pszSRS_WKT );
