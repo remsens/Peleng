@@ -1,6 +1,7 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
+#include "../Library/GeoTiff.h"
 #include <QMessageBox>
 
 int cmp2(const void *a, const void *b);
@@ -273,9 +274,6 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-
-
-
 }
 
 void Main2DWindow::setInitCustomplotSettings()
@@ -781,9 +779,13 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
 }
 
+void Main2DWindow::on_action_GeoTiff_triggered()
+{
+    QMessageBox msgBox;
+    if(GeoTiff::save("D:/hyperCube.tif",m_pCube))
+        msgBox.setText("Сохранено");
+    else
+        msgBox.setText("Ошибка при сохранении");
+    msgBox.exec();
 
-
-
-
-
-
+}

@@ -33,6 +33,7 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
     Region.cpp\
+    ../Library/GeoTiff.cpp
 
 
 
@@ -45,7 +46,8 @@ HEADERS += \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
-    Region.h
+    Region.h \
+    ../Library/GeoTiff.h
 
 
 FORMS += \
@@ -54,3 +56,9 @@ FORMS += \
 
 RESOURCES += \
     icons2Dcube.qrc \
+
+# _______________________
+LIBS += -LD:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/lib -lgdal_i
+
+INCLUDEPATH += D:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/include
+DEPENDPATH += D:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/include

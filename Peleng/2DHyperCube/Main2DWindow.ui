@@ -221,6 +221,7 @@
     </widget>
     <addaction name="subMenuImage"/>
     <addaction name="polygonTool"/>
+    <addaction name="action_GeoTiff"/>
    </widget>
    <addaction name="menuOptions"/>
   </widget>
@@ -246,6 +247,11 @@
   <action name="polygonTool">
    <property name="text">
     <string>Выделение области</string>
+   </property>
+  </action>
+  <action name="action_GeoTiff">
+   <property name="text">
+    <string>Сохранить в GeoTiff</string>
    </property>
   </action>
  </widget>
