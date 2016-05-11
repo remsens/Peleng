@@ -3,7 +3,9 @@
 #include "cpl_conv.h" // for CPLMalloc()
 #include "cpl_string.h"
 #include <ogr_spatialref.h>
-
+#include <QProgressBar>
+#include <QDebug>
+#include <QCoreApplication>
 GeoTiff::GeoTiff()
 {
 
@@ -29,6 +31,13 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
     poDstDS = poDriver->Create( dstName, nY, nX, nZ, GDT_Int16,papszOptions );
     GDALRasterBand *poBand;
     GInt16 *abyRaster = new GInt16[nX*nY];
+
+    QProgressBar *progress = new QProgressBar();
+    progress->setRange(0,nZ);
+    progress->setValue(0);
+    progress->setTextVisible(true);
+    progress->setWindowTitle("Сохранение");
+    progress->show();
     for (int i = 0; i < nZ; ++i)
     {
         for (int j = 0; j < nX; ++j)
@@ -39,21 +48,17 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
         poBand = poDstDS->GetRasterBand(i+1);
         poBand->RasterIO( GF_Write, 0, 0, nY, nX,
                           abyRaster, nY, nX, GDT_Int16, 0, 0 );
+        progress->setValue(i);
+        QCoreApplication::processEvents();
     }
-    //установка метаданных
-//    cube->m_geoData.GeoTransform[0] = 444720;
-//    cube->m_geoData.GeoTransform[1] = 30;
-//    cube->m_geoData.GeoTransform[2] = 0;
-//    cube->m_geoData.GeoTransform[3] = 3751320;
-//    cube->m_geoData.GeoTransform[4] = 0;
-//    cube->m_geoData.GeoTransform[5] = -30;
-//    cube->m_geoData.GeodeticSystem = "NAD27";
-//    cube->m_geoData.UTMzone = 11;
-//    cube->m_geoData.northernHemisphere = true;
+    delete progress;
+
+    //задание метаданных
     double arr[6] = { 444720, 30, 0, 3751320, 0, -30 };
     cube->SetGeoDataGeoTransform(arr);
     cube->SetGeoDataUTMzone(11,true);
     cube->SetGeoDataGeodeticSystem("NAD27");
+    //конец задания метаданных
 
     OGRSpatialReference oSRS;
     char *pszSRS_WKT = NULL;
