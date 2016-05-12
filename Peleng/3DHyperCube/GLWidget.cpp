@@ -1214,23 +1214,23 @@ void GLWidget::createCubeSides()
     prevChN =  nCHNLS;
     prevRowsN = nROWS;
 
-    sidesDataCH_RO = new qint16**[2]; //Массив из 2 граней куба с размерностью CHNLS х ROWS
+    sidesDataCH_RO = new double**[2]; //Массив из 2 граней куба с размерностью CHNLS х ROWS
     for(int i = 0; i<2; ++i){
-        sidesDataCH_RO[i] = new qint16*[nCHNLS];
+        sidesDataCH_RO[i] = new double*[nCHNLS];
         for(int j = 0; j<nCHNLS; ++j)
-            sidesDataCH_RO[i][j] = new qint16[nROWS];
+            sidesDataCH_RO[i][j] = new double[nROWS];
     }
-    sidesDataCH_CO = new qint16**[2]; //Массив из 2 граней куба с размерностью CHNLS х COLS
+    sidesDataCH_CO = new double**[2]; //Массив из 2 граней куба с размерностью CHNLS х COLS
     for(int i = 0; i<2; ++i){
-        sidesDataCH_CO[i] = new qint16*[nCHNLS];
+        sidesDataCH_CO[i] = new double*[nCHNLS];
         for(int j = 0; j<nCHNLS; ++j)
-            sidesDataCH_CO[i][j] = new qint16[nCOLS];
+            sidesDataCH_CO[i][j] = new double[nCOLS];
     }
-    sidesDataRO_CO = new qint16**[2]; //Массив из 2 граней куба с размерностью ROWS х COLS
+    sidesDataRO_CO = new double**[2]; //Массив из 2 граней куба с размерностью ROWS х COLS
     for(int i = 0; i<2; ++i){
-        sidesDataRO_CO[i] = new qint16*[nROWS];
+        sidesDataRO_CO[i] = new double*[nROWS];
         for(int j = 0; j<nROWS; ++j)
-            sidesDataRO_CO[i][j] = new qint16[nCOLS];
+            sidesDataRO_CO[i][j] = new double[nCOLS];
     }
 }
 
@@ -1268,30 +1268,7 @@ void GLWidget::fillCubeSides()//заполнение массивов, соот�
 }
 
 
-void GLWidget::create2RowChanSides(int ch1, int ch2, int r1, int r2 ) // выполнять в paintGL//добавить деструктор для массива
-{
-    int numCh = ch2-ch1+1;
-    int numRow = r2-r1+1;
-    sidesDataCH_RO = new qint16**[2];
-    for(int i = 0; i<2; ++i){
-        sidesDataCH_RO[i] = new qint16*[numCh];
-        for(int j = 0; j < (numCh); ++j)
-            sidesDataCH_RO[i][j] = new qint16[numRow];
-    }
-    for(int x = 0; x < (numCh); ++x)
-        for(int y = 0; y < (numRow); ++y)
-            sidesDataCH_RO[0][x][y]  = data[x][y * COLS + 0];
 
-}
-void GLWidget::create2ColChanSides(int ch1, int ch2, int c1, int c2 ) // мб ф-ия не нужна//добавить деструктор для массива
-{
-    sidesDataCH_CO = new qint16**[2];
-    for(int i = 0; i<2; ++i){
-        sidesDataCH_CO[i] = new qint16*[ch2-ch1+1];
-        for(int j = 0; j < (ch2-ch1+1); ++j)
-            sidesDataCH_CO[i][j] = new qint16[c2-c1+1];
-    }
-}
 
 
 //эта ф-ия в даный момент не используется. Передаем, например,  data[0]
@@ -1329,7 +1306,7 @@ QImage GLWidget::from2Dmass2QImage(qint16 *data)
 }
 
 //передаем, например  sidesDataCH_CO[0]
-QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
+QImage GLWidget::from2Dmass2QImage(double **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
     QCustomPlot *customPlot = new QCustomPlot();
