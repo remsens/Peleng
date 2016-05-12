@@ -578,6 +578,11 @@ void Main2DWindow::createMenus()
         connect(m_actionMedian5, SIGNAL(triggered()), this, SLOT(OnActionMedian5Triggered()));
         connect(m_actionMedian7, SIGNAL(triggered()), this, SLOT(OnActionMedian7Triggered()));
     }
+    if (m_attributes->GetAvailablePlugins().contains("SpectralDistance"))
+    {
+        pContextMenu->addAction(QIcon(":/IconsCube/iconsCube/distance.png"),
+                                "Сравнить со спектральными кривыми", this, SLOT(ActionSpectralDistanceToogled()));
+    }
 }
 
 
@@ -779,6 +784,14 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
     pContextMenu->exec(ui->customPlot->mapToGlobal(point));//centralwidget->viewport()->mapToGlobal(point));
 
+}
+
+void Main2DWindow::ActionSpectralDistanceToogled()
+{
+    m_attributes->ClearList();
+    m_attributes->SetPoint(m_dataX, m_dataY, 0);
+    m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pCube, m_attributes);
 }
 
 
