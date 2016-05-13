@@ -54,10 +54,10 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
     delete progress;
 
     //задание метаданных
-    double arr[6] = { 444720, 30, 0, 3751320, 0, -30 };
+    double arr[6] = { 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
     cube->SetGeoDataGeoTransform(arr);
     cube->SetGeoDataUTMzone(11,true);
-    cube->SetGeoDataGeodeticSystem("NAD27");
+    cube->SetGeoDataGeographCordSys("WGS84");
     //конец задания метаданных
 
     OGRSpatialReference oSRS;
@@ -65,8 +65,10 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
     double transform[6];
     cube->GetGeoDataGeoTransform(transform);
     poDstDS->SetGeoTransform( transform );
-    oSRS.SetUTM( cube->GetGeoDataUTMzone(), cube->GetGeoDataUTMzoneNorth() );
-    oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeodeticSystem() );
+
+    oSRS.SetUTM( cube->GetGeoDataUTMzone(), cube->GetGeoDataUTMzoneNorth() ); //установка картографической проекции
+
+    oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeographCordSys() ); // установка геодезического датума
     oSRS.exportToWkt( &pszSRS_WKT );
     poDstDS->SetProjection( pszSRS_WKT );
     CPLFree( pszSRS_WKT );

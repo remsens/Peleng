@@ -24,7 +24,7 @@ struct geoData{
     double GeoTransform[6];
     int UTMzone;
     bool northernHemisphere;
-    char* GeodeticSystem;
+    char* GeographCordSys;
 };
 
 enum TYPES {
@@ -82,8 +82,8 @@ public:
     void SetGeoDataUTMzone(int zone, bool north);
 
     //! Функция задания геодезической системы
-    //! @param GeodeticSystem - одна из стандартных геодезических систем. Пример: "NAD27"
-    void SetGeoDataGeodeticSystem(char* GeodeticSystem);
+    //! @param GeographCordSys - одна из стандартных координатных систем. Пример: "NAD27"
+    void SetGeoDataGeographCordSys(char* GeographCordSys);
 
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
@@ -160,7 +160,7 @@ public:
     void GetGeoDataGeoTransform(double (&geo6arr)[6]);
     int GetGeoDataUTMzone(){return m_geoData.UTMzone;}
     bool GetGeoDataUTMzoneNorth(){return m_geoData.northernHemisphere;}
-    char* GetGeoDataGeodeticSystem(){return m_geoData.GeodeticSystem;}
+    char* GetGeoDataGeographCordSys(){return m_geoData.GeographCordSys;}
 
     //! Функция изменения размера гиперкуба (параметры функции - координаты, по которым будет вырезаться куб)
     //! Перед вызовом этой функции надо сохранить куб в hdf!!!

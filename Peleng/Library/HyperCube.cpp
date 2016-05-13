@@ -85,9 +85,9 @@ void HyperCube::SetGeoDataUTMzone(int zone, bool north)
     m_geoData.northernHemisphere = north;
 }
 
-void HyperCube::SetGeoDataGeodeticSystem(char *GeodeticSystem)
+void HyperCube::SetGeoDataGeographCordSys(char *GeographCordSys)
 {
-    m_geoData.GeodeticSystem = GeodeticSystem;
+    m_geoData.GeographCordSys = GeographCordSys;
 }
 
 void HyperCube::DestroyCube() {
