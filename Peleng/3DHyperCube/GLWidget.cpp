@@ -1179,6 +1179,42 @@ void GLWidget::loadData(HyperCube *ptrCube)
     CHNLS = (int)ptrCube->GetCountofChannels();
     COLS = (int)ptrCube->GetColumns();
     ROWS = (int)ptrCube->GetLines();
+
+//    switch (ptrCube->GetFormatType()) {
+//    case type_int8:
+//#define type_int8 TYPE
+//        break;
+//    case type_uint8:
+//#define type_uint8 TYPE
+//        break;
+//    case type_int16:
+//#define type_int16 TYPE
+//        break;
+//    case type_uint16:
+//#define type_uint16 TYPE
+//        break;
+//    case type_int32:
+//#define type_int32 TYPE
+//        break;
+//    case type_uint32:
+//#define type_uint32 TYPE
+//        break;
+//    case type_int64:
+//#define type_int64 TYPE
+//        break;
+//    case type_uint64:
+//#define type_uint64 TYPE
+//        break;
+//    case type_float:
+//#define type_float TYPE
+//        break;
+//    case type_double:
+//#define type_double TYPE
+//        break;
+//    default:  break;
+//    }
+
+
     data = (qint16**)ptrCube->GetDataCube();
 
 

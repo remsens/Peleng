@@ -10,6 +10,7 @@
 #include "../Library/Types.h"
 #include "CreaterHyperCubes.h"
 #include "convertdatacubetolittleendian.h"
+#include <QtGlobal>
 
 CreaterHyperCubes::CreaterHyperCubes()
 {
@@ -131,6 +132,48 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                     {
                         QStringList data = QString(readWords.at(3)).split("\r\n");
                         m_infoData.formatType = TypeFromAvirisType(QString(data.at(0)).toLong()); wordsPoints++;
+//                        switch (m_infoData.formatType) {
+//                        case type_int8:
+//                    using C = int;
+//                            break;
+//                        case type_uint8:
+//                    //using C = double;
+//                            break;
+//                        case type_int16:
+//                    #define TYPE u::int16
+//                            break;
+//                        case type_uint16:
+//                    #define TYPE u::uint16
+//                            break;
+//                        case type_int32:
+//                    #define TYPE u::int32
+//                            break;
+//                        case type_uint32:
+//                    #define TYPE u::uint32
+//                            break;
+//                        case type_int64:
+//                    #define TYPE u::int64
+//                            break;
+//                        case type_uint64:
+//                    #define TYPE u::uint64
+//                            break;
+//                        case type_float:
+//                    #define TYPE float
+//                            break;
+//                        case type_double:
+//                    #define TYPE double
+//                            break;
+//                        default:  break;
+//                        }
+#if m_infoData.formatType == type_int8
+       typedef  double  TYPE;
+#elif m_infoData.formatType == type_uint8
+       typedef  int  TYPE;
+#endif
+
+
+
+
                     } else if (basedWords.key(readWords.at(1)).compare("wavelength") == 0 && basedWords.value(readWords.at(0)).compare("=") == 0)
                     {
                         readWords.erase(readWords.begin());
