@@ -122,7 +122,7 @@ private:
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
     void findAbsoluteMinMax();
     QImage from2Dmass2QImage(qint16 *data);
-    QImage from2Dmass2QImage(qint16 **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
+    QImage from2Dmass2QImage(double **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
     void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
@@ -139,9 +139,9 @@ private:
     int CHNLS;// = 224;
     bool FLAGisInit = false;
     qint16 **data;
-    qint16 ***sidesDataCH_RO = NULL;
-    qint16 ***sidesDataCH_CO = NULL;
-    qint16 ***sidesDataRO_CO = NULL;
+    double ***sidesDataCH_RO = NULL;
+    double ***sidesDataCH_CO = NULL;
+    double ***sidesDataRO_CO = NULL;
     int xRot;
     int yRot;
     int zRot;

@@ -7,10 +7,12 @@
 #include <QDebug>
 #include "../Library/FileProjectFeatures.h"
 #include "../Library/stepsdefinitions.h"
+#include "../Library/stepsdefinitions.h"
+#include "../Library/Utils/Compare.h"
 
 using namespace std;
 
-int cmp(const void *a, const void *b);
+//int cmp(const void *a, const void *b);
 
 
 GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
@@ -1360,7 +1362,7 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     for (int i=0; i<n; ++i)
     {
         m_pHyperCube->GetDataChannel(i*step,dataTemp);
-        qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
+        qsort(dataTemp,COLS*ROWS,sizeof(qint16),Compare::CompareVariables<qint16>);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];
         if (min < minCMap )
@@ -1394,14 +1396,14 @@ void GLWidget::findAbsoluteMinMax()
     absMax = max;
 }
 
-int cmp(const void *a, const void *b)
-{
-    const qint16 *pa = (const qint16*)a;
-    const qint16 *pb = (const qint16*)b;
-    if (*pa < *pb)
-        return -1;
-    else if (*pa > *pb)
-        return +1;
-    else
-        return 0;
-}
+//int cmp(const void *a, const void *b)
+//{
+//    const qint16 *pa = (const qint16*)a;
+//    const qint16 *pb = (const qint16*)b;
+//    if (*pa < *pb)
+//        return -1;
+//    else if (*pa > *pb)
+//        return +1;
+//    else
+//        return 0;
+//}
