@@ -139,7 +139,6 @@ private:
     int CHNLS;// = 224;
     bool FLAGisInit = false;
     qint16 **data;
-
     double ***sidesDataCH_RO = NULL;
     double ***sidesDataCH_CO = NULL;
     double ***sidesDataRO_CO = NULL;
