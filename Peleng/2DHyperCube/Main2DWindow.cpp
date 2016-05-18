@@ -782,7 +782,8 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 void Main2DWindow::on_action_GeoTiff_triggered()
 {
     QMessageBox msgBox;
-    if(GeoTiff::save("D:/hyperCube.tif",m_pCube))
+    char s[] = "D:/hyperCube.tif" ;
+    if(GeoTiff::save(s,m_pCube)) // GeoTiff::save("D:/hyperCube.tif",m_pCube) не компилируется в релизе
         msgBox.setText("Сохранено");
     else
         msgBox.setText("Ошибка при сохранении");

@@ -57,7 +57,8 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
     double arr[6] = { 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
     cube->SetGeoDataGeoTransform(arr);
     cube->SetGeoDataUTMzone(11,true);
-    cube->SetGeoDataGeographCordSys("WGS84");
+    char Sferoid[] = "WGS84";
+    cube->SetGeoDataGeographCordSys(Sferoid);
     //конец задания метаданных
 
     OGRSpatialReference oSRS;
@@ -74,7 +75,6 @@ bool GeoTiff::save(char *dstName, HyperCube *cube)
     CPLFree( pszSRS_WKT );
     //конец установки
     GDALClose( (GDALDatasetH) poDstDS );
-
     delete[] abyRaster;
     return true;
 }

@@ -57,8 +57,7 @@ FORMS += \
 RESOURCES += \
     icons2Dcube.qrc \
 
-# _______________________
-LIBS += -LD:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/lib -lgdal_i
 
-INCLUDEPATH += D:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/include
-DEPENDPATH += D:/Work/Programming/Other/GDAL/release-1800-x64-gdal-1-11-3-mapserver-6-4-2-libs/include
+win32: LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/include
+DEPENDPATH += $$PWD/../Library/GDAL/include
