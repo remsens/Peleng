@@ -66,6 +66,7 @@ public slots:
     void ActionNoiseSavitGolay5_9Toogled();
     void ActionSpectralDistanceToogled();
     void ActionRGBCorrectionToogled();
+    void ActionAtmCorrToogled();
 protected:
     void closeEvent(QCloseEvent *e);
 

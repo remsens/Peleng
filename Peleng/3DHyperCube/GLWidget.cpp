@@ -806,6 +806,11 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB изображение", this, SLOT(ActionRGBCorrectionToogled()));
     }
+    if (m_attributes->GetAvailablePlugins().contains("AtmCorr UI"))
+    {
+        contextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "Атмосферная коррекция", this, SLOT(ActionAtmCorrToogled()));
+    }
+
     if (m_attributes->GetAvailablePlugins().contains("Noise Remover"))
     {
         QMenu* menuNoise = new QMenu("Фильтры", contextMenu);
@@ -860,6 +865,12 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
 void GLWidget::ActionRGBCorrectionToogled()
 {
     m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pHyperCube, m_attributes);
+}
+
+void GLWidget::ActionAtmCorrToogled()
+{
+    m_attributes->GetAvailablePlugins().value("AtmCorr UI")->Execute(m_pHyperCube, m_attributes);
+     updateCube();
 }
 
 void GLWidget::NoiseGolayAlgExecute()

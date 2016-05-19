@@ -1,0 +1,6 @@
+{
+    "Type" : "ProcessingFormat",
+    "Name" : "AtmCorr UI",
+    "Description" : "Libradtran Atmosheric Correction Module",
+    "Extinsion" : "*.hdr"
+}
