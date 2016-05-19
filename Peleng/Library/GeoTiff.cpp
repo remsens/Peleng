@@ -12,7 +12,7 @@ GeoTiff::GeoTiff()
 }
 
 
-bool GeoTiff::save(char *dstName, HyperCube *cube)
+bool GeoTiff::save(const char *dstName, HyperCube *cube)
 {  
     int nX = cube->GetLines();//2449
     int nY = cube->GetColumns();//792
