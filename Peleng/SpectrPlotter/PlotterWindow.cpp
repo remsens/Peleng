@@ -359,6 +359,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
     QString err;
     try
     {    //если можем получить точку гиперкуба
+        QVector<double> sortedYArr;
         m_xArr.clear();
         m_yArr.clear();
         if (m_attributes->GetExternalSpectrFlag())
@@ -367,25 +368,29 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             m_yArr = m_attributes->GetYUnits();
         } else
         {
-            quint16 Chnls = m_cube->GetCountofChannels();
-            qint16* pSpectrValues = new qint16[Chnls];
-            m_cube->GetSpectrumPoint(dataX, dataY,pSpectrValues); // записали в pSpectrValues из гиперкуба
-            QList<double> Wawes;
-            Wawes.append(m_cube->GetListOfChannels());
-            for (quint16 i = 0; i < Chnls; ++i )
+            m_yArr.clear();
+            m_cube->GetSpectrumPoint(dataX, dataY, m_yArr); // записали в pSpectrValues из гиперкуба
+            sortedYArr = m_yArr;
+            qSort(sortedYArr);
+            for (int i = 0; i < m_yArr.size(); i++)
             {
-               m_xArr.push_back(Wawes.at(i));
-               m_yArr.push_back(pSpectrValues[i]);
+                m_yArr[i] /= sortedYArr.last();
             }
-            delete [] pSpectrValues;
+            m_xArr.append(m_cube->GetListOfChannels().toVector());
+
         }
-        QVector<double> sortedYArr;
         sortedYArr = m_yArr;
         qSort(sortedYArr);
         if (sortedYArr.first() < minY )
             minY = sortedYArr.first();
         if (sortedYArr.last() > maxY )
             maxY = sortedYArr.last();
+
+        // как догадаться, где нужно нормировать, а где не нужно? Все-таки отдельный функционал нужно делать.
+       /* for (int i = 0; i < m_yArr.size(); i++)
+        {
+            m_yArr[i] /= maxY;
+        }*/
 
         QString grafName;
         if (m_attributes->GetExternalSpectrFlag())

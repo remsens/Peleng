@@ -7,10 +7,7 @@ SpectraComparePlugin::SpectraComparePlugin(QObject *parent)
 
 SpectraComparePlugin::~SpectraComparePlugin()
 {
-    if (m_spectraCompareWindow != 0)
-    {
-        delete m_spectraCompareWindow;
-    }
+
 }
 
 void SpectraComparePlugin::Execute(HyperCube* cube, Attributes* attr)

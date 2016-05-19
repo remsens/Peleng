@@ -4,17 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
-Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 TARGET = SpectrCompare
 TEMPLATE = lib
 
 DEFINES += SPECTRACOMPARE_PLUGIN
+
+Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
+Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 unix {
     target.path = /usr/lib
@@ -26,9 +26,11 @@ DISTFILES += \
 
 SOURCES +=\
         SpectraCompare.cpp \
-    SpectraComparePlugin.cpp
+    SpectraComparePlugin.cpp \
+    ../Library/QCustomPlot.cpp
 
 HEADERS  += SpectraCompare.h \
-    SpectraComparePlugin.h
+    SpectraComparePlugin.h \
+    ../Library/QCustomPlot.h
 
 FORMS    += SpectraCompare.ui
