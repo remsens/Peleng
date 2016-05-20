@@ -781,17 +781,17 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
 void Main2DWindow::on_action_GeoTiff_triggered()
 {
-    QMessageBox msgBox;
-    //char s[] = "D:/hyperCube.tif" ;
     QString filename  = QFileDialog::getSaveFileName(this, "Сохранить гиперкуб",
                                                      "гиперкуб.tif",
                                                      "Images (*.tif)");
+    if(filename.isEmpty())
+        return;
     std::string strName = filename.toStdString();
     const char *charName = strName.c_str();
-    if(GeoTiff::save(charName,m_pCube)) // GeoTiff::save("D:/hyperCube.tif",m_pCube) не компилируется в релизе
-        msgBox.setText("Сохранено");
-    else
+    QMessageBox msgBox;
+    if(!GeoTiff::save(charName,m_pCube))
+    {
         msgBox.setText("Ошибка при сохранении");
-    msgBox.exec();
-
+        msgBox.exec();
+    }
 }
