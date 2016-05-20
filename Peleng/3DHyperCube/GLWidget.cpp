@@ -1040,7 +1040,10 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
     {
         //qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
-        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+//        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+//        qDebug()<<"data старый способ: "<<strForLbl;
+        strForLbl = QString::number(m_pHyperCube->GetDataPoint(m_dataX,m_dataY,m_dataZ));
+//        qDebug()<<"data новый способ: "<<strForLbl;
     }
     else
     {
