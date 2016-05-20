@@ -64,6 +64,8 @@ public slots:
     void ActionNoiseSavitGolay4_9Toogled();
     void ActionNoiseSavitGolay5_7Toogled();
     void ActionNoiseSavitGolay5_9Toogled();
+
+    void ActionNormalization();
     void AddSpectr();
 private:
     bool m_hold;

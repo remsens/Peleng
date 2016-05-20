@@ -38,7 +38,14 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
         {
             if (m_windowList.at(i)->getIsHold())
             {
-                m_windowList.at(i)->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
+                if (attr->GetExternalSpectrFlag())
+                {
+                    // передавать, отображать подписи осей, или нет
+                     m_windowList.at(i)->plotSpectr();
+                } else
+                {
+                   m_windowList.at(i)->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
+                }
                 plot = true;
             }
         }

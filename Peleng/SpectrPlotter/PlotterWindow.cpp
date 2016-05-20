@@ -114,6 +114,7 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
         menu->addAction("Удалить выделенный график", this, SLOT(removeSelectedGraph()));
         menu->addAction("Оставить выделенный график",this,SLOT(removeAllExceptSelectedGraph()));
         menu->addAction("Интерполяция", this, SLOT(onActionInterplol()));
+        menu->addAction("Нормировка", this, SLOT(ActionNormalization()));
         if (m_attributes->GetAvailablePlugins().contains("SpectralLib UI"))
         {
             menu->addAction("Сохранить в библиотеку",this,SLOT(on_actionSave_toggled()));
@@ -256,8 +257,35 @@ void PlotterWindow::onActionInterplol()
         m_attributes->SetYUnit(Ynew);
         m_attributes->SetExternalSpectrFlag(true);
         //m_attributes->SetExternalSpectrFormat(0);
-        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes );
+        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes);
     }
+}
+
+void PlotterWindow::ActionNormalization()
+{
+    //QStringList nameList = m_customPlot->selectedGraphs().at(0)->name().split("Name: ");
+    bool oldHold = m_hold;
+    m_hold = true;
+    m_attributes->SetXUnit(m_xArr);
+    QVector<double> sortedYArr;
+    sortedYArr = m_yArr;
+    qSort(sortedYArr);
+    for (int i = 0; i < m_yArr.size(); i++)
+    {
+        m_yArr[i] /= sortedYArr.last();
+    }
+    m_attributes->SetYUnit(m_yArr);
+    m_attributes->SetExternalSpectrFlag(true);
+    QList<Attributes::DescriptionSpectr> descripSpectr = m_attributes->GetSpectrumDescription();
+    descripSpectr.removeAt(0);
+    Attributes::DescriptionSpectr ds;
+    ds.title = "Нормировка";
+    ds.description = "Нормировка: " + m_customPlot->selectedGraphs().at(0)->name();
+    descripSpectr.insert(0, ds);
+    m_attributes->SetDescriptionSpectr(descripSpectr);
+    removeSelectedGraph();
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
+    m_hold = oldHold;
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()
@@ -381,22 +409,14 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         }
         sortedYArr = m_yArr;
         qSort(sortedYArr);
-        if (sortedYArr.first() < minY )
-            minY = sortedYArr.first();
-        if (sortedYArr.last() > maxY )
-            maxY = sortedYArr.last();
-
-        // как догадаться, где нужно нормировать, а где не нужно? Все-таки отдельный функционал нужно делать.
-       /* for (int i = 0; i < m_yArr.size(); i++)
-        {
-            m_yArr[i] /= maxY;
-        }*/
+        minY = sortedYArr.first();
+        maxY = sortedYArr.last();
 
         QString grafName;
         if (m_attributes->GetExternalSpectrFlag())
         {
             if (!m_attributes->GetSpectrumDescription().isEmpty())
-                grafName.append(m_attributes->GetSpectrumDescription().at(0).title).append(m_attributes->GetSpectrumDescription().at(0).description);
+                grafName.append(m_attributes->GetSpectrumDescription().at(0).description);
         } else
         {
             grafName.append("X:");
