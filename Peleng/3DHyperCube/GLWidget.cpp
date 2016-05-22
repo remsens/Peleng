@@ -5,10 +5,12 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
+#include <algorithm>
 #include "../Library/FileProjectFeatures.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/Utils/Compare.h"
+#include <QElapsedTimer>
 
 using namespace std;
 
@@ -1335,28 +1337,38 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
         qDebug()<<"выполнено"<<i<<"/"<<n;
 #endif
     }
+    for (int i = 0; i < n; ++i)
+    {
+        dataTemp.clear();
+        for (int j = 0; j < ROWS; ++j)
+        {
+            for(int k = 0; k < COLS; ++k)
+            {
+                dataTemp.append(m_pHyperCube->GetDataPoint(j,k,i*step));
+            }
+        }
+        qSort(dataTemp);
+        min = dataTemp[int(ROWS*COLS*thresholdLow)];
+        max = dataTemp[int(ROWS*COLS*thresholdHigh)];
+        if (min < minCMap )
+            minCMap = min;
+        if (max > maxCMap )
+            maxCMap = max;
+#ifdef DEBUG
+        qDebug()<<"выполнено"<<i<<"/"<<n;
+#endif
+    }
+
+
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;
 }
 
 void GLWidget::findAbsoluteMinMax()
 {
-//    int min =  32767;
-//    int max = -32767;
-//    for (int i = 0; i < CHNLS; ++i)
-//    {
-//        for (int j = 0; j < ROWS*COLS; ++j)
-//        {
-//            if(data[i][j] < min)
-//                min = data[i][j];
-//            if (data[i][j] > max)
-//                max = data[i][j];
-//        }
-//    }
-//    absMin = min;
-//    absMax = max;
-    int min =  32767;
-    int max = -32767;
+
+    double min =  1e300;
+    double max = -1e300;
     for (int i = 0; i < CHNLS; ++i)
     {
         for (int j = 0; j < ROWS; ++j)
@@ -1370,6 +1382,7 @@ void GLWidget::findAbsoluteMinMax()
             }
         }
     }
-    absMin = min;
-    absMax = max;
+    absMin = (int)min;
+    absMax = (int)max;
+
 }
