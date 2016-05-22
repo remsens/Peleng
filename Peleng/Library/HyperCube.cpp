@@ -310,22 +310,26 @@ double HyperCube::GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z)
         {
             qint64 value;
             LongLongFromCharArray(m_dataCube[z] + shift,m_infoData.formatType,value);
-            return(double(value));
+            return(static_cast<double>(value));
 
-        }else if(m_infoData.formatType == type_float ||
-                 m_infoData.formatType == type_double ||
-                 m_infoData.formatType == type_2double)
+        }else if(m_infoData.formatType == type_float)
         {
             float value;
-            FloatFromCharArray(m_dataCube[z] + shift,m_infoData.formatType,value);
+            FloatFromCharArray(m_dataCube[z] + shift,value);
+            return(static_cast<double>(value));
         }
+        else if (m_infoData.formatType == type_double )
+        {
+            double value;
+            DoubleFromCharArray(m_dataCube[z] + shift,value);
+            return value;
 
-        else
+        }
+        else // все целочисленнные unsigned
         {
             quint64 value;
             ULongLongFromCharArray(m_dataCube[z] + shift,m_infoData.formatType,value);
-            return(double(value));
-
+            return(static_cast<double>(value));
         }
     } catch(...) {
         throw GenericExc("Неверно выделен размер под блок данных", -1);
