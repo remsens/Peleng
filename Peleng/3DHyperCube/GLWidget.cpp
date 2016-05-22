@@ -6,11 +6,11 @@
 #include <GL/glu.h>
 #include <QDebug>
 #include <algorithm>
+#include <climits>
 #include "../Library/FileProjectFeatures.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/Utils/Compare.h"
-#include <QElapsedTimer>
 
 using namespace std;
 
@@ -1315,8 +1315,8 @@ QImage GLWidget::from2Dmass2QImage(double **sidesData,int dim1,int dim2,int minC
 void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
-    minCMap =  32767;
-    maxCMap = -32767;
+    minCMap = INT_MAX; //это не опечатка!
+    maxCMap = INT_MIN;
     int min;
     int max;
     QVector<double>dataTemp;
@@ -1337,29 +1337,6 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
         qDebug()<<"выполнено"<<i<<"/"<<n;
 #endif
     }
-    for (int i = 0; i < n; ++i)
-    {
-        dataTemp.clear();
-        for (int j = 0; j < ROWS; ++j)
-        {
-            for(int k = 0; k < COLS; ++k)
-            {
-                dataTemp.append(m_pHyperCube->GetDataPoint(j,k,i*step));
-            }
-        }
-        qSort(dataTemp);
-        min = dataTemp[int(ROWS*COLS*thresholdLow)];
-        max = dataTemp[int(ROWS*COLS*thresholdHigh)];
-        if (min < minCMap )
-            minCMap = min;
-        if (max > maxCMap )
-            maxCMap = max;
-#ifdef DEBUG
-        qDebug()<<"выполнено"<<i<<"/"<<n;
-#endif
-    }
-
-
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;
 }
@@ -1367,8 +1344,8 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 void GLWidget::findAbsoluteMinMax()
 {
 
-    double min =  1e300;
-    double max = -1e300;
+    double min = std::numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::min();
     for (int i = 0; i < CHNLS; ++i)
     {
         for (int j = 0; j < ROWS; ++j)
