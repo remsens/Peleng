@@ -143,6 +143,12 @@ public:
     //! @param C2 - конечный номер столбцов
     void ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2);
 
+    //! Функция получения  одной точки из куба
+    //! @param x - координата по строкам
+    //! @param y - координата по столбцам
+    //! @param z - координата по каналам
+    //! @return - значение по координатам (x,y,z)
+    double GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z);
 
 private:
     u::int8** m_dataCube; //!< двумерный массив данных гиперкуба

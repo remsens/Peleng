@@ -88,7 +88,7 @@ private slots:
     void prepareToHist();
     void addSpectr();
     void contextMenuRequest(QPoint point);
-
+    void ActionSpectralDistanceToogled();
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
     void setInitSliders(int chan);
@@ -110,7 +110,7 @@ private:
     QAction *pPlotHistAction;
     QAction *pSelectAreaAction;
     QLabel *pStatusBarLabel;
-    QAction* pAddSpectr;
+    QAction *pAddSpectr;
 
     QMenu* m_filters;
     QMenu* m_medianFilter;
