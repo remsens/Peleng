@@ -768,7 +768,7 @@ void GLWidget::ActionSpectralDistanceToogled()
     m_attributes->ClearList();
     m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
     m_attributes->SetExternalSpectrFlag(false);
-    m_attributes->GetAvailablePlugins().value("SpectraCompare")->Execute(m_pHyperCube, m_attributes);
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
 }
 
