@@ -106,66 +106,46 @@ bool Attributes::GetModeLib() const
     return m_addSpectr;
 }
 
-void Attributes::SetXUnit(double xUnit)
+void Attributes::SetCurrentXUnits(const QVector<double>& xUnits)
 {
-    m_XUnits.push_back(xUnit);
+    m_currentXUnits.clear();
+    m_currentXUnits = xUnits;
 }
 
-void Attributes::SetYUnit(double yUnit)
+QVector<double> Attributes::GetCurrentXUnits()
 {
-    m_YUnits.push_back(yUnit);
+    return m_currentXUnits;
 }
 
-void Attributes::SetXUnit(QVector<double>& xUnits)
+void Attributes::SetCurrentYUnits(const QVector<double>& yUnits)
 {
-    m_XUnits.clear();
-    foreach (double x, xUnits) {
-        m_XUnits.append(x);
-    }
+    m_currentYUnits.clear();
+    m_currentYUnits = yUnits;
 }
 
-void Attributes::SetYUnit(QVector<double>& yUnits)
+QVector<double> Attributes::GetCurrentYUnits()
 {
-    m_YUnits.clear();
-    foreach (double y, yUnits) {
-        m_YUnits.append(y);
-    }
+    return m_currentYUnits;
 }
 
-void Attributes::ClearUnitsLists()
+void Attributes::SetCurrentTitle(const QString& title)
 {
-    m_XUnits.clear();
-    m_YUnits.clear();
-    m_descriptionSpectr.clear();
+    m_currentTitle = title;
 }
 
-void Attributes::SetDescriptionItem(const QString& keyTitle, const QString& value)
+QString Attributes::GetCurrentTitle() const
 {
-    DescriptionSpectr ds;
-    ds.title = keyTitle;
-    ds.description = value;
-    m_descriptionSpectr.append(ds);
+    return m_currentTitle;
 }
 
-void Attributes::SetDescriptionSpectr(QList<DescriptionSpectr>& ds)
+void Attributes::SetCurrentSpectr(Spectr* spectr)
 {
-    m_descriptionSpectr.clear();
-    m_descriptionSpectr.append(ds);
+    m_spectr = spectr;
 }
 
-const QVector<double>& Attributes::GetXUnits() const
+Spectr* Attributes::GetCurrentSpectr() const
 {
-    return m_XUnits;
-}
-
-const QVector<double>& Attributes::GetYUnits() const
-{
-    return m_YUnits;
-}
-
-const QList<Attributes::DescriptionSpectr> &Attributes::GetSpectrumDescription() const
-{
-    return m_descriptionSpectr;
+    return m_spectr;
 }
 
 void Attributes::SetPointsList(const Point& point)

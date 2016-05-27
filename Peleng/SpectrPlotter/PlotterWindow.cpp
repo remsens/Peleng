@@ -45,7 +45,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     }
     if (m_attributes->GetExternalSpectrFlag())
     {
-        m_descriptionExternalSpectr.append(m_attributes->GetSpectrumDescription());    
+        //m_descriptionExternalSpectr.append(m_attributes->GetCurrentSpectr()->GetTitle());
     }
     else
          ui->menuSpectrum->removeAction(ui->actionInterplol);
@@ -56,8 +56,6 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
-    //connect(ui->actionInterplol,SIGNAL(triggered()),this, SLOT(onActionInterplol()));
-
 }
 
 PlotterWindow::~PlotterWindow()
@@ -77,8 +75,8 @@ void PlotterWindow::NoiseMedianAlgExecute()
     m_hold = true;
     m_attributes->SetNoiseAlg(Median1D);
     m_attributes->SetApplyToAllCube(false);
-    m_attributes->SetXUnit(m_xArr);
-    m_attributes->SetYUnit(m_yArr);
+    m_attributes->SetCurrentXUnits(m_xArr);
+    m_attributes->SetCurrentYUnits(m_yArr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }
@@ -92,7 +90,8 @@ void PlotterWindow::AddSpectr()
 
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
 {
-    QString grafName = plottable->name();
+    m_selectedSpectr = m_listSpectr.at(m_customPlot->selectedGraphs().indexOf(dynamic_cast<QCPGraph*>(plottable)));
+    //QString grafName = plottable->name();
     QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
     m_xArr.clear();
     m_yArr.clear();
@@ -102,7 +101,7 @@ void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
         m_yArr.append(xy.value);
     }
     //    XandY.at(i).key; //х
-    //    XandY.at(i).value; //у
+    //    XandY.at(i).value; //у*/
 }
 
 void PlotterWindow::contextMenuRequest(QPoint pos)
@@ -241,7 +240,7 @@ void PlotterWindow::onActionPoints(bool flag)
 
 void PlotterWindow::onActionInterplol()
 {
-    QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
+    /*QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
     bool isIntrpl = false;
     try
     {
@@ -258,7 +257,10 @@ void PlotterWindow::onActionInterplol()
         m_attributes->SetExternalSpectrFlag(true);
         //m_attributes->SetExternalSpectrFormat(0);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes);
-    }
+    }*/
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes);
 }
 
 void PlotterWindow::ActionNormalization()
@@ -266,7 +268,7 @@ void PlotterWindow::ActionNormalization()
     //QStringList nameList = m_customPlot->selectedGraphs().at(0)->name().split("Name: ");
     bool oldHold = m_hold;
     m_hold = true;
-    m_attributes->SetXUnit(m_xArr);
+    /*m_attributes->SetXUnit(m_xArr);
     QVector<double> sortedYArr;
     sortedYArr = m_yArr;
     qSort(sortedYArr);
@@ -282,8 +284,9 @@ void PlotterWindow::ActionNormalization()
     ds.title = "Нормировка";
     ds.description = "Нормировка: " + m_customPlot->selectedGraphs().at(0)->name();
     descripSpectr.insert(0, ds);
-    m_attributes->SetDescriptionSpectr(descripSpectr);
+    m_attributes->SetDescriptionSpectr(descripSpectr);*/
     removeSelectedGraph();
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }
@@ -378,7 +381,7 @@ void PlotterWindow::ActionNoiseSavitGolay5_9Toogled()
 
 void PlotterWindow::plotSpectr(uint dataX, uint dataY)
 {
-
+    m_listSpectr.append(m_attributes->GetCurrentSpectr());
     initSize = size();
 
     m_xArr.clear();
@@ -388,12 +391,11 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
     try
     {    //если можем получить точку гиперкуба
         QVector<double> sortedYArr;
-        m_xArr.clear();
-        m_yArr.clear();
-        if (m_attributes->GetExternalSpectrFlag())
+
+       /* if (m_attributes->GetExternalSpectrFlag())
         {
-            m_xArr = m_attributes->GetXUnits();
-            m_yArr = m_attributes->GetYUnits();
+            m_xArr = m_attributes->GetCurrentXUnits();
+            m_yArr = m_attributes->GetCurrentYUnits();
         } else
         {
             m_yArr.clear();
@@ -406,14 +408,16 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             }
             m_xArr.append(m_cube->GetListOfChannels().toVector());
 
-        }
+        }*/
+        m_xArr = m_attributes->GetCurrentXUnits();
+        m_yArr = m_attributes->GetCurrentYUnits();
         sortedYArr = m_yArr;
         qSort(sortedYArr);
         minY = sortedYArr.first();
         maxY = sortedYArr.last();
 
         QString grafName;
-        if (m_attributes->GetExternalSpectrFlag())
+        /*if (m_attributes->GetExternalSpectrFlag())
         {
             if (!m_attributes->GetSpectrumDescription().isEmpty())
                 grafName.append(m_attributes->GetSpectrumDescription().at(0).description);
@@ -423,7 +427,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             grafName.append(QString::number(dataX));
             grafName.append(" Y:");
             grafName.append(QString::number(dataY));
-        }
+        }*/
 
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
         //m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);//так можно сделать зум по одной оси
@@ -453,7 +457,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         m_customPlot->graph()->setData(m_xArr, m_yArr);
         m_customPlot->xAxis->setRange(m_xArr.first(),m_xArr.last());
         m_customPlot->yAxis->setRange(minY,maxY);
-        if (m_attributes->GetExternalSpectrFlag())
+       /* if (m_attributes->GetExternalSpectrFlag())
         {
              for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
              {
@@ -472,7 +476,7 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
             m_attributes->SetSPlotterYtitle("Яркость,ед. АЦП");// можно вынести хоть в mainApp. если понадобится (например после перевода СПЭЯ->коэф.отраж.), то вызвать с другим параметром в нужном месте.
             m_customPlot->xAxis->setLabel("Длина волны, нм");
             m_customPlot->yAxis->setLabel(m_attributes->GetSPlotterYtitle());
-        }
+        }*/
         m_customPlot->replot();
         autoTickCountX = m_customPlot->xAxis->autoTickCount();
         autoTickCountY = m_customPlot->yAxis->autoTickCount();
@@ -522,10 +526,10 @@ void PlotterWindow::on_actionHold_toggled(bool value)
 void PlotterWindow::on_actionSave_toggled()
 {
     m_attributes->SetModeLib(0);
-    m_attributes->ClearUnitsLists();
-    m_attributes->SetXUnit(m_xArr);
-    m_attributes->SetYUnit(m_yArr);
-    m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);
+    //m_attributes->ClearUnitsLists();
+   /* m_attributes->SetCurrentXUnits(m_xArr);
+    m_attributes->SetCurrentYUnits(m_yArr);
+    m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);*/
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
 }
 
@@ -535,8 +539,8 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_hold = true;
     m_attributes->SetNoiseAlg(Savitski_Golay1D);
     m_attributes->SetApplyToAllCube(false);
-    m_attributes->SetXUnit(m_xArr);
-    m_attributes->SetYUnit(m_yArr);
+    //m_attributes->SetXUnit(m_xArr);
+    //m_attributes->SetYUnit(m_yArr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }

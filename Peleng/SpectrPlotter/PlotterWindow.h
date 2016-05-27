@@ -5,6 +5,9 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
+#include "../Library/Spectr.h"
+#include "../Library/structures.h"
+
 namespace Ui {
 class PlotterWindow;
 }
@@ -83,10 +86,11 @@ private:
     int autoTickCountY;
     HyperCube* m_cube;
     Attributes* m_attributes;
-    QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
+    QList<DescriptionSpectr> m_descriptionExternalSpectr;
     QVector<double> m_xArr;
     QVector<double> m_yArr;
-
+    QList<Spectr*> m_listSpectr;
+    Spectr* m_selectedSpectr;
 };
 
 #endif // PLOTTERWINDOW_H

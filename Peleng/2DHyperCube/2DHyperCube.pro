@@ -33,6 +33,8 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
     Region.cpp\
+    ../Library/Spectr.cpp \
+    ../Library/MathOperations/interpolation.cpp
 
 
 
@@ -45,7 +47,10 @@ HEADERS += \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
-    Region.h
+    Region.h \
+    ../Library/Spectr.h \
+    ../Library/structures.h \
+    ../Library/MathOperations/interpolation.h
 
 
 FORMS += \

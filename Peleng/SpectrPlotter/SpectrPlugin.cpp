@@ -54,15 +54,8 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
     {
         PlotterWindow* plotterWindow = new PlotterWindow(cube, attr);
         QObject::connect(plotterWindow, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(OnClose(PlotterWindow*)));
-         if (attr->GetExternalSpectrFlag())
-         {
-             // передавать, отображать подписи осей, или нет
-              plotterWindow->plotSpectr();
-         } else
-         {
-            plotterWindow->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
-         }
-         m_windowList.append(plotterWindow);
+        plotterWindow->plotSpectr();
+        m_windowList.append(plotterWindow);
     }
 
     for (int i = 0; i < m_windowList.size(); i++)

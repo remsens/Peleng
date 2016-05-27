@@ -25,6 +25,8 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
     ../Library/Utils/Compare.cpp \
+    ../Library/Spectr.cpp \
+    ../Library/MathOperations/interpolation.cpp
 
 
 HEADERS += \
@@ -42,7 +44,10 @@ HEADERS += \
     ../Library/QCustomPlot.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
     ../Library/Utils/Compare.h \
-    SavitskiGolay1DAlg.h
+    SavitskiGolay1DAlg.h \
+    ../Library/Spectr.h \
+    ../Library/structures.h \
+    ../Library/MathOperations/interpolation.h
 
 RESOURCES += \
     resources.qrc

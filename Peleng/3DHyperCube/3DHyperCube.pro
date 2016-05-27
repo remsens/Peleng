@@ -28,7 +28,9 @@ HEADERS       = \
     ../Library/Attributes/Attributes.h \
     ../Library/FileProjectFeatures.h \
     ../Library/stepsdefinitions.h \
-    ../Library/Utils/Compare.h
+    ../Library/Utils/Compare.h \
+    ../Library/Spectr.h \
+    ../Library/MathOperations/interpolation.h
 
 
 SOURCES       = \
@@ -41,7 +43,9 @@ SOURCES       = \
     ContrastWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     ../Library/FileProjectFeatures.cpp \
-    ../Library/Utils/Compare.cpp
+    ../Library/Utils/Compare.cpp \
+    ../Library/Spectr.cpp \
+    ../Library/MathOperations/interpolation.cpp
 
 
 
