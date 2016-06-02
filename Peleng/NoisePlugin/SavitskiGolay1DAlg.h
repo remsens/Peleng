@@ -1047,8 +1047,8 @@ private:
 
     void ToSpectrWindow()
     {
-        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentXUnits();
-        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentYUnits();
+        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetXUnits();
+        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetYUnits();
         // определим массив коэффициентов
         u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
         u::int32* coeff = new u::int32[maskPixels];

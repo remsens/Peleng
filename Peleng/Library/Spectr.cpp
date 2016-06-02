@@ -15,8 +15,6 @@ Spectr::Spectr(HyperCube* cube, u::uint32 x, u::uint32 y)
     m_interpolated = false;
     m_normed = false;
     m_cube = cube;
-    qDebug() << m_cube->GetCountofChannels();
-    qDebug() << m_cube->GetListOfChannels().size();
     for (uint i = 0; i < m_cube->GetCountofChannels(); i++)
     {
         m_xUnits.append(m_cube->GetListOfChannels().at(i));
@@ -37,6 +35,8 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     m_interpolated = false;
     m_normed = false;
     m_cube = cube;
+    Norm();
+    Interpolate();
 }
 
 Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<double>& yUnits, QString& title, Measurements measurements)
@@ -48,6 +48,8 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     m_interpolated = false;
     m_normed = false;
     m_cube = cube;
+    Norm();
+    Interpolate();
 }
 
 Spectr::~Spectr()
@@ -64,11 +66,13 @@ Spectr::~Spectr()
 
 void Spectr::Interpolate()
 {
-    interpolate(m_xUnits, m_yUnits, m_cube->GetListOfChannels(),m_yUnitsInterpolated);
     for (u::uint32 i = 0; i < m_cube->GetCountofChannels(); i++)
     {
         m_xUnitsInterpolated.push_back(m_cube->GetListOfChannels().at(i));
     }
+    m_yUnitsInterpolated.resize(m_cube->GetCountofChannels());
+    interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
+
     m_interpolated = true;
 }
 

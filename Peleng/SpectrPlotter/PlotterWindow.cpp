@@ -73,8 +73,7 @@ void PlotterWindow::NoiseMedianAlgExecute()
     m_hold = true;
     m_attributes->SetNoiseAlg(Median1D);
     m_attributes->SetApplyToAllCube(false);
-    m_attributes->SetCurrentXUnits(m_xArr);
-    m_attributes->SetCurrentYUnits(m_yArr);
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }
@@ -88,15 +87,11 @@ void PlotterWindow::AddSpectr()
 
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
 {
-    m_selectedSpectr = m_listSpectr.at(m_customPlot->selectedGraphs().indexOf(dynamic_cast<QCPGraph*>(plottable)));
-   /* QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
-    m_xArr.clear();
-    m_yArr.clear();
-    foreach(QCPData xy,XandYlist)
+    int index = m_customPlot->selectedGraphs().indexOf(dynamic_cast<QCPGraph*>(plottable));
+    if (index > -1 && index < m_listSpectr.size())
     {
-        m_xArr.append(xy.key);
-        m_yArr.append(xy.value);
-    }*/
+        m_selectedSpectr = m_listSpectr.at(index);
+    }
 }
 
 void PlotterWindow::contextMenuRequest(QPoint pos)
@@ -151,7 +146,6 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             menuNoise->addMenu(menuNoiseSavGolay);
             menu->addMenu(menuNoise);
         }
-
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
 }
@@ -452,8 +446,7 @@ void PlotterWindow::NoiseGolayAlgExecute()
     m_hold = true;
     m_attributes->SetNoiseAlg(Savitski_Golay1D);
     m_attributes->SetApplyToAllCube(false);
-    //m_attributes->SetXUnit(m_xArr);
-    //m_attributes->SetYUnit(m_yArr);
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
     m_attributes->GetAvailablePlugins().value("Noise Remover")->Execute(m_cube, m_attributes);
     m_hold = oldHold;
 }

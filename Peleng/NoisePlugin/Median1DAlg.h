@@ -42,7 +42,7 @@ public:
 private:
     void ToSpectrWindow()
     {
-        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentXUnits();
+        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetXUnits();
 
         if (BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()%2 == 0)
         {
@@ -56,7 +56,7 @@ private:
         // Сформировать массив. Для импортируемых - тип double, не проверяем у гиперкуба
         // не думаю, что для спектров так критична скорость
 
-        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentYUnits();
+        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetYUnits();
         QVector<double> resultSpectr; resultSpectr.resize(spectrMas.size());
         for (u::uint32 i = 0; i < spectrMas.size()- BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()+1; i++)
         {
