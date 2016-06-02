@@ -207,21 +207,42 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
         throw GenericExc("Неверно введен канал", -1);
     }
     try {
-        if (    m_infoData.formatType == type_int8  ||
+        //        if (    m_infoData.formatType == type_int8  ||
+        //                m_infoData.formatType == type_int16 ||
+        //                m_infoData.formatType == type_int32 ||
+        //                m_infoData.formatType == type_int64 ||
+        //                m_infoData.formatType == type_float ||
+        //                m_infoData.formatType == type_double ||
+        //                m_infoData.formatType == type_2double)
+        if (m_infoData.formatType == type_int8  ||
                 m_infoData.formatType == type_int16 ||
                 m_infoData.formatType == type_int32 ||
-                m_infoData.formatType == type_int64 ||
-                m_infoData.formatType == type_float ||
-                m_infoData.formatType == type_double ||
-                m_infoData.formatType == type_2double)
+                m_infoData.formatType == type_int64)
         {
             qint64 value;
             for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
                 LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType, m_infoData.formatType,value);
                 data.append(value);
             }
+        }
+        else if(m_infoData.formatType == type_float)
+        {
+            float value;
+            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
+                FloatFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,value);
+                data.append(value);
+            }
+        }
+        else if (m_infoData.formatType == type_double )
+        {
+            double value;
+            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
+                DoubleFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,value);
+                data.append(value);
+            }
 
-        } else
+        }
+        else
         {
             quint64 value;
             for (u::uint32 i =0; i < GetSizeChannel(); i++) {
