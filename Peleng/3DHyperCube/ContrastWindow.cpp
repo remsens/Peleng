@@ -71,23 +71,23 @@ void ContrastWindow::maxChngdSlot(int val)
     emit minMaxChanged(MAX,MIN);
 }
 
-void ContrastWindow::showMinLabel(int val)
-{
-    ui->labelMin->setNum(doubleFromInt(val));
-}
+//void ContrastWindow::showMinLabel(int val)
+//{
+//    ui->labelMin->setNum(doubleFromInt(val));
+//}
 
-void ContrastWindow::showMaxLabel(int val)
-{
-    ui->labelMax->setNum(doubleFromInt(val));
-}
+//void ContrastWindow::showMaxLabel(int val)
+//{
+//    ui->labelMax->setNum(doubleFromInt(val));
+//}
 
-int ContrastWindow::intFromDouble(double val)
-{
-    return (int) val*dpi;
-}
+//int ContrastWindow::intFromDouble(double val)
+//{
+//    return (int) val*dpi;
+//}
 
-double ContrastWindow::doubleFromInt(int val)
-{
-    return (double)val/dpi;
-}
+//double ContrastWindow::doubleFromInt(int val)
+//{
+//    return (double)val/dpi;
+//}
 
