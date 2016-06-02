@@ -379,56 +379,25 @@ void PlotterWindow::ActionNoiseSavitGolay5_9Toogled()
     NoiseGolayAlgExecute();
 }
 
-void PlotterWindow::plotSpectr(uint dataX, uint dataY)
+void PlotterWindow::plotSpectr(QVector<double>& dataX, QVector<double>& dataY)
 {
-    m_listSpectr.append(m_attributes->GetCurrentSpectr());
-    initSize = size();
-
-    m_xArr.clear();
-    m_yArr.clear();
-
+    if (!m_listSpectr.contains(m_attributes->GetCurrentSpectr()))
+    {
+        m_listSpectr.append(m_attributes->GetCurrentSpectr());
+    }
+   // initSize = size();
     QString err;
     try
     {    //если можем получить точку гиперкуба
         QVector<double> sortedYArr;
-
-       /* if (m_attributes->GetExternalSpectrFlag())
-        {
-            m_xArr = m_attributes->GetCurrentXUnits();
-            m_yArr = m_attributes->GetCurrentYUnits();
-        } else
-        {
-            m_yArr.clear();
-            m_cube->GetSpectrumPoint(dataX, dataY, m_yArr); // записали в pSpectrValues из гиперкуба
-            sortedYArr = m_yArr;
-            qSort(sortedYArr);
-            for (int i = 0; i < m_yArr.size(); i++)
-            {
-                m_yArr[i] /= sortedYArr.last();
-            }
-            m_xArr.append(m_cube->GetListOfChannels().toVector());
-
-        }*/
-        m_xArr = m_attributes->GetCurrentXUnits();
-        m_yArr = m_attributes->GetCurrentYUnits();
-        sortedYArr = m_yArr;
+       /* m_xArr = m_attributes->GetCurrentSpectr()->GetXUnits();
+        m_yArr = m_attributes->GetCurrentSpectr()->GetYUnits();*/
+        sortedYArr = dataY;
         qSort(sortedYArr);
         minY = sortedYArr.first();
         maxY = sortedYArr.last();
 
         QString grafName;
-        /*if (m_attributes->GetExternalSpectrFlag())
-        {
-            if (!m_attributes->GetSpectrumDescription().isEmpty())
-                grafName.append(m_attributes->GetSpectrumDescription().at(0).description);
-        } else
-        {
-            grafName.append("X:");
-            grafName.append(QString::number(dataX));
-            grafName.append(" Y:");
-            grafName.append(QString::number(dataY));
-        }*/
-
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
         //m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);//так можно сделать зум по одной оси
         m_customPlot->legend->setVisible(true);
@@ -440,7 +409,6 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
         {
             m_customPlot->graph()->setScatterStyle( QCPScatterStyle::ssDisc );
         }
-        //addTracer(m_customPlot->graph());
         if (m_customPlot->graphCount() == 1) // первый график всегда черного цвета, остальные - рандомные
             m_customPlot->graph()->setPen(QPen(Qt::black));
         else
@@ -454,35 +422,14 @@ void PlotterWindow::plotSpectr(uint dataX, uint dataY)
            m_customPlot->graph()->setPen(QPen(color));
         }
         m_customPlot->graph()->setName(grafName);
-        m_customPlot->graph()->setData(m_xArr, m_yArr);
-        m_customPlot->xAxis->setRange(m_xArr.first(),m_xArr.last());
+        m_customPlot->graph()->setData(dataX, dataY);
+        m_customPlot->xAxis->setRange(dataX.first(), dataX.last());
         m_customPlot->yAxis->setRange(minY,maxY);
-       /* if (m_attributes->GetExternalSpectrFlag())
-        {
-             for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
-             {
-                  if (m_attributes->GetSpectrumDescription().at(i).title.compare("X Units:") == 0)
-                  {
-                      m_customPlot->xAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                  } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Y Units:") == 0)
-                  {
-                      m_customPlot->yAxis->setLabel(m_attributes->GetSpectrumDescription().at(i).description);
-                  }
-              }
-        }
-        else
-        {
-            // проверять, проведена атмосферная коррекция, или нет
-            m_attributes->SetSPlotterYtitle("Яркость,ед. АЦП");// можно вынести хоть в mainApp. если понадобится (например после перевода СПЭЯ->коэф.отраж.), то вызвать с другим параметром в нужном месте.
-            m_customPlot->xAxis->setLabel("Длина волны, нм");
-            m_customPlot->yAxis->setLabel(m_attributes->GetSPlotterYtitle());
-        }*/
         m_customPlot->replot();
         autoTickCountX = m_customPlot->xAxis->autoTickCount();
         autoTickCountY = m_customPlot->yAxis->autoTickCount();
     } catch(const GenericExc& exc)
     {
-        //m_customPlot->replot();
         err = exc.GetWhat();
     } catch(...)
     {

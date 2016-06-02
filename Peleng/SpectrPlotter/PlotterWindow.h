@@ -21,7 +21,7 @@ public:
     explicit PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     virtual ~PlotterWindow();
 
-    void plotSpectr(uint dataX = 0, uint dataY = 0 );
+    void plotSpectr(QVector<double>& dataX, QVector<double>& dataY);
     bool getIsHold(){return m_hold;}
 
     void chooseStep();
@@ -70,6 +70,7 @@ public slots:
 
     void ActionNormalization();
     void AddSpectr();
+
 private:
     bool m_hold;
     bool m_valuesFlag;

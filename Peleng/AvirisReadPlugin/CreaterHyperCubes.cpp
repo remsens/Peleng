@@ -169,12 +169,13 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
         }
     }
     file.close();
-    if (wordsPoints != 8)
+    return true;
+    /*if (wordsPoints != 8)
     {
         return false;
     } else {
         return true;
-    }
+    }*/
 }
 
 u::uint32 CreaterHyperCubes::GetNumberOfBytesFromData(u::int32 format) {
@@ -289,16 +290,19 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
             return true;
         }
         char* tempbuf = new char[chunk_size];
+        memset(tempbuf, 0, chunk_size);
         if (!dataFile.atEnd())
         {
             if (dataFile.read(tempbuf, chunk_size) != chunk_size)
             {
                 return false;
             }
+
             cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
             m_progress = i*100/m_infoData.bands-1;
+            qDebug() << tempbuf;
         }
-        delete [] tempbuf;
+       delete [] tempbuf;
    }
    dataFile.close();
    return true;
