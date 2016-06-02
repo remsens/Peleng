@@ -170,16 +170,16 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, QVector<double> &data
         else if(m_infoData.formatType == type_float)
         {
             float value;
-            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
-                FloatFromCharArray(m_dataCube[channel] + shift,value);
+            for (u::uint32 i = 0; i < m_infoData.bands; i++) {
+                FloatFromCharArray(m_dataCube[i] + shift,value);
                 data.append(value);
             }
         }
         else if (m_infoData.formatType == type_double )
         {
             double value;
-            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
-                DoubleFromCharArray(m_dataCube[channel] + shift,value);
+            for (u::uint32 i = 0; i < m_infoData.bands; i++) {
+                DoubleFromCharArray(m_dataCube[i] + shift,value);
                 data.append(value);
             }
 
