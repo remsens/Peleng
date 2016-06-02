@@ -5,6 +5,8 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
+#include <algorithm>
+#include <climits>
 #include "../Library/FileProjectFeatures.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/stepsdefinitions.h"
@@ -12,7 +14,7 @@
 
 using namespace std;
 
-//int cmp(const void *a, const void *b);
+#define DEBUG
 
 
 GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
@@ -1039,11 +1041,11 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
     {
-        //qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
-//        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
-//        qDebug()<<"data старый способ: "<<strForLbl;
+        float **data = (float**)m_pHyperCube->GetDataCube();
+        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+        qDebug()<<"data старый способ: "<<strForLbl;
         strForLbl = QString::number(m_pHyperCube->GetDataPoint(m_dataX,m_dataY,m_dataZ));
-//        qDebug()<<"data новый способ: "<<strForLbl;
+        qDebug()<<"data новый способ: "<<strForLbl;
     }
     else
     {
@@ -1313,8 +1315,8 @@ QImage GLWidget::from2Dmass2QImage(double **sidesData,int dim1,int dim2,int minC
 void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
-    minCMap =  32767;
-    maxCMap = -32767;
+    minCMap = INT_MAX; //это не опечатка!
+    maxCMap = INT_MIN;
     int min;
     int max;
     QVector<double>dataTemp;
@@ -1341,22 +1343,9 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 
 void GLWidget::findAbsoluteMinMax()
 {
-//    int min =  32767;
-//    int max = -32767;
-//    for (int i = 0; i < CHNLS; ++i)
-//    {
-//        for (int j = 0; j < ROWS*COLS; ++j)
-//        {
-//            if(data[i][j] < min)
-//                min = data[i][j];
-//            if (data[i][j] > max)
-//                max = data[i][j];
-//        }
-//    }
-//    absMin = min;
-//    absMax = max;
-    int min =  32767;
-    int max = -32767;
+
+    double min = std::numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::min();
     for (int i = 0; i < CHNLS; ++i)
     {
         for (int j = 0; j < ROWS; ++j)
@@ -1370,6 +1359,7 @@ void GLWidget::findAbsoluteMinMax()
             }
         }
     }
-    absMin = min;
-    absMax = max;
+    absMin = (int)min;
+    absMax = (int)max;
+
 }
