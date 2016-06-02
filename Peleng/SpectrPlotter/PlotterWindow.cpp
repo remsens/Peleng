@@ -31,8 +31,6 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     textValues->setVisible(false); // т.к. есть баг, что при создании item'ов они сразу отрисовываются в (0,0)
     vertLine->setVisible(false);
     horizLine->setVisible(false);
-//    m_customPlot->addItem(vertLine);
-//    m_customPlot->addItem(horizLine);
     QPropertyAnimation* panim = new QPropertyAnimation(this, "windowOpacity");
     panim->setDuration(300);
     panim->setStartValue(0);
@@ -54,7 +52,7 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
-    connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool))); // toogled and triggered
+    connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool)));
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
 }
 
@@ -91,17 +89,14 @@ void PlotterWindow::AddSpectr()
 void PlotterWindow::graphClicked(QCPAbstractPlottable * plottable)
 {
     m_selectedSpectr = m_listSpectr.at(m_customPlot->selectedGraphs().indexOf(dynamic_cast<QCPGraph*>(plottable)));
-    //QString grafName = plottable->name();
-    QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
+   /* QList<QCPData> XandYlist = dynamic_cast<QCPGraph*>(plottable)->data()->values();
     m_xArr.clear();
     m_yArr.clear();
     foreach(QCPData xy,XandYlist)
     {
         m_xArr.append(xy.key);
         m_yArr.append(xy.value);
-    }
-    //    XandY.at(i).key; //х
-    //    XandY.at(i).value; //у*/
+    }*/
 }
 
 void PlotterWindow::contextMenuRequest(QPoint pos)
@@ -182,6 +177,15 @@ void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
 
 void PlotterWindow::removeSelectedGraph()
 {
+    // удаляем из списка
+    for (int i = 0; i < m_listSpectr.size(); i++)
+    {
+        if (m_listSpectr.at(i) == m_selectedSpectr)
+        {
+            m_listSpectr.removeAt(i);
+            break;
+        }
+    }
     if (m_customPlot->selectedGraphs().size() > 0)
     {
         m_customPlot->removeGraph(m_customPlot->selectedGraphs().first());
@@ -240,55 +244,18 @@ void PlotterWindow::onActionPoints(bool flag)
 
 void PlotterWindow::onActionInterplol()
 {
-    /*QVector<double> Ynew(m_cube->GetListOfChannels().count()); //контейнер для интерполированных значений яркостей
-    bool isIntrpl = false;
-    try
-    {
-        isIntrpl = interpolate(m_xArr, m_yArr, m_cube->GetListOfChannels(),Ynew);
-    }catch(...)
-    {
-        QMessageBox::critical(this, "Ошибка", "Ошибка при интерполяции спектра");
-    }
-    if(isIntrpl)
-    {
-        QVector<double> xCube = m_cube->GetListOfChannels().toVector();
-        m_attributes->SetXUnit(xCube);
-        m_attributes->SetYUnit(Ynew);
-        m_attributes->SetExternalSpectrFlag(true);
-        //m_attributes->SetExternalSpectrFormat(0);
-        m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes);
-    }*/
-    m_attributes->SetCurrentSpectr(m_selectedSpectr);
-    m_attributes->SetExternalSpectrFlag(true);
-    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube,m_attributes);
+    QString name = "Интерполяция: " + m_selectedSpectr->GetTitle();
+    removeSelectedGraph();
+    m_listSpectr.push_back(m_selectedSpectr);
+    plotSpectr(m_selectedSpectr->GetXUnitsInterpolated(), m_selectedSpectr->GetYUnitsInterpolated(), name);
 }
 
 void PlotterWindow::ActionNormalization()
 {
-    //QStringList nameList = m_customPlot->selectedGraphs().at(0)->name().split("Name: ");
-    bool oldHold = m_hold;
-    m_hold = true;
-    /*m_attributes->SetXUnit(m_xArr);
-    QVector<double> sortedYArr;
-    sortedYArr = m_yArr;
-    qSort(sortedYArr);
-    for (int i = 0; i < m_yArr.size(); i++)
-    {
-        m_yArr[i] /= sortedYArr.last();
-    }
-    m_attributes->SetYUnit(m_yArr);
-    m_attributes->SetExternalSpectrFlag(true);
-    QList<Attributes::DescriptionSpectr> descripSpectr = m_attributes->GetSpectrumDescription();
-    descripSpectr.removeAt(0);
-    Attributes::DescriptionSpectr ds;
-    ds.title = "Нормировка";
-    ds.description = "Нормировка: " + m_customPlot->selectedGraphs().at(0)->name();
-    descripSpectr.insert(0, ds);
-    m_attributes->SetDescriptionSpectr(descripSpectr);*/
+    QString name = "Нормировка: " + m_selectedSpectr->GetTitle();
     removeSelectedGraph();
-    m_attributes->SetCurrentSpectr(m_selectedSpectr);
-    m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
-    m_hold = oldHold;
+    m_listSpectr.push_back(m_selectedSpectr);
+    plotSpectr(m_selectedSpectr->GetXUnitsNormed(), m_selectedSpectr->GetYUnitsNormed(), name);
 }
 
 void PlotterWindow::ActionNoise3MedianToggled()
@@ -379,27 +346,22 @@ void PlotterWindow::ActionNoiseSavitGolay5_9Toogled()
     NoiseGolayAlgExecute();
 }
 
-void PlotterWindow::plotSpectr(QVector<double>& dataX, QVector<double>& dataY)
+void PlotterWindow::plotSpectr(QVector<double>& dataX, QVector<double>& dataY, QString& graphName)
 {
     if (!m_listSpectr.contains(m_attributes->GetCurrentSpectr()))
     {
-        m_listSpectr.append(m_attributes->GetCurrentSpectr());
+        m_listSpectr.push_back(m_attributes->GetCurrentSpectr());
     }
-   // initSize = size();
     QString err;
     try
     {    //если можем получить точку гиперкуба
         QVector<double> sortedYArr;
-       /* m_xArr = m_attributes->GetCurrentSpectr()->GetXUnits();
-        m_yArr = m_attributes->GetCurrentSpectr()->GetYUnits();*/
         sortedYArr = dataY;
         qSort(sortedYArr);
         minY = sortedYArr.first();
         maxY = sortedYArr.last();
 
-        QString grafName;
         m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables | QCP::iSelectLegend);
-        //m_customPlot->axisRect()->setRangeZoom(Qt::Horizontal);//так можно сделать зум по одной оси
         m_customPlot->legend->setVisible(true);
         if (!m_hold)
             m_customPlot->clearGraphs();
@@ -421,7 +383,11 @@ void PlotterWindow::plotSpectr(QVector<double>& dataX, QVector<double>& dataY)
            color.setRgb(randR,randG,randB);
            m_customPlot->graph()->setPen(QPen(color));
         }
-        m_customPlot->graph()->setName(grafName);
+        if (graphName == "")
+        {
+            graphName = m_attributes->GetCurrentSpectr()->GetTitle();
+        }
+        m_customPlot->graph()->setName(graphName);
         m_customPlot->graph()->setData(dataX, dataY);
         m_customPlot->xAxis->setRange(dataX.first(), dataX.last());
         m_customPlot->yAxis->setRange(minY,maxY);

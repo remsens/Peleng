@@ -21,10 +21,9 @@ public:
     explicit PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     virtual ~PlotterWindow();
 
-    void plotSpectr(QVector<double>& dataX, QVector<double>& dataY);
+    void plotSpectr(QVector<double>& dataX, QVector<double>& dataY, QString& graphName = QString(""));
     bool getIsHold(){return m_hold;}
 
-    void chooseStep();
 protected:
     void resizeEvent(QResizeEvent * event);
     void keyPressEvent(QKeyEvent *event);
