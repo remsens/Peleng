@@ -54,13 +54,19 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
     setInitCustomplotSettings();
     setHyperCube(cube);
     initArrChanLimits();
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int))); //коннектим здесь (до fillChanList), чтобы не было двух коннектов одного сигнала
+    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
     fillChanList();
     polyMngr = new PolygonManager(m_pCube,m_attributes,ui->customPlot,this);
     createMenus();
     if (m_attributes->GetPointsList().size())
     {
         setInitChanel(m_attributes->GetPointsList().at(0).z);
-        setTempChannel(data[m_initChanel]);
+//        setTempChannel(data[m_initChanel]);
+        QVector<double> tempCh;
+        m_pCube->GetDataChannel(m_initChanel,tempCh);
+        setTempChannel(tempCh);
+
     }
     connect(ui->actionInterpolation,SIGNAL(toggled(bool)),SLOT(toggledActionInterpolation(bool)));
     connect(ui->customPlot,SIGNAL(customContextMenuRequested(QPoint)),SLOT(contextMenuRequest(QPoint)));
@@ -69,8 +75,8 @@ Main2DWindow::Main2DWindow(HyperCube* cube, Attributes *attr, QWidget *parent) :
 
     connect(ui->customPlot,SIGNAL(mousePress(QMouseEvent*)),SLOT(mousePressOnColorMap(QMouseEvent*)));
     ui->listWidget->setCurrentRow(m_initChanel);
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(updateViewchan(int)));
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),SLOT(setInitSliders(int)));
+
+
     connect(ui->SliderContrastMin,SIGNAL(valueChanged(int)),SLOT(leftBorderContrast(int)));
     connect(ui->SliderContrastMax,SIGNAL(valueChanged(int)),SLOT(rightBorderContrast(int)));
     connect(ui->polygonTool,SIGNAL(triggered()),SLOT(polygonTool()));
@@ -298,11 +304,12 @@ void Main2DWindow::setInitCustomplotSettings()
     colorMap->rescaleDataRange(true);
 }
 
-void Main2DWindow::setTempChannel(qint16* chanData)
+//void Main2DWindow::setTempChannel(qint16* chanData)
+void Main2DWindow::setTempChannel(QVector<double> chanData)
 {
     for(int i = 0; i < rows; ++i)
         for(int j = 0; j < cols; ++j)
-            m_tempChanel[i*cols+j] = (double)chanData[i*cols+j];
+            m_tempChanel[i*cols+j] = chanData.at(i*cols+j);//(double)chanData[i*cols+j];
     m_attributes->SetTempChanel(m_tempChanel);
 }
 
@@ -397,7 +404,10 @@ void Main2DWindow::updateViewchan(int chan)
 {
     if(flagGetTempChannelFromCube)
     {
-        setTempChannel(data[chan]);//data[chan]
+        QVector<double> tempCh;
+        m_pCube->GetDataChannel(chan,tempCh);
+        setTempChannel(tempCh);
+//        setTempChannel(data[chan]);//data[chan]
     }
     if(ChnlLimits[chan][0] == -32767 || ChnlLimits[chan][1] == -32767 )
     {
@@ -416,8 +426,6 @@ void Main2DWindow::updateViewchan(int chan)
     m_lines.clear();
 
     drawHeatMap(ChnlLimits[chan][0], ChnlLimits[chan][1]);
-
-
 }
 
 
