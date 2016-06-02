@@ -29,7 +29,8 @@ public:
     void initArrChanLimits();
     void setInitCustomplotSettings();
     //! Функция задания временного канала гиперкуба
-    void setTempChannel(qint16 *chanData);
+//    void setTempChannel(qint16 *chanData);
+    void setTempChannel(QVector<double> chanData);
 
 public slots:
     //! Слот отрисовки данных канала гиперкуба
