@@ -23,14 +23,6 @@ bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVect
             return false;
         }
     }
-    for (int i = 0; i<Y.size()-1; ++i)
-    {
-        if(Y.at(i+1) < Y.at(i))
-        {
-            qDebug()<<"Y is unsorted! Error!";
-            return false;
-        }
-    }
     for (int i = 0; i<Xnew.size()-1; ++i)
     {
         if(Xnew.at(i+1) < Xnew.at(i))
