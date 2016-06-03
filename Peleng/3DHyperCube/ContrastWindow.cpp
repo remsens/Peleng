@@ -21,6 +21,10 @@ ContrastWindow::ContrastWindow(int absMin, int absMax, int initMin, int initMax,
     ui->sliderMax->setValue(initMax);
     connect(ui->sliderMin,SIGNAL(valueChanged(int)),SLOT(minChngdSlot(int)));
     connect(ui->sliderMax,SIGNAL(valueChanged(int)),SLOT(maxChngdSlot(int)));
+    //законнектить олько тогда, когда все double/int нюансы будут решены. И не забыть удалить сигналы с самой формы.
+//    connect(ui->sliderMin,SIGNAL(valueChanged(int)),SLOT(showMinLabel(int)));
+//    connect(ui->sliderMax,SIGNAL(valueChanged(int)),SLOT(showMaxLabel(int)));
+
 
 }
 
@@ -55,17 +59,7 @@ void ContrastWindow::minChngdSlot(int val)
     }
     emit minMaxChanged(MIN,MAX);
 }
-//void Preview2D::on_SliderMin_valueChanged(int value)
-//{
-//    if (value >  m_ui->SliderMax->value())
-//    {
-//        m_ui->SliderMin->setValue(m_ui->SliderMax->value() - 1);
-//        return;
-//    }
-//    double max =  colorMap->dataRange().upper;
-//    colorMap->setDataRange(QCPRange(value,max));
-//    m_cPlot->replot();
-//}
+
 void ContrastWindow::maxChngdSlot(int val)
 {
     MAX = val;
@@ -77,16 +71,23 @@ void ContrastWindow::maxChngdSlot(int val)
     emit minMaxChanged(MAX,MIN);
 }
 
-
-
-//void Preview2D::on_SliderMax_valueChanged(int value)
+//void ContrastWindow::showMinLabel(int val)
 //{
-//    if (value <  m_ui->SliderMin->value())
-//    {
-//        m_ui->SliderMax->setValue(m_ui->SliderMin->value() + 1);
-//        return;
-//    }
-//    double min =  colorMap->dataRange().lower;
-//    colorMap->setDataRange(QCPRange(min,value));
-//    m_cPlot->replot();
+//    ui->labelMin->setNum(doubleFromInt(val));
 //}
+
+//void ContrastWindow::showMaxLabel(int val)
+//{
+//    ui->labelMax->setNum(doubleFromInt(val));
+//}
+
+//int ContrastWindow::intFromDouble(double val)
+//{
+//    return (int) val*dpi;
+//}
+
+//double ContrastWindow::doubleFromInt(int val)
+//{
+//    return (double)val/dpi;
+//}
+

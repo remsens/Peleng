@@ -1,7 +1,9 @@
 #include "Interpolation.h"
 #include <qdebug>
 
-double lerp(const double &x0, const double &x1, const double &y0, const double &y1, const double &x) //возвращает y, соответствующий иксу. x0 < x < x1
+//Линейная интерполяция по двум точкам.
+//возвращает y, соответствующий иксу. x0 < x < x1
+double lerp(const double &x0, const double &x1, const double &y0, const double &y1, const double &x)
 {
   if (x == x0) // нужно из-за ошибок округления
       return y0;
@@ -13,20 +15,35 @@ double lerp(const double &x0, const double &x1, const double &y0, const double &
 
 bool interpolate(const QVector<double> &X, const QVector<double> &Y, const QVector<double> &Xnew, QVector<double> &Ynew)
 {
+    for (int i = 0; i<X.size()-1; ++i)
+    {
+        if(X.at(i+1) < X.at(i))
+        {
+            qDebug()<<"X is unsorted! Error!";
+            return false;
+        }
+    }
+    for (int i = 0; i<Xnew.size()-1; ++i)
+    {
+        if(Xnew.at(i+1) < Xnew.at(i))
+        {
+            qDebug()<<"Xnew is unsorted! Error!";
+            return false;
+        }
+    }
+    Ynew.fill(0); //Если
     int i=0;
     int j=0;
-//    QVector<double> Xnew(XnewUnsrtd) ;//потом убрать
-//    qSort(Xnew);//потом убрать
-    while (i < X.length() && j < Xnew.length())
+    while (i < X.length()-1 && j < Xnew.length())
     {
-        if(X.at(i) <= Xnew.at(j) &&  Xnew.at(j) <= X.at(i+1) )
+        if(X.at(i) <= Xnew.at(j) &&  Xnew.at(j) <= X.at(i+1) )              // x(i) <= Xnew(j) <=x(i+1)
         {
             Ynew[j] = lerp(X.at(i), X.at(i+1), Y.at(i), Y.at(i+1), Xnew.at(j));
             ++j;
         }
-        else if (X.at(i) <= Xnew.at(j) &&  Xnew.at(j) >= X.at(i+1))
+        else if (Xnew.at(j) > X.at(i+1))
             ++i;
-        else if (X.at(i) > Xnew.at(j) &&  Xnew.at(j) < X.at(i+1)) // что-то тут неправильно
+        else if (Xnew.at(j) < X.at(i))
         {
 //            if(i>5 && j>5)
 //            {

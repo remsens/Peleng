@@ -29,7 +29,8 @@ public:
     void initArrChanLimits();
     void setInitCustomplotSettings();
     //! Функция задания временного канала гиперкуба
-    void setTempChannel(qint16 *chanData);
+//    void setTempChannel(qint16 *chanData);
+    void setTempChannel(QVector<double> chanData);
 
 public slots:
     //! Слот отрисовки данных канала гиперкуба
@@ -88,7 +89,7 @@ private slots:
     void prepareToHist();
     void addSpectr();
     void contextMenuRequest(QPoint point);
-
+    void ActionSpectralDistanceToogled();
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
     void setInitSliders(int chan);
@@ -112,7 +113,7 @@ private:
     QAction *pPlotHistAction;
     QAction *pSelectAreaAction;
     QLabel *pStatusBarLabel;
-    QAction* pAddSpectr;
+    QAction *pAddSpectr;
 
     QMenu* m_filters;
     QMenu* m_medianFilter;

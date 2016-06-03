@@ -10,6 +10,7 @@ inline void LongLongFromCharArray(const u::int8* data, u::int32 formatType, qint
         qint32 *fourByte;
         qint16 *twoByte;
         qint8 *oneByte;
+//        float *floatType;
     };
 
     oneByte=(qint8*)data;
@@ -19,11 +20,10 @@ inline void LongLongFromCharArray(const u::int8* data, u::int32 formatType, qint
         case type_int16: value = twoByte[0]; break;
         case type_int32: value = fourByte[0]; break;
         case type_int64: value = eightByte[0]; break;
+//        case type_float: value = floatType[0]; break;
         default: value = 0; break;
     }
 }
-
-
 inline void ULongLongFromCharArray(const u::int8* data, int formatType, quint64 &value) {
 
     union {
@@ -32,7 +32,6 @@ inline void ULongLongFromCharArray(const u::int8* data, int formatType, quint64 
         quint16 *twoUByte;
         quint8 *oneUByte;
     };
-
 
     oneUByte=(quint8*)data;
 
@@ -46,5 +45,13 @@ inline void ULongLongFromCharArray(const u::int8* data, int formatType, quint64 
     }
 }
 
+inline void FloatFromCharArray(const u::int8* data, float &value) {
+
+    value = *(float*)data;
+}
+inline void DoubleFromCharArray(const u::int8* data, double &value) {
+
+    value = *(double*)data;
+}
 #endif // TYPECONVERTOR_H
 

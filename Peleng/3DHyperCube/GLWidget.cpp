@@ -5,12 +5,16 @@
 #include <QMouseEvent>
 #include <GL/glu.h>
 #include <QDebug>
+#include <algorithm>
+#include <climits>
 #include "../Library/FileProjectFeatures.h"
 #include "../Library/stepsdefinitions.h"
+#include "../Library/stepsdefinitions.h"
+#include "../Library/Utils/Compare.h"
 
 using namespace std;
 
-int cmp(const void *a, const void *b);
+#define DEBUG
 
 
 GLWidget::GLWidget(HyperCube* ptrCube, Attributes *attr, QWidget *parent)
@@ -1037,8 +1041,11 @@ void GLWidget::evalDataCordsFromMouse(int mouseX,int mouseY)
     calcUintCords(m_dataXf, m_dataYf, m_dataZf, m_dataX, m_dataY, m_dataZ);
     if (m_dataX <= ROWS-1 && m_dataY <=COLS-1 && m_dataZ <= CHNLS-1 )
     {
-        //qDebug()<<data[m_dataZ][m_dataX * COLS + m_dataY];
-        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+//        float **data = (float**)m_pHyperCube->GetDataCube();
+//        strForLbl = QString::number(data[m_dataZ][m_dataX * COLS + m_dataY]);
+//        qDebug()<<"data старый способ: "<<strForLbl;
+        strForLbl = QString::number(m_pHyperCube->GetDataPoint(m_dataX,m_dataY,m_dataZ));
+//        qDebug()<<"data новый способ: "<<strForLbl;
     }
     else
     {
@@ -1177,9 +1184,6 @@ void GLWidget::loadData(HyperCube *ptrCube)
     CHNLS = (int)ptrCube->GetCountofChannels();
     COLS = (int)ptrCube->GetColumns();
     ROWS = (int)ptrCube->GetLines();
-    data = (qint16**)ptrCube->GetDataCube();
-
-
 }
 void GLWidget::SidesDestructor()
 {
@@ -1214,23 +1218,23 @@ void GLWidget::createCubeSides()
     prevChN =  nCHNLS;
     prevRowsN = nROWS;
 
-    sidesDataCH_RO = new qint16**[2]; //Массив из 2 граней куба с размерностью CHNLS х ROWS
+    sidesDataCH_RO = new double**[2]; //Массив из 2 граней куба с размерностью CHNLS х ROWS
     for(int i = 0; i<2; ++i){
-        sidesDataCH_RO[i] = new qint16*[nCHNLS];
+        sidesDataCH_RO[i] = new double*[nCHNLS];
         for(int j = 0; j<nCHNLS; ++j)
-            sidesDataCH_RO[i][j] = new qint16[nROWS];
+            sidesDataCH_RO[i][j] = new double[nROWS];
     }
-    sidesDataCH_CO = new qint16**[2]; //Массив из 2 граней куба с размерностью CHNLS х COLS
+    sidesDataCH_CO = new double**[2]; //Массив из 2 граней куба с размерностью CHNLS х COLS
     for(int i = 0; i<2; ++i){
-        sidesDataCH_CO[i] = new qint16*[nCHNLS];
+        sidesDataCH_CO[i] = new double*[nCHNLS];
         for(int j = 0; j<nCHNLS; ++j)
-            sidesDataCH_CO[i][j] = new qint16[nCOLS];
+            sidesDataCH_CO[i][j] = new double[nCOLS];
     }
-    sidesDataRO_CO = new qint16**[2]; //Массив из 2 граней куба с размерностью ROWS х COLS
+    sidesDataRO_CO = new double**[2]; //Массив из 2 граней куба с размерностью ROWS х COLS
     for(int i = 0; i<2; ++i){
-        sidesDataRO_CO[i] = new qint16*[nROWS];
+        sidesDataRO_CO[i] = new double*[nROWS];
         for(int j = 0; j<nROWS; ++j)
-            sidesDataRO_CO[i][j] = new qint16[nCOLS];
+            sidesDataRO_CO[i][j] = new double[nCOLS];
     }
 }
 
@@ -1242,94 +1246,33 @@ void GLWidget::fillCubeSides()//заполнение массивов, соот�
 
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = 0; y < nROWS; ++y)
-            sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  C1]; //data[x+Ch1][y+R1][COLS - C2];
-
+            //sidesDataCH_RO[0][x][y]  = data[x+Ch1][(y+R1) * COLS +  C1]; //data[x+Ch1][y+R1][COLS - C2];
+            sidesDataCH_RO[0][x][y]  = m_pHyperCube->GetDataPoint(y+R1,C1,x+Ch1);
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = 0; y < nROWS; ++y)//задняя грань куба
-            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + C2]; //data[x+Ch1][y+R1][COLS - C1];
-
-
-
+//            sidesDataCH_RO[1][x][y]  = data[x+Ch1][(y+R1) * COLS + C2]; //data[x+Ch1][y+R1][COLS - C1];
+            sidesDataCH_RO[1][x][y] = m_pHyperCube->GetDataPoint(y+R1,C2,x+Ch1);
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
-            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + C1)];//data[x+Ch1][R1][y+С1]; было data[x+Ch1][R1][y+COLS-C2];
-
+//            sidesDataCH_CO[0][x][y]  = data[x+Ch1][R1 * COLS + ( y + C1)];//data[x+Ch1][R1][y+С1]; было data[x+Ch1][R1][y+COLS-C2];
+            sidesDataCH_CO[0][x][y] = m_pHyperCube->GetDataPoint(R1,y + C1,x+Ch1);
     for(int x = 0; x < nCHNLS; ++x)
         for(int y = nCOLS-1; y >= 0; --y)
-            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + C1)];
+//            sidesDataCH_CO[1][x][y]  = data[x+Ch1][R2 * COLS + (y + C1)];
+            sidesDataCH_CO[1][x][y] = m_pHyperCube->GetDataPoint(R2,y + C1,x+Ch1);
 
     for(int x = 0; x < nROWS; ++x)
         for(int y = 0; y < nCOLS; ++y)
-            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + C1)];
-
+//            sidesDataRO_CO[0][x][y]  = data[Ch1][(x+R1)* COLS + (y + C1)];
+            sidesDataRO_CO[0][x][y] = m_pHyperCube->GetDataPoint(x+R1,y + C1,Ch1);
     for(int x = 0; x < nROWS; ++x)
         for(int y = 0; y < nCOLS; ++y)
-            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + C1)];
-}
-
-
-void GLWidget::create2RowChanSides(int ch1, int ch2, int r1, int r2 ) // выполнять в paintGL//добавить деструктор для массива
-{
-    int numCh = ch2-ch1+1;
-    int numRow = r2-r1+1;
-    sidesDataCH_RO = new qint16**[2];
-    for(int i = 0; i<2; ++i){
-        sidesDataCH_RO[i] = new qint16*[numCh];
-        for(int j = 0; j < (numCh); ++j)
-            sidesDataCH_RO[i][j] = new qint16[numRow];
-    }
-    for(int x = 0; x < (numCh); ++x)
-        for(int y = 0; y < (numRow); ++y)
-            sidesDataCH_RO[0][x][y]  = data[x][y * COLS + 0];
-
-}
-void GLWidget::create2ColChanSides(int ch1, int ch2, int c1, int c2 ) // мб ф-ия не нужна//добавить деструктор для массива
-{
-    sidesDataCH_CO = new qint16**[2];
-    for(int i = 0; i<2; ++i){
-        sidesDataCH_CO[i] = new qint16*[ch2-ch1+1];
-        for(int j = 0; j < (ch2-ch1+1); ++j)
-            sidesDataCH_CO[i][j] = new qint16[c2-c1+1];
-    }
-}
-
-
-//эта ф-ия в даный момент не используется. Передаем, например,  data[0]
-QImage GLWidget::from2Dmass2QImage(qint16 *data)
-{
-    QCustomPlot customPlot;
-
-    customPlot.yAxis->setTicks(false);
-    customPlot.xAxis->setTicks(false);
-    customPlot.xAxis->setTickLabels(false);
-    customPlot.yAxis->setTickLabels(false);
-    customPlot.xAxis->setVisible(false);
-    customPlot.yAxis->setVisible(false);
-    customPlot.axisRect()->setAutoMargins(QCP::msNone);
-    customPlot.axisRect()->setMargins(QMargins(0,0,0,0));
-    QCPColorMap *colorMap = new QCPColorMap(customPlot.xAxis, customPlot.yAxis);
-    customPlot.addPlottable(colorMap);
-    colorMap->data()->setSize(ROWS, COLS);
-    colorMap->data()->setRange(QCPRange(0, ROWS), QCPRange(0, COLS));
-    for (int x=0; x<ROWS; ++x) {
-        for (int y=0; y<COLS; ++y) {
-            colorMap->data()->setCell(x, y, data[x*COLS+y]);
-        }
-    }
-    customPlot.rescaleAxes();
-    colorMap->setGradient(QCPColorGradient::gpGrayscale);
-    colorMap->rescaleDataRange(true);
-    colorMap->setDataRange(QCPRange(minCMap,maxCMap));
-    colorMap->setInterpolate(false);
-    customPlot.rescaleAxes();
-    customPlot.replot();
-    QPixmap pixmap = customPlot.toPixmap(ROWS,COLS);
-    QImage Q_image = pixmap.toImage();
-    return Q_image;
+//            sidesDataRO_CO[1][x][y]  = data[Ch2][(x+R1)* COLS + (y + C1)];
+            sidesDataRO_CO[1][x][y] = m_pHyperCube->GetDataPoint(x+R1,y + C1,Ch2);
 }
 
 //передаем, например  sidesDataCH_CO[0]
-QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
+QImage GLWidget::from2Dmass2QImage(double **sidesData,int dim1,int dim2,int minContrast, int maxContrast, bool gray) // для граней dim1=CHNLS, dim2 = ROWS Или COLS
 {
 
     QCustomPlot *customPlot = new QCustomPlot();
@@ -1372,18 +1315,18 @@ QImage GLWidget::from2Dmass2QImage(qint16 **sidesData,int dim1,int dim2,int minC
 void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
 //thresholdLow = 0.02 (первые 2% игнорируются), thresholdHigh = 0.98
 {
-    minCMap =  32767;
-    maxCMap = -32767;
+    minCMap = INT_MAX; //это не опечатка!
+    maxCMap = INT_MIN;
     int min;
     int max;
-    qint16 *dataTemp = new qint16[ROWS*COLS];
+    QVector<double>dataTemp;
     int n = 10; // количество сортировок
     int step = (CHNLS-1)/(n-1);
 
     for (int i=0; i<n; ++i)
     {
         m_pHyperCube->GetDataChannel(i*step,dataTemp);
-        qsort(dataTemp,COLS*ROWS,sizeof(qint16),cmp);
+        qSort(dataTemp);
         min = dataTemp[int(ROWS*COLS*thresholdLow)];
         max = dataTemp[int(ROWS*COLS*thresholdHigh)];
         if (min < minCMap )
@@ -1396,35 +1339,27 @@ void GLWidget::findMinMaxforColorMap(float thresholdLow,float thresholdHigh)
     }
     minCMapSides = minCMap;
     maxCMapSides = maxCMap;
-    delete[] dataTemp;
 }
 
 void GLWidget::findAbsoluteMinMax()
 {
-    int min =  32767;
-    int max = -32767;
+
+    double min = std::numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::min();
     for (int i = 0; i < CHNLS; ++i)
     {
-        for (int j = 0; j < ROWS*COLS; ++j)
+        for (int j = 0; j < ROWS; ++j)
         {
-            if(data[i][j] < min)
-                min = data[i][j];
-            if (data[i][j] > max)
-                max = data[i][j];
+            for(int k = 0; k < COLS; ++k)
+            {
+                if(m_pHyperCube->GetDataPoint(j,k,i) < min)
+                    min = m_pHyperCube->GetDataPoint(j,k,i);
+                if (m_pHyperCube->GetDataPoint(j,k,i) > max)
+                    max = m_pHyperCube->GetDataPoint(j,k,i);
+            }
         }
     }
-    absMin = min;
-    absMax = max;
-}
+    absMin = (int)min;
+    absMax = (int)max;
 
-int cmp(const void *a, const void *b)
-{
-    const qint16 *pa = (const qint16*)a;
-    const qint16 *pb = (const qint16*)b;
-    if (*pa < *pb)
-        return -1;
-    else if (*pa > *pb)
-        return +1;
-    else
-        return 0;
 }

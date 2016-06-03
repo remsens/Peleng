@@ -173,12 +173,9 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, QVector<double> &data
 
     try {
         if (m_infoData.formatType == type_int8  ||
-            m_infoData.formatType == type_int16 ||
-            m_infoData.formatType == type_int32 ||
-            m_infoData.formatType == type_int64 ||
-            m_infoData.formatType == type_float ||
-            m_infoData.formatType == type_double ||
-            m_infoData.formatType == type_2double)
+                m_infoData.formatType == type_int16 ||
+                m_infoData.formatType == type_int32 ||
+                m_infoData.formatType == type_int64)
         {
             qint64 value;
             for (u::uint32 i = 0; i < m_infoData.bands; i++) {
@@ -186,7 +183,25 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, QVector<double> &data
                 data.append(value);
 
             }
-        } else
+        }
+        else if(m_infoData.formatType == type_float)
+        {
+            float value;
+            for (u::uint32 i = 0; i < m_infoData.bands; i++) {
+                FloatFromCharArray(m_dataCube[i] + shift,value);
+                data.append(value);
+            }
+        }
+        else if (m_infoData.formatType == type_double )
+        {
+            double value;
+            for (u::uint32 i = 0; i < m_infoData.bands; i++) {
+                DoubleFromCharArray(m_dataCube[i] + shift,value);
+                data.append(value);
+            }
+
+        }
+        else
         {
             quint64 value;
             for (u::uint32 i = 0; i < m_infoData.bands; i++) {
@@ -224,21 +239,42 @@ void HyperCube::GetDataChannel(u::uint32 channel, QVector<double> &data)
         throw GenericExc("Неверно введен канал", -1);
     }
     try {
-        if (    m_infoData.formatType == type_int8  ||
+        //        if (    m_infoData.formatType == type_int8  ||
+        //                m_infoData.formatType == type_int16 ||
+        //                m_infoData.formatType == type_int32 ||
+        //                m_infoData.formatType == type_int64 ||
+        //                m_infoData.formatType == type_float ||
+        //                m_infoData.formatType == type_double ||
+        //                m_infoData.formatType == type_2double)
+        if (m_infoData.formatType == type_int8  ||
                 m_infoData.formatType == type_int16 ||
                 m_infoData.formatType == type_int32 ||
-                m_infoData.formatType == type_int64 ||
-                m_infoData.formatType == type_float ||
-                m_infoData.formatType == type_double ||
-                m_infoData.formatType == type_2double)
+                m_infoData.formatType == type_int64)
         {
             qint64 value;
             for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
                 LongLongFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType, m_infoData.formatType,value);
                 data.append(value);
             }
+        }
+        else if(m_infoData.formatType == type_float)
+        {
+            float value;
+            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
+                FloatFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,value);
+                data.append(value);
+            }
+        }
+        else if (m_infoData.formatType == type_double )
+        {
+            double value;
+            for (u::uint32 i = 0; i < GetSizeChannel(); i++) {
+                DoubleFromCharArray(m_dataCube[channel] + i*m_infoData.bytesType,value);
+                data.append(value);
+            }
 
-        } else
+        }
+        else
         {
             quint64 value;
             for (u::uint32 i =0; i < GetSizeChannel(); i++) {
@@ -306,4 +342,55 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
     delete [] m_dataCube;
     m_dataCube = dataCubeNew;
     m_infoData = newInfoData;
+}
+
+double HyperCube::GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z)
+{
+
+//    double el = double(m_dataCube[z][(x*m_infoData.samples + y)*m_infoData.bytesType]);
+//    return (el);
+    if (x > m_infoData.lines) {
+        throw GenericExc("Неверно задана коодината X", -1);
+    }
+    if (y > m_infoData.samples) {
+        throw GenericExc("Неверно задана коодината Y", -1);
+    }
+    if (z > m_infoData.bands) {
+        throw GenericExc("Неверно задана коодината Z", -1);
+    }
+    u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
+
+    try {
+        if (m_infoData.formatType == type_int8  ||
+                m_infoData.formatType == type_int16 ||
+                m_infoData.formatType == type_int32 ||
+                m_infoData.formatType == type_int64)
+
+        {
+            qint64 value;
+            LongLongFromCharArray(m_dataCube[z] + shift,m_infoData.formatType,value);
+            return(static_cast<double>(value));
+
+        }else if(m_infoData.formatType == type_float)
+        {
+            float value;
+            FloatFromCharArray(m_dataCube[z] + shift,value);
+            return(static_cast<double>(value));
+        }
+        else if (m_infoData.formatType == type_double )
+        {
+            double value;
+            DoubleFromCharArray(m_dataCube[z] + shift,value);
+            return value;
+
+        }
+        else // все целочисленнные unsigned
+        {
+            quint64 value;
+            ULongLongFromCharArray(m_dataCube[z] + shift,m_infoData.formatType,value);
+            return(static_cast<double>(value));
+        }
+    } catch(...) {
+        throw GenericExc("Неверно выделен размер под блок данных", -1);
+    }
 }

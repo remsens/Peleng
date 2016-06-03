@@ -27,7 +27,8 @@ HEADERS       = \
     ContrastWindow.h \
     ../Library/Attributes/Attributes.h \
     ../Library/FileProjectFeatures.h \
-    ../Library/stepsdefinitions.h
+    ../Library/stepsdefinitions.h \
+    ../Library/Utils/Compare.h
 
 
 SOURCES       = \
@@ -39,7 +40,8 @@ SOURCES       = \
     ../Library/QCustomPlot.cpp \
     ContrastWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
-    ../Library/FileProjectFeatures.cpp
+    ../Library/FileProjectFeatures.cpp \
+    ../Library/Utils/Compare.cpp
 
 
 
