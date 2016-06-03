@@ -32,8 +32,7 @@ SOURCES += \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
-    Region.cpp\
-    ../Library/GeoTiff.cpp
+    Region.cpp
 
 
 
@@ -47,7 +46,8 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
     Region.h \
-    ../Library/GeoTiff.h
+    ../Library/GeoTiff.h \
+    savegeotiff.h
 
 
 FORMS += \

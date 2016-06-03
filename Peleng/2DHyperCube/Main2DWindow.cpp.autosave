@@ -794,7 +794,6 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
 void Main2DWindow::on_action_GeoTiff_triggered()
 {
-
     saveGeoTiff(m_pCube);
 }
 void Main2DWindow::ActionSpectralDistanceToogled()
