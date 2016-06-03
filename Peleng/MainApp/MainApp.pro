@@ -50,3 +50,4 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     icons.qrc
 CONFIG += c++11
+

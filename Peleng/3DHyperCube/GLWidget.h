@@ -127,7 +127,6 @@ private:
     void evalDataCordsFromMouse(int mouseX, int mouseY);
     void Noise();
     void NoiseGolayAlgExecute();
-
 private:
     Attributes* m_attributes;
     QColor clearColor;

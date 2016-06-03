@@ -32,7 +32,7 @@ SOURCES += \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
-    Region.cpp\
+    Region.cpp
 
 
 
@@ -45,7 +45,9 @@ HEADERS += \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
-    Region.h
+    Region.h \
+    ../Library/GeoTiff.h \
+    savegeotiff.h
 
 
 FORMS += \
@@ -54,3 +56,8 @@ FORMS += \
 
 RESOURCES += \
     icons2Dcube.qrc \
+
+
+win32: LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/include
+DEPENDPATH += $$PWD/../Library/GDAL/include
