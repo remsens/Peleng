@@ -66,6 +66,7 @@ bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
         poBand = poDstDS->GetRasterBand(i+1);
         poBand->RasterIO( GF_Write, 0, 0, nY, nX,
                           abyRaster, nY, nX, type, 0, 0 );
+        poBand->SetMetadataItem("wawelengths","100"); //"wavelength" //"WAVELENGTHS"
         progress->setValue(i);
         QCoreApplication::processEvents();
     }
