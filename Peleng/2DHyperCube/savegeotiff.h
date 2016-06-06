@@ -8,8 +8,7 @@
 void saveGeoTiff(HyperCube* pCube)
 {
     QString filename  = QFileDialog::getSaveFileName(0, "Сохранить гиперкуб",
-                                                     "гиперкуб.tif",
-                                                     "Images (*.tif)");
+                                                     "hypercube");
     if(filename.isEmpty())
         return;
     std::string strName = filename.toStdString();

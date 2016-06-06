@@ -13,12 +13,33 @@
 #include <QCoreApplication>
 
 
+
+
+const char *wavesfromQList(std::string& stdStr,HyperCube* cube)
+{
+    QList<double> list = cube->GetListOfChannels();
+    QString str;
+    str.append('{');
+    for(int i = 0; i < list.size()-1; ++i)
+    {
+       str.append(QString::number(list.at(i)));
+       str.append(',');
+    }
+    str.append(QString::number(list.at(list.size()-1)));
+    str.append('}');
+    stdStr = str.toStdString();
+    const char *chW =  stdStr.c_str();
+    return chW;
+}
+
+
 template <typename T>
 class GeoTiff
 {
 public:
     GeoTiff();
     static bool save(const char* dstName, HyperCube* cube, GDALDataType type);// еще передать параметры: время, координаты и т.п.
+
 };
 
 template <typename T>
@@ -38,7 +59,7 @@ bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     GDALDataset *poDstDS;
     char **papszOptions = NULL;
     GDALDriver *poDriver;
-    const char *pszFormat = "GTiff";
+    const char *pszFormat = "ENVI";//"GTiff";
     poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
     if( poDriver == NULL )
     {
@@ -66,12 +87,15 @@ bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
         poBand = poDstDS->GetRasterBand(i+1);
         poBand->RasterIO( GF_Write, 0, 0, nY, nX,
                           abyRaster, nY, nX, type, 0, 0 );
-        poBand->SetMetadataItem("wawelengths","100"); //"wavelength" //"WAVELENGTHS"
+
         progress->setValue(i);
         QCoreApplication::processEvents();
     }
     delete progress;
-
+    std::string str; //создаем тут а не в wavesfromQList из-за времени жизни
+    const char *waves = wavesfromQList(str,cube);
+    poDstDS->SetMetadataItem("wavelength",waves,"ENVI");
+    poDstDS->SetMetadataItem("wavelength units","Nanometers","ENVI");
     //задание метаданных
     double arr[6] = { 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
     cube->SetGeoDataGeoTransform(arr);
@@ -97,4 +121,6 @@ bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     delete[] abyRaster;
     return true;
 }
+
+
 #endif // GEOTIFF_H
