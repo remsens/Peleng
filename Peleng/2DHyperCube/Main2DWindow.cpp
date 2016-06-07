@@ -1,9 +1,9 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
-#include "../Library/GeoTiff.h"
+#include "../Library/ENVIsaver.h"
 #include <QMessageBox>
-#include <savegeotiff.h>
+#include <saveENVI.h>
 int cmp2(const void *a, const void *b);
 
 
@@ -792,11 +792,7 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
 }
 
-void Main2DWindow::on_action_GeoTiff_triggered()
-{
 
-    saveGeoTiff(m_pCube);
-}
 void Main2DWindow::ActionSpectralDistanceToogled()
 {
     m_attributes->ClearList();
@@ -805,9 +801,7 @@ void Main2DWindow::ActionSpectralDistanceToogled()
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pCube, m_attributes);
 }
 
-
-
-
-
-
-
+void Main2DWindow::on_action_saveENVI_triggered()
+{
+     saveENVI(m_pCube);
+}

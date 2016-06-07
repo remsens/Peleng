@@ -1,9 +1,8 @@
-#ifndef GEOTIFF_H
-#define GEOTIFF_H
+#ifndef ENVISAVER_H
+#define ENVISAVER_H
 
 #include <QObject>
 #include "HyperCube.h"
-#include "GeoTiff.h"
 #include <gdal_priv.h>
 #include "cpl_conv.h" // for CPLMalloc()
 #include "cpl_string.h"
@@ -19,11 +18,11 @@ const char *wavesfromQList(std::string& stdStr,HyperCube* cube)
 {
     QList<double> list = cube->GetListOfChannels();
     QString str;
-    str.append('{');
+    str.append(QString("{\n"));
     for(int i = 0; i < list.size()-1; ++i)
     {
        str.append(QString::number(list.at(i)));
-       str.append(',');
+       str.append(QString(",\n"));
     }
     str.append(QString::number(list.at(list.size()-1)));
     str.append('}');
@@ -34,22 +33,22 @@ const char *wavesfromQList(std::string& stdStr,HyperCube* cube)
 
 
 template <typename T>
-class GeoTiff
+class ENVIsaver
 {
 public:
-    GeoTiff();
+    ENVIsaver();
     static bool save(const char* dstName, HyperCube* cube, GDALDataType type);// еще передать параметры: время, координаты и т.п.
 
 };
 
 template <typename T>
-GeoTiff<T>::GeoTiff()
+ENVIsaver<T>::ENVIsaver()
 {
 
 }
 
 template <typename T>
-bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
+bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
 {
     int nX = cube->GetLines();//2449
     int nY = cube->GetColumns();//792
@@ -123,4 +122,4 @@ bool GeoTiff<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
 }
 
 
-#endif // GEOTIFF_H
+#endif // ENVISAVER_H

@@ -221,7 +221,7 @@
     </widget>
     <addaction name="subMenuImage"/>
     <addaction name="polygonTool"/>
-    <addaction name="action_GeoTiff"/>
+    <addaction name="action_saveENVI"/>
    </widget>
    <addaction name="menuOptions"/>
   </widget>
@@ -249,9 +249,9 @@
     <string>Выделение области</string>
    </property>
   </action>
-  <action name="action_GeoTiff">
+  <action name="action_saveENVI">
    <property name="text">
-    <string>Сохранить в GeoTiff</string>
+    <string>Сохранить для ENVI</string>
    </property>
   </action>
  </widget>

@@ -157,7 +157,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                         readWords = w.split("{", QString::SkipEmptyParts);
                         w = readWords.join("");
                         readWords = w.split(",", QString::SkipEmptyParts);
-                        for (u::uint32 i = 0; i < (u::uint32)readWords.size() - 1; i++)
+                        for (u::uint32 i = 0; i < (u::uint32)readWords.size() - 1; i++) // было readWords.size() - 1
                         {
                             m_infoData.listChannels.push_back(QString(readWords.at(i)).toDouble());
                         };
@@ -165,7 +165,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                         while (k < m_infoData.bands)
                         {
                             if (!file.atEnd())
-                            readingLine = file.readLine();
+                                readingLine = file.readLine();
                             readWords = readingLine.split("}",QString::SkipEmptyParts);
                             readingLine = readWords.join("");
                             readWords.clear();

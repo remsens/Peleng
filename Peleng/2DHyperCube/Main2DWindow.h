@@ -97,7 +97,7 @@ private slots:
     void OnActionMedian3Triggered();
     void OnActionMedian5Triggered();
     void OnActionMedian7Triggered();
-    void on_action_GeoTiff_triggered();
+    void on_action_saveENVI_triggered();
 
 private:
     void findMinMaxforColorMap(int &minCMap, int &maxCMap, float thresholdLow = 0.02, float thresholdHigh = 0.98);
