@@ -580,8 +580,6 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
         m_attributes->SetPoint(x, y, z);*/
         Spectr* spectr = new Spectr(m_pHyperCube, x, y);
         m_attributes->SetCurrentSpectr(spectr);
-        m_attributes->SetCurrentXUnits(spectr->GetXUnits());
-        m_attributes->SetCurrentYUnits(spectr->GetYUnits());
         m_attributes->SetCurrentTitle(spectr->GetTitle());
         m_attributes->SetExternalSpectrFlag(false);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);

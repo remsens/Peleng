@@ -5,6 +5,7 @@
 
 #include <QList>
 #include <QVector>
+#include "../Library/structures.h"
 
 //! Структура метаданных для гипекуба
 struct InfoData {
@@ -31,7 +32,7 @@ enum TYPES {
     type_2double
 };
 
-//! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
+//! Класс гиперкуба. Хранит данные гиперкуба и метаданные
 class HyperCube {
 
 public:
@@ -98,7 +99,6 @@ public:
     //! @return - размер гиперкуба кол-во элементов)
     u::uint32 GetSizeCube() const;
 
-    //QVector<QVector<u::int8> >* GetDataCube();
     //! Функция получения данных гиперкуба
     //! @return указатель на данные гиперкуба (двумерный массив, который можно привести к любому типу)
     u::ptr* GetDataCube() const;
@@ -150,10 +150,14 @@ public:
     //! @return - значение по координатам (x,y,z)
     double GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z);
 
+    void SetMeasurement(Measurements measurement);
+    void GetMeasurements(Measurements& measurement);
+
 private:
     u::int8** m_dataCube; //!< двумерный массив данных гиперкуба
     u::uint32 m_sizeCube; //!< размер куба
     InfoData m_infoData; //!< метаданные куба
+    Measurements m_measurements; //!< единицы измерения гиперкуба
 };
 
 #endif

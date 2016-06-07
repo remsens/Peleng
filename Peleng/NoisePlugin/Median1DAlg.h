@@ -42,7 +42,7 @@ public:
 private:
     void ToSpectrWindow()
     {
-        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetXUnits();
+        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataX();
 
         if (BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()%2 == 0)
         {
@@ -56,7 +56,7 @@ private:
         // Сформировать массив. Для импортируемых - тип double, не проверяем у гиперкуба
         // не думаю, что для спектров так критична скорость
 
-        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetYUnits();
+        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataY();
         QVector<double> resultSpectr; resultSpectr.resize(spectrMas.size());
         for (u::uint32 i = 0; i < spectrMas.size()- BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()+1; i++)
         {
@@ -73,9 +73,9 @@ private:
         //BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
         QString descr = QString("Устранение шумов: медианный фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
-        Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, resultSpectr, descr, ECP);
-        BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
-        BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
+       // Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, resultSpectr, descr, BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetMeasurements());
+        //BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
+        //BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
     }
 
     bool ToCube()

@@ -12,17 +12,24 @@ Spectr::Spectr(HyperCube* cube, u::uint32 x, u::uint32 y)
 {
     m_xCoord = x;
     m_yCoord = y;
-    m_interpolated = false;
-    m_normed = false;
     m_cube = cube;
     for (uint i = 0; i < m_cube->GetCountofChannels(); i++)
     {
         m_xUnits.append(m_cube->GetListOfChannels().at(i));
     }
+    m_currentDataType = NONPROCESSING;
     m_cube->GetSpectrumPoint(x, y, m_yUnits);
-    Norm();
-    Interpolate();
-    m_title = "X = " + QString::number(x) + " Y = " + QString::number(y);
+    // нормировка простых данных
+    Norm(m_xUnits, m_yUnits, m_xUnitsNormed, m_yUnitsNormed);
+    // интерполяция простых данных
+    Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
+    // нормировка интерполированных данных
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    // интерполяция нормированных данных
+    Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
+    m_title = "X = " + QString::number(x) + " Y = " + QString::number(y);    
+    m_cube->GetMeasurements(m_measurements);
+    qDebug() << "Единицы измерения куба" + QString::number(m_measurements);
 }
 
 Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<double>& yUnits, QString& title, Measurements measurements, const QList<DescriptionSpectr>& spectrDescription)
@@ -32,11 +39,17 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     m_title = title;
     m_measurements = measurements;
     m_spectrDescription = spectrDescription;
-    m_interpolated = false;
-    m_normed = false;
     m_cube = cube;
-    Norm();
-    Interpolate();
+    m_currentDataType = NONPROCESSING;
+    // нормировка простых данных
+    Norm(m_xUnits, m_yUnits, m_xUnitsNormed, m_yUnitsNormed);
+    // интерполяция простых данных
+    Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
+    // нормировка интерполированных данных
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    // интерполяция нормированных данных
+    Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
+
 }
 
 Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<double>& yUnits, QString& title, Measurements measurements)
@@ -45,11 +58,17 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     m_yUnits = yUnits;
     m_title = title;
     m_measurements = measurements;
-    m_interpolated = false;
-    m_normed = false;
     m_cube = cube;
-    Norm();
-    Interpolate();
+    m_currentDataType = NONPROCESSING;
+    // нормировка простых данных
+    Norm(m_xUnits, m_yUnits, m_xUnitsNormed, m_yUnitsNormed);
+    // интерполяция простых данных
+    Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
+    // нормировка интерполированных данных
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    // интерполяция нормированных данных
+    Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
+
 }
 
 Spectr::~Spectr()
@@ -61,35 +80,70 @@ Spectr::~Spectr()
     m_yUnitsInterpolated.clear();
     m_xUnitsNormed.clear();
     m_yUnitsNormed.clear();
+    m_xUnitsInterpolatedNormed.clear();
+    m_yUnitsInterpolatedNormed.clear();
+    m_xUnitsNormedInterpolated.clear();
+    m_xUnitsNormedInterpolated.clear();
     m_title.clear();
 }
 
-void Spectr::Interpolate()
+QVector<double> Spectr::GetCurrentDataX() const
+{
+    switch (m_currentDataType)
+    {
+        case NONPROCESSING: return m_xUnits;
+        case NORMED: return m_xUnitsNormed;
+        case INTERPOLATE: return m_xUnitsInterpolated;
+        case NORMED_INTERPOLATE: return m_xUnitsNormedInterpolated;
+        case INTERPOLATE_NORMED: return m_xUnitsInterpolatedNormed;
+    }
+}
+
+QVector<double> Spectr::GetCurrentDataY() const
+{
+    switch (m_currentDataType)
+    {
+        case NONPROCESSING: return m_yUnits;
+        case NORMED: return m_yUnitsNormed;
+        case INTERPOLATE: return m_yUnitsInterpolated;
+        case NORMED_INTERPOLATE: return m_yUnitsNormedInterpolated;
+        case INTERPOLATE_NORMED: return m_yUnitsInterpolatedNormed;
+    }
+}
+
+void Spectr::SetCurrentDataType(CurrentDataType currentDataType)
+{
+    m_currentDataType = currentDataType;
+}
+
+Spectr::CurrentDataType Spectr::GetCurrentDataType() const
+{
+    return m_currentDataType;
+}
+
+void Spectr::Interpolate(QVector<double>& xUnitsOld, QVector<double>& yUnitsOld, QVector<double>& xUnitsNew, QVector<double>& yUnitsNew)
 {
     for (u::uint32 i = 0; i < m_cube->GetCountofChannels(); i++)
     {
-        m_xUnitsInterpolated.push_back(m_cube->GetListOfChannels().at(i));
+        xUnitsNew.push_back(m_cube->GetListOfChannels().at(i));
     }
-    m_yUnitsInterpolated.resize(m_cube->GetCountofChannels());
-    interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
-
-    m_interpolated = true;
+    yUnitsNew.resize(m_cube->GetCountofChannels());
+    interpolate(xUnitsOld, yUnitsOld, xUnitsNew, yUnitsNew);
 }
 
-void Spectr::Norm()
+void Spectr::Norm(QVector<double> &xUnitsOld, QVector<double> &yUnitsOld, QVector<double> &xUnitsNew, QVector<double> &yUnitsNew)
 {
     QVector<double> sortedYArr;
-    sortedYArr = m_yUnits;
+    sortedYArr = yUnitsOld;
     qSort(sortedYArr);
-    m_xUnitsNormed = m_xUnits;
-    for (int i = 0; i < m_yUnits.size(); i++)
+    xUnitsNew = xUnitsOld;
+    for (int i = 0; i < yUnitsOld.size(); i++)
     {
-        m_yUnitsNormed.push_back(m_yUnits.at(i)/sortedYArr.last());
+        yUnitsNew.push_back(yUnitsOld.at(i)/sortedYArr.last());
     }
-    m_normed = true;
 }
 
-QVector<double> Spectr::GetXUnits() const
+/*QVector<double> Spectr::GetXUnits() const
 {
     return m_xUnits;
 }
@@ -113,7 +167,7 @@ QVector<double> Spectr::GetXUnitsNormed() const
 QVector<double> Spectr::GetYUnitsNormed() const
 {
     return m_yUnitsNormed;
-}
+}*/
 
 QString Spectr::GetTitle() const
 {
@@ -127,31 +181,14 @@ u::uint32 Spectr::GetYCoord() const
 {
     return m_yCoord;
 }
-Measurements Spectr::GetMeasurements() const
+void Spectr::GetMeasurements(Measurements &measurement)
 {
-    return m_measurements;
+    qDebug() << "Единицы измерения спектра" + QString::number(m_measurements);
+    measurement = m_measurements;
 }
 QList<DescriptionSpectr> Spectr::GetDescriptionOfSpectr() const
 {
     return m_spectrDescription;
-}
-
-void Spectr::SetInterpolated()
-{
-    m_interpolated = true;
-}
-bool Spectr::GetInterpolated()
-{
-    return m_interpolated;
-}
-
-void Spectr::SetNormed()
-{
-    m_normed = true;
-}
-bool Spectr::GetNormed()
-{
-    return m_normed;
 }
 
 void Spectr::SetDescriptionItem(QString& title, QString& description)

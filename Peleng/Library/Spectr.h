@@ -51,27 +51,27 @@ public:
      */
     virtual ~Spectr();
 
-    QVector<double> GetXUnits() const;
-    QVector<double> GetYUnits() const;
-    QVector<double> GetXUnitsInterpolated() const;
-    QVector<double> GetYUnitsInterpolated() const;
-    QVector<double> GetXUnitsNormed() const;
-    QVector<double> GetYUnitsNormed() const;
     QString GetTitle() const;
     u::uint32 GetXCoord() const;
     u::uint32 GetYCoord() const;
-    Measurements GetMeasurements() const;
+    void GetMeasurements(Measurements& measurement);
     QList<DescriptionSpectr> GetDescriptionOfSpectr() const;
     void SetDescriptionItem(QString& title, QString& description);
-    void SetInterpolated();
-    bool GetInterpolated();
 
-    void SetNormed();
-    bool GetNormed();
+    QVector<double> GetCurrentDataX() const;
+    QVector<double> GetCurrentDataY() const;
+
+    enum CurrentDataType
+    {
+        NONPROCESSING, NORMED, INTERPOLATE, NORMED_INTERPOLATE, INTERPOLATE_NORMED
+    };
+
+    void SetCurrentDataType(CurrentDataType currentDataType);
+    CurrentDataType GetCurrentDataType() const;
 
 private:
-    void Interpolate();
-    void Norm();
+    void Interpolate(QVector<double> &xUnitsOld, QVector<double> &yUnitsOld, QVector<double> &xUnitsNew, QVector<double> &yUnitsNew);
+    void Norm(QVector<double> &xUnitsOld, QVector<double> &yUnitsOld, QVector<double> &xUnitsNew, QVector<double> &yUnitsNew);
 
 private:
     HyperCube* m_cube;                              ///< Указатель на объект класса гиперкуб
@@ -84,13 +84,18 @@ private:
     QVector<double> m_xUnitsNormed;                 ///< Нормированные значения по х координате
     QVector<double> m_yUnitsNormed;                 ///< Нормированные значения по у координате
 
+    QVector<double> m_xUnitsNormedInterpolated;     ///< Нормированные и интерполированные значения по х координате
+    QVector<double> m_yUnitsNormedInterpolated;     ///< Нормированные и интерполированные значения по у координате
+
+    QVector<double> m_xUnitsInterpolatedNormed;     ///< интерполированные и нормированные значения по х координате
+    QVector<double> m_yUnitsInterpolatedNormed;     ///< интерполированные и нормированные значения по у координате
+
     QString   m_title;                              ///< Название спектра
     u::uint32 m_xCoord;                             ///< Координата X в гиперкубе
     u::uint32 m_yCoord;                             ///< Координата Y в гиперкубе
     Measurements m_measurements;                    ///< Единицы измерения
     QList<DescriptionSpectr> m_spectrDescription;   ///< Полное описание спектра
-    bool m_interpolated;                            ///< флаг, есть ли нормированные данные
-    bool m_normed;                                  ///< флаг, нормированные данные или нет
+    CurrentDataType m_currentDataType;              ///< Текущие данные, которые отображены на графике
 };
 
 #endif // SPECTR_H

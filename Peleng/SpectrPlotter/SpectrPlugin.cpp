@@ -39,7 +39,7 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
             if (m_windowList.at(i)->getIsHold())
             {
                  // передавать, отображать подписи осей, или нет
-                 m_windowList.at(i)->plotSpectr(attr->GetCurrentSpectr()->GetXUnits(), attr->GetCurrentSpectr()->GetYUnits());
+                 m_windowList.at(i)->plotSpectr(attr->GetCurrentSpectr()->GetCurrentDataX(), attr->GetCurrentSpectr()->GetCurrentDataY());
             }
                 plot = true;
          }
@@ -48,7 +48,7 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
     {
         PlotterWindow* plotterWindow = new PlotterWindow(cube, attr);
         QObject::connect(plotterWindow, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(OnClose(PlotterWindow*)));
-        plotterWindow->plotSpectr(attr->GetCurrentSpectr()->GetXUnits(), attr->GetCurrentSpectr()->GetYUnits());
+        plotterWindow->plotSpectr(attr->GetCurrentSpectr()->GetCurrentDataX(), attr->GetCurrentSpectr()->GetCurrentDataY());
         m_windowList.append(plotterWindow);
     }
 

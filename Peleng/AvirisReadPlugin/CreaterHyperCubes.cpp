@@ -250,6 +250,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     }
     m_infoData.bytesType = GetNumberOfBytesFromData(m_infoData.formatType);
     cube->SetInfoData(m_infoData);
+    cube->SetMeasurement(ADC);
     return true;
 }
 

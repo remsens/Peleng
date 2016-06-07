@@ -376,7 +376,7 @@ void PolygonManager::onMenuAverageSpectr()
        wawesVect.push_back(Wawes[i]);
     // править размерность
     QString title = "Среднее по региону '" + m_RegionArr[m_currIndexRegion].m_name + "'";
-    Spectr* spectr = new Spectr (m_cube, wawesVect, averageSpectrVect, title, ECP);
+    Spectr* spectr = new Spectr (m_cube, wawesVect, averageSpectrVect, title, Measurements::ADC);
     m_attributes->SetCurrentXUnits(wawesVect);
     m_attributes->SetCurrentYUnits(averageSpectrVect);
     m_attributes->SetExternalSpectrFlag(true);
@@ -434,7 +434,7 @@ void PolygonManager::onMenuStandardDeviation()
        wawesVect.push_back(Wawes[i]);
     QString title = "СКО по региону " + m_RegionArr[m_currIndexRegion].m_name;
     //править
-    Spectr* spectr = new Spectr (m_cube, wawesVect, std, title, ECP);
+    Spectr* spectr = new Spectr (m_cube, wawesVect, std, title, Measurements::ADC);
     m_attributes->SetCurrentXUnits(wawesVect);
     m_attributes->SetCurrentYUnits(std);
     m_attributes->SetExternalSpectrFlag(true);
