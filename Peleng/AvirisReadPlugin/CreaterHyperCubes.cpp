@@ -11,6 +11,7 @@
 #include "CreaterHyperCubes.h"
 #include "convertdatacubetolittleendian.h"
 
+
 CreaterHyperCubes::CreaterHyperCubes()
 {
 }
@@ -62,6 +63,22 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
 
 bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
 {
+    //определяем, чем заканчиваются строки: "\r\n" или "\n"
+    QFile fileDetect(headerFilePath);
+    if (!fileDetect.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    QString readingLineTemp = fileDetect.readLine();
+    QString endOfStr = "";
+    if(readingLineTemp.contains("\r\n"))
+        endOfStr = "\r\n";
+    else if(readingLineTemp.contains("\n"))
+        endOfStr = "\n";
+    fileDetect.close();
+    //и сохраняем в endOfStr
+
+
 
     QFile file(headerFilePath);
 
@@ -93,19 +110,19 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
 
                     if (QString(readWords.at(0)).compare("samples") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        QStringList data = QString(readWords.at(2)).split(endOfStr);
                         m_infoData.samples = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (QString(readWords.at(0)).compare("lines") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        QStringList data = QString(readWords.at(2)).split(endOfStr);
                         m_infoData.lines = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (QString(readWords.at(0)).compare("bands") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        QStringList data = QString(readWords.at(2)).split(endOfStr);
                         m_infoData.bands = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (QString(readWords.at(0)).compare("interleave") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split("\r\n");
+                        QStringList data = QString(readWords.at(2)).split(endOfStr);
                         if (QString(data.at(0)).compare("bsq", Qt::CaseInsensitive) == 0)
                         {
                             m_interleave = BSQ; wordsPoints++; continue;
@@ -121,15 +138,15 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                 {
                     if (basedWords.key(readWords.at(1)).compare("header") == 0 && basedWords.value(readWords.at(0)).compare("offset") == 0)
                     {
-                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        QStringList data = QString(readWords.at(3)).split(endOfStr);
                         m_headerOffset = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (basedWords.key(readWords.at(1)).compare("byte") == 0 && basedWords.value(readWords.at(0)).compare("order") == 0)
                     {
-                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        QStringList data = QString(readWords.at(3)).split(endOfStr);
                         m_byteOrder = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (basedWords.key(readWords.at(1)).compare("data") == 0 && basedWords.value(readWords.at(0)).compare("type") == 0)
                     {
-                        QStringList data = QString(readWords.at(3)).split("\r\n");
+                        QStringList data = QString(readWords.at(3)).split(endOfStr);
                         m_infoData.formatType = TypeFromAvirisType(QString(data.at(0)).toLong()); wordsPoints++;
                     } else if (basedWords.key(readWords.at(1)).compare("wavelength") == 0 && basedWords.value(readWords.at(0)).compare("=") == 0)
                     {
@@ -152,7 +169,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                             readWords = readingLine.split("}",QString::SkipEmptyParts);
                             readingLine = readWords.join("");
                             readWords.clear();
-                            readWords = readingLine.split(",\r\n",QString::SkipEmptyParts);
+                            readWords = readingLine.split(","+endOfStr,QString::SkipEmptyParts);//",\r\n"
                             readingLine = readWords.join("");
                             readWords.clear();
                             readWords = readingLine.split(", ", QString::SkipEmptyParts);
