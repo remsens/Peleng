@@ -276,7 +276,6 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     rows = m_pCube->GetLines();
     cols = m_pCube->GetColumns();
     chnls = m_pCube->GetCountofChannels();
-    data = (qint16**)ptrCube->GetDataCube();
     m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
