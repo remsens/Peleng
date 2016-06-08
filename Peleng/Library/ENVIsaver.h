@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include "HyperCube.h"
-#include <gdal_priv.h>
+//#include <gdal_priv.h>
+#include "../Library/GDAL/include/gdal_priv.h"
 #include "cpl_conv.h" // for CPLMalloc()
 #include "cpl_string.h"
 #include <ogr_spatialref.h>

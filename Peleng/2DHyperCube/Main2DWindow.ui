@@ -251,7 +251,7 @@
   </action>
   <action name="action_saveENVI">
    <property name="text">
-    <string>Сохранить для ENVI</string>
+    <string>Сохранить в формат ENVI</string>
    </property>
   </action>
  </widget>

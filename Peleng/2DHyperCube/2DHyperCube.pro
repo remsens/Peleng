@@ -47,7 +47,7 @@ HEADERS += \
     PolygonManager.h \
     Region.h \
     ../Library/ENVIsaver.h \
-    saveENVI.h
+    ../Library/saveENVI.h
 
 
 FORMS += \

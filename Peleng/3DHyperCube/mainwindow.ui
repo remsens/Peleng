@@ -285,6 +285,7 @@
     </property>
     <addaction name="actionBrightCheck"/>
     <addaction name="actionResizeCube"/>
+    <addaction name="action_ENVI"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -300,6 +301,11 @@
   <action name="actionResizeCube">
    <property name="text">
     <string>Изменить размер куба</string>
+   </property>
+  </action>
+  <action name="action_ENVI">
+   <property name="text">
+    <string>Сохранить в формат ENVI</string>
    </property>
   </action>
  </widget>

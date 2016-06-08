@@ -3,7 +3,7 @@
 #include "../Library/GenericExc.h"
 #include "../Library/ENVIsaver.h"
 #include <QMessageBox>
-#include <saveENVI.h>
+#include "../Library/saveENVI.h"
 int cmp2(const void *a, const void *b);
 
 
