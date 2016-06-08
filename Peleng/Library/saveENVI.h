@@ -1,15 +1,14 @@
-#ifndef SAVEGEOTIFF
-#define SAVEGEOTIFF
+#ifndef SAVEENVI
+#define SAVEENVI
 #include <qobject>
 #include <../Library/HyperCube.h>
-#include <../Library/GeoTiff.h>
+#include <../Library/ENVIsaver.h>
 #include <QFileDialog>
 #include <../Library/Types.h>
-void saveGeoTiff(HyperCube* pCube)
+void saveENVI(HyperCube* pCube)
 {
     QString filename  = QFileDialog::getSaveFileName(0, "Сохранить гиперкуб",
-                                                     "гиперкуб.tif",
-                                                     "Images (*.tif)");
+                                                     "hypercube");
     if(filename.isEmpty())
         return;
     std::string strName = filename.toStdString();
@@ -22,35 +21,35 @@ void saveGeoTiff(HyperCube* pCube)
     switch (pCube->GetFormatType()) {
     case type_uint8:
         type = GDT_Byte;
-        succes = GeoTiff<u::uint8>::save(charName,pCube,type);
+        succes = ENVIsaver<u::uint8>::save(charName,pCube,type);
         break;
     case type_int16:
         type = GDT_Int16;
-        succes = GeoTiff<u::int16>::save(charName,pCube,type);
+        succes = ENVIsaver<u::int16>::save(charName,pCube,type);
         break;
     case type_uint16:
         type = GDT_UInt16 ;
-        succes = GeoTiff<u::uint16>::save(charName,pCube,type);
+        succes = ENVIsaver<u::uint16>::save(charName,pCube,type);
         break;
     case type_int32:
         type = GDT_Int32;
-        succes = GeoTiff<u::int32>::save(charName,pCube,type);
+        succes = ENVIsaver<u::int32>::save(charName,pCube,type);
         break;
     case type_uint32:
         type = GDT_UInt32;
-        succes = GeoTiff<u::uint32>::save(charName,pCube,type);
+        succes = ENVIsaver<u::uint32>::save(charName,pCube,type);
         break;
     case type_float:
         type = GDT_Float32;
-        succes = GeoTiff<float>::save(charName,pCube,type);
+        succes = ENVIsaver<float>::save(charName,pCube,type);
         break;
     case type_double:
         type = GDT_Float64;
-        succes = GeoTiff<double>::save(charName,pCube,type);
+        succes = ENVIsaver<double>::save(charName,pCube,type);
         break;
     default:
         type = GDT_Byte;
-        succes = GeoTiff<u::uint8>::save(charName,pCube,type);
+        succes = ENVIsaver<u::uint8>::save(charName,pCube,type);
         break;
     }
     if(!succes)
@@ -60,5 +59,5 @@ void saveGeoTiff(HyperCube* pCube)
     }
 }
 
-#endif // SAVEGEOTIFF
+#endif // SAVEENVI
 

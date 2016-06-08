@@ -28,7 +28,8 @@ HEADERS       = \
     ../Library/Attributes/Attributes.h \
     ../Library/FileProjectFeatures.h \
     ../Library/stepsdefinitions.h \
-    ../Library/Utils/Compare.h
+    ../Library/Utils/Compare.h \
+    ../Library/saveENVI.h
 
 
 SOURCES       = \
@@ -64,6 +65,10 @@ INCLUDEPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 DEPENDPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 
 win32: LIBS += -L$$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/lib/ -lopengl32
+
+win32: LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/include
+DEPENDPATH += $$PWD/../Library/GDAL/include
 
 RESOURCES += \
     icons3Dcube.qrc \

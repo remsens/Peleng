@@ -42,6 +42,8 @@ private slots:
     //! для исправления бага с opengl отрисовкой после ресайза для слайдера x2
     void X1chngd(int num);
     void X2chngd(int num);
+    void on_action_ENVI_triggered();
+
 private:
     void setSlidersSettings();
 

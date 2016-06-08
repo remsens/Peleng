@@ -46,8 +46,8 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
     Region.h \
-    ../Library/GeoTiff.h \
-    savegeotiff.h
+    ../Library/ENVIsaver.h \
+    ../Library/saveENVI.h
 
 
 FORMS += \

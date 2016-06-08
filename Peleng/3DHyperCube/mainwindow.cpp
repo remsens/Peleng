@@ -139,6 +139,11 @@ void MainWindow::resizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint3
     widgetHyperCube->resizeAndRedraw(Ch1,Ch2,R1,R2,C1,C2);
 }
 
+void MainWindow::on_action_ENVI_triggered()
+{
+    widgetHyperCube->saveCubeForENVI();
+}
+
 void MainWindow::labelBright(int x, int y, QString brightValue)
 {
     QToolTip::showText(QPoint(x,y),brightValue,this, rect() );
