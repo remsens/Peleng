@@ -9,5 +9,5 @@ TEMPLATE = subdirs
 SUBDIRS = AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyperCube HistPlotter\
     RgbImagePlotter \
     SpectralDistance \
-    NoisePlugin
-#SpectralLibPlugin\
+    NoisePlugin \
+    SpectralLibPlugin

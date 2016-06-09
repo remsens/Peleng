@@ -73,9 +73,11 @@ private:
         //BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
         QString descr = QString("Устранение шумов: медианный фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
-       // Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, resultSpectr, descr, BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetMeasurements());
-        //BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
-        //BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
+        Measurements measurement;
+        BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetMeasurements(measurement);
+        Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, resultSpectr, descr, measurement);
+        BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
+        BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
     }
 
     bool ToCube()
