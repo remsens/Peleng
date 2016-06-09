@@ -1,7 +1,6 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
-#include "../Library/ENVIsaver.h"
 #include <QMessageBox>
 #include "../Library/saveENVI.h"
 int cmp2(const void *a, const void *b);
@@ -276,7 +275,6 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     rows = m_pCube->GetLines();
     cols = m_pCube->GetColumns();
     chnls = m_pCube->GetCountofChannels();
-    data = (qint16**)ptrCube->GetDataCube();
     m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));

@@ -126,7 +126,6 @@ private:
     HyperCube* m_pCube;
     u::uint32 m_initChanel;
     QCPColorMap *colorMap;
-    qint16 **data;
     double *m_tempChanel;
     int rows, cols, chnls;
     int m_dataX, m_dataY;
