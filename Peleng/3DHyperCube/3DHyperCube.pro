@@ -28,8 +28,7 @@ HEADERS       = \
     ../Library/Attributes/Attributes.h \
     ../Library/FileProjectFeatures.h \
     ../Library/stepsdefinitions.h \
-    ../Library/Utils/Compare.h \
-    ../Library/saveENVI.h
+    ../Library/Utils/Compare.h
 
 
 SOURCES       = \

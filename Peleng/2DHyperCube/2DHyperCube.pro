@@ -45,8 +45,7 @@ HEADERS += \
     Main2DWindow.h \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
-    Region.h \
-    ../Library/saveENVI.h
+    Region.h
 
 
 FORMS += \

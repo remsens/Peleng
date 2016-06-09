@@ -2,7 +2,6 @@
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
 #include <QMessageBox>
-#include "../Library/saveENVI.h"
 int cmp2(const void *a, const void *b);
 
 
@@ -801,5 +800,5 @@ void Main2DWindow::ActionSpectralDistanceToogled()
 
 void Main2DWindow::on_action_saveENVI_triggered()
 {
-     saveENVI(m_pCube);
+     //saveENVI(m_pCube);
 }

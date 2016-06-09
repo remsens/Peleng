@@ -141,7 +141,7 @@ void MainWindow::resizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint3
 
 void MainWindow::on_action_ENVI_triggered()
 {
-    widgetHyperCube->saveCubeForENVI();
+    //widgetHyperCube->saveCubeForENVI();
 }
 
 void MainWindow::labelBright(int x, int y, QString brightValue)
