@@ -1,7 +1,6 @@
 #include "Main2DWindow.h"
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
-#include "../Library/ENVIsaver.h"
 #include <QMessageBox>
 #include "../Library/saveENVI.h"
 int cmp2(const void *a, const void *b);
