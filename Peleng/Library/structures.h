@@ -15,6 +15,7 @@ enum Measurements
     RSD,         // СПЭЯ (radiance spectral density)
     RFL_percent, // Reflectance, % (коэффициент отражения, %)
     RFL_units,   // Reflectance, parts of units (коэффициет отражения в долях единиц)
+    Unknown_measurement      // Неизвестный тип
 };
 
 inline QString GetTextMeasurements(Measurements measurement)

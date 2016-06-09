@@ -16,7 +16,7 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     , m_cube(cube)
     , m_attributes(attr)
 {
-    m_ui->setupUi(this);
+    /*m_ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
     QObject::connect(m_ui->pushButton_save, SIGNAL(clicked()), this, SLOT(OnPushButtonSaveSpectr()));
     QObject::connect(m_ui->pushButtonTranslate, SIGNAL(clicked()), this, SLOT(OnPushButtonTranslateClicked()));
@@ -86,6 +86,7 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_headers_english.append("Y Units");
     m_headers_english.append("Additional Information");
     m_bEnglish = false;
+    */
 }
 
 CreateSpectr::~CreateSpectr()
@@ -96,7 +97,7 @@ CreateSpectr::~CreateSpectr()
 void CreateSpectr::OnPushButtonSaveSpectr()
 {
     // получили вектор данных для записи
-    QVector<double> data; QList<double> listWaves;
+   /* QVector<double> data; QList<double> listWaves;
     listWaves = m_attributes->GetXUnits().toList();
     data = m_attributes->GetYUnits();
     // проверяем, все ли поля заполнены (не нужно, можно оставлять пустыми).
@@ -197,12 +198,12 @@ void CreateSpectr::OnPushButtonSaveSpectr()
     {
         QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка записи в файл данных: %0").arg(err));
     }
-
+*/
 }
 
 void CreateSpectr::OnPushButtonTranslateClicked()
 {
-    if (!m_bEnglish)
+   /* if (!m_bEnglish)
     {
         m_ui->label_name->setText(m_headers_english.at(0));
         m_ui->label_type->setText(m_headers_english.at(1));
@@ -231,4 +232,5 @@ void CreateSpectr::OnPushButtonTranslateClicked()
         m_ui->label_addInfo->setText(m_headers_russian.at(10));
         m_bEnglish = false;
     }
+    */
 }

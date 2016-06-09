@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QIcon>
 #include "../Library/Spectr.h"
+#include "../Library/structures.h"
 #include "../Library/GenericExc.h"
 
 AddSpectr::AddSpectr(HyperCube* cube, Attributes* attr)
@@ -59,7 +60,7 @@ void AddSpectr::ParseFile()
         QVector<double> yUnits;
         QString title, description;
         DescriptionSpectr descriptionItem;
-        QList<DescriptionSpectr>& spectrDescription;
+        QList<DescriptionSpectr> spectrDescription;
         // Алгоритм предусматривает, что titles может идти не по порядку. Но нужно как-то разграничивать описание от данных
         // Поэтому смотрим по последнему элементу в possibleTitles;
         bool flagEndDescription = false;
@@ -198,24 +199,55 @@ void AddSpectr::ParseFile()
         for (int i = 0; i < spectrDescription.size(); i++)
         {
             toMessageBox.append(spectrDescription.at(i).title);
-            toMessageBox.append(mspectrDescription.at(i).description);
+            toMessageBox.append(spectrDescription.at(i).description);
             toMessageBox.append("\n");
         }
         toMessageBox.append("\n");
         toMessageBox.append("X Units size: ");
-        toMessageBox.append(QString::number(xUnits().size()));
+        toMessageBox.append(QString::number(xUnits.size()));
 
         toMessageBox.append("\n");
         toMessageBox.append("Y Units size: ");
-        toMessageBox.append(QString::number(xUnits().size()));
+        toMessageBox.append(QString::number(xUnits.size()));
         QMessageBox messageBox;
         QIcon icon(":/pic/icons/information.png");
         messageBox.setWindowIcon(icon);
         messageBox.setWindowTitle("Информация о спектре");
         messageBox.setText(toMessageBox);
         messageBox.exec();
-        QMessageBox::information(NULL, "Информация о спектре", toMessageBox);
-
+        //QMessageBox::information(NULL, "Информация о спектре", toMessageBox);
+        Measurements measurement = Unknown_measurement;
+        for (int i = 0; i < spectrDescription.size(); i++)
+        {
+            if (spectrDescription.at(i).title.contains("Name", Qt::CaseInsensitive))
+            {
+                title = spectrDescription.at(i).description;
+            } else if (spectrDescription.at(i).title.contains("Y Units", Qt::CaseInsensitive))
+            {
+                // пробуем определить в чем измеряются величины y
+                if (spectrDescription.at(i).description.contains("Reflectance", Qt::CaseInsensitive))
+                {
+                    // определяем в % или в долях единиц
+                    if (spectrDescription.at(i).description.contains("percent", Qt::CaseInsensitive))
+                    {
+                        measurement = RFL_percent;
+                    } else
+                    {
+                        measurement = RFL_units;
+                    }
+                } else if (spectrDescription.at(i).description.contains("Коэф. спектральной яркости", Qt::CaseInsensitive))
+                    {
+                        measurement = RSD;
+                    }
+            }
+        }
+        if (measurement == -1)
+        {
+            // неизвестный тип данных. Запрашиваем у пользователя
+            // нужно сделать окно.
+        }
+        Spectr spectr(m_cube, xUnits, yUnits, title, measurement, spectrDescription);
+        m_attr->SetCurrentSpectr(&spectr);
         if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
         {
             m_attr->SetExternalSpectrFlag(true);
