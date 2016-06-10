@@ -289,6 +289,7 @@ void PlotterWindow::ActionNormalization()
     {
         m_selectedSpectr->SetCurrentDataType(Spectr::NORMED_INTERPOLATE);
     }
+    m_selectedSpectr->SetMeasurement(Relative_units);
     m_listSpectr.push_back(m_selectedSpectr);
     plotSpectr(m_selectedSpectr->GetCurrentDataX(), m_selectedSpectr->GetCurrentDataY(), name);
 }

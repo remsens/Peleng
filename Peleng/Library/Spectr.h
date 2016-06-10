@@ -54,6 +54,7 @@ public:
     QString GetTitle() const;
     u::uint32 GetXCoord() const;
     u::uint32 GetYCoord() const;
+    void SetMeasurement(Measurements measurement);
     void GetMeasurements(Measurements& measurement);
     QList<DescriptionSpectr> GetDescriptionOfSpectr() const;
     void SetDescriptionItem(QString& title, QString& description);

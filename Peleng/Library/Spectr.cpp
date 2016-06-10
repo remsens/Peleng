@@ -87,6 +87,11 @@ Spectr::~Spectr()
     m_title.clear();
 }
 
+void Spectr::SetMeasurement(Measurements measurement)
+{
+    m_measurements = measurement;
+}
+
 QVector<double> Spectr::GetCurrentDataX() const
 {
     switch (m_currentDataType)

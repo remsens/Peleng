@@ -228,7 +228,7 @@ void AddSpectr::ParseFile()
                 if (spectrDescription.at(i).description.contains("Reflectance", Qt::CaseInsensitive))
                 {
                     // определяем в % или в долях единиц
-                    if (spectrDescription.at(i).description.contains("percent", Qt::CaseInsensitive))
+                    if (spectrDescription.at(i).description.contains("percent", Qt::CaseInsensitive) )
                     {
                         measurement = RFL_percent;
                     } else
@@ -237,7 +237,7 @@ void AddSpectr::ParseFile()
                     }
                 } else if (spectrDescription.at(i).description.contains("Коэф. спектральной яркости", Qt::CaseInsensitive))
                     {
-                        measurement = RSD;
+                        measurement = RFL_units;
                     }
             }
         }
