@@ -32,6 +32,14 @@ enum TYPES {
     type_2double
 };
 
+//! http://www.gdal.org/gdal_datamodel.html
+struct geoData{
+    double GeoTransform[6];
+    int UTMzone;
+    bool northernHemisphere;
+    char* GeographCordSys;
+};
+
 //! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
 class HyperCube {
 

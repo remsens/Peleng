@@ -5,9 +5,9 @@
 #include <QFileDialog>
 #include <../Library/Types.h>
 #include "../Library/GDAL/include/gdal_priv.h"
-#include "cpl_conv.h" // for CPLMalloc()
-#include "cpl_string.h"
-#include <ogr_spatialref.h>
+#include "../Library/GDAL/include/cpl_conv.h" // for CPLMalloc()
+#include "../Library/GDAL/include/cpl_string.h"
+#include "../Library/GDAL/include/ogr_spatialref.h"
 #include <QProgressBar>
 #include <QDebug>
 #include <QCoreApplication>

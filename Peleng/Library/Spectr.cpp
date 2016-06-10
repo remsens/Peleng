@@ -24,7 +24,7 @@ Spectr::Spectr(HyperCube* cube, u::uint32 x, u::uint32 y)
     // интерполяция простых данных
     Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
     // нормировка интерполированных данных
-    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsInterpolatedNormed);
     // интерполяция нормированных данных
     Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
     m_title = "X = " + QString::number(x) + " Y = " + QString::number(y);    
@@ -46,7 +46,7 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     // интерполяция простых данных
     Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
     // нормировка интерполированных данных
-    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsInterpolatedNormed);
     // интерполяция нормированных данных
     Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
 
@@ -65,7 +65,7 @@ Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<dou
     // интерполяция простых данных
     Interpolate(m_xUnits, m_yUnits, m_xUnitsInterpolated, m_yUnitsInterpolated);
     // нормировка интерполированных данных
-    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsNormedInterpolated);
+    Norm(m_xUnitsInterpolated, m_yUnitsInterpolated, m_xUnitsInterpolatedNormed, m_yUnitsInterpolatedNormed);
     // интерполяция нормированных данных
     Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
 
@@ -143,32 +143,6 @@ void Spectr::Norm(QVector<double> &xUnitsOld, QVector<double> &yUnitsOld, QVecto
     }
 }
 
-/*QVector<double> Spectr::GetXUnits() const
-{
-    return m_xUnits;
-}
-QVector<double> Spectr::GetYUnits() const
-{
-    return m_yUnits;
-}
-
-QVector<double> Spectr::GetXUnitsInterpolated() const
-{
-    return m_xUnitsInterpolated;
-}
-QVector<double> Spectr::GetYUnitsInterpolated() const
-{
-    return m_yUnitsInterpolated;
-}
-QVector<double> Spectr::GetXUnitsNormed() const
-{
-    return m_xUnitsNormed;
-}
-QVector<double> Spectr::GetYUnitsNormed() const
-{
-    return m_yUnitsNormed;
-}*/
-
 QString Spectr::GetTitle() const
 {
     return m_title;
@@ -181,11 +155,13 @@ u::uint32 Spectr::GetYCoord() const
 {
     return m_yCoord;
 }
+
 void Spectr::GetMeasurements(Measurements &measurement)
 {
     qDebug() << "Единицы измерения спектра" + QString::number(m_measurements);
     measurement = m_measurements;
 }
+
 QList<DescriptionSpectr> Spectr::GetDescriptionOfSpectr() const
 {
     return m_spectrDescription;
