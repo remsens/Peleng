@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "../Library/stepsdefinitions.h"
+#include "../Library/Ellipsoid.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -39,6 +40,17 @@ MainWindow::MainWindow(QWidget *parent) :
       m_translatingStepsMap.insert(MEDIAN_FILTER_FOR_SPECTRA_WITH_STEP, "Медианный фильтр по спектрам с шагом ");
       m_translatingStepsMap.insert(MEDIAN_FILTER_FOR_BANDS_WITH_STEP, "Медианный фильтр по каналам с шагом ");
       m_translatingStepsMap.insert(SAVITSKI_GOLAY_FILTER_WITH_STEP, "Сглаживающий фильтр Савитского-Голая с шагом ");
+
+      //---------тест перевода координат---------
+    TEllipsoid earth(ELL_WGS84, 0.0);
+    double radBreadth = DegToRad(40);
+    double radlong = DegToRad(30);
+    char zone[4];
+    xyzREAL utmCord =  earth.BLH_To_UTM(radBreadth, radlong, 0, zone);
+    qDebug()<<"utmX = "<<utmCord.x;
+    qDebug()<<"utmY = "<<utmCord.y;
+    qDebug()<<"utmZ = "<<utmCord.z;
+    qDebug()<<"zone = "<<zone;
 }
 
 
