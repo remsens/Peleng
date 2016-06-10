@@ -2,7 +2,7 @@
 #include "ui_Main2DWindow.h"
 #include "../Library/GenericExc.h"
 #include <QMessageBox>
-
+#include "../Library/saveENVI.h"
 int cmp2(const void *a, const void *b);
 
 
@@ -275,13 +275,9 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     rows = m_pCube->GetLines();
     cols = m_pCube->GetColumns();
     chnls = m_pCube->GetCountofChannels();
-    data = (qint16**)ptrCube->GetDataCube();
     m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
-
-
-
 }
 
 void Main2DWindow::setInitCustomplotSettings()
@@ -794,6 +790,7 @@ void Main2DWindow::contextMenuRequest(QPoint point)
 
 }
 
+
 void Main2DWindow::ActionSpectralDistanceToogled()
 {
     m_attributes->ClearList();
@@ -802,9 +799,7 @@ void Main2DWindow::ActionSpectralDistanceToogled()
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pCube, m_attributes);
 }
 
-
-
-
-
-
-
+void Main2DWindow::on_action_saveENVI_triggered()
+{
+     saveENVI(m_pCube);
+}

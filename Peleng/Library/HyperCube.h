@@ -32,7 +32,7 @@ enum TYPES {
     type_2double
 };
 
-//! Класс гиперкуба. Хранит данные гиперкуба и метаданные
+//! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
 class HyperCube {
 
 public:
@@ -62,6 +62,19 @@ public:
     //! @param x - номер строки точки
     //! @param у - номер столбца точки
     void SetDataSpectrum(u::cptr data, u::uint32 x, u::uint32 y);
+
+    //!Функция задания геоматрицы
+    //! @param GeoTransform[] - матрица из 6 элементов (http://www.gdal.org/gdal_datamodel.html)
+    void SetGeoDataGeoTransform(double GeoTransform[]);
+
+    //!Функция задания UTM зоны
+    //! @param zone - номер UTM зоны
+    //! @param north - TRUE for northern hemisphere, or FALSE for southern hemisphere.
+    void SetGeoDataUTMzone(int zone, bool north);
+
+    //! Функция задания геодезической системы
+    //! @param GeographCordSys - одна из стандартных координатных систем. Пример: "NAD27"
+    void SetGeoDataGeographCordSys(char* GeographCordSys);
 
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
@@ -99,6 +112,7 @@ public:
     //! @return - размер гиперкуба кол-во элементов)
     u::uint32 GetSizeCube() const;
 
+
     //! Функция получения данных гиперкуба
     //! @return указатель на данные гиперкуба (двумерный массив, который можно привести к любому типу)
     u::ptr* GetDataCube() const;
@@ -133,6 +147,12 @@ public:
     //! @param data - вектор, куда будут записаны данные одного канала ( под него уже должна быть выделена память!)
     void GetDataChannel(u::uint32 channel, QVector<double>& data);
 
+    //! @param geo6arr - массив[6], в который будет записана геоматрица
+    void GetGeoDataGeoTransform(double (&geo6arr)[6]);
+    int GetGeoDataUTMzone(){return m_geoData.UTMzone;}
+    bool GetGeoDataUTMzoneNorth(){return m_geoData.northernHemisphere;}
+    char* GetGeoDataGeographCordSys(){return m_geoData.GeographCordSys;}
+
     //! Функция изменения размера гиперкуба (параметры функции - координаты, по которым будет вырезаться куб)
     //! Перед вызовом этой функции надо сохранить куб в hdf!!!
     //! @param Ch1 - начальный номер канала
@@ -158,6 +178,7 @@ private:
     u::uint32 m_sizeCube; //!< размер куба
     InfoData m_infoData; //!< метаданные куба
     Measurements m_measurements; //!< единицы измерения гиперкуба
+    geoData m_geoData;
 };
 
 #endif

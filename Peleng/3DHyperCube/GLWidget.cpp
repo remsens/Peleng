@@ -12,6 +12,7 @@
 #include "../Library/stepsdefinitions.h"
 #include "../Library/Utils/Compare.h"
 #include "../Library/Spectr.h"
+#include "../Library/saveENVI.h"
 
 using namespace std;
 
@@ -863,6 +864,11 @@ void GLWidget::ShowContextMenu(const QPoint& pos)
     {
         contextMenu->setEnabled(false);
     }
+}
+
+void GLWidget::saveCubeForENVI()
+{
+     saveENVI(m_pHyperCube);
 }
 
 void GLWidget::ActionRGBCorrectionToogled()

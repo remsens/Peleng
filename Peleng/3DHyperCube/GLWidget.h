@@ -66,6 +66,7 @@ public slots:
     void ActionNoiseSavitGolay5_9Toogled();
     void ActionSpectralDistanceToogled();
     void ActionRGBCorrectionToogled();
+    void saveCubeForENVI();
 protected:
     void closeEvent(QCloseEvent *e);
 
@@ -84,6 +85,7 @@ private slots:
     void updateCube();
     void needToUpdate(bool needToUpdate);
     void ShowContextMenu(const QPoint& pos);
+
 signals:
     void clicked();
     void sendXYZ(uint, uint, uint); //отправляет сигнал, по которому вызывается SpectrPlotter
@@ -127,7 +129,6 @@ private:
     void evalDataCordsFromMouse(int mouseX, int mouseY);
     void Noise();
     void NoiseGolayAlgExecute();
-
 private:
     Attributes* m_attributes;
     QColor clearColor;

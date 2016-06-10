@@ -354,13 +354,12 @@ void PolygonManager::onMenuAverageSpectr()
             if(m_RegionArr[m_currIndexRegion].m_byteArr.at(i*m_cols+j) == 0x01)
             {
                 numSpctrs++;
-                qint16* spectr = new qint16[Chnls];
-                m_cube->GetSpectrumPoint(i, j,spectr); // записали в pSpectrValues из гиперкуба
+                QVector<double> spectr;
+                m_cube->GetSpectrumPoint(i, j, spectr); // записали в pSpectrValues из гиперкуба
                 for (int k = 0; k < Chnls; ++k)
                 {
-                    spectrSum[k] += (double)spectr[k];
+                    spectrSum[k] += spectr.at(k);
                 }
-                delete[] spectr;
             }
         }
     }
@@ -390,9 +389,7 @@ void PolygonManager::onMenuStandardDeviation()
     int Chnls = m_cube->GetCountofChannels();
     QVector<double> buf;
     QVector<double> std(Chnls,0); //СКО
-    qint16** data = (qint16**)m_cube->GetDataCube();
     QVector<QPoint> ijArr;
-
     for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
     {
         for(int j = 0; j < m_cols; ++j)
@@ -406,7 +403,7 @@ void PolygonManager::onMenuStandardDeviation()
     for (int k = 0; k < Chnls; ++k)
     {
         foreach(QPoint p,ijArr)
-            buf.append(data[k][p.x()*m_cols + p.y()]);
+             buf.append(m_cube->GetDataPoint(p.x(),p.y(),k)); //  buf.append(data[k][p.x()*m_cols + p.y()]);
         std[k] = sqrt(calcStandardDeviation(buf));
         buf.clear();
     }

@@ -1,0 +1,1 @@
+Копировать все dll файлы из папки BinaryFiles x64 в один каталог с exe-файлом (debug и release)

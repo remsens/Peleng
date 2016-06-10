@@ -51,6 +51,7 @@ HEADERS += \
     ../Library/Spectr.h \
     ../Library/structures.h \
     ../Library/MathOperations/interpolation.h
+    ../Library/saveENVI.h
 
 
 FORMS += \
@@ -59,3 +60,8 @@ FORMS += \
 
 RESOURCES += \
     icons2Dcube.qrc \
+
+
+win32: LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/include
+DEPENDPATH += $$PWD/../Library/GDAL/include
