@@ -5,6 +5,9 @@
 #include "../Library/QCustomPlot.h"
 #include "../Library/HyperCube.h"
 #include "../Library/Attributes/Attributes.h"
+#include "../Library/Spectr.h"
+#include "../Library/structures.h"
+
 namespace Ui {
 class PlotterWindow;
 }
@@ -18,10 +21,10 @@ public:
     explicit PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent = 0);
     virtual ~PlotterWindow();
 
-    void plotSpectr(uint dataX = 0, uint dataY = 0 );
+    void plotSpectr(QVector<double>& dataX, QVector<double>& dataY, QString& graphName = QString(""));
     bool getIsHold(){return m_hold;}
-
-    void chooseStep();
+    void setMeasurement(Measurements& measurement) {m_measurement = measurement;}
+    Measurements getGraphMeasurement() {return m_measurement;}
 protected:
     void resizeEvent(QResizeEvent * event);
     void keyPressEvent(QKeyEvent *event);
@@ -64,7 +67,10 @@ public slots:
     void ActionNoiseSavitGolay4_9Toogled();
     void ActionNoiseSavitGolay5_7Toogled();
     void ActionNoiseSavitGolay5_9Toogled();
+
+    void ActionNormalization();
     void AddSpectr();
+
 private:
     bool m_hold;
     bool m_valuesFlag;
@@ -81,10 +87,12 @@ private:
     int autoTickCountY;
     HyperCube* m_cube;
     Attributes* m_attributes;
-    QList<Attributes::DescriptionSpectr> m_descriptionExternalSpectr;
+    QList<DescriptionSpectr> m_descriptionExternalSpectr;
     QVector<double> m_xArr;
     QVector<double> m_yArr;
-
+    QList<Spectr*> m_listSpectr;
+    Spectr* m_selectedSpectr;
+    Measurements m_measurement;
 };
 
 #endif // PLOTTERWINDOW_H

@@ -3,6 +3,8 @@
 #include "../Library/GenericExc.h"
 #include <QMessageBox>
 #include "../Library/saveENVI.h"
+#include "../Library/Spectr.h"
+
 int cmp2(const void *a, const void *b);
 
 
@@ -664,8 +666,9 @@ void Main2DWindow::plotSpectr(uint x, uint y)
 {
     if (!m_needToUpdate)
     {
-        m_attributes->ClearList();
-        m_attributes->SetPoint(x, y, 0);
+        Spectr* spectr = new Spectr(m_pCube, x, y);
+        m_attributes->SetCurrentSpectr(spectr);
+        m_attributes->SetCurrentTitle(spectr->GetTitle());
         m_attributes->SetExternalSpectrFlag(false);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pCube, m_attributes);
     } else

@@ -6,7 +6,7 @@
 
 QT       += core
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets gui
 
 TARGET = AvirisReadPlugin
 TEMPLATE = lib
@@ -28,7 +28,8 @@ HEADERS += avirisreadplugin.h \
     ../Library/HyperCube.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
-    ConvertDataCubeToLittleEndian.h
+    ConvertDataCubeToLittleEndian.h \
+    ../Library/structures.h
 
 unix {
     target.path = /usr/lib

@@ -6,6 +6,8 @@ TEMPLATE = subdirs
 #SUBDIRS = HDF5FormatLib ReadDataLib AvirisReadPlugin MainApp 2DHyperCube SpectrPlotter \
  #   LinePlotter HistPlotter 3DHyperCube\
 
-SUBDIRS = AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyperCube HistPlotter SpectralLibPlugin NoisePlugin\
+SUBDIRS = AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyperCube HistPlotter\
     RgbImagePlotter \
-    SpectralDistance
+    SpectralDistance \
+    NoisePlugin \
+    SpectralLibPlugin

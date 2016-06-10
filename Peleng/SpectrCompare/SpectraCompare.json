@@ -1,0 +1,5 @@
+{
+    "Type" : "ProcessingFormat",
+    "Name" : "SpectraCompare",
+    "Description" : "Compare spectra"
+}

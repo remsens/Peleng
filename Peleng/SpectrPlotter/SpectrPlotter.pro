@@ -30,7 +30,8 @@ SOURCES +=\
     SpectrPlugin.cpp \
     PlotterWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
-    ../Library/MathOperations/interpolation.cpp
+    ../Library/MathOperations/interpolation.cpp \
+    ../Library/Spectr.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -41,7 +42,9 @@ HEADERS  += \
     PlotterWindow.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
-    ../Library/MathOperations/interpolation.h
+    ../Library/MathOperations/interpolation.h \
+    ../Library/Spectr.h \
+    ../Library/structures.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library
