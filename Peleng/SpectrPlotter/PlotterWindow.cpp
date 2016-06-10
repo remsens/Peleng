@@ -188,6 +188,15 @@ void PlotterWindow::removeSelectedGraph()
 
 void PlotterWindow::removeAllExceptSelectedGraph()
 {
+    // удаляем из списка
+    for (int i = 0; i < m_listSpectr.size(); i++)
+    {
+        if (m_listSpectr.at(i) != m_selectedSpectr)
+        {
+            m_listSpectr.removeAt(i);
+            break;
+        }
+    }
     if (m_customPlot->selectedGraphs().size() > 0)
     {
         for (int i = m_customPlot->graphCount()-1; i >= 0; --i)
@@ -455,10 +464,7 @@ void PlotterWindow::on_actionHold_toggled(bool value)
 void PlotterWindow::on_actionSave_toggled()
 {
     m_attributes->SetModeLib(0);
-    //m_attributes->ClearUnitsLists();
-   /* m_attributes->SetCurrentXUnits(m_xArr);
-    m_attributes->SetCurrentYUnits(m_yArr);
-    m_attributes->SetDescriptionSpectr(m_descriptionExternalSpectr);*/
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
     m_attributes->GetAvailablePlugins().value("SpectralLib UI")->Execute(m_cube, m_attributes);
 }
 

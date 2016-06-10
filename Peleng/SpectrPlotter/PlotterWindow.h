@@ -23,7 +23,8 @@ public:
 
     void plotSpectr(QVector<double>& dataX, QVector<double>& dataY, QString& graphName = QString(""));
     bool getIsHold(){return m_hold;}
-
+    void setMeasurement(Measurements& measurement) {m_measurement = measurement;}
+    Measurements getGraphMeasurement() {return m_measurement;}
 protected:
     void resizeEvent(QResizeEvent * event);
     void keyPressEvent(QKeyEvent *event);
@@ -91,6 +92,7 @@ private:
     QVector<double> m_yArr;
     QList<Spectr*> m_listSpectr;
     Spectr* m_selectedSpectr;
+    Measurements m_measurement;
 };
 
 #endif // PLOTTERWINDOW_H

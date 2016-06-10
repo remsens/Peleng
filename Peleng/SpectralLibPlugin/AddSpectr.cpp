@@ -246,8 +246,8 @@ void AddSpectr::ParseFile()
             // неизвестный тип данных. Запрашиваем у пользователя
             // нужно сделать окно.
         }
-        Spectr spectr(m_cube, xUnits, yUnits, title, measurement, spectrDescription);
-        m_attr->SetCurrentSpectr(&spectr);
+        Spectr* spectr = new Spectr(m_cube, xUnits, yUnits, title, measurement, spectrDescription); //костыль!
+        m_attr->SetCurrentSpectr(spectr);
         if (m_attr->GetAvailablePlugins().contains("Spectr UI"))
         {
             m_attr->SetExternalSpectrFlag(true);
