@@ -17,7 +17,7 @@ Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 DISTFILES += \
     SpectralDistance.json \
-    sdistancewin.qml
+
 
 SOURCES += spectraldistance.cpp \
     ../Library/HyperCube.cpp \
@@ -38,8 +38,7 @@ HEADERS += spectraldistance.h\
 
 
 
-RESOURCES += \
-    qmldata.qrc
+RESOURCES +=
 
 FORMS += \
     ../Library/CustomPlotForPreview2D/Preview2D.ui \

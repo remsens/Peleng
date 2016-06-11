@@ -51,6 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug()<<"utmY = "<<utmCord.y;
     qDebug()<<"utmZ = "<<utmCord.z;
     qDebug()<<"zone = "<<zone;
+    utmCord =  earth.BLH_To_UTM(radBreadth, radlong, 0,zone, 35);
+    qDebug()<<"utmX = "<<utmCord.x;
+    qDebug()<<"utmY = "<<utmCord.y;
+    qDebug()<<"utmZ = "<<utmCord.z;
+    qDebug()<<"zone = "<<zone;
 }
 
 
