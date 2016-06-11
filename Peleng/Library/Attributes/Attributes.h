@@ -7,7 +7,7 @@
 #include <QString>
 #include <QList>
 #include <../Library/PointStruct.h>
-
+#include <../Library/Spectr.h>
 
 class Attributes;
 #include "../Library/Interfaces/ProcessingPluginInterface.h"
@@ -57,21 +57,19 @@ public:
     // спектральные библиотеки
     void SetModeLib(bool value);
     bool GetModeLib() const;
-    void SetXUnit(double xUnit);
-    void SetYUnit(double yUnit);
-    void SetXUnit(QVector<double>& xUnits);
-    void SetYUnit(QVector<double>& yUnits);
-    void ClearUnitsLists();
-    struct DescriptionSpectr
-    {
-        QString title;
-        QString description;
-    };
-    void SetDescriptionItem(const QString& keyTitle, const QString& value);
-    void SetDescriptionSpectr(QList<DescriptionSpectr>& ds);
-    const QVector<double>& GetXUnits() const;
-    const QVector<double>& GetYUnits() const;
-    const QList<Attributes::DescriptionSpectr>& GetSpectrumDescription() const;
+
+    void SetCurrentSpectr(Spectr *spectr);
+    Spectr* GetCurrentSpectr() const;
+
+    // для простоты вызова в Plotter
+    void SetCurrentXUnits(const QVector<double>& xUnits);
+    QVector<double> GetCurrentXUnits();
+
+    void SetCurrentYUnits(const QVector<double>& yUnits);
+    QVector<double> GetCurrentYUnits();
+
+    void SetCurrentTitle(const QString& title);
+    QString GetCurrentTitle() const;
 
     //SpectrPlotter
     void SetExternalSpectrFlag(bool externalSpectr);
@@ -79,13 +77,11 @@ public:
     void SetSPlotterYtitle(QString Yunits);
     QString GetSPlotterYtitle() const;
 
-
     // общее
     const QList<Point>& GetPointsList() const;
     const QMap<QString, ProcessingPluginsInterface*>& GetAvailablePlugins() const;
 
     // шумы
-
     void SetNoiseAlg(NoiseAlgorithm alg);
     NoiseAlgorithm GetNoiseAlg() const;
     void SetApplyToAllCube(bool apply);
@@ -120,9 +116,9 @@ private:
     QMap<QString, ProcessingPluginsInterface*> m_availablePlugins;
 
     bool m_addSpectr; //! 0 - создать новый, 1 - выгрузить из библиотеки
-    QVector<double> m_XUnits;
-    QVector<double> m_YUnits;
-    QList<DescriptionSpectr> m_descriptionSpectr;
+    QVector<double> m_currentXUnits;
+    QVector<double> m_currentYUnits;
+    QString m_currentTitle;
 
     bool m_externalSpectr; //! флаг, внешний спектр или спектр с куба
 
@@ -132,6 +128,7 @@ private:
     u::uint8 m_degreePolinom;
     double* m_tempChan; //! указатель на временный канал из 2D модуля
     QString m_SPlotter_Ytitle; //! подпись по оси Y в SpectrPlotter
+    Spectr* m_spectr;
 };
 
 #endif // ATTRIBUTES_H

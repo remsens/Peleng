@@ -1,6 +1,9 @@
 #include "PolygonManager.h"
 #include "ui_PolygonManager.h"
 #include "../Library/GenericExc.h"
+#include "../Library/Spectr.h"
+#include "../Library/structures.h"
+
 class BackgroundDelegate : public QStyledItemDelegate // для того, чтобы через выделение не был виден цвет ячейки
 {
 public:
@@ -370,15 +373,14 @@ void PolygonManager::onMenuAverageSpectr()
     QVector<double> wawesVect;
     for (int i = 0; i < Chnls; ++i )
        wawesVect.push_back(Wawes[i]);
-    m_attributes->SetXUnit(wawesVect);
-    m_attributes->SetYUnit(averageSpectrVect);
+    // править размерность
+    QString title = "Среднее по региону '" + m_RegionArr[m_currIndexRegion].m_name + "'";
+    Spectr* spectr = new Spectr (m_cube, wawesVect, averageSpectrVect, title, Measurements::ADC);
+    m_attributes->SetCurrentXUnits(wawesVect);
+    m_attributes->SetCurrentYUnits(averageSpectrVect);
     m_attributes->SetExternalSpectrFlag(true);
-    QList<Attributes::DescriptionSpectr> list;
-    Attributes::DescriptionSpectr descriptionAverSpctr;
-    descriptionAverSpctr.title = "Среднее по региону '";
-    descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
-    list.append(descriptionAverSpctr);
-    m_attributes->SetDescriptionSpectr(list);
+    m_attributes->SetCurrentSpectr(spectr);
+    //m_attributes->SetCurrentTitle("Среднее по региону '" + m_RegionArr[m_currIndexRegion].m_name + "'");
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
 }
 
@@ -427,7 +429,15 @@ void PolygonManager::onMenuStandardDeviation()
     QVector<double> wawesVect;
     for (int i = 0; i < Chnls; ++i )
        wawesVect.push_back(Wawes[i]);
-    m_attributes->SetXUnit(wawesVect);
+    QString title = "СКО по региону " + m_RegionArr[m_currIndexRegion].m_name;
+    //править
+    Spectr* spectr = new Spectr (m_cube, wawesVect, std, title, Measurements::ADC);
+    m_attributes->SetCurrentXUnits(wawesVect);
+    m_attributes->SetCurrentYUnits(std);
+    m_attributes->SetExternalSpectrFlag(true);
+    m_attributes->SetCurrentSpectr(spectr);
+
+   /* m_attributes->SetXUnit(wawesVect);
     m_attributes->SetYUnit(std);
     m_attributes->SetExternalSpectrFlag(true);
     QList<Attributes::DescriptionSpectr> list;
@@ -435,10 +445,9 @@ void PolygonManager::onMenuStandardDeviation()
     descriptionAverSpctr.title = "СКО по региону '";
     descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
     list.append(descriptionAverSpctr);
-    m_attributes->SetDescriptionSpectr(list);
+    m_attributes->SetDescriptionSpectr(list);*/
+
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
-
-
 }
 
 double PolygonManager::calcStandardDeviation(QVector<double> X)

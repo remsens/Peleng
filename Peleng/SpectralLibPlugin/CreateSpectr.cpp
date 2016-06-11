@@ -7,7 +7,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
-
+#include "../Library/Spectr.h"
+#include "../Library/structures.h"
 #include "../Library/GenericExc.h"
 
 CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -23,42 +24,42 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     // если файл extern. то можно заполнить поля
     if (m_attributes->GetExternalSpectrFlag())
     {
-        for (int i = 0; i < m_attributes->GetSpectrumDescription().size(); i++)
+        for (int i = 0; i < m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().size(); i++)
         {
             // через case нельзя, т.к. нужно сравнивать без учета регистра
-            if (m_attributes->GetSpectrumDescription().at(i).title.compare("Name:", Qt::CaseInsensitive) == 0)
+            if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Name:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_name->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Type:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_name->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Type:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_type->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Class:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_type->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Class:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_class->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Subclass:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_class->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Subclass:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_subclass->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Qwner:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_subclass->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Qwner:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_owner->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Origin:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_owner->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Origin:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_origin->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Description:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_origin->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Description:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_description->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Measurement:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_description->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Measurement:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_measurements->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("First column:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_measurements->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("First column:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_firstColumn->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Second column:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_firstColumn->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Second column:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_secondColumn->setText(m_attributes->GetSpectrumDescription().at(i).description);
-            } else if (m_attributes->GetSpectrumDescription().at(i).title.compare("Additional information:", Qt::CaseInsensitive) == 0)
+                m_ui->lineEdit_secondColumn->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
+            } else if (m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).title.compare("Additional information:", Qt::CaseInsensitive) == 0)
             {
-                m_ui->lineEdit_addInfo->setText(m_attributes->GetSpectrumDescription().at(i).description);
+                m_ui->lineEdit_addInfo->setText(m_attributes->GetCurrentSpectr()->GetDescriptionOfSpectr().at(i).description);
             }
         }
     }
@@ -70,8 +71,8 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_headers_russian.append("Происхождение");
     m_headers_russian.append("Описание");
     m_headers_russian.append("Измеряемая величина");
-    m_headers_russian.append("Первый столбец");
-    m_headers_russian.append("Второй столбец");
+    m_headers_russian.append("Единицы измерения: X");
+    m_headers_russian.append("Единицы измерения: Y");
     m_headers_russian.append("Дополнительная информация");
 
     m_headers_english.append("Name");
@@ -85,7 +86,14 @@ CreateSpectr::CreateSpectr(HyperCube* cube, Attributes* attr, QWidget *parent)
     m_headers_english.append("X Units");
     m_headers_english.append("Y Units");
     m_headers_english.append("Additional Information");
+    // Зададим жестко, что x - измеряется в нанометрах, а y - в том, что записанов спектре
+    Measurements measurement;
+    m_attributes->GetCurrentSpectr()->GetMeasurements(measurement);
+    m_ui->lineEdit_measurements->setText(GetTextMeasurements(measurement));
+    m_ui->lineEdit_secondColumn->setText(GetTextMeasurements(measurement));
+    m_ui->lineEdit_firstColumn->setText("Нанометры");
     m_bEnglish = false;
+
 }
 
 CreateSpectr::~CreateSpectr()
@@ -96,9 +104,8 @@ CreateSpectr::~CreateSpectr()
 void CreateSpectr::OnPushButtonSaveSpectr()
 {
     // получили вектор данных для записи
-    QVector<double> data; QList<double> listWaves;
-    listWaves = m_attributes->GetXUnits().toList();
-    data = m_attributes->GetYUnits();
+    QVector<double> listWaves (m_attributes->GetCurrentSpectr()->GetCurrentDataX());
+    QVector<double> data(m_attributes->GetCurrentSpectr()->GetCurrentDataY());
     // проверяем, все ли поля заполнены (не нужно, можно оставлять пустыми).
     QString filePathBase = "";
     if (!m_ui->lineEdit_name->text().isEmpty())
@@ -197,7 +204,6 @@ void CreateSpectr::OnPushButtonSaveSpectr()
     {
         QMessageBox::critical(this, tr("Ошибка"), tr("Ошибка записи в файл данных: %0").arg(err));
     }
-
 }
 
 void CreateSpectr::OnPushButtonTranslateClicked()

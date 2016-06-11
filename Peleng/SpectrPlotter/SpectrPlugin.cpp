@@ -32,13 +32,15 @@ void SpectrPlugin::OnClose(PlotterWindow* plotterWindow)
 void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
 {
     bool plot = false;
+    Measurements measurement;
+    attr->GetCurrentSpectr()->GetMeasurements(measurement);
     if (m_windowList.size() != 0)
     {
         for (int i = 0; i < m_windowList.size(); i++)
         {
-            if (m_windowList.at(i)->getIsHold())
+            if (m_windowList.at(i)->getIsHold() && m_windowList.at(i)->getGraphMeasurement() == measurement)
             {
-                m_windowList.at(i)->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
+                m_windowList.at(i)->plotSpectr(attr->GetCurrentSpectr()->GetCurrentDataX(), attr->GetCurrentSpectr()->GetCurrentDataY());
                 plot = true;
             }
         }
@@ -47,19 +49,14 @@ void SpectrPlugin::Execute(HyperCube* cube, Attributes* attr)
     {
         PlotterWindow* plotterWindow = new PlotterWindow(cube, attr);
         QObject::connect(plotterWindow, SIGNAL(closePlotterWindow(PlotterWindow*)), this, SLOT(OnClose(PlotterWindow*)));
-         if (attr->GetExternalSpectrFlag())
-         {
-             // передавать, отображать подписи осей, или нет
-              plotterWindow->plotSpectr();
-         } else
-         {
-            plotterWindow->plotSpectr(attr->GetPointsList().at(0).x,  attr->GetPointsList().at(0).y);
-         }
-         m_windowList.append(plotterWindow);
+        plotterWindow->plotSpectr(attr->GetCurrentSpectr()->GetCurrentDataX(), attr->GetCurrentSpectr()->GetCurrentDataY());
+        plotterWindow->setMeasurement(measurement);
+        m_windowList.append(plotterWindow);
     }
 
     for (int i = 0; i < m_windowList.size(); i++)
     {
         m_windowList.at(i)->show();
+        m_windowList.at(i)->activateWindow();
     }
 }

@@ -32,7 +32,9 @@ SOURCES += \
     Main2DWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     PolygonManager.cpp \
-    Region.cpp
+    Region.cpp\
+    ../Library/Spectr.cpp \
+    ../Library/MathOperations/interpolation.cpp
 
 
 
@@ -46,6 +48,9 @@ HEADERS += \
     ../Library/Attributes/Attributes.h \
     PolygonManager.h \
     Region.h \
+    ../Library/Spectr.h \
+    ../Library/structures.h \
+    ../Library/MathOperations/interpolation.h
     ../Library/saveENVI.h
 
 

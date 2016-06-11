@@ -26,7 +26,6 @@ void SpectralLibPlugin::Execute(HyperCube *cube, Attributes *attr)
         createSpectr->show();
     } else
     {
-        attr->ClearUnitsLists();
         AddSpectr* addSpectr = new AddSpectr(cube, attr);
         addSpectr->ParseFile();
         delete addSpectr;

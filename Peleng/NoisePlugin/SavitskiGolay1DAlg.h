@@ -1047,8 +1047,8 @@ private:
 
     void ToSpectrWindow()
     {
-        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetXUnits();
-        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetYUnits();
+        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataX();
+        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataY();
         // определим массив коэффициентов
         u::int8 maskPixels = BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount();
         u::int32* coeff = new u::int32[maskPixels];
@@ -1059,13 +1059,12 @@ private:
         ApplyFilterToSpectr<double>(spectrMas.data(), spectrMas.size(), coeff, normalization);
         CalculateEdges<double>(spectrMas.data(), spectrMas.size(), true);
         delete [] coeff;
-        BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
-        //BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFormat(0);
         QString descr = QString(" Савитский-Голау фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
-        BaseNoiseAlg<T>::m_attributes->SetDescriptionItem("Устранение шумов:", descr);
-        BaseNoiseAlg<T>::m_attributes->SetXUnit(XUnits);
-        BaseNoiseAlg<T>::m_attributes->SetYUnit(spectrMas);
+        Measurements measurement;
+        BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetMeasurements(measurement);
+        Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, spectrMas, descr, measurement);
+        BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
         BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
     }
 };

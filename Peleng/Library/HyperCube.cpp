@@ -394,3 +394,17 @@ double HyperCube::GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z)
         throw GenericExc("Неверно выделен размер под блок данных", -1);
     }
 }
+
+void HyperCube::SetMeasurement(Measurements measurement)
+{
+    qDebug() << "Куб: установка измерения" + QString::number(measurement);
+    m_measurements = measurement;
+}
+
+void HyperCube::GetMeasurements(Measurements &measurement)
+{
+    qDebug() << "Куб: получение измерения" + QString::number(m_measurements);
+    measurement = m_measurements;
+}
+
+

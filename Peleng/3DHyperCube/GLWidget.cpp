@@ -11,6 +11,7 @@
 #include "../Library/stepsdefinitions.h"
 #include "../Library/stepsdefinitions.h"
 #include "../Library/Utils/Compare.h"
+#include "../Library/Spectr.h"
 #include "../Library/saveENVI.h"
 
 using namespace std;
@@ -576,8 +577,11 @@ void GLWidget::plotSpectr(uint x, uint y, uint z)
 {
     if (!m_needToUpdate)
     {
-        m_attributes->ClearList();
-        m_attributes->SetPoint(x, y, z);
+        /*m_attributes->ClearList();
+        m_attributes->SetPoint(x, y, z);*/
+        Spectr* spectr = new Spectr(m_pHyperCube, x, y);
+        m_attributes->SetCurrentSpectr(spectr);
+        m_attributes->SetCurrentTitle(spectr->GetTitle());
         m_attributes->SetExternalSpectrFlag(false);
         m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_pHyperCube, m_attributes);
     } else

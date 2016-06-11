@@ -29,7 +29,9 @@ HEADERS += \
     ../Library/GenericExc.h \
     ../Library/Types.h \
     AddSpectr.h \
-    ../Library/MathOperations/Interpolation.h
+    ../Library/MathOperations/Interpolation.h \
+    ../Library/Spectr.h \
+    ../Library/structures.h
 
 SOURCES += \
     SpectralLibPlugin.cpp \
@@ -38,7 +40,8 @@ SOURCES += \
     ../Library/Attributes/Attributes.cpp \
     ../Library/GenericExc.cpp \
     AddSpectr.cpp \
-    ../Library/MathOperations/Interpolation.cpp
+    ../Library/MathOperations/Interpolation.cpp \
+    ../Library/Spectr.cpp
 
 FORMS += \
     CreateSpectr.ui

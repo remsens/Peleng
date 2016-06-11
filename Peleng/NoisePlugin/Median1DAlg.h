@@ -8,7 +8,7 @@
 #include <QApplication>
 #include "../Library/Types.h"
 #include "../Library/Utils/Compare.h"
-#include <QDebug>
+#include "../Library/Spectr.h"
 
 template <typename T>
 class Median1DAlg : public BaseNoiseAlg<T>
@@ -42,7 +42,7 @@ public:
 private:
     void ToSpectrWindow()
     {
-        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetXUnits();
+        QVector<double> XUnits = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataX();
 
         if (BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()%2 == 0)
         {
@@ -56,7 +56,7 @@ private:
         // Сформировать массив. Для импортируемых - тип double, не проверяем у гиперкуба
         // не думаю, что для спектров так критична скорость
 
-        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetYUnits();
+        QVector<double> spectrMas = BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetCurrentDataY();
         QVector<double> resultSpectr; resultSpectr.resize(spectrMas.size());
         for (u::uint32 i = 0; i < spectrMas.size()- BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()+1; i++)
         {
@@ -70,13 +70,13 @@ private:
             resultSpectr.data()[i+BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()/2] = mask[BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()/2];
         }
         spectrMas.clear();
-        BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
+        //BaseNoiseAlg<T>::m_attributes->ClearUnitsLists();
         BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFlag(true);
-        //BaseNoiseAlg<T>::m_attributes->SetExternalSpectrFormat(0);
-        QString descr = QString(" медианный фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
-        BaseNoiseAlg<T>::m_attributes->SetDescriptionItem("Устранение шумов:", descr);
-        BaseNoiseAlg<T>::m_attributes->SetXUnit(XUnits);
-        BaseNoiseAlg<T>::m_attributes->SetYUnit(resultSpectr);
+        QString descr = QString("Устранение шумов: медианный фильтр %1x%1").arg(QString::number(BaseNoiseAlg<T>::m_attributes->GetMaskPixelsCount()));
+        Measurements measurement;
+        BaseNoiseAlg<T>::m_attributes->GetCurrentSpectr()->GetMeasurements(measurement);
+        Spectr* spectr = new Spectr(BaseNoiseAlg<T>::m_cube, XUnits, resultSpectr, descr, measurement);
+        BaseNoiseAlg<T>::m_attributes->SetCurrentSpectr(spectr);
         BaseNoiseAlg<T>::m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(BaseNoiseAlg<T>::m_cube, BaseNoiseAlg<T>::m_attributes);
     }
 

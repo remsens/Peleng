@@ -331,7 +331,11 @@
     </widget>
    </item>
    <item row="12" column="1">
-    <widget class="QLineEdit" name="lineEdit_measurements"/>
+    <widget class="QLineEdit" name="lineEdit_measurements">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="13" column="0">
     <widget class="QLabel" name="label_firstColumn">
@@ -341,7 +345,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Первый столбец</string>
+      <string>Единицы измерения:  Х</string>
      </property>
     </widget>
    </item>
@@ -349,6 +353,9 @@
     <widget class="QLineEdit" name="lineEdit_firstColumn">
      <property name="text">
       <string/>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -360,12 +367,9 @@
       </font>
      </property>
      <property name="text">
-      <string>Второй столбец</string>
+      <string>Единицы измерения:  Y</string>
      </property>
     </widget>
-   </item>
-   <item row="14" column="1">
-    <widget class="QLineEdit" name="lineEdit_secondColumn"/>
    </item>
    <item row="15" column="0">
     <widget class="QLabel" name="label_addInfo">
@@ -470,6 +474,13 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="14" column="1">
+    <widget class="QLineEdit" name="lineEdit_secondColumn">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>
