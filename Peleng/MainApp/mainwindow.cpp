@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     double radlong = DegToRad(30);
     char zone[4];
     xyzREAL utmCord =  earth.BLH_To_UTM(radBreadth, radlong, 0, zone);
+
     qDebug()<<"utmX = "<<utmCord.x;
     qDebug()<<"utmY = "<<utmCord.y;
     qDebug()<<"utmZ = "<<utmCord.z;

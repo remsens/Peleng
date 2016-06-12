@@ -408,3 +408,13 @@ void HyperCube::GetMeasurements(Measurements &measurement)
 }
 
 
+
+QVector<BLrad> HyperCube::getCornerPoints() const
+{
+    return m_geoData.cornerPoints;
+}
+
+void HyperCube::setCornerPoints(const QVector<BLrad> &value)
+{
+    m_geoData.cornerPoints = value;
+}

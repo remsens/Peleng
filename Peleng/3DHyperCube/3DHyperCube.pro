@@ -30,7 +30,7 @@ HEADERS       = \
     ../Library/stepsdefinitions.h \
     ../Library/Utils/Compare.h \
     ../Library/Spectr.h \
-    ../Library/MathOperations/interpolation.h
+    ../Library/MathOperations/interpolation.h \
     ../Library/saveENVI.h
 
 SOURCES       = \

@@ -57,21 +57,21 @@
 #endif
 
 
-// ГКИНП(ГНТА)-06-278-04 ... (СК-95).pdf
+// Р“РљРРќРџ(Р“РќРўРђ)-06-278-04 ... (РЎРљ-95).pdf
 
 // CK-95 >> WGS84
-// DX    =  +24.653 м  DY = - 129.136 м DZ = - 83.057 м
+// DX    =  +24.653 Рј  DY = - 129.136 Рј DZ = - 83.057 Рј
 // RX    = - 0.06696"  RY = +0.00391"   RZ= - 0.12902"
 // Scale = - 0.175 * 10^-6.
-//                  WE= 7.292115 * 10-5;   // рад/сек:  Угловая скорость вращения Земли WGS-84
-#define We_Earth double(7.2921151467e-5)   /* В.Л.Пантелеев, сайт "Урания" теория фигуры Земли*/
-#define fM_Earth double(398600.43996e+9)   /* m^3/s^2) М.С.Урмаев -> Ю.В.Плахов]              */
+//                  WE= 7.292115 * 10-5;   // СЂР°Рґ/СЃРµРє:  РЈРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РІСЂР°С‰РµРЅРёСЏ Р—РµРјР»Рё WGS-84
+#define We_Earth double(7.2921151467e-5)   /* Р’.Р›.РџР°РЅС‚РµР»РµРµРІ, СЃР°Р№С‚ "РЈСЂР°РЅРёСЏ" С‚РµРѕСЂРёСЏ С„РёРіСѓСЂС‹ Р—РµРјР»Рё*/
+#define fM_Earth double(398600.43996e+9)   /* m^3/s^2) Рњ.РЎ.РЈСЂРјР°РµРІ -> Р®.Р’.РџР»Р°С…РѕРІ]              */
 
 // fabs(Angle) < 2*Pi
 #define Range2Pi(Angle) (((Angle)<0) ?(-fmod(fabs(Angle),rwPiM2)) :(fmod(Angle,rwPiM2)))
 // 0 <= (Angle) < 2*Pi
 #define Range2Pi_Plus(Angle) ((Range2Pi(Angle)<0) ?(Range2Pi(Angle)+rwPiM2) :Range2Pi(Angle))
-//  0  <= (Angle) <  +Pi  |  -Pi  <= (Angle) < 0    //    РАВНЫЕ ИНТЕРВАЛы
+//  0  <= (Angle) <  +Pi  |  -Pi  <= (Angle) < 0    //    Р РђР’РќР«Р• РРќРўР•Р Р’РђР›С‹
 //  arctan(y,x):             -Pi  <  (Angle) <=  +Pi
 #define RangePi_Equal(Angle) ((Range2Pi_Plus(Angle)>=rwPi) ?(Range2Pi_Plus(Angle)-rwPiM2) :Range2Pi_Plus(Angle))
 ///____________________________________________________________________________.
@@ -127,16 +127,16 @@ inline  double ATan2Pi(double Dy,double Dx)// return [0 .. 2.0*Pi]
 
 double   Dist2D(xyREAL  p1,xyREAL  p2);
 double   Dist3D(xyzREAL p1,xyzREAL p2);
-// return 2 решения .x & .y
+// return 2 СЂРµС€РµРЅРёСЏ .x & .y
 xyREAL   rwSolveQ_2 (double   a,double   b,double   c, long* aOK=NULL);// a*x*x+b*x+c= 0 //
 xyREAL     SolveQ_2L(LDouble aq,LDouble bq,LDouble cq, long* aOK=NULL);// a*x*x+b*x+c= 0 //
 
 
 struct TValueEllipsoid
-{//  int    VELL_i;      //   Соответствует индексу
+{//  int    VELL_i;      //   РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РёРЅРґРµРєСЃСѓ
 	  char   VELL_Id [16];
 	  double VELL_a;      //   EquatorialRadius=  a
-	  double VELL_p;      //   Полярное сжатие = (a-b)/a = 1-sqrt(1-e^2)
+	  double VELL_p;      //   РџРѕР»СЏСЂРЅРѕРµ СЃР¶Р°С‚РёРµ = (a-b)/a = 1-sqrt(1-e^2)
 	  char   ELL_Name[24];
 };
 //________________________________________________________________________________________.
@@ -150,89 +150,89 @@ extern   double      ANGLE_TOPO;// == (Pi/2)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
-   double Calc_To (double  Ro);// (       sec), Точный период орбиты
-   double Calc_Mo (double  Ro);// (m     /sec), Mo Средняя Линейная скорость спутника
-   double Calc_Wo (double  Ro);// (радиан/sec), Wo Средняя угловая  скорость спутника
-// Средняя аномалия=
-   double Calc_Mt (double  Ro  // Tv в секундах от перигея [Tv= Ti-Tп]
-                  ,double  Tv);// Ro= Большая полуось орбиты
-   double Calc_We (          );// (радиан/sec), We угловая скорость вращения Земли
-///Отношение линейной скорости спутника на орбите к ее проекции на Землю
+   double Calc_To (double  Ro);// (       sec), РўРѕС‡РЅС‹Р№ РїРµСЂРёРѕРґ РѕСЂР±РёС‚С‹
+   double Calc_Mo (double  Ro);// (m     /sec), Mo РЎСЂРµРґРЅСЏСЏ Р›РёРЅРµР№РЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ СЃРїСѓС‚РЅРёРєР°
+   double Calc_Wo (double  Ro);// (СЂР°РґРёР°РЅ/sec), Wo РЎСЂРµРґРЅСЏСЏ СѓРіР»РѕРІР°СЏ  СЃРєРѕСЂРѕСЃС‚СЊ СЃРїСѓС‚РЅРёРєР°
+// РЎСЂРµРґРЅСЏСЏ Р°РЅРѕРјР°Р»РёСЏ=
+   double Calc_Mt (double  Ro  // Tv РІ СЃРµРєСѓРЅРґР°С… РѕС‚ РїРµСЂРёРіРµСЏ [Tv= Ti-TРї]
+                  ,double  Tv);// Ro= Р‘РѕР»СЊС€Р°СЏ РїРѕР»СѓРѕСЃСЊ РѕСЂР±РёС‚С‹
+   double Calc_We (          );// (СЂР°РґРёР°РЅ/sec), We СѓРіР»РѕРІР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РІСЂР°С‰РµРЅРёСЏ Р—РµРјР»Рё
+///РћС‚РЅРѕС€РµРЅРёРµ Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё СЃРїСѓС‚РЅРёРєР° РЅР° РѕСЂР±РёС‚Рµ Рє РµРµ РїСЂРѕРµРєС†РёРё РЅР° Р—РµРјР»СЋ
    double Calc_OE (double  Re
                   ,double  Ho);// { return (Re+Ho) / Re;  };
-///Отношение проекции линейной скорости спутника на Землю к скорости на орбите
+///РћС‚РЅРѕС€РµРЅРёРµ РїСЂРѕРµРєС†РёРё Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё СЃРїСѓС‚РЅРёРєР° РЅР° Р—РµРјР»СЋ Рє СЃРєРѕСЂРѕСЃС‚Рё РЅР° РѕСЂР±РёС‚Рµ
    double Calc_EO (double  Re
                   ,double  Ho);// { return Re / (Re+Ho);  };
-// геоцентрический радиус(м) эллипсоида на широте, соответствующей Xs, Ys, Zs
-   double Calc_Rgc(double  Xc // Для любого значения долготы
-                  ,double  Yc // , значение не зависит от эллипсоида
+// РіРµРѕС†РµРЅС‚СЂРёС‡РµСЃРєРёР№ СЂР°РґРёСѓСЃ(Рј) СЌР»Р»РёРїСЃРѕРёРґР° РЅР° С€РёСЂРѕС‚Рµ, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµР№ Xs, Ys, Zs
+   double Calc_Rgc(double  Xc // Р”Р»СЏ Р»СЋР±РѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РґРѕР»РіРѕС‚С‹
+                  ,double  Yc // , Р·РЅР°С‡РµРЅРёРµ РЅРµ Р·Р°РІРёСЃРёС‚ РѕС‚ СЌР»Р»РёРїСЃРѕРёРґР°
                   ,double  Zc);// {return sqrt(Xc*Xc+Yc*Yc+Zc*Zc);};
-// Прямоугольный сферический треугольник: решения...
+// РџСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Р№ СЃС„РµСЂРёС‡РµСЃРєРёР№ С‚СЂРµСѓРіРѕР»СЊРЅРёРє: СЂРµС€РµРЅРёСЏ...
    double Calcf_Io(double Io,double Bf, double *L_o,double *U_o,double *A_o);;// return(Lo)
    double Calcf_Ao(double Ao,double Bf, double *I_o,double *L_o,double *U_o);;// return(Lo)
    double Calcf_Uo(double Uo,double Bf, double *A_o,double *I_o,double *L_o);;// return(Lo)
 //________________________________________________________________________________________.
 //
 long    NZona_GsK (double L, long Wz= 6);// L(Radian), lz={ 6 | 3 }
-double  LZona_GsK (long  Nz, long Wz= 6);// return L(Radian) -- Долгота осевого мерилиана
+double  LZona_GsK (long  Nz, long Wz= 6);// return L(Radian) -- Р”РѕР»РіРѕС‚Р° РѕСЃРµРІРѕРіРѕ РјРµСЂРёР»РёР°РЅР°
 
-//      return:    Radian`s  ...  ЦЕНТРАЛЬНЫЙ МЕРИДИАН ЗОНЫ
+//      return:    Radian`s  ...  Р¦Р•РќРўР РђР›Р¬РќР«Р™ РњР•Р РР”РРђРќ Р—РћРќР«
 double  LZona_UTM (long   Nz_UTM);//             1..60
 double  LZona_UTM (char * sz_UTM);// sz_UTM[4]= "1..60'C'"
 
-long    NZona_UTM (double Lrad  );// L(Radian), Lz= 6: Геометрия ОК, но не соотв.разграфке
-long    NZona_UTM (double Lrad, double Brad);// ...........................Cоотв.разграфке
+long    NZona_UTM (double Lrad  );// L(Radian), Lz= 6: Р“РµРѕРјРµС‚СЂРёСЏ РћРљ, РЅРѕ РЅРµ СЃРѕРѕС‚РІ.СЂР°Р·РіСЂР°С„РєРµ
+long    NZona_UTM (double Lrad, double Brad);// ...........................CРѕРѕС‚РІ.СЂР°Р·РіСЂР°С„РєРµ
 
 long    IsUTMZ(double X_East);    // return  NZona_UTM[1..60] if UTMZ-Format, else <=0
 
 //  Latitude is inside the UTM limits of ==84N to >=80S
-char   UTMLetterDesignator(double Lat);//   +/-B - градусы
-xyREAL UTMLetter_Lat1Lat2 (char  Cutm);//  return  .x= Lat1(min), y=Lat2(max) в градусах
-//                                     if  !(.x || .y) ошибочный символ
+char   UTMLetterDesignator(double Lat);//   +/-B - РіСЂР°РґСѓСЃС‹
+xyREAL UTMLetter_Lat1Lat2 (char  Cutm);//  return  .x= Lat1(min), y=Lat2(max) РІ РіСЂР°РґСѓСЃР°С…
+//                                     if  !(.x || .y) РѕС€РёР±РѕС‡РЅС‹Р№ СЃРёРјРІРѕР»
     xyREAL   UTM_To_UTMZ(double XEast,    double YNorth,               char szZonaUTM_In [4]);
     xyzREAL  UTM_To_UTMZ(double XEast,    double YNorth,     double H, char szZonaUTM_In [4]);
 
 //  TEllipsoid::
-//  // if( !szZonaUTM_Out[0] ) Ошибка ...
+//  // if( !szZonaUTM_Out[0] ) РћС€РёР±РєР° ...
 //  //......TEllipsoid::............................................>> NNc: c>=N: North, c<=M: South
 //  xyREAL  UTMZ_To_UTM (double XEastPlus,double YNorthMinus,          char szZonaUTM_Out[4]);
 //  xyzREAL UTMZ_To_UTM (double XEastPlus,double YNorthMinus,double H, char szZonaUTM_Out[4]);
 //
 //______________________________________________________________________________+
 //
-// Параметры трансформации:
-// геоцентрическая(XYZ)  <<==>>  геодезическая систем(BLH) <<==>> UTM, Gauss-Krueger, ...
-class TEllipsoid     // радианы и метры ...
-{ public:// iELL=[1..N] Индекс эллипсоида: [1],2,3, ...
+// РџР°СЂР°РјРµС‚СЂС‹ С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёРё:
+// РіРµРѕС†РµРЅС‚СЂРёС‡РµСЃРєР°СЏ(XYZ)  <<==>>  РіРµРѕРґРµР·РёС‡РµСЃРєР°СЏ СЃРёСЃС‚РµРј(BLH) <<==>> UTM, Gauss-Krueger, ...
+class TEllipsoid     // СЂР°РґРёР°РЅС‹ Рё РјРµС‚СЂС‹ ...
+{ public:// iELL=[1..N] РРЅРґРµРєСЃ СЌР»Р»РёРїСЃРѕРёРґР°: [1],2,3, ...
          // iELL<=0:    Sphere(Rs = DeltaOrSphere), if(DeltaOrSphere<=0) DeltaOrSphere=1;
    void  Init(long   iELL,double DeltaOrRSphere);
    TEllipsoid( )                                 { Init(ELL_WGS84,       0.0);};
    TEllipsoid(long   iELL,double DeltaOrRSphere) { Init(iELL, DeltaOrRSphere);};
    TEllipsoid(double a, double b)                { Init_Ellipsoid(a, b);      };
   ~TEllipsoid( ) { };
-   long   ELL_i;   // =1: WGS-84,                      =2: ПЗ-90             =3: К...1942 г.
+   long   ELL_i;   // =1: WGS-84,                      =2: РџР—-90             =3: Рљ...1942 Рі.
    double ELL_a;   //  a= 6378137      b= a*(1-p)      a= 6378136            a= 6378245
    double ELL_b;   //  b= 6356752.314  a-b=21384.7...  b= 6356751.362        b= 6356863.001877
-   double ELL_c;   //  c= a^2/b = b/(1-e^2) = a/sqrt(1-e^2) = ПОЛЯРНЫЙ РАДИУС КРИВИЗНЫ
+   double ELL_c;   //  c= a^2/b = b/(1-e^2) = a/sqrt(1-e^2) = РџРћР›РЇР РќР«Р™ Р РђР”РРЈРЎ РљР РР’РР—РќР«
    double ELL_p;   //  p= 1.0/298.257223563            p= 1.0/298.257839303  p= 1.0/298.3
-//        ELL_p    Полярное сжатие p= (a-b)/a = 1-b/a : [0 .. <1],  p==0 для сферы
-// double ELL_beta;^   == a/(a-b)= 1/p  [[ не определен для сферы ]]
+//        ELL_p    РџРѕР»СЏСЂРЅРѕРµ СЃР¶Р°С‚РёРµ p= (a-b)/a = 1-b/a : [0 .. <1],  p==0 РґР»СЏ СЃС„РµСЂС‹
+// double ELL_beta;^   == a/(a-b)= 1/p  [[ РЅРµ РѕРїСЂРµРґРµР»РµРЅ РґР»СЏ СЃС„РµСЂС‹ ]]
    double ELL_ba;  //  == b/a = (1-p)
-//        ELL_ef   линейный эксцентриситет = расстояние от центра эллипса до фокуса(1|2)
+//        ELL_ef   Р»РёРЅРµР№РЅС‹Р№ СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚ = СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ С†РµРЅС‚СЂР° СЌР»Р»РёРїСЃР° РґРѕ С„РѕРєСѓСЃР°(1|2)
    double ELL_ef;  //  sqrt(a^2-b^2)       = sqrt(ELL_a*ELL_a-ELL_b*ELL_b);
-   double ELL_pf;  //  (b^2/a)= a*(1-e^2) ФОКАЛЬНЫЙ ПАРАМЕТР
-   double ELL_ra;  //  (a+ef)= a*(1+e) радиус  апоцентра (от фокуса)
-   double ELL_rp;  //  (a-ef)= a*(1-e) радиус перицентра (от фокуса)
-   double ELL_e1;  //  ef/a=(ELL_ef/ELL_a) = ( e )            первый  эксцентриситет
-   double ELL_e2;  //  ef/b=(ELL_ef/ELL_b) = ( e')            второй  эксцентриситет
-   double ELL_e1E2;// [ EM1 ] = 1-b^2/a^2  = ( e )^2  квадрат первого эксцентриситета
-   double ELL_e2E2;// [ EM2 ] = a^2/b^2-1  = ( e')^2  квадрат второго эксцентриситета
+   double ELL_pf;  //  (b^2/a)= a*(1-e^2) Р¤РћРљРђР›Р¬РќР«Р™ РџРђР РђРњР•РўР 
+   double ELL_ra;  //  (a+ef)= a*(1+e) СЂР°РґРёСѓСЃ  Р°РїРѕС†РµРЅС‚СЂР° (РѕС‚ С„РѕРєСѓСЃР°)
+   double ELL_rp;  //  (a-ef)= a*(1-e) СЂР°РґРёСѓСЃ РїРµСЂРёС†РµРЅС‚СЂР° (РѕС‚ С„РѕРєСѓСЃР°)
+   double ELL_e1;  //  ef/a=(ELL_ef/ELL_a) = ( e )            РїРµСЂРІС‹Р№  СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚
+   double ELL_e2;  //  ef/b=(ELL_ef/ELL_b) = ( e')            РІС‚РѕСЂРѕР№  СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚
+   double ELL_e1E2;// [ EM1 ] = 1-b^2/a^2  = ( e )^2  РєРІР°РґСЂР°С‚ РїРµСЂРІРѕРіРѕ СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚Р°
+   double ELL_e2E2;// [ EM2 ] = a^2/b^2-1  = ( e')^2  РєРІР°РґСЂР°С‚ РІС‚РѕСЂРѕРіРѕ СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚Р°
 // +
 // double ELL_e0;  // [ EM0 ] 1/(1-p)= beta/(beta-1) = a/b
    double ELL_ab;  // [ EM0 ] 1/(1-p)= beta/(beta-1) = a/b
    double ELL_c1;  // [ EC1 ] b*e2E2       = (ELL_b*ELL_e2E2)  =  b * e'^2
    double ELL_c2;  // [ EC2 ] a*e1E2       = (ELL_a*ELL_e1E2)  =  a * e ^2
-// Совместимость:
+// РЎРѕРІРјРµСЃС‚РёРјРѕСЃС‚СЊ:
    double AELL;// =     ELL_a;       // +
    double BETA;// = 1.0/ELL_p;       // +
    double BELL;// =     ELL_b;       // +
@@ -247,59 +247,59 @@ class TEllipsoid     // радианы и метры ...
    double wq246,wq6,wq46;
 //^
    char  ZonaUTM[4];
-// Rp- Радиус параллели
+// Rp- Р Р°РґРёСѓСЃ РїР°СЂР°Р»Р»РµР»Рё
    double Calc_Rp (double  Bc){return        ELL_a*cos( Calc_Bu(Bc) );   };
 
-// Bu- Приведенная     широта[ на широте B ]
+// Bu- РџСЂРёРІРµРґРµРЅРЅР°СЏ     С€РёСЂРѕС‚Р°[ РЅР° С€РёСЂРѕС‚Рµ B ]
    double Calc_Bu (double  Bc){if(ELL_i<=0)  return(Bc);
                                return        atan( (ELL_b/ELL_a)*tan(Bc) );};
-// Bс- Геодезическая широта( Bu- Приведенная   широта )
+// BСЃ- Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ С€РёСЂРѕС‚Р°( Bu- РџСЂРёРІРµРґРµРЅРЅР°СЏ   С€РёСЂРѕС‚Р° )
    double Calc_Bc (double  Bu){if(ELL_i<=0)  return(Bu);
                                return        atan( (ELL_a/ELL_b)*tan(Bu) );};
-// Bf- Геоцентрическая широта[ на широте B ]  tg(Bf)= (b/a)tg(Bu)= (1-e^2)*tg(B))
+// Bf- Р“РµРѕС†РµРЅС‚СЂРёС‡РµСЃРєР°СЏ С€РёСЂРѕС‚Р°[ РЅР° С€РёСЂРѕС‚Рµ B ]  tg(Bf)= (b/a)tg(Bu)= (1-e^2)*tg(B))
    double Calc_Bf (double  Bc){if(ELL_i<=0)  return(Bc);
                                return        atan( (1.0-ELL_e1E2)*tan(Bc));};
-// Bgd- Геодезическая   широта  tg(B)= tg(Bf)/(1-e^2);
-// Bf - Геоцентрическая широта[ на широте B ]  tg(Bf)= (b/a)tg(Bu)= (1-e^2)*tg(B))
+// Bgd- Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ   С€РёСЂРѕС‚Р°  tg(B)= tg(Bf)/(1-e^2);
+// Bf - Р“РµРѕС†РµРЅС‚СЂРёС‡РµСЃРєР°СЏ С€РёСЂРѕС‚Р°[ РЅР° С€РёСЂРѕС‚Рµ B ]  tg(Bf)= (b/a)tg(Bu)= (1-e^2)*tg(B))
    double Calc_Bgd(double  Bf){if(ELL_i<=0)  return(Bf);
                                return        atan( tan(Bf)/(1.0-ELL_e1E2));};
-// nl- Вспомогательная функция эксцентриситета [ на широте B ]
+// nl- Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ СЌРєСЃС†РµРЅС‚СЂРёСЃРёС‚РµС‚Р° [ РЅР° С€РёСЂРѕС‚Рµ B ]
    double Calc_nl (double  Bc){if(ELL_i<=0)  return(0.0);
                                return        ELL_e2*cos(Bc); };  // e'*cos(B)
-// W - Основная сфероидическая функция [ на широте B ]
+// W - РћСЃРЅРѕРІРЅР°СЏ СЃС„РµСЂРѕРёРґРёС‡РµСЃРєР°СЏ С„СѓРЅРєС†РёСЏ [ РЅР° С€РёСЂРѕС‚Рµ B ]
 // W = sqrt(1-e^2)*V = (b/a)*V
    double Calc_W  (double  Bc){if(ELL_i<=0)  return(1.0);     // W= V*sqrt(1-e*e)
                                double sinB = sin(Bc);         // ELL_e1E2=   e*e
                                return sqrt(1.0-ELL_e1E2*sinB*sinB);   };
-// V - Основная сфероидическая функция [ на широте B ]
+// V - РћСЃРЅРѕРІРЅР°СЏ СЃС„РµСЂРѕРёРґРёС‡РµСЃРєР°СЏ С„СѓРЅРєС†РёСЏ [ РЅР° С€РёСЂРѕС‚Рµ B ]
 // V = sqrt(1+e'^2)*W = (a/b)*W
    double Calc_V  (double  Bc){if(ELL_i<=0)  return(1.0);
                                double cosB = cos(Bc);         // ELL_e2E2=  e'*e'
                                return sqrt(1.0 + ELL_e2E2*cosB*cosB); };
-// Радиус кривизны первого вертикала [ на широте B ] = c/V
+// Р Р°РґРёСѓСЃ РєСЂРёРІРёР·РЅС‹ РїРµСЂРІРѕРіРѕ РІРµСЂС‚РёРєР°Р»Р° [ РЅР° С€РёСЂРѕС‚Рµ B ] = c/V
    double Calc_Nc (double  Bc){if(ELL_i<=0)  return(ELL_a);
                                double cosB = cos(Bc);
                                double  ue  = (1.0 + ELL_e2E2*cosB*cosB);
                                return (ELL_c / sqrt (ue) );           };
-// Радиус кривизны первого вертикала [ на широте B ] = a/W
+// Р Р°РґРёСѓСЃ РєСЂРёРІРёР·РЅС‹ РїРµСЂРІРѕРіРѕ РІРµСЂС‚РёРєР°Р»Р° [ РЅР° С€РёСЂРѕС‚Рµ B ] = a/W
    double Calc_N  (double  Bc){if(ELL_i<=0)  return(ELL_a);
                                double sinB = sin(Bc);
                                double  ue  = (1.0 - ELL_e1E2*sinB*sinB);
                                return (ELL_a / sqrt (ue) );           };
-// Радиус кривизны меридиана         [ на широте B ]
+// Р Р°РґРёСѓСЃ РєСЂРёРІРёР·РЅС‹ РјРµСЂРёРґРёР°РЅР°         [ РЅР° С€РёСЂРѕС‚Рµ B ]
    double Calc_M  (double  Bc){if(ELL_i<=0)  return(ELL_a);
                                double sinB = sin(Bc);
                                double  ue  = (1.0 - ELL_e1E2*sinB*sinB);
                                return (ELL_a*(1.0 - ELL_e1E2) / (ue*sqrt(ue)) );
                               };
-// Средний радиус кривизны эллипсоида на широте Bc = sqrt(M*N) = a*sqrt(1-e^2) / (1-e^2*sin(B)^2)
-// Средний радиус экв. сферы в полосе Bc+-1.5° или +-(150-200)км
+// РЎСЂРµРґРЅРёР№ СЂР°РґРёСѓСЃ РєСЂРёРІРёР·РЅС‹ СЌР»Р»РёРїСЃРѕРёРґР° РЅР° С€РёСЂРѕС‚Рµ Bc = sqrt(M*N) = a*sqrt(1-e^2) / (1-e^2*sin(B)^2)
+// РЎСЂРµРґРЅРёР№ СЂР°РґРёСѓСЃ СЌРєРІ. СЃС„РµСЂС‹ РІ РїРѕР»РѕСЃРµ Bc+-1.5В° РёР»Рё +-(150-200)РєРј
    double Calc_RMN(double  Bc){if(ELL_i<=0)  return(ELL_a);
                                double sinB = sin(Bc);
                                double  ue  = (1.0 - ELL_e1E2*sinB*sinB);
                                return (ELL_a * sqrt(1.0-ELL_e1E2)/(ue));
                               };
-// геоцентрический радиус(м) эллипсоида на широте Bc
+// РіРµРѕС†РµРЅС‚СЂРёС‡РµСЃРєРёР№ СЂР°РґРёСѓСЃ(Рј) СЌР»Р»РёРїСЃРѕРёРґР° РЅР° С€РёСЂРѕС‚Рµ Bc
    double Calc_Rgc(double  Bc){if(ELL_i<=0)  return (  ELL_a  );
                                double ba  =  ( ELL_b / ELL_a  );
                                double Bu  =  atan( ba*tan(Bc) );
@@ -309,71 +309,71 @@ class TEllipsoid     // радианы и метры ...
                                if    (Bf >= (89.99*(RWpi/180.0))) return(ELL_b);
                                return r/cos(Bf);
                               };
-// Исход.вектор, заданный двумя точками от p1 к p2 |p1->p2| в ГЕОЦЕНТР.С.К.(X,Y,Z)
-// return(X,Y,Z) ближайшей точки от p1 на поверхности эллипсоида, лежащей на прямой p1->p2
-// Dgc= расстояние от(p1) до поверхности эллипсоида
+// РСЃС…РѕРґ.РІРµРєС‚РѕСЂ, Р·Р°РґР°РЅРЅС‹Р№ РґРІСѓРјСЏ С‚РѕС‡РєР°РјРё РѕС‚ p1 Рє p2 |p1->p2| РІ Р“Р•РћР¦Р•РќРўР .РЎ.Рљ.(X,Y,Z)
+// return(X,Y,Z) Р±Р»РёР¶Р°Р№С€РµР№ С‚РѕС‡РєРё РѕС‚ p1 РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР°, Р»РµР¶Р°С‰РµР№ РЅР° РїСЂСЏРјРѕР№ p1->p2
+// Dgc= СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚(p1) РґРѕ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР°
    xyzREAL VectorToEllipsoid(xyzREAL p1,xyzREAL p2, double * ADgc= NULL);
 
-// Наклонение орбиты Io
-// return(X,Y) X=ELL_a, Y=ELL_b`(ПРИ СЕЧЕНИИ ЭЛЛИПСОИДА ПЛОСКОСТЬЮ ОРБИТЫ)
-// BMax= максимальная широта, достигаемая подспутниковой точкой,
-//       по напрравлению к центру масс
+// РќР°РєР»РѕРЅРµРЅРёРµ РѕСЂР±РёС‚С‹ Io
+// return(X,Y) X=ELL_a, Y=ELL_b`(РџР Р РЎР•Р§Р•РќРР Р­Р›Р›РРџРЎРћРР”Рђ РџР›РћРЎРљРћРЎРўР¬Р® РћР Р‘РРўР«)
+// BMax= РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ С€РёСЂРѕС‚Р°, РґРѕСЃС‚РёРіР°РµРјР°СЏ РїРѕРґСЃРїСѓС‚РЅРёРєРѕРІРѕР№ С‚РѕС‡РєРѕР№,
+//       РїРѕ РЅР°РїСЂСЂР°РІР»РµРЅРёСЋ Рє С†РµРЅС‚СЂСѓ РјР°СЃСЃ
    xyREAL Calc_Cut(double Io, double * ABMax= NULL);
 
-// Исход.точка с координатами в ГЕОЦЕНТР.С.К. Ph(X,Y,Z)
-// return(X,Y,Z) точки на поверхности эллипсоида, лежащей на прямой от(Ph) к центру С.К.
-// Dgc= расстояние от(Ph) до поверхности эллипсоида по направлению к центру масс
+// РСЃС…РѕРґ.С‚РѕС‡РєР° СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РІ Р“Р•РћР¦Р•РќРўР .РЎ.Рљ. Ph(X,Y,Z)
+// return(X,Y,Z) С‚РѕС‡РєРё РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР°, Р»РµР¶Р°С‰РµР№ РЅР° РїСЂСЏРјРѕР№ РѕС‚(Ph) Рє С†РµРЅС‚СЂСѓ РЎ.Рљ.
+// Dgc= СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚(Ph) РґРѕ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР° РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ Рє С†РµРЅС‚СЂСѓ РјР°СЃСЃ
    xyzREAL Calc_Dgc(xyzREAL Ph, double * ADgc= NULL);
-    xyREAL Calc_Dgc( xyREAL Ph, double * ADgc= NULL);// то же для эллипса
+    xyREAL Calc_Dgc( xyREAL Ph, double * ADgc= NULL);// С‚Рѕ Р¶Рµ РґР»СЏ СЌР»Р»РёРїСЃР°
 
-// Исход.точка с координатами в ГЕОЦЕНТР.С.К. Ph(X,Y,Z) -> Геодезич.высота и XYZ
-// return  (X,Y,Z) точки пересечения нормали от (Ph) к поверхности эллипсоида
-// Hgc= расстояние от(Ph) до поверхности эллипсоида  по нормали к поверхности
+// РСЃС…РѕРґ.С‚РѕС‡РєР° СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РІ Р“Р•РћР¦Р•РќРўР .РЎ.Рљ. Ph(X,Y,Z) -> Р“РµРѕРґРµР·РёС‡.РІС‹СЃРѕС‚Р° Рё XYZ
+// return  (X,Y,Z) С‚РѕС‡РєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РЅРѕСЂРјР°Р»Рё РѕС‚ (Ph) Рє РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР°
+// Hgc= СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚(Ph) РґРѕ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЌР»Р»РёРїСЃРѕРёРґР°  РїРѕ РЅРѕСЂРјР°Р»Рё Рє РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
    xyzREAL Calc_Hgd(xyzREAL Ph, double * AHgd= NULL);
-    xyREAL Calc_Hgd( xyREAL Ph, double * AHgd= NULL);// то же для эллипса
+    xyREAL Calc_Hgd( xyREAL Ph, double * AHgd= NULL);// С‚Рѕ Р¶Рµ РґР»СЏ СЌР»Р»РёРїСЃР°
 
-// Радиус  в полярной системе координат, связанной с фокусом(Ta= истинная аномалия)
+// Р Р°РґРёСѓСЃ  РІ РїРѕР»СЏСЂРЅРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚, СЃРІСЏР·Р°РЅРЅРѕР№ СЃ С„РѕРєСѓСЃРѕРј(Ta= РёСЃС‚РёРЅРЅР°СЏ Р°РЅРѕРјР°Р»РёСЏ)
    double Calc_Rpf(double  Ta){if(ELL_i<=0)  return (  ELL_a  );
                                return ( ELL_pf /(1.0+ELL_e1*cos(Ta)));
                               };
-//.Истинная аномалия в полярной системе координат, связанной с фокусом(Rt= радиус)
+//.РСЃС‚РёРЅРЅР°СЏ Р°РЅРѕРјР°Р»РёСЏ РІ РїРѕР»СЏСЂРЅРѕР№ СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚, СЃРІСЏР·Р°РЅРЅРѕР№ СЃ С„РѕРєСѓСЃРѕРј(Rt= СЂР°РґРёСѓСЃ)
 //.double Calc_Ta (double  Rt){if(ELL_i<=0)  return ( 0 );
 //.                            return (acos((ELL_pf-Rt)/(ELL_e1*Rt)));
 //.                           };
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-   double        AMeridian (          double  B,double  L, long Wz=6);// ДЛЯ 6|3^ГРАДУСНОЙ ЗОНЫ
+   double        AMeridian (          double  B,double  L, long Wz=6);// Р”Р›РЇ 6|3^Р“Р РђР”РЈРЎРќРћР™ Р—РћРќР«
    double  LzOwn_AMeridian (double Lz,double  B,double  L);
 
-   double  Calc_PofBL(double Bc, double L2minL1)// [In: Meter ] Возврат длины дуги параллели от Radian(B) и Radian(L2-L1)
+   double  Calc_PofBL(double Bc, double L2minL1)// [In: Meter ] Р’РѕР·РІСЂР°С‚ РґР»РёРЅС‹ РґСѓРіРё РїР°СЂР°Р»Р»РµР»Рё РѕС‚ Radian(B) Рё Radian(L2-L1)
    {
    // double r= Calc_N(Bc)*cos(Bc);
       return    Calc_N(Bc)*cos(Bc) * L2minL1;
    };
-   double  Calc_LofBP(double Bc, double PLength)// [In: Radian] Возврат (L2-L1) от длины дуги(PLength) и параллели Radian(B)
+   double  Calc_LofBP(double Bc, double PLength)// [In: Radian] Р’РѕР·РІСЂР°С‚ (L2-L1) РѕС‚ РґР»РёРЅС‹ РґСѓРіРё(PLength) Рё РїР°СЂР°Р»Р»РµР»Рё Radian(B)
    {  return PLength/(Calc_N(Bc)*cos(Bc));
    }
-   double  Calc_XB(double Bx);// [In: Radian] Возврат длины дуги меридиана от экватора до (Bx)  в метрах
-   double  Calc_BX(double Xb);// [In: Meter ] Возврат широты, соотв дуге меридиана от экватора в радианах
+   double  Calc_XB(double Bx);// [In: Radian] Р’РѕР·РІСЂР°С‚ РґР»РёРЅС‹ РґСѓРіРё РјРµСЂРёРґРёР°РЅР° РѕС‚ СЌРєРІР°С‚РѕСЂР° РґРѕ (Bx)  РІ РјРµС‚СЂР°С…
+   double  Calc_BX(double Xb);// [In: Meter ] Р’РѕР·РІСЂР°С‚ С€РёСЂРѕС‚С‹, СЃРѕРѕС‚РІ РґСѓРіРµ РјРµСЂРёРґРёР°РЅР° РѕС‚ СЌРєРІР°С‚РѕСЂР° РІ СЂР°РґРёР°РЅР°С…
 
-//                                             H - ГЕОЦЕНТРИЧЕСКАЯ
+//                                             H - Р“Р•РћР¦Р•РќРўР РР§Р•РЎРљРђРЇ
    xyzREAL BLH_To_XYZ(double B,double L,double H);// (B,L,H) in radian, return( X,Y,Z )
-//                                                        H - ГЕОЦЕНТРИЧЕСКАЯ
+//                                                        H - Р“Р•РћР¦Р•РќРўР РР§Р•РЎРљРђРЇ
    xyzREAL XYZ_To_BLH(double X,double Y,double Z);// return xyzREAL(B,L,H) in radian, m
 //___________________________________________________________________________________________.
 //___________________________________________________________________________________________.
 //
    char  * ZonaUTM_BL(double B, double L);
 
-// xEast = Nz*1000000+500000+x, где Nz=NZona_UTM
-// yNorth>=0: North, yNorth<0: South без прибавления 10000000.0
+// xEast = Nz*1000000+500000+x, РіРґРµ Nz=NZona_UTM
+// yNorth>=0: North, yNorth<0: South Р±РµР· РїСЂРёР±Р°РІР»РµРЅРёСЏ 10000000.0
    char  * ZonaUTMZ  (double xEast,double yNorth);
    //..............................................................>> NNc: c>=N: North, c<=M: South
    xyREAL  UTMZ_To_UTM (double XEastPlus,double YNorthMinus,          char szZonaUTM_Out[4]);
    xyzREAL UTMZ_To_UTM (double XEastPlus,double YNorthMinus,double H, char szZonaUTM_Out[4]);
 //___________________________________________________________________________________________.
 //
-//                         Геодезическая высота(относ. эллипсоида)->ТРАНСЛЯЦИЯ
+//                         Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ РІС‹СЃРѕС‚Р°(РѕС‚РЅРѕСЃ. СЌР»Р»РёРїСЃРѕРёРґР°)->РўР РђРќРЎР›РЇР¦РРЇ
    xyzREAL UTM_To_BLH      (double xEast,double yNorth,double H, char ZoneIn [4]);// return xyzREAL(B,L,H) in radian, m
 //                                                      In parameter
    xyzREAL BLH_To_UTM_NzOwn(double B    ,double L     ,double H, char ZoneIn [4]);
@@ -383,71 +383,71 @@ class TEllipsoid     // радианы и метры ...
    xyzREAL BLH_To_UTM(double B,double L,double H, char ZoneOut[4]=NULL);// (B,L,H) in radian, return(x, y, H)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-// Как и в АНАЛОГ GsK:
-//                                                 в зоне NzUTM    Target +1..60
+// РљР°Рє Рё РІ РђРќРђР›РћР“ GsK:
+//                                                 РІ Р·РѕРЅРµ NzUTM    Target +1..60
    xyzREAL BLH_To_UTM (double B,double L,double H, char ZoneOut[4], long  Nz_UTM);// (B,L,H) in radian, return(x, y, H)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-// АНАЛОГ GsK:
-// .Номер зоны UTM включается в координату (xEast) в виде: +Nz*1000000+500000+x
-// yNorth>=0: North, yNorth<0: South без прибавления 10000000.0          Target 1..60
+// РђРќРђР›РћР“ GsK:
+// .РќРѕРјРµСЂ Р·РѕРЅС‹ UTM РІРєР»СЋС‡Р°РµС‚СЃСЏ РІ РєРѕРѕСЂРґРёРЅР°С‚Сѓ (xEast) РІ РІРёРґРµ: +Nz*1000000+500000+x
+// yNorth>=0: North, yNorth<0: South Р±РµР· РїСЂРёР±Р°РІР»РµРЅРёСЏ 10000000.0          Target 1..60
    xyzREAL BLH_To_UTMZ(double B,double L,double H, char ZoneOut[4]=NULL, long  Nz_UTM= 0);// (B,L,H) in radian, return(x, y, H)
 
-// .Номер зоны UTM включается в координату (xEast) в виде: +Nz*1000000+500000+x
-// yNorth>=0: North, yNorth<0: South без прибавления 10000000.0
+// .РќРѕРјРµСЂ Р·РѕРЅС‹ UTM РІРєР»СЋС‡Р°РµС‚СЃСЏ РІ РєРѕРѕСЂРґРёРЅР°С‚Сѓ (xEast) РІ РІРёРґРµ: +Nz*1000000+500000+x
+// yNorth>=0: North, yNorth<0: South Р±РµР· РїСЂРёР±Р°РІР»РµРЅРёСЏ 10000000.0
    xyzREAL UTMZ_To_BLH(double xEast,double yNorth,double H, char ZoneOut[4]=NULL);// return xyzREAL(B,L,H) in radian, m
 
-// .x= EastCoord не ссодержит: Nz и + 500000.0  и обратно
-// .y= (+/-) без добавления +10000000 при .y<0
-   xyREAL BLH_To_UTMZ_NzOwn(long   NzUTM// Номер зоны [1..60] UTM, как правило соседней
-                           ,double B    // Radian`s: полные
-                           ,double L);  // Radian`s: полные
-   xyREAL NzOwn_UTMZ_To_BLH(long   NzUTM// Номер зоны [1..60] UTM, как правило соседней
+// .x= EastCoord РЅРµ СЃСЃРѕРґРµСЂР¶РёС‚: Nz Рё + 500000.0  Рё РѕР±СЂР°С‚РЅРѕ
+// .y= (+/-) Р±РµР· РґРѕР±Р°РІР»РµРЅРёСЏ +10000000 РїСЂРё .y<0
+   xyREAL BLH_To_UTMZ_NzOwn(long   NzUTM// РќРѕРјРµСЂ Р·РѕРЅС‹ [1..60] UTM, РєР°Рє РїСЂР°РІРёР»Рѕ СЃРѕСЃРµРґРЅРµР№
+                           ,double B    // Radian`s: РїРѕР»РЅС‹Рµ
+                           ,double L);  // Radian`s: РїРѕР»РЅС‹Рµ
+   xyREAL NzOwn_UTMZ_To_BLH(long   NzUTM// РќРѕРјРµСЂ Р·РѕРЅС‹ [1..60] UTM, РєР°Рє РїСЂР°РІРёР»Рѕ СЃРѕСЃРµРґРЅРµР№
                            ,double xEast
                            ,double yNorth);// return xyREAL(B,L) in radian, m
 //________________________________________________________________________________________.
 //________________________________________________________________________________________.
 //
-// .x= EastCoord->(Yг)  ссодержит: Nz и + 500000.0  и обратно  ->    B,L: полные
-//                    East      North      Геодезическая высота(относ. эллипсоида)->ТРАНСЛЯЦИЯ
+// .x= EastCoord->(YРі)  СЃСЃРѕРґРµСЂР¶РёС‚: Nz Рё + 500000.0  Рё РѕР±СЂР°С‚РЅРѕ  ->    B,L: РїРѕР»РЅС‹Рµ
+//                    East      North      Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ РІС‹СЃРѕС‚Р°(РѕС‚РЅРѕСЃ. СЌР»Р»РёРїСЃРѕРёРґР°)->РўР РђРќРЎР›РЇР¦РРЇ
    xyzREAL GsK_To_BLH(double Yg,double Xg, double H, long Wz=6);// return xyzREAL(B,L,H) in radian
 
-// return( x: East , y: North, H: Геодезическая высота(относ. эллипсоида)->ТРАНСЛЯЦИЯ)
+// return( x: East , y: North, H: Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ РІС‹СЃРѕС‚Р°(РѕС‚РЅРѕСЃ. СЌР»Р»РёРїСЃРѕРёРґР°)->РўР РђРќРЎР›РЇР¦РРЇ)
    xyzREAL BLH_To_GsK(double  B,double  L,double  H, long Wz=6, long Nz= 0);// (B,L,H) in radian, return(.x=Yg,.y=Xg,H )
                       //                                       ^Target 1..60
-// .x= EastCoord->(Yг) не ссодержит: Nz и + 500000.0  и обратно,     B,L: полные
-//                          double Lz  Radian`s: ОСЕВОЙ МЕРИДИАН
+// .x= EastCoord->(YРі) РЅРµ СЃСЃРѕРґРµСЂР¶РёС‚: Nz Рё + 500000.0  Рё РѕР±СЂР°С‚РЅРѕ,     B,L: РїРѕР»РЅС‹Рµ
+//                          double Lz  Radian`s: РћРЎР•Р’РћР™ РњР•Р РР”РРђРќ
    xyREAL  LzOwn_GsK_To_BLH(double Lz, double dYg,double Xg);// return xyREAL(B,L) in radian
-   xyREAL  BLH_To_GsK_LzOwn(double Lz, double   B,double  L);// (B,L) in radian, return(dYг,Xг)
+   xyREAL  BLH_To_GsK_LzOwn(double Lz, double   B,double  L);// (B,L) in radian, return(dYРі,XРі)
 //___________________________________________________________________________________________.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 
-// UTM                                                h - ГЕОДЕЗИЧЕКАЯ
+// UTM                                                h - Р“Р•РћР”Р•Р—РР§Р•РљРђРЇ
    xyzREAL UTM_To_XYZ  (double    x,double  y,double  h, char ZoneIn [4]=NULL)// return(X,Y,Z)
    {  xyzREAL blh= UTM_To_BLH(    x,        y,        h,      ZoneIn );
       return       BLH_To_XYZ(blh.x,    blh.y,    blh.z);
-   };                                                                         //            h - ГЕОДЕЗИЧЕКАЯ
+   };                                                                         //            h - Р“Р•РћР”Р•Р—РР§Р•РљРђРЇ
    xyzREAL XYZ_To_UTM  (double    X,double  Y,double  Z, char ZoneOut[4]=NULL)// return(x,y,h)
    {  xyzREAL blh= XYZ_To_BLH(    X,        Y,        Z);
       return       BLH_To_UTM(blh.x,    blh.y,    blh.z,      ZoneOut);
    };
 
-// .x= EastCoord->(Yг) ссодержит: Nz*1000000.0 +  500000.0, B,L: полные
-// .y= ИСТИННОЕ ЗНАЧЕНИЕ (+/-) без прибавления +10000000.0  при  .y < 0
-//  и обратно ...
+// .x= EastCoord->(YРі) СЃСЃРѕРґРµСЂР¶РёС‚: Nz*1000000.0 +  500000.0, B,L: РїРѕР»РЅС‹Рµ
+// .y= РРЎРўРРќРќРћР• Р—РќРђР§Р•РќРР• (+/-) Р±РµР· РїСЂРёР±Р°РІР»РµРЅРёСЏ +10000000.0  РїСЂРё  .y < 0
+//  Рё РѕР±СЂР°С‚РЅРѕ ...
    xyzREAL UTMZ_To_XYZ  (double    x,double  y,double  h)
    {  xyzREAL blh= UTMZ_To_BLH(    x,        y,        h);
       return        BLH_To_XYZ(blh.x,    blh.y,    blh.z);
-   };                                                                         //            h - ГЕОДЕЗИЧЕКАЯ
+   };                                                                         //            h - Р“Р•РћР”Р•Р—РР§Р•РљРђРЇ
    xyzREAL XYZ_To_UTMZ  (double    X,double  Y,double  Z, char ZoneOut[4]=NULL)// return(x,y,h)
    {  xyzREAL blh= XYZ_To_BLH (    X,        Y,        Z);
       return       BLH_To_UTMZ(blh.x,    blh.y,    blh.z,      ZoneOut);
    };
 
-// Gauss-Krueger   //   East        North     Геодезическая высота(относ. эллипсоида)
+// Gauss-Krueger   //   East        North     Р“РµРѕРґРµР·РёС‡РµСЃРєР°СЏ РІС‹СЃРѕС‚Р°(РѕС‚РЅРѕСЃ. СЌР»Р»РёРїСЃРѕРёРґР°)
    xyzREAL GsK_To_XYZ  (double    x,double  y,double  h, long Wz=6)           // return(X,Y,Z)
    {  xyzREAL blh= GsK_To_BLH(    x,        y,        h,      Wz  );
       return       BLH_To_XYZ(blh.x,    blh.y,    blh.z);
-   };                                                                         //            h - ГЕОДЕЗИЧЕКАЯ
+   };                                                                         //            h - Р“Р•РћР”Р•Р—РР§Р•РљРђРЇ
    xyzREAL XYZ_To_GsK  (double    X,double  Y,double  Z, long Wz=6)           // return(x,y,h)
    {  xyzREAL blh= XYZ_To_BLH(    X,        Y,        Z);
       return       BLH_To_GsK(blh.x,    blh.y,    blh.z,      Wz  );

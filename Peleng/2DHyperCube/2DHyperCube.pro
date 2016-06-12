@@ -50,7 +50,7 @@ HEADERS += \
     Region.h \
     ../Library/Spectr.h \
     ../Library/structures.h \
-    ../Library/MathOperations/interpolation.h
+    ../Library/MathOperations/interpolation.h \
     ../Library/saveENVI.h
 
 
