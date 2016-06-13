@@ -25,7 +25,8 @@ SOURCES += spectraldistance.cpp \
     ../Library/Attributes/Attributes.cpp \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
     ../Library/QCustomPlot.cpp \
-    SpecDistWindow.cpp
+    SpecDistWindow.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS += spectraldistance.h\
     ../Library/HyperCube.h \
@@ -34,7 +35,8 @@ HEADERS += spectraldistance.h\
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/CustomPlotForPreview2D/Preview2D.h \
     ../Library/QCustomPlot.h \
-    SpecDistWindow.h
+    SpecDistWindow.h \
+    ../Library/Ellipsoid.h
 
 
 

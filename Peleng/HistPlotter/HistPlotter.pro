@@ -22,7 +22,8 @@ SOURCES +=\
     ../Library/QCustomPlot.cpp \
     histplugin.cpp \
     ../Library/Attributes/Attributes.cpp \
-    histplotterwidget.cpp
+    histplotterwidget.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -33,7 +34,8 @@ HEADERS  += \
     ../Library/Utils/typeconvertor.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
     ../Library/Attributes/Attributes.h \
-    histplotterwidget.h
+    histplotterwidget.h \
+    ../Library/Ellipsoid.h
 
 DISTFILES += \
     HistPlugin.json

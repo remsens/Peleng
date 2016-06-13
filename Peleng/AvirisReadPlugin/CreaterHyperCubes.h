@@ -27,6 +27,7 @@ private:
     u::logic ReadBIP(const QString& fileName, HyperCube* cube);
     void ConvertToLittleEndian(HyperCube* cube);
     void SortByWavelength(HyperCube* cube);
+    void calcAngle(HyperCube* cube);
 
 private:
     InfoData m_infoData;

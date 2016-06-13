@@ -10,6 +10,7 @@
 #include "../Library/Types.h"
 #include "CreaterHyperCubes.h"
 #include "convertdatacubetolittleendian.h"
+#include "../Library/Ellipsoid.h"
 
 
 CreaterHyperCubes::CreaterHyperCubes()
@@ -57,6 +58,16 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
         ConvertToLittleEndian(cube);
     }
     SortByWavelength(cube);
+
+    //-----пока вручную, потом должно из хидера------
+    cube->initElipsoid(ELL_WGS84);
+    QVector<BLrad> corners;
+    corners.append(BLrad(40,30));
+    corners.append(BLrad(42,33));
+    corners.append(BLrad(40,32));
+    corners.append(BLrad(10,32));
+    cube->setCornerPoints(corners);
+    calcAngle(cube);
     return res;
 
 }
@@ -475,4 +486,23 @@ void CreaterHyperCubes::SortByWavelength(HyperCube* cube)
     }
     cube->UpdateListWaves(listWavelenth);
 
+}
+
+void CreaterHyperCubes::calcAngle(HyperCube *cube)
+{
+    TEllipsoid earth(ELL_WGS84, 0.0);
+    char zone0[4], zone1[4], zone2[4], zone3[4] ;
+    QVector<BLrad> corners = cube->getCornerPoints();
+    xyzREAL utmCord0 =  earth.BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    xyzREAL utmCord1 =  earth.BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone1);
+    xyzREAL utmCord2 =  earth.BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone2);
+    xyzREAL utmCord3 =  earth.BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone3);
+    qDebug()<<" 0 угол: "<<zone0 <<" 1 угол:  "<<zone1<<" 2 угол: "<<zone2<<" 3 угол: "<<zone3;
+    double x0 = utmCord0.x;
+    double y0 = utmCord0.y;
+    double x1 = utmCord1.x;
+    double y1 = utmCord1.y;
+
+    double sinAlph = abs(y1 - y0)/sqrt((x1 - x0)*(x1 - x0) + (y1 - y0)*(y1 - y0));
+    double alph = asin(sinAlph);
 }

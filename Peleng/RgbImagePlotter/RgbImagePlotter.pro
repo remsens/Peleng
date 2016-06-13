@@ -21,7 +21,8 @@ SOURCES += \
     rgbprofile.cpp \
     rgbimagewindow.cpp \
     ../Library/QCustomPlot.cpp \
-    zoomimage.cpp
+    zoomimage.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS += \
     rgbimageplugin.h \
@@ -34,7 +35,8 @@ HEADERS += \
     rgbimagewindow.h \
     ../Library/QCustomPlot.h \
     zoomimage.h \
-    ../Library/Interfaces/ProcessingPluginInterface.h
+    ../Library/Interfaces/ProcessingPluginInterface.h \
+    ../Library/Ellipsoid.h
 DISTFILES += \
     RgbImagePlugin.json
 

@@ -6,6 +6,7 @@
 #include <QList>
 #include <QVector>
 #include "../Library/structures.h"
+#include "../Library/Ellipsoid.h"
 
 //! Структура метаданных для гипекуба
 struct InfoData {
@@ -33,13 +34,19 @@ enum TYPES {
 };
 
 //! http://www.gdal.org/gdal_datamodel.html
-struct BLrad{double breadth,longitude;}; //!< широта и долгота точки в радианах
+struct BLrad
+{
+    double breadth,longitude;
+    BLrad(double bl=0, double lon=0):breadth(bl),longitude(lon){}
+
+}; //!< широта и долгота точки в радианах
 struct geoData{
     double GeoTransform[6];
     int UTMzone;
     bool northernHemisphere;
     char* GeographCordSys;
     QVector<BLrad> cornerPoints; //!< вектор с координатами 4 угловых точек гиперснимка
+    TEllipsoid earth;
 };
 
 //! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
@@ -185,6 +192,10 @@ public:
 
     QVector<BLrad> getCornerPoints() const;
     void setCornerPoints(const QVector<BLrad> &value);
+
+    //! функция инициализации элипсоида Земли
+    //! @param iell - номер модели элипсоида
+    void initElipsoid(long iell);
 
 private:
     u::int8** m_dataCube; //!< двумерный массив данных гиперкуба

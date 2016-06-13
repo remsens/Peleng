@@ -418,3 +418,8 @@ void HyperCube::setCornerPoints(const QVector<BLrad> &value)
 {
     m_geoData.cornerPoints = value;
 }
+
+void HyperCube::initElipsoid(long iell)
+{
+    m_geoData.earth.Init(iell,0);
+}
