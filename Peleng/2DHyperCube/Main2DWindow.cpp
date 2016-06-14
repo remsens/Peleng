@@ -518,7 +518,11 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
     if (xInt >= 0 && xInt < rows && yInt >= 0 && yInt < cols)
     {
         double bright = m_tempChanel[xInt * cols + yInt];
-        pStatusBarLabel->setText("X: " + QString().setNum(xInt) + "    Y: " + QString().setNum(yInt) + "    Значение:" + QString().setNum(bright));
+        pStatusBarLabel->setText("X: " + QString().setNum(xInt) +
+                                 "    Y: " + QString().setNum(yInt) +
+                                 "    Значение:" + QString().setNum(bright) +
+                                 "    UTM x: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).x) +
+                                 "    UTM y: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).y));
     }
     else
         pStatusBarLabel->setText("");

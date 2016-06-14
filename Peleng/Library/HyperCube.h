@@ -40,14 +40,24 @@ struct BLrad
     BLrad(double bl=0, double lon=0):breadth(bl),longitude(lon){}
 
 }; //!< широта и долгота точки в радианах
+struct  point { double   x,y; };
+struct  pointInt { int   x,y; };
 struct geoData{
     double GeoTransform[6];
     int UTMzone;
     bool northernHemisphere;
     char* GeographCordSys;
-    QVector<BLrad> cornerPoints; //!< вектор с координатами 4 угловых точек гиперснимка
+    QVector<BLrad> cornerPoints;    //!< вектор с координатами (в радианах) 4-х угловых точек гиперснимка.
+                                    //!< Обход по часовой стрелке начиная с (0,0) вершины
     TEllipsoid earth;
+    double rotationAngle;           //!< угол поворота снимка в радианах от 0 до 2Pi
+    double pixelSizeX;              //!< размер пикселя по оси Х (т.е. ширина 1 sampl'a)
+    double pixelSizeY;              //!< размер пикселя по оси Y (т.е. высота 1 line'a)
+    point point00;                  //!< UTM координаты точки куба c координатами sample = 0, line = 0
+    char utmZone[4];                //! зона UTM в формате для TEllipsoid
+
 };
+
 
 //! Класс гиперкуба. Хранит данные гиперкуба и метаданные)
 class HyperCube {
@@ -196,6 +206,29 @@ public:
     //! функция инициализации элипсоида Земли
     //! @param iell - номер модели элипсоида
     void initElipsoid(long iell);
+
+    TEllipsoid getElipsoid() const;
+
+    double getRotationAngle() const;
+    void setRotationAngle(double value);
+
+    //! Функция возвращает координату в UTM зоне для любой точки гиперкуба
+    point getUTMcords(int row, int col);
+
+    //! Функция возвращает номер строки и столбца гиперкуба для любой заданной UTM координаты
+    //! возвращаемые значения могут выходить за границы допустимых индексов гиперкуба
+    pointInt getImageCords(double utmX, double utmY);
+
+    double getPixelSizeX() const;
+    void setPixelSizeX(double value);
+    double getPixelSizeY() const;
+    void setPixelSizeY(double value);
+    point getPoint00() const;
+    void setPoint00(const point &value);
+    void setPoint00(double x, double y);
+    void setUTMforElipsoid(char zone[]);
+    void getUTMforElipsoid(char *outZone);
+
 
 private:
     u::int8** m_dataCube; //!< двумерный массив данных гиперкуба
