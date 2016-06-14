@@ -79,9 +79,8 @@ void HyperCube::SetGeoDataGeoTransform(double GeoTransform[])
         m_geoData.GeoTransform[i] = GeoTransform[i];
 }
 
-void HyperCube::SetGeoDataUTMzone(int zone, bool north)
+void HyperCube::SetNorthernHemisphere(bool north)
 {
-    m_geoData.UTMzone = zone;
     m_geoData.northernHemisphere = north;
 }
 

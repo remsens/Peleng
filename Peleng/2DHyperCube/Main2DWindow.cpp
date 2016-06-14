@@ -521,8 +521,8 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
         pStatusBarLabel->setText("X: " + QString().setNum(xInt) +
                                  "    Y: " + QString().setNum(yInt) +
                                  "    Значение:" + QString().setNum(bright) +
-                                 "    UTM x: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).x) +
-                                 "    UTM y: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).y));
+                                 "    UTM x: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).x,'f',2) +
+                                 "    UTM y: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).y,'f',2));
     }
     else
         pStatusBarLabel->setText("");

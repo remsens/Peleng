@@ -44,15 +44,14 @@ struct  point { double   x,y; };
 struct  pointInt { int   x,y; };
 struct geoData{
     double GeoTransform[6];
-    int UTMzone;
     bool northernHemisphere;
     char* GeographCordSys;
     QVector<BLrad> cornerPoints;    //!< вектор с координатами (в радианах) 4-х угловых точек гиперснимка.
                                     //!< Обход по часовой стрелке начиная с (0,0) вершины
     TEllipsoid earth;
     double rotationAngle;           //!< угол поворота снимка в радианах от 0 до 2Pi
-    double pixelSizeX;              //!< размер пикселя по оси Х (т.е. ширина 1 sampl'a)
-    double pixelSizeY;              //!< размер пикселя по оси Y (т.е. высота 1 line'a)
+    double pixelSizeX;              //!< размер пикселя в метрах по оси Х (т.е. ширина 1 sampl'a)
+    double pixelSizeY;              //!< размер пикселя в метрах по оси Y (т.е. высота 1 line'a)
     point point00;                  //!< UTM координаты точки куба c координатами sample = 0, line = 0
     char utmZone[4];                //! зона UTM в формате для TEllipsoid
 
@@ -94,13 +93,12 @@ public:
     //! @param GeoTransform[] - матрица из 6 элементов (http://www.gdal.org/gdal_datamodel.html)
     void SetGeoDataGeoTransform(double GeoTransform[]);
 
-    //!Функция задания UTM зоны
-    //! @param zone - номер UTM зоны
+    //! Функция полушария (нужна для сохранения в ENVI)
     //! @param north - TRUE for northern hemisphere, or FALSE for southern hemisphere.
-    void SetGeoDataUTMzone(int zone, bool north);
+    void SetNorthernHemisphere (bool north);
 
     //! Функция задания геодезической системы
-    //! @param GeographCordSys - одна из стандартных координатных систем. Пример: "NAD27"
+    //! @param GeographCordSys - одна из стандартных координатных систем. Пример: "WGS84"
     void SetGeoDataGeographCordSys(char* GeographCordSys);
 
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
@@ -174,10 +172,14 @@ public:
     //! @param data - вектор, куда будут записаны данные одного канала ( под него уже должна быть выделена память!)
     void GetDataChannel(u::uint32 channel, QVector<double>& data);
 
+    //! Функция получения геоматрицы (для сохранения в ENVI)
     //! @param geo6arr - массив[6], в который будет записана геоматрица
     void GetGeoDataGeoTransform(double (&geo6arr)[6]);
-    int GetGeoDataUTMzone(){return m_geoData.UTMzone;}
-    bool GetGeoDataUTMzoneNorth(){return m_geoData.northernHemisphere;}
+
+    //! Функция получения полушария (для сохранения в ENVI)
+    bool GetNorthernHemisphere(){return m_geoData.northernHemisphere;}
+
+     //! Функция получения географической координатной системы
     char* GetGeoDataGeographCordSys(){return m_geoData.GeographCordSys;}
 
     //! Функция изменения размера гиперкуба (параметры функции - координаты, по которым будет вырезаться куб)
@@ -207,8 +209,10 @@ public:
     //! @param iell - номер модели элипсоида
     void initElipsoid(long iell);
 
+    //! возвращает элипсоид
     TEllipsoid getElipsoid() const;
 
+    //! get/set угла поворота изображения в радианах от 0 до 2 Pi
     double getRotationAngle() const;
     void setRotationAngle(double value);
 
@@ -219,13 +223,20 @@ public:
     //! возвращаемые значения могут выходить за границы допустимых индексов гиперкуба
     pointInt getImageCords(double utmX, double utmY);
 
+    //! get/set размера пикселя по Х в метрах
     double getPixelSizeX() const;
     void setPixelSizeX(double value);
+
+    //! get/set размера пикселя по Х в метрах
     double getPixelSizeY() const;
     void setPixelSizeY(double value);
+
+    //! get/set  UTM координат точки куба с координатами sample = 0, line = 0
     point getPoint00() const;
     void setPoint00(const point &value);
     void setPoint00(double x, double y);
+
+    //! get/set  UTM зоны, в которой находится гиперкуб
     void setUTMforElipsoid(char zone[]);
     void getUTMforElipsoid(char *outZone);
 

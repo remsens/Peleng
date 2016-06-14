@@ -95,10 +95,11 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     const char *waves = wavesfromQList(str,cube);
     poDstDS->SetMetadataItem("wavelength",waves,"ENVI");
     poDstDS->SetMetadataItem("wavelength units","Nanometers","ENVI");
-    //задание метаданных
+
+    //задание метаданных. Должно осуществляться программно, а не вручную
     double arr[6] = { 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
     cube->SetGeoDataGeoTransform(arr);
-    cube->SetGeoDataUTMzone(11,true);
+    cube->SetNorthernHemisphere(true);
     char Sferoid[] = "WGS84";
     cube->SetGeoDataGeographCordSys(Sferoid);
     //конец задания метаданных
@@ -109,7 +110,10 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     cube->GetGeoDataGeoTransform(transform);
     poDstDS->SetGeoTransform( transform );
 
-    oSRS.SetUTM( cube->GetGeoDataUTMzone(), cube->GetGeoDataUTMzoneNorth() ); //установка картографической проекции
+    char zoneUTMchar[4];
+    cube->getUTMforElipsoid(zoneUTMchar);
+    int zone = atoi(zoneUTMchar);
+    oSRS.SetUTM( zone,cube->GetNorthernHemisphere() ); //установка картографической проекции
 
     oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeographCordSys() ); // установка геодезического датума
     oSRS.exportToWkt( &pszSRS_WKT );
