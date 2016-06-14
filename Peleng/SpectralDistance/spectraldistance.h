@@ -28,9 +28,9 @@ signals:
     void progressPercentChanged();
 
 private:
-    void CalcEvklidDistance(int k, int l); //k = row, l = column
-    void CalcSpectralAngle(int k, int l); //k = row, l = column
-    void CalcSpectralCorellation(int k, int l); //k = row, l = column
+    void CalcEvklidDistance(); //k = row, l = column
+    void CalcSpectralAngle(); //k = row, l = column
+    void CalcSpectralCorellation(); //k = row, l = column
     double averageSpectralValue(const int _i, const int _j, bool isInverted);
     void Destroy();
 private slots:
@@ -40,7 +40,8 @@ public slots:
     void callMethod(int methNumber);
     void selectRange();
     void changeRange(const int range);
-
+private:
+    void normSpectr(QVector<double>& dataSpectr);
 private:
     SpecDistWindow *m_specWindow;
     Attributes* m_attr;

@@ -318,7 +318,6 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 
             cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
             m_progress = i*100/m_infoData.bands-1;
-            qDebug() << tempbuf;
         }
        delete [] tempbuf;
    }

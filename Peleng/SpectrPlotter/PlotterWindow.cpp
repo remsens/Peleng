@@ -145,8 +145,21 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             menuNoise->addMenu(menuNoiseSavGolay);
             menu->addMenu(menuNoise);
         }
+        if (m_attributes->GetAvailablePlugins().contains("SpectralDistance"))
+        {
+            menu->addAction("Сравнить со спектральными кривыми гиперкуба", this, SLOT(CompareSpectrWithCube()));
+        }
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::CompareSpectrWithCube()
+{
+    m_selectedSpectr->SetCurrentDataType(Spectr::INTERPOLATE_NORMED);
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
+    m_attributes->SetStartRangeWave(0);
+    m_attributes->SetEndRangeWave(m_cube->GetCountofChannels());
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_cube, m_attributes);
 }
 
 void PlotterWindow::mouseMoveRequest(QMouseEvent *e)

@@ -249,3 +249,21 @@ double* Attributes::GetTempChanel()
 {
     return m_tempChan;
 }
+void Attributes::SetStartRangeWave(const u::uint32 startRangeWave)
+{
+    m_startRangeWave = startRangeWave;
+}
+void Attributes::SetEndRangeWave(const u::uint32 endRangeWave)
+{
+    m_endRangeWave = endRangeWave;
+}
+
+u::uint32 Attributes::GetStartRangeWave() const
+{
+    return m_startRangeWave;
+}
+
+u::uint32 Attributes::GetEndRangeWave() const
+{
+    return m_endRangeWave;
+}

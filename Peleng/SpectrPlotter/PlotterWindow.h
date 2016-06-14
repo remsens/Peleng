@@ -70,7 +70,7 @@ public slots:
 
     void ActionNormalization();
     void AddSpectr();
-
+    void CompareSpectrWithCube();
 private:
     bool m_hold;
     bool m_valuesFlag;

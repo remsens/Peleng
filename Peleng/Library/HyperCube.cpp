@@ -149,7 +149,7 @@ void HyperCube::GetSpectrumPoint(u::uint32 x, u::uint32 y, u::ptr data)
 	if (y > m_infoData.samples) {
         throw GenericExc("Неверно задана коодината Y", -1);
 	}
-	u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
+    u::uint32 shift = (x*m_infoData.samples + y)*m_infoData.bytesType;
 	try {
         for (u::uint32 i = 0; i < m_infoData.bands; i++) {
             memcpy((u::int8*)data + i*m_infoData.bytesType, m_dataCube[i] + shift, m_infoData.bytesType);

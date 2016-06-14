@@ -124,7 +124,7 @@ private:
     void findMinMaxforColorMap(float thresholdLow = 0.02,float thresholdHigh = 0.99);
     void findAbsoluteMinMax();
     QImage from2Dmass2QImage(double **sidesData, int dim1, int dim2, int minContrast, int maxContrast, bool gray = false);
-    void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint16& dataXu,  u::uint16& dataYu, u::uint16& dataZu);
+    void calcUintCords (float dataXf, float dataYf, float dataZf, u::uint32 &dataXu,  u::uint32 &dataYu, u::uint32 &dataZu);
     void calcCenterCube(int Ch1, int Ch2, int R1, int R2, int C1, int C2);
     void evalDataCordsFromMouse(int mouseX, int mouseY);
     void Noise();
@@ -162,7 +162,7 @@ private:
     int minCMapSides,maxCMapSides;
     int absMin,absMax;
     HyperCube *m_pHyperCube;
-    u::uint16 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
+    u::uint32 m_dataX, m_dataY, m_dataZ; // координаты (uint) ячейки массива data
     float m_dataXf, m_dataYf, m_dataZf; // // координаты (float) ячейки массива data
     uint m_x1, m_x2, m_y1, m_y2, m_z1, m_z2; //data координаты клика "Начало" и "Конец"
     bool firstWindowPlotter;
