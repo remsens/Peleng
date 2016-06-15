@@ -593,6 +593,10 @@ void Main2DWindow::createMenus()
         pContextMenu->addAction(QIcon(":/IconsCube/iconsCube/distance.png"),
                                 "Сравнить со спектральными кривыми", this, SLOT(ActionSpectralDistanceToogled()));
     }
+    if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
+    {
+        pContextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB изображение", this, SLOT(ActionRGBCorrectionToogled()));
+    }
 }
 
 
@@ -804,6 +808,10 @@ void Main2DWindow::ActionSpectralDistanceToogled()
     m_attributes->SetPoint(m_dataX, m_dataY, 0);
     m_attributes->SetExternalSpectrFlag(false);
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pCube, m_attributes);
+}
+void Main2DWindow::ActionRGBCorrectionToogled()
+{
+    m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::on_action_saveENVI_triggered()
