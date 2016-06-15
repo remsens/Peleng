@@ -49,6 +49,14 @@ private slots:
     void onActionPoints(bool flag);
     //! слот по клику из опций "привестик длинам волн гиперкуба"
     void onActionInterplol();
+
+    void on_horizontalSlider_end_valueChanged(int value);
+    void on_horizontalSlider_start_valueChanged(int value);
+
+    void on_horizontalSlider_start_sliderMoved(int position);
+
+    void on_horizontalSlider_end_sliderMoved(int position);
+
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();
@@ -71,6 +79,7 @@ public slots:
     void ActionNormalization();
     void AddSpectr();
     void CompareSpectrWithCube();
+    void PrepareToCompare();
 private:
     bool m_hold;
     bool m_valuesFlag;
@@ -93,6 +102,7 @@ private:
     QList<Spectr*> m_listSpectr;
     Spectr* m_selectedSpectr;
     Measurements m_measurement;
+    QCPItemStraightLine *leftLine, *rightLine;
 };
 
 #endif // PLOTTERWINDOW_H
