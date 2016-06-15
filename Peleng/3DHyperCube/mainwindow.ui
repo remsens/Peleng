@@ -38,7 +38,7 @@
       <item row="2" column="5">
        <widget class="QScrollBar" name="horizontalScrollBar_Y2">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 2-ой плоскостью среза, перемещающейся вдоль столбцов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет&lt;span style=&quot; font-weight:600;&quot;&gt; 2-ой&lt;/span&gt; плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;столбцов&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="layoutDirection">
          <enum>Qt::LeftToRight</enum>
@@ -51,7 +51,7 @@
       <item row="0" column="5">
        <widget class="QScrollBar" name="horizontalScrollBar_Ch2">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 2-ой плоскостью среза, перемещающейся вдоль каналов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет &lt;span style=&quot; font-weight:600;&quot;&gt;2-ой&lt;/span&gt; плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;каналов&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="layoutDirection">
          <enum>Qt::LeftToRight</enum>
@@ -64,7 +64,7 @@
       <item row="0" column="4">
        <widget class="QScrollBar" name="horizontalScrollBar_Ch1">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 1-ой плоскостью среза, перемещающейся вдоль каналов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет &lt;span style=&quot; font-weight:600;&quot;&gt;1-ой&lt;/span&gt; плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;каналов&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -74,7 +74,7 @@
       <item row="1" column="5">
        <widget class="QScrollBar" name="horizontalScrollBar_X2">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 2-ой плоскостью среза, перемещающейся вдоль строк&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет &lt;span style=&quot; font-weight:600;&quot;&gt;2-ой&lt;/span&gt; плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;строк&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="layoutDirection">
          <enum>Qt::LeftToRight</enum>
@@ -93,7 +93,7 @@
       <item row="2" column="4">
        <widget class="QScrollBar" name="horizontalScrollBar_Y1">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 1-ой плоскостью среза, перемещающейся вдоль столбцов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет &lt;span style=&quot; font-weight:600;&quot;&gt;1-ой &lt;/span&gt;плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;столбцов&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -103,7 +103,7 @@
       <item row="1" column="4">
        <widget class="QScrollBar" name="horizontalScrollBar_X1">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет 1-ой плоскостью среза, перемещающейся вдоль строк&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управляет &lt;span style=&quot; font-weight:600;&quot;&gt;1-ой&lt;/span&gt; плоскостью среза, перемещающейся вдоль &lt;span style=&quot; font-weight:600;&quot;&gt;строк&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
