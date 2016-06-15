@@ -9,7 +9,6 @@ SpectralDistance::SpectralDistance(QObject *parent)
     view_range = 50;
     m_specWindow = NULL;
     preview_2d = NULL;
-    is_evklid_distance = false;
 }
 
 SpectralDistance::~SpectralDistance()
@@ -29,6 +28,18 @@ void SpectralDistance::callMethod(int methNumber)
     }
     case 2:{
         CalcSpectralCorellation();
+        return;
+    }
+    case 3:{
+        CalcSpectralDistance();
+        return;
+    }
+    case 4:{
+        CalcSID();
+        return;
+    }
+    case 5:{
+        CalcEntropy();
         return;
     }
     default:
@@ -87,7 +98,6 @@ void SpectralDistance::normSpectr(QVector<double>& dataSpectr)
 
 void SpectralDistance::CalcEvklidDistance()
 {
-    is_evklid_distance = true;
     int execute_time = GetTickCount();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
@@ -133,6 +143,7 @@ void SpectralDistance::CalcEvklidDistance()
                 spectral_distance +=pow(dataSpectr.at(z)
                         - m_attr->GetCurrentSpectr()->GetCurrentDataY().at(z), 2);
             }
+            dataSpectr.clear();
             spectral_distance = sqrt(spectral_distance);
             if (spectral_distance > max_value)
             {
@@ -166,7 +177,6 @@ void SpectralDistance::CalcEvklidDistance()
 
 void SpectralDistance::CalcSpectralAngle()
 {
-    is_evklid_distance = false;
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
 
@@ -178,7 +188,7 @@ void SpectralDistance::CalcSpectralAngle()
     u::uint32 maxValueBar = line_count*row_count;
     QProgressDialog* progressBar  = new QProgressDialog();
     progressBar->setLabelText("Производится сравнение спектральных кривых...");
-    QString descr = QString("Метод: Евклидово расстояние");
+    QString descr = QString("Метод: Спектральный угол");
     //progressBar->setWindowIcon(icon);
     progressBar->setWindowTitle(descr);
     progressBar->setRange(0, 100);
@@ -211,6 +221,7 @@ void SpectralDistance::CalcSpectralAngle()
                 local_val2 += pow(dataSpectr.at(z),2);
                 local_val3 += pow(m_attr->GetCurrentSpectr()->GetCurrentDataY().at(z),2);
             }
+            dataSpectr.clear();
             cube_map[i][j] = acos(local_val1 / (sqrt(local_val2) * sqrt(local_val3)));
             if (cube_map[i][j] > max_value)
             {
@@ -242,9 +253,6 @@ void SpectralDistance::CalcSpectralAngle()
 
 void SpectralDistance::CalcSpectralCorellation()
 {
-    int k = 0;int l = 0;
-    is_evklid_distance = false;
-    int chan_count = m_pHyperCube->GetCountofChannels();
     int line_count = m_pHyperCube->GetLines();
     int row_count  = m_pHyperCube->GetColumns();
 
@@ -254,7 +262,22 @@ void SpectralDistance::CalcSpectralCorellation()
     cube_map.clear();
     cube_map.resize(line_count);
 
-    double average_kl = averageSpectralValue(l,k, true);
+    u::uint32 maxValueBar = line_count*row_count;
+    QProgressDialog* progressBar  = new QProgressDialog();
+    progressBar->setLabelText("Производится сравнение спектральных кривых...");
+    QString descr = QString("Метод: Спектральная корреляция");
+    //progressBar->setWindowIcon(icon);
+    progressBar->setWindowTitle(descr);
+    progressBar->setRange(0, 100);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButtonText("Отмена");
+    progressBar->show();
+    progressBar->setValue(0);
+    QApplication::processEvents();
+
+    QVector<double> dataSpectrOrigin = m_attr->GetCurrentSpectr()->GetCurrentDataY();
+
+    double average_kl = averageSpectralValue(dataSpectrOrigin);
 
     for (int i=0; i < line_count; i++)
     {
@@ -262,19 +285,30 @@ void SpectralDistance::CalcSpectralCorellation()
         cube_map[i].resize(row_count);
         for (int j = 0; j < row_count; j++)
         {
+            if (progressBar->wasCanceled())
+            {
+                delete progressBar;
+                Destroy();
+                return;
+            }
             double local_val1 = 0;
             double local_val2 = 0;
             double local_val3 = 0;
-            double average_ij = averageSpectralValue(i,j, false);
+            QVector<double> dataSpectr;
+            m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
+            normSpectr(dataSpectr);
+            double average_ij = averageSpectralValue(dataSpectr);
+
             for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
             {
-                short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-                local_val1 += (data_ptr[j*line_count + i] - average_ij) *
-                        (data_ptr[k * row_count + l] - average_kl);
-                local_val2 += pow(data_ptr[j*line_count + i] - average_ij, 2);
-                local_val3 += pow(data_ptr[k * row_count + l] - average_kl, 2);
+
+                local_val1 += (dataSpectr.at(z) - average_ij) *
+                        (dataSpectrOrigin.at(z) - average_kl);
+                local_val2 += pow(dataSpectr.at(z) - average_ij, 2);
+                local_val3 += pow(dataSpectrOrigin.at(z) - average_kl, 2);
             }
-            cube_map[i][j] =  1.0 - local_val1 / (sqrt(local_val2) * sqrt(local_val3));
+            dataSpectr.clear();
+            cube_map[i][j] =  sqrt(1.0 - local_val1 / (sqrt(local_val2) * sqrt(local_val3)))/sqrt(2);
             if (cube_map[i][j] > max_value)
             {
                 max_value = cube_map[i][j];
@@ -283,11 +317,108 @@ void SpectralDistance::CalcSpectralCorellation()
             {
                 min_value = cube_map[i][j];
             }
+            double a = i*row_count + j;
+            double b = a/maxValueBar*100;
+            int percent = b*100/100;
+            progressBar->setValue(percent);
+            QApplication::processEvents();
         }
     }
-
+    if (!progressBar->wasCanceled())
+    {
+        progressBar->setValue(100);
+        QApplication::processEvents();
+        progressBar->hide();
+        delete progressBar;
+    }
+    dataSpectrOrigin.clear();
     is_cubemap_emty = false;
     selectRange();
+
+}
+
+void SpectralDistance::CalcSpectralDistance()
+{
+    int line_count = m_pHyperCube->GetLines();
+    int row_count  = m_pHyperCube->GetColumns();
+
+    max_value = 0;
+    min_value = 10000000;
+
+    cube_map.clear();
+    cube_map.resize(line_count);
+
+    u::uint32 maxValueBar = line_count*row_count;
+    QProgressDialog* progressBar  = new QProgressDialog();
+    progressBar->setLabelText("Производится сравнение спектральных кривых...");
+    QString descr = QString("Метод: Спектральные расстояния");
+    //progressBar->setWindowIcon(icon);
+    progressBar->setWindowTitle(descr);
+    progressBar->setRange(0, 100);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButtonText("Отмена");
+    progressBar->show();
+    progressBar->setValue(0);
+    QApplication::processEvents();
+
+    QVector<double> dataSpectrOrigin = m_attr->GetCurrentSpectr()->GetCurrentDataY();
+
+    for (int i=0; i < line_count; i++)
+    {
+        cube_map[i].clear();
+        cube_map[i].resize(row_count);
+        for (int j = 0; j < row_count; j++)
+        {
+            if (progressBar->wasCanceled())
+            {
+                delete progressBar;
+                Destroy();
+                return;
+            }
+            QVector<double> dataSpectr;
+            m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
+            normSpectr(dataSpectr);
+            double sum = 0;
+            for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
+            {
+                sum += abs(dataSpectr.at(z) - dataSpectrOrigin.at(z));
+            }
+            dataSpectr.clear();
+            cube_map[i][j] =  sum;
+            if (cube_map[i][j] > max_value)
+            {
+                max_value = cube_map[i][j];
+            }
+            if (cube_map[i][j] < min_value)
+            {
+                min_value = cube_map[i][j];
+            }
+            double a = i*row_count + j;
+            double b = a/maxValueBar*100;
+            int percent = b*100/100;
+            progressBar->setValue(percent);
+            QApplication::processEvents();
+        }
+    }
+    if (!progressBar->wasCanceled())
+    {
+        progressBar->setValue(100);
+        QApplication::processEvents();
+        progressBar->hide();
+        delete progressBar;
+    }
+    dataSpectrOrigin.clear();
+    is_cubemap_emty = false;
+    selectRange();
+}
+
+void SpectralDistance::CalcSID()
+{
+
+}
+
+void SpectralDistance::CalcEntropy()
+{
 
 }
 
@@ -341,25 +472,15 @@ void SpectralDistance::changeRange(const int range)
     selectRange();
 }
 
-double SpectralDistance::averageSpectralValue(const int _i, const int _j, bool isInverted)
+double SpectralDistance::averageSpectralValue(const QVector<double> &dataSpectr)
 {
-    int chan_count = m_pHyperCube->GetCountofChannels();
-    int line_count = m_pHyperCube->GetLines();
-    int row_count  = m_pHyperCube->GetColumns();
-
     double chanel_sum = 0;
-    for (int z=0; z < chan_count; z++)
+    for (int z=m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
     {
-        short int *data_ptr = static_cast<short int*>(m_pHyperCube->GetDataCube()[z]);
-        if (isInverted)
-        {
-            chanel_sum += data_ptr[_j*row_count + _i];
-        }else
-        {
-            chanel_sum += data_ptr[_j*line_count + _i];
-        }
+            chanel_sum += dataSpectr.at(z);
+
     }
-    return chanel_sum / (double)chan_count;
+    return chanel_sum / (double)dataSpectr.size();
 }
 
 QObject *SpectralDistance::GetObjectPointer()

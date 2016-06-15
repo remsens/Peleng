@@ -98,6 +98,21 @@
         <string>Спектральная корреляция</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Спектральное расстояние</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Спектральная информационная дивергенция</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Энтропийная мера близости</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item>
