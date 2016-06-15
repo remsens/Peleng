@@ -2,6 +2,8 @@
 
 #include <QProgressBar>
 #include "../Library/Spectr.h"
+#include <math.h>
+#include <QDebug>
 
 SpectralDistance::SpectralDistance(QObject *parent)
 {
@@ -414,12 +416,200 @@ void SpectralDistance::CalcSpectralDistance()
 
 void SpectralDistance::CalcSID()
 {
+    int line_count = m_pHyperCube->GetLines();
+    int row_count  = m_pHyperCube->GetColumns();
 
+    max_value = 0;
+    min_value = 10000000;
+
+    cube_map.clear();
+    cube_map.resize(line_count);
+
+    u::uint32 maxValueBar = line_count*row_count;
+    QProgressDialog* progressBar  = new QProgressDialog();
+    progressBar->setLabelText("Производится сравнение спектральных кривых...");
+    QString descr = QString("Метод: Спектральная информационная дивергенция");
+    //progressBar->setWindowIcon(icon);
+    progressBar->setWindowTitle(descr);
+    progressBar->setRange(0, 100);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButtonText("Отмена");
+    progressBar->show();
+    progressBar->setValue(0);
+    QApplication::processEvents();
+
+    QVector<double> dataSpectrOrigin = m_attr->GetCurrentSpectr()->GetCurrentDataY();
+    double sum = 0;
+    for (int i = 0; i < dataSpectrOrigin.size(); i++)
+    {
+        sum += dataSpectrOrigin.at(i);
+    }
+    for (int i = 0; i < dataSpectrOrigin.size(); i++)
+    {
+        dataSpectrOrigin[i] /= sum;
+    }
+    for (int i=0; i < line_count; i++)
+    {
+        cube_map[i].clear();
+        cube_map[i].resize(row_count);
+        for (int j = 0; j < row_count; j++)
+        {
+            if (progressBar->wasCanceled())
+            {
+                delete progressBar;
+                Destroy();
+                return;
+            }
+            QVector<double> dataSpectr;
+            m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
+            normSpectr(dataSpectr);
+            sum = 0;
+            for (int k = 0; k < dataSpectr.size(); k++)
+            {
+                sum += dataSpectr.at(k);
+            }
+            for (int k = 0; k < dataSpectr.size(); k++)
+            {
+                dataSpectr[k] /= sum;
+            }
+
+            double d1 = 0;
+            double d2 = 0;
+            for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
+            {
+                //double l = log2(dataSpectr.at(z)/dataSpectrOrigin.at(z));
+                //qDebug() << l;
+                d1 += dataSpectr.at(z)*log2(dataSpectr.at(z)/dataSpectrOrigin.at(z));
+                //qDebug() << d1;
+                d2 += dataSpectrOrigin.at(z)*log2(dataSpectrOrigin.at(z)/dataSpectr.at(z));
+            }
+            dataSpectr.clear();
+            //qDebug() << d1+d2;
+            cube_map[i][j] =  d1+d2;
+            if (cube_map[i][j] > max_value)
+            {
+                max_value = cube_map[i][j];
+            }
+            if (cube_map[i][j] < min_value)
+            {
+                min_value = cube_map[i][j];
+            }
+            double a = i*row_count + j;
+            double b = a/maxValueBar*100;
+            int percent = b*100/100;
+            progressBar->setValue(percent);
+            QApplication::processEvents();
+        }
+    }
+    if (!progressBar->wasCanceled())
+    {
+        progressBar->setValue(100);
+        QApplication::processEvents();
+        progressBar->hide();
+        delete progressBar;
+    }
+    dataSpectrOrigin.clear();
+    is_cubemap_emty = false;
+    selectRange();
 }
 
 void SpectralDistance::CalcEntropy()
 {
+    int line_count = m_pHyperCube->GetLines();
+    int row_count  = m_pHyperCube->GetColumns();
 
+    max_value = 0;
+    min_value = 10000000;
+
+    cube_map.clear();
+    cube_map.resize(line_count);
+
+    u::uint32 maxValueBar = line_count*row_count;
+    QProgressDialog* progressBar  = new QProgressDialog();
+    progressBar->setLabelText("Производится сравнение спектральных кривых...");
+    QString descr = QString("Метод: Спектральная информационная дивергенция");
+    //progressBar->setWindowIcon(icon);
+    progressBar->setWindowTitle(descr);
+    progressBar->setRange(0, 100);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButtonText("Отмена");
+    progressBar->show();
+    progressBar->setValue(0);
+    QApplication::processEvents();
+
+    QVector<double> dataSpectrOrigin = m_attr->GetCurrentSpectr()->GetCurrentDataY();
+    double sum = 0;
+    for (int i = 0; i < dataSpectrOrigin.size(); i++)
+    {
+        sum += dataSpectrOrigin.at(i);
+    }
+    for (int i = 0; i < dataSpectrOrigin.size(); i++)
+    {
+        dataSpectrOrigin[i] /= sum;
+    }
+    for (int i=0; i < line_count; i++)
+    {
+        cube_map[i].clear();
+        cube_map[i].resize(row_count);
+        for (int j = 0; j < row_count; j++)
+        {
+            if (progressBar->wasCanceled())
+            {
+                delete progressBar;
+                Destroy();
+                return;
+            }
+            QVector<double> dataSpectr;
+            m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
+            normSpectr(dataSpectr);
+            sum = 0;
+            for (int k = 0; k < dataSpectr.size(); k++)
+            {
+                sum += dataSpectr.at(k);
+            }
+            for (int k = 0; k < dataSpectr.size(); k++)
+            {
+                dataSpectr[k] /= sum;
+            }
+
+            double d1 = 0;
+            double d2 = 0;
+            for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
+            {
+                //if (dataSpectrOrigin.at(z)!= 0)
+                    d1 += dataSpectr.at(z)/dataSpectrOrigin.at(z);
+                //else d1 += max_value;
+                //if (dataSpectr.at(z) != 0)
+                    d2 += dataSpectrOrigin.at(z)/dataSpectr.at(z);
+                //else d2 += max_value;
+            }
+            dataSpectr.clear();
+            cube_map[i][j] =  log2(d1*d2);
+            if (cube_map[i][j] > max_value)
+            {
+                max_value = cube_map[i][j];
+            }
+            if (cube_map[i][j] < min_value)
+            {
+                min_value = cube_map[i][j];
+            }
+            double a = i*row_count + j;
+            double b = a/maxValueBar*100;
+            int percent = b*100/100;
+            progressBar->setValue(percent);
+            QApplication::processEvents();
+        }
+    }
+    if (!progressBar->wasCanceled())
+    {
+        progressBar->setValue(100);
+        QApplication::processEvents();
+        progressBar->hide();
+        delete progressBar;
+    }
+    dataSpectrOrigin.clear();
+    is_cubemap_emty = false;
+    selectRange();
 }
 
 void SpectralDistance::selectRange()
@@ -431,11 +621,13 @@ void SpectralDistance::selectRange()
         int row_count  = m_pHyperCube->GetColumns();
 
         double dist_range = min_value + (max_value - min_value)*((100.0 - view_range) / 100.0);
+        qDebug() << "dist: " << dist_range;
         double* view_mem = (double*)malloc(sizeof(double) * line_count*row_count);
         for (int i = 0; i < cube_map.length(); i++)
         {
             for (int j=0; j < cube_map[i].length(); j++)
             {
+                qDebug() << cube_map[i][j];
                     if (cube_map[i][j] <= dist_range)
                     {
                         view_mem[j + cube_map[i].length() * i] = 1;
