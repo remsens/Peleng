@@ -1069,14 +1069,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dxM = event->x() - lastPos.x();
     int dyM = event->y() - lastPos.y();
-
+    // при запуске модуля куб переворачивается, чтобы верхней гранью стала нулевая грань.
+    // из-за этого надо инвертировать dxM
+    dxM = -dxM;
     if (event->buttons() & Qt::LeftButton)
     {
         rotateBy(8 * dyM, 8 * dxM, 0);
     }
     if (event->buttons() & Qt::MidButton)
     {
-        dx += (float)dxM/115;
+        dx -= (float)dxM/115;
         dy -= (float)dyM/115;
         update();
     }
