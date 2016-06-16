@@ -66,7 +66,7 @@
       <item row="3" column="2">
        <widget class="QPushButton" name="buttonLoadregion">
         <property name="text">
-         <string>Загрузить область</string>
+         <string>Загрузить регион интереса</string>
         </property>
        </widget>
       </item>
@@ -86,7 +86,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Сохранить область</string>
+         <string>Сохранить регион интереса</string>
         </property>
        </widget>
       </item>

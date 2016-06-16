@@ -15,7 +15,7 @@ MainWindow::MainWindow(HyperCube *cube, Attributes *attr, QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose, true);
     QFont font;
     font.setPixelSize(16);
-    font.setBold(true);
+    //font.setBold(true);
     QToolTip::setFont(font);
     connectionsOfPlugins();
 }

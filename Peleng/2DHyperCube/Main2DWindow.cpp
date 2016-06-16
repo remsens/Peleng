@@ -518,7 +518,11 @@ void Main2DWindow::mouseMoveOnColorMap(QMouseEvent *e)
     if (xInt >= 0 && xInt < rows && yInt >= 0 && yInt < cols)
     {
         double bright = m_tempChanel[xInt * cols + yInt];
-        pStatusBarLabel->setText("X: " + QString().setNum(xInt) + "    Y: " + QString().setNum(yInt) + "    Значение:" + QString().setNum(bright));
+        pStatusBarLabel->setText("X: " + QString().setNum(xInt) +
+                                 "    Y: " + QString().setNum(yInt) +
+                                 "    Значение:" + QString().setNum(bright) +
+                                 "    UTM x: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).x,'f',2) +
+                                 "    UTM y: " + QString().setNum(m_pCube->getUTMcords(xInt,yInt).y,'f',2));
     }
     else
         pStatusBarLabel->setText("");
@@ -588,6 +592,10 @@ void Main2DWindow::createMenus()
     {
         pContextMenu->addAction(QIcon(":/IconsCube/iconsCube/distance.png"),
                                 "Сравнить со спектральными кривыми", this, SLOT(ActionSpectralDistanceToogled()));
+    }
+    if (m_attributes->GetAvailablePlugins().contains("Rgb Image UI"))
+    {
+        pContextMenu->addAction(QIcon(":/IconsCube/iconsCube/RGB.png"), "RGB изображение", this, SLOT(ActionRGBCorrectionToogled()));
     }
 }
 
@@ -800,6 +808,10 @@ void Main2DWindow::ActionSpectralDistanceToogled()
     m_attributes->SetPoint(m_dataX, m_dataY, 0);
     m_attributes->SetExternalSpectrFlag(false);
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pCube, m_attributes);
+}
+void Main2DWindow::ActionRGBCorrectionToogled()
+{
+    m_attributes->GetAvailablePlugins().value("Rgb Image UI")->Execute(m_pCube, m_attributes);
 }
 
 void Main2DWindow::on_action_saveENVI_triggered()

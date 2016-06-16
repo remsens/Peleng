@@ -31,7 +31,8 @@ SOURCES +=\
     PlotterWindow.cpp \
     ../Library/Attributes/Attributes.cpp \
     ../Library/MathOperations/interpolation.cpp \
-    ../Library/Spectr.cpp
+    ../Library/Spectr.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -44,7 +45,8 @@ HEADERS  += \
     ../Library/Attributes/Attributes.h \
     ../Library/MathOperations/interpolation.h \
     ../Library/Spectr.h \
-    ../Library/structures.h
+    ../Library/structures.h \
+    ../Library/Ellipsoid.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library

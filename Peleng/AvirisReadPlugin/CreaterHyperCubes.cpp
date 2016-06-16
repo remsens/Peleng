@@ -10,6 +10,7 @@
 #include "../Library/Types.h"
 #include "CreaterHyperCubes.h"
 #include "convertdatacubetolittleendian.h"
+#include "../Library/Ellipsoid.h"
 
 
 CreaterHyperCubes::CreaterHyperCubes()
@@ -57,6 +58,41 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
         ConvertToLittleEndian(cube);
     }
     SortByWavelength(cube);
+
+    //-----пока вручную, потом должно из хидера------
+    cube->initElipsoid(ELL_WGS84);
+
+    QVector<BLrad> corners;
+    corners.append(BLrad(DegToRad(35.562078),DegToRad(241.011208)));
+    corners.append(BLrad(DegToRad(35.501278),DegToRad(241.122)));
+    corners.append(BLrad(DegToRad(35.2209),DegToRad(240.892469)));
+    corners.append(BLrad(DegToRad(35.281503),DegToRad(240.781911)));
+    cube->setCornerPoints(corners); // при ресайзе снова вызвать и передать новые координаты углов
+
+    char zone0[4];
+    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    cube->setPoint00(utmCord0.x, utmCord0.y); // при ресайзе снова вызвать и передать новые координаты
+    cube->setUTMforElipsoid(zone0);
+
+    double rot = calcRotAngle(cube);
+    cube->setRotationAngle(rot);
+
+    cube->setPixelSizeX(15.3);
+    cube->setPixelSizeY(15.3);
+
+    //тесты
+    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone0);
+    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone0);
+    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone0);
+    point p0 = cube->getUTMcords(0,0);
+    point p1 = cube->getUTMcords(0,cube->GetColumns()-1);
+    point p2 = cube->getUTMcords(cube->GetLines()-1,cube->GetColumns()-1);
+    point p3 = cube->getUTMcords(cube->GetLines()-1,0);
+
+    pointInt ijP0 = cube->getImageCords(p0.x,p0.y);
+    pointInt ijP1 = cube->getImageCords(p1.x,p1.y);
+    pointInt ijP2 = cube->getImageCords(p2.x,p2.y);
+    pointInt ijP3 = cube->getImageCords(p3.x,p3.y);
     return res;
 
 }
@@ -318,7 +354,7 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 
             cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
             m_progress = i*100/m_infoData.bands-1;
-            qDebug() << tempbuf;
+            //qDebug() << tempbuf;
         }
        delete [] tempbuf;
    }
@@ -475,4 +511,40 @@ void CreaterHyperCubes::SortByWavelength(HyperCube* cube)
     }
     cube->UpdateListWaves(listWavelenth);
 
+}
+
+double CreaterHyperCubes::calcRotAngle(HyperCube *cube)
+{
+
+    char zone0[4], zone1[4], zone2[4], zone3[4] ;
+    QVector<BLrad> corners = cube->getCornerPoints();
+    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone1);
+    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone2);
+    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone3);
+    qDebug()<<"все точки должны быть в одной UTM зоне";
+    qDebug()<<" 0 угол: "<<zone0 <<" 1 угол:  "<<zone1<<" 2 угол: "<<zone2<<" 3 угол: "<<zone3;
+
+    // Если они разные надо добавить функционал, чтобы все вычисления проводились в одной зоне.
+    double x0 = utmCord0.x;
+    double y0 = utmCord0.y;
+    double x1 = utmCord1.x;
+    double y1 = utmCord1.y;
+    double dx = x1 - x0;
+    double dy = y1 - y0;
+    double sinAlph = abs(dy)/sqrt(dx*dx + dy*dy);
+    double alph = asin(sinAlph); // это угол (рад) от 0 до Pi/2 градусов.
+    double rotationAngle = 0;
+    if(dx > 0)
+        if(dy > 0)
+            rotationAngle = alph;
+        else
+            rotationAngle = 2 * RWpi - alph;
+    else
+        if(dy > 0)
+            rotationAngle = RWpi - alph;
+        else
+            rotationAngle = RWpi + alph;
+    qDebug()<<"угол поворота изображения (градусы) = "<<RadToDeg(rotationAngle);
+    return rotationAngle;
 }

@@ -31,7 +31,8 @@ HEADERS += \
     AddSpectr.h \
     ../Library/MathOperations/Interpolation.h \
     ../Library/Spectr.h \
-    ../Library/structures.h
+    ../Library/structures.h \
+    ../Library/Ellipsoid.h
 
 SOURCES += \
     SpectralLibPlugin.cpp \
@@ -41,7 +42,8 @@ SOURCES += \
     ../Library/GenericExc.cpp \
     AddSpectr.cpp \
     ../Library/MathOperations/Interpolation.cpp \
-    ../Library/Spectr.cpp
+    ../Library/Spectr.cpp \
+    ../Library/Ellipsoid.cpp
 
 FORMS += \
     CreateSpectr.ui

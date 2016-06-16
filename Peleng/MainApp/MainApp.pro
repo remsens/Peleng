@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     ../Library/ProcessingPluginLoader.cpp \
     ../Library/Attributes/Attributes.cpp \
     FileProjectWindow.cpp \
-    ../Library/FileProjectFeatures.cpp
+    ../Library/FileProjectFeatures.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS  += mainwindow.h \
     ../Library/Types.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     ../Library/Attributes/Attributes.h \
     FileProjectWindow.h \
     ../Library/FileProjectFeatures.h \
-    ../Library/stepsdefinitions.h
+    ../Library/stepsdefinitions.h \
+    ../Library/Ellipsoid.h
 
 
 

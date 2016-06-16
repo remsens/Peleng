@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>sdistancewin.qml</file>
-    </qresource>
-</RCC>

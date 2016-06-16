@@ -79,9 +79,8 @@ void HyperCube::SetGeoDataGeoTransform(double GeoTransform[])
         m_geoData.GeoTransform[i] = GeoTransform[i];
 }
 
-void HyperCube::SetGeoDataUTMzone(int zone, bool north)
+void HyperCube::SetNorthernHemisphere(bool north)
 {
-    m_geoData.UTMzone = zone;
     m_geoData.northernHemisphere = north;
 }
 
@@ -342,6 +341,30 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
     delete [] m_dataCube;
     m_dataCube = dataCubeNew;
     m_infoData = newInfoData;
+
+    //-----  изменения, связанные с географической привязкой ------
+    QVector<BLrad> corners; // проверить, правильно ли определяются R1 и т.д.
+    //получаем utm координаты новых вершин
+    point p0 = getUTMcords(R1,C1);
+    point p1 = getUTMcords(R1,C2);
+    point p2 = getUTMcords(R2,C2);
+    point p3 = getUTMcords(R2,C1);
+    char zone[4];
+    getUTMforElipsoid(zone);
+    //получаем lat, lon координаты новых вершин
+    xyzREAL pBL0= getElipsoid().UTM_To_BLH(p0.x, p0.y, 0, zone);
+    xyzREAL pBL1= getElipsoid().UTM_To_BLH(p1.x, p1.y, 0, zone);
+    xyzREAL pBL2= getElipsoid().UTM_To_BLH(p2.x, p2.y, 0, zone);
+    xyzREAL pBL3= getElipsoid().UTM_To_BLH(p3.x, p3.y, 0, zone);
+    corners.append(BLrad(pBL0.x,pBL0.y));
+    corners.append(BLrad(pBL1.x,pBL1.y));
+    corners.append(BLrad(pBL2.x,pBL2.y));
+    corners.append(BLrad(pBL3.x,pBL3.y));
+    // устанавливаем новый вектор с координатами вершин
+    setCornerPoints(corners);
+    // устанавливаем нулевую точку
+    xyzREAL utmCord0 =  getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone);
+    setPoint00(utmCord0.x, utmCord0.y);
 }
 
 double HyperCube::GetDataPoint(u::uint32 x, u::uint32 y, u::uint32 z)
@@ -408,3 +431,112 @@ void HyperCube::GetMeasurements(Measurements &measurement)
 }
 
 
+
+QVector<BLrad> HyperCube::getCornerPoints() const
+{
+    return m_geoData.cornerPoints;
+}
+
+void HyperCube::setCornerPoints(const QVector<BLrad> &value)
+{
+    m_geoData.cornerPoints = value;
+}
+
+void HyperCube::initElipsoid(long iell)
+{
+    m_geoData.earth.Init(iell,0);
+}
+
+TEllipsoid HyperCube::getElipsoid() const
+{
+    return m_geoData.earth;
+}
+
+double HyperCube::getRotationAngle() const
+{
+    return  m_geoData.rotationAngle;
+}
+
+void HyperCube::setRotationAngle(double value)
+{
+    m_geoData.rotationAngle = value;
+}
+
+point HyperCube::getUTMcords(int row, int col)
+{
+    point p0 = getPoint00();
+    double angl = getRotationAngle();
+    double sinA = sin(angl);
+    double cosA = cos(angl);
+    double shiftX = col * getPixelSizeX();
+    double shiftY = row * getPixelSizeY();
+    point p;
+    p.x = p0.x + shiftX*cosA + shiftY*sinA;
+    p.y = p0.y + shiftX*sinA - shiftY*cosA;
+    return p;
+}
+
+pointInt HyperCube::getImageCords(double utmX, double utmY)
+{
+     point p0 = getPoint00();
+     double angl = getRotationAngle();
+     double sinA = sin(angl);
+     double cosA = cos(angl);
+     double dx = utmX - p0.x;
+     double dy = utmY - p0.y;
+     point ij;                                     //!< точка гиперкуба
+     ij.x = (dx*sinA - dy*cosA)/getPixelSizeX();   //!< номер строки
+     ij.y = (dx*cosA + dy*sinA)/getPixelSizeY();   //!< номер столбца
+     pointInt ijInt;
+     ijInt.x = round(ij.x);
+     ijInt.y = round(ij.y);
+     return ijInt;
+}
+
+double HyperCube::getPixelSizeY() const
+{
+    return m_geoData.pixelSizeY;
+}
+
+void HyperCube::setPixelSizeY(double value)
+{
+    m_geoData.pixelSizeY = value;
+}
+
+double HyperCube::getPixelSizeX() const
+{
+    return m_geoData.pixelSizeX;
+}
+
+void HyperCube::setPixelSizeX(double value)
+{
+    m_geoData.pixelSizeX = value;
+}
+
+point HyperCube::getPoint00() const
+{
+    return m_geoData.point00;
+}
+
+void HyperCube::setPoint00(const point &value)
+{
+    m_geoData.point00 = value;
+}
+
+void HyperCube::setPoint00(double x, double y)
+{
+    m_geoData.point00.x = x;
+    m_geoData.point00.y = y;
+}
+
+void HyperCube::setUTMforElipsoid(char zone[])
+{
+    for(int i = 0; i < 4; ++i)
+        m_geoData.utmZone[i] = zone[i];
+}
+
+void HyperCube::getUTMforElipsoid(char * outZone)
+{
+    for(int i = 0; i < 4; ++i)
+        outZone[i] = m_geoData.utmZone[i];
+}
