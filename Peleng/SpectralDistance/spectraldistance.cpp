@@ -539,14 +539,6 @@ void SpectralDistance::CalcEntropy()
 
     QVector<double> dataSpectrOrigin = m_attr->GetCurrentSpectr()->GetCurrentDataY();
     double sum = 0;
-    for (int i = 0; i < dataSpectrOrigin.size(); i++)
-    {
-        sum += dataSpectrOrigin.at(i);
-    }
-    for (int i = 0; i < dataSpectrOrigin.size(); i++)
-    {
-        dataSpectrOrigin[i] /= sum;
-    }
     for (int i=0; i < line_count; i++)
     {
         cube_map[i].clear();
@@ -563,28 +555,23 @@ void SpectralDistance::CalcEntropy()
             m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
             normSpectr(dataSpectr);
             sum = 0;
-            for (int k = 0; k < dataSpectr.size(); k++)
-            {
-                sum += dataSpectr.at(k);
-            }
-            for (int k = 0; k < dataSpectr.size(); k++)
-            {
-                dataSpectr[k] /= sum;
-            }
-
             double d1 = 0;
             double d2 = 0;
             for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
             {
                 //if (dataSpectrOrigin.at(z)!= 0)
                     d1 += dataSpectr.at(z)/dataSpectrOrigin.at(z);
+                    qDebug() << dataSpectr.at(z) << dataSpectrOrigin.at(z);
                 //else d1 += max_value;
                 //if (dataSpectr.at(z) != 0)
                     d2 += dataSpectrOrigin.at(z)/dataSpectr.at(z);
+                    qDebug() << dataSpectr.at(z) << dataSpectrOrigin.at(z);
                 //else d2 += max_value;
             }
             dataSpectr.clear();
+            qDebug() << d1*d2;
             cube_map[i][j] =  log2(d1*d2);
+            qDebug() << cube_map[i][j];
             if (cube_map[i][j] > max_value)
             {
                 max_value = cube_map[i][j];
@@ -621,14 +608,12 @@ void SpectralDistance::selectRange()
         int row_count  = m_pHyperCube->GetColumns();
 
         double dist_range = min_value + (max_value - min_value)*((100.0 - view_range) / 100.0);
-        qDebug() << "dist: " << dist_range;
         double* view_mem = (double*)malloc(sizeof(double) * line_count*row_count);
         for (int i = 0; i < cube_map.length(); i++)
         {
             for (int j=0; j < cube_map[i].length(); j++)
             {
-                qDebug() << cube_map[i][j];
-                    if (cube_map[i][j] <= dist_range)
+                if (cube_map[i][j] <= dist_range)
                     {
                         view_mem[j + cube_map[i].length() * i] = 1;
                     } else
