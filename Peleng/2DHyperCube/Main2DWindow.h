@@ -90,6 +90,7 @@ private slots:
     void addSpectr();
     void contextMenuRequest(QPoint point);
     void ActionSpectralDistanceToogled();
+    void ActionRGBCorrectionToogled();
     //! Слот для установки слайдеров при переключении канала
     //! @param chan - текущий канал
     void setInitSliders(int chan);

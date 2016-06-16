@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "../Library/stepsdefinitions.h"
+#include "../Library/Ellipsoid.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

@@ -30,8 +30,9 @@ HEADERS       = \
     ../Library/stepsdefinitions.h \
     ../Library/Utils/Compare.h \
     ../Library/Spectr.h \
-    ../Library/MathOperations/interpolation.h
-    ../Library/saveENVI.h
+    ../Library/MathOperations/interpolation.h \
+    ../Library/saveENVI.h \
+    ../Library/Ellipsoid.h
 
 SOURCES       = \
     CubePlugin.cpp \
@@ -45,7 +46,8 @@ SOURCES       = \
     ../Library/FileProjectFeatures.cpp \
     ../Library/Utils/Compare.cpp \
     ../Library/Spectr.cpp \
-    ../Library/MathOperations/interpolation.cpp
+    ../Library/MathOperations/interpolation.cpp \
+    ../Library/Ellipsoid.cpp
 
 
 

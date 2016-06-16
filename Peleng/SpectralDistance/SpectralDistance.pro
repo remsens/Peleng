@@ -16,7 +16,9 @@ Debug:    DLLDESTDIR = ../../Debug/MainApp/debug
 Release:    DLLDESTDIR = ../../Release/MainApp/release
 
 DISTFILES += \
+
     SpectralDistance.json
+
 
 SOURCES += spectraldistance.cpp \
     ../Library/HyperCube.cpp \
@@ -27,6 +29,8 @@ SOURCES += spectraldistance.cpp \
     SpecDistWindow.cpp \
     ../Library/Spectr.cpp \
     ../Library/MathOperations/interpolation.cpp
+    ../Library/Ellipsoid.cpp
+
 
 HEADERS += spectraldistance.h\
     ../Library/HyperCube.h \
@@ -39,9 +43,10 @@ HEADERS += spectraldistance.h\
     ../Library/Spectr.h \
     ../Library/structures.h \
     ../Library/MathOperations/interpolation.h
+    ../Library/Ellipsoid.h
 
-RESOURCES += \
-    qmldata.qrc
+
+RESOURCES +=
 
 FORMS += \
     ../Library/CustomPlotForPreview2D/Preview2D.ui \

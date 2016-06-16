@@ -56,6 +56,9 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="1">
           <widget class="QSlider" name="SliderContrastMin">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Значение в данном канале гиперкуба, которое будет отображено на изображении &lt;span style=&quot; font-weight:600;&quot;&gt;черным цветом &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -63,6 +66,9 @@
          </item>
          <item row="1" column="1">
           <widget class="QSlider" name="SliderContrastMax">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Значение в данном канале гиперкуба, которое будет отображено на изображении &lt;span style=&quot; font-weight:600;&quot;&gt;белым цветом &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>

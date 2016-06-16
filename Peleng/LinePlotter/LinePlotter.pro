@@ -28,7 +28,8 @@ SOURCES += \
     ../Library/QCustomPlot.cpp \
     LinePlotterWindow.cpp \
     LinePlugin.cpp \
-    ../Library/Attributes/Attributes.cpp
+    ../Library/Attributes/Attributes.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS +=\
     ../Library/GenericExc.h \
@@ -38,7 +39,8 @@ HEADERS +=\
     LinePlotterWindow.h \
     LinePlugin.h \
     ../Library/Interfaces/ProcessingPluginInterface.h \
-    ../Library/Attributes/Attributes.h
+    ../Library/Attributes/Attributes.h \
+    ../Library/Ellipsoid.h
 
 INCLUDEPATH += $$PWD/../Library\
                $$PWD/../3DHyperCube

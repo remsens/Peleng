@@ -26,7 +26,8 @@ SOURCES += \
     ../Library/CustomPlotForPreview2D/Preview2D.cpp \
     ../Library/Utils/Compare.cpp \
     ../Library/Spectr.cpp \
-    ../Library/MathOperations/interpolation.cpp
+    ../Library/MathOperations/interpolation.cpp \
+    ../Library/Ellipsoid.cpp
 
 
 HEADERS += \
@@ -47,7 +48,8 @@ HEADERS += \
     SavitskiGolay1DAlg.h \
     ../Library/Spectr.h \
     ../Library/structures.h \
-    ../Library/MathOperations/interpolation.h
+    ../Library/MathOperations/interpolation.h \
+    ../Library/Ellipsoid.h
 
 RESOURCES += \
     resources.qrc

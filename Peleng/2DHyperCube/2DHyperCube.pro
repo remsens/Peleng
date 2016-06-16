@@ -34,7 +34,8 @@ SOURCES += \
     PolygonManager.cpp \
     Region.cpp\
     ../Library/Spectr.cpp \
-    ../Library/MathOperations/interpolation.cpp
+    ../Library/MathOperations/interpolation.cpp \
+    ../Library/Ellipsoid.cpp
 
 
 
@@ -50,8 +51,9 @@ HEADERS += \
     Region.h \
     ../Library/Spectr.h \
     ../Library/structures.h \
-    ../Library/MathOperations/interpolation.h
-    ../Library/saveENVI.h
+    ../Library/MathOperations/interpolation.h \
+    ../Library/saveENVI.h \
+    ../Library/Ellipsoid.h
 
 
 FORMS += \

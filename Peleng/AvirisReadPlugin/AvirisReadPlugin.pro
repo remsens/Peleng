@@ -20,7 +20,8 @@ DEFINES += AVIRISREADPLUGIN_LIBRARY
 SOURCES += avirisreadplugin.cpp \
     CreaterHyperCubes.cpp \
     ../Library/HyperCube.cpp \
-    ../Library/GenericExc.cpp
+    ../Library/GenericExc.cpp \
+    ../Library/Ellipsoid.cpp
 
 HEADERS += avirisreadplugin.h \
     ../Library/Interfaces/FileReadInterface.h \
@@ -29,7 +30,8 @@ HEADERS += avirisreadplugin.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
     ConvertDataCubeToLittleEndian.h \
-    ../Library/structures.h
+    ../Library/structures.h \
+    ../Library/Ellipsoid.h
 
 unix {
     target.path = /usr/lib
