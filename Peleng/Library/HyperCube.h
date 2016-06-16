@@ -219,9 +219,16 @@ public:
     //! Функция возвращает координату в UTM зоне для любой точки гиперкуба
     point getUTMcords(int row, int col);
 
+    //! Функция возвращает широту/долготу в градусах для любой точки гиперкуба
+    point getBLdegreeCords(int row, int col);
+
     //! Функция возвращает номер строки и столбца гиперкуба для любой заданной UTM координаты
     //! возвращаемые значения могут выходить за границы допустимых индексов гиперкуба
-    pointInt getImageCords(double utmX, double utmY);
+    pointInt getImageCordsFromUTM(double utmX, double utmY);
+
+    //! Функция возвращает номер строки и столбца гиперкуба для любой заданной широты/долготы в град.
+    //! возвращаемые значения могут выходить за границы допустимых индексов гиперкуба
+    pointInt getImageCordsFromBLdeg(double breadthDeg, double longitudeDeg);
 
     //! get/set размера пикселя по Х в метрах
     double getPixelSizeX() const;

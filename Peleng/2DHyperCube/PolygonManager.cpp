@@ -3,6 +3,9 @@
 #include "../Library/GenericExc.h"
 #include "../Library/Spectr.h"
 #include "../Library/structures.h"
+#include <QXmlStreamWriter>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
 
 class BackgroundDelegate : public QStyledItemDelegate // для того, чтобы через выделение не был виден цвет ячейки
 {
@@ -73,7 +76,8 @@ void PolygonManager::createPolygonSlot()
     m_parent2D->setToolTip(strForLineHelp);
     m_cusPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
     QPolygonF polygon;
-    m_polygonArr.append(polygon);
+    PolygonObject polygonArea;
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.append(polygonArea);
     m_polyCreationInProcess = true;
     //connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     connect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
@@ -83,15 +87,16 @@ void PolygonManager::addPolygonPoint(double x,double y)
 {
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
     QPointF p(x,y);
-    if (m_polygonArr.last().size() > 0)
-        drawLine(m_polygonArr.last().last(), p,  color);
-    m_polygonArr.last().append(p);
+    if (m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.size() > 0)
+        drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(), p,  color);
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.last().ijVertices.append(p);
 }
 
 void PolygonManager::drawLine(QPointF p1, QPointF p2, QColor color)
 {
     QCPItemLine *line = new QCPItemLine(m_cusPlot);
-    m_RegionArr[m_currIndexRegion].m_lines.append(line);
+//    m_RegionArr[m_currIndexRegion].m_lines.append(line);
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.last().lines.append(line);
     line->start->setCoords(p1);
     line->end->setCoords(p2);
     line->setPen(QPen(color));
@@ -112,24 +117,27 @@ void PolygonManager::finishPolygonCreation()
     m_flagDoubleClicked = true;
     m_cusPlot->setCursor(QCursor(Qt::ArrowCursor));
     m_parent2D->setToolTip("");
-    drawLine(m_polygonArr.last().last(), m_polygonArr.last().first(), color );
-    QByteArray byteArr = byteMaskFromPolygons(m_polygonArr); //байтовая маска из полигонов
-    m_RegionArr[m_currIndexRegion].m_byteArr = byteMaskFrom2ByteMasks(m_RegionArr[m_currIndexRegion].m_byteArr, byteArr);//добавляем полученную маску к уже существующей маске
+    drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(),
+             m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.first(), color );
+    QByteArray byteArr = byteMaskFromPolygons(m_RegionArr.at(m_currIndexRegion).m_polygonObjects); //байтовая маска из полигонов
+    m_RegionArr[m_currIndexRegion].m_byteArr = byteMaskFrom2ByteMasks(
+                m_RegionArr[m_currIndexRegion].m_byteArr, byteArr);//добавляем полученную маску к уже существующей маске
     QImage mask = imageFromByteMask(m_RegionArr[m_currIndexRegion].m_byteArr,color);
     drawImage(mask);
+    calcPolygonBLcord(m_RegionArr[m_currIndexRegion]);
     m_cusPlot->replot();
 }
 
-QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygonF> polygonArr)
+QByteArray PolygonManager::byteMaskFromPolygons(QVector<PolygonObject> polygonArr)
 {
     QByteArray byteArr(m_rows*m_cols,0x00);
     for(int i = 0; i < m_rows; ++i)
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            foreach(QPolygonF polygon, polygonArr)
+            foreach(PolygonObject polygon, polygonArr)
             {
-                if(polygon.containsPoint(QPoint(i,j),Qt::WindingFill))
+                if(polygon.ijVertices.containsPoint(QPoint(i,j),Qt::WindingFill))
                 {
                     byteArr[i*m_cols+j] = 0x01;
                 }
@@ -167,6 +175,28 @@ void PolygonManager::saveByteMask(QByteArray byteArr, QString fileName)
         file.write(byteArr);
         file.close();
     }
+}
+
+void PolygonManager::saveRegionToXML(Region region, QString fileName)
+{
+    QFile file(fileName);
+    QDomDocument doc("Region_of_interest");
+    QDomElement rootElement = doc.createElement("region");
+    rootElement.setAttribute("name", "Лес");
+    rootElement.setAttribute("color", "#FFFFFF");
+    QDomElement polygon1 = doc.createElement("polygon");
+    QDomElement point1 = doc.createElement("point");
+    point1.setAttribute("breadth",34.435);
+    point1.setAttribute("longitude ",84.4235);
+    polygon1.appendChild(point1);
+
+
+    rootElement.appendChild(polygon1);
+    if(file.open(QIODevice::WriteOnly)) {
+        QTextStream(&file) <<  doc.toString();
+        file.close();
+    }
+
 }
 
 QByteArray PolygonManager::loadByteMaskFromFile()
@@ -233,6 +263,18 @@ void PolygonManager::drawImage(QImage mask)
     m_RegionArr[m_currIndexRegion].m_pixItem = pixItem;
 }
 
+void PolygonManager::calcPolygonBLcord(Region &region)
+{
+    foreach (PolygonObject polygon , region.m_polygonObjects) {
+        foreach(QPointF pIm,polygon.ijVertices){
+            polygon.ijVertices.clear();
+            point pBL = m_cube->getBLdegreeCords(pIm.x(),pIm.y());
+            QPointF newBLp(pBL.x,pBL.y);
+            polygon.BLdegVertices.append(newBLp);
+        }
+    }
+}
+
 void PolygonManager::tableContextMenuRequest(QPoint pos)
 {
 
@@ -279,8 +321,10 @@ void PolygonManager::onButtonRemoveRegion()
     if(m_RegionArr[selectedRow].m_pixItem != NULL)
     {
         m_cusPlot->removeItem(m_RegionArr[selectedRow].m_pixItem);
-        foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_lines) {
-            m_cusPlot->removeItem(line);
+        for (int i = 0; i < m_RegionArr[selectedRow].m_polygonObjects.length(); ++i){
+            foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_polygonObjects[i].lines) {
+                m_cusPlot->removeItem(line);
+            }
         }
         m_cusPlot->replot();
     }
@@ -298,11 +342,11 @@ void PolygonManager::onButtonSaveRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.xml");
     if (fileName.contains(".area",Qt::CaseInsensitive))
-        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+        saveRegionToXML(m_RegionArr.at(m_currIndexRegion),fileName);
     else
-        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
+        saveRegionToXML(m_RegionArr.at(m_currIndexRegion),fileName+".xml");
 }
 
 void PolygonManager::onButtonLoadRegion()
@@ -483,7 +527,6 @@ void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
         connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
     }
     m_currIndexRegion = curr.row();
-    m_polygonArr.clear();
 }
 
 PolygonManager::~PolygonManager()
