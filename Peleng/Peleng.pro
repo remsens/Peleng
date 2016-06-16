@@ -11,5 +11,4 @@ SUBDIRS = AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyper
     SpectralDistance \
     NoisePlugin \
     SpectralLibPlugin \
-    ReadDataPlugin/ReadDataPlugin \
     ReadDataPlugin

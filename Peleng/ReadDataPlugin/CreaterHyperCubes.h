@@ -41,7 +41,7 @@ private:
     Date m_date;
     Time m_time;
     TYPES m_type;
-    u::uint32 m_pixelSize;
+    double m_pixelSize;
     u::uint32 m_altitude;
     u::uint32 m_viewingDirection;
     u::uint32 m_aperture;

@@ -68,7 +68,7 @@ void MainWindow::LoadData()
     if (m_pluginsControl->GetReadingPlugins().size() > 0)
     {
         cube->DestroyCube();
-        FilePlugin = m_pluginsControl->GetReadingPlugins().value("AVIRIS Loader");
+        FilePlugin = m_pluginsControl->GetReadingPlugins().value("Data Loader");
         if (FilePlugin != 0)
         {
             if (Attributes::I()->GetHeaderPath().size() == 0)
@@ -103,7 +103,7 @@ void MainWindow::LoadData()
             timer.stop();
         } else {
 
-            QMessageBox::critical(this, "Ошибка", "Плагин чтения данных Aviris не подключен");
+            QMessageBox::critical(this, "Ошибка", "Плагин чтения данных не подключен");
             return;
         }
         if (m_canceled)
