@@ -34,20 +34,13 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
       QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения файла заголовка %1").arg(headerFilePath), QMessageBox::Ok);
       return false;
     }
-    QString dataFilePath;
-    res = getDataFilePath(headerFilePath, dataFilePath);
-    if (!res)
-    {
-        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка при получении пути к файлу с данными"), QMessageBox::Ok);
-        return false;
-    }
     res = setMetaDataToCube(cube);
     if (!res)
     {
         QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка метаданных или ошибка выделения памяти"), QMessageBox::Ok);
         return false;
     }
-    res = readDataToCube(cube, dataFilePath);
+    res = readDataToCube(cube, m_dataPath);
     if (!res)
     {
         QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения данных гиперкуба"), QMessageBox::Ok);
@@ -58,41 +51,6 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
         ConvertToLittleEndian(cube);
     }
     SortByWavelength(cube);
-
-    //-----пока вручную, потом должно из хидера------
-    cube->initElipsoid(ELL_WGS84);
-
-    QVector<BLrad> corners;
-    corners.append(BLrad(DegToRad(35.562078),DegToRad(241.011208)));
-    corners.append(BLrad(DegToRad(35.501278),DegToRad(241.122)));
-    corners.append(BLrad(DegToRad(35.2209),DegToRad(240.892469)));
-    corners.append(BLrad(DegToRad(35.281503),DegToRad(240.781911)));
-    cube->setCornerPoints(corners); // при ресайзе снова вызвать и передать новые координаты углов
-
-    char zone0[4];
-    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
-    cube->setPoint00(utmCord0.x, utmCord0.y); // при ресайзе снова вызвать и передать новые координаты
-    cube->setUTMforElipsoid(zone0);
-
-    double rot = calcRotAngle(cube);
-    cube->setRotationAngle(rot);
-
-    cube->setPixelSizeX(15.3);
-    cube->setPixelSizeY(15.3);
-
-    //тесты
-    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone0);
-    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone0);
-    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone0);
-    point p0 = cube->getUTMcords(0,0);
-    point p1 = cube->getUTMcords(0,cube->GetColumns()-1);
-    point p2 = cube->getUTMcords(cube->GetLines()-1,cube->GetColumns()-1);
-    point p3 = cube->getUTMcords(cube->GetLines()-1,0);
-
-    pointInt ijP0 = cube->getImageCords(p0.x,p0.y);
-    pointInt ijP1 = cube->getImageCords(p1.x,p1.y);
-    pointInt ijP2 = cube->getImageCords(p2.x,p2.y);
-    pointInt ijP3 = cube->getImageCords(p3.x,p3.y);
     return res;
 
 }
@@ -114,8 +72,6 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     fileDetect.close();
     //и сохраняем в endOfStr
 
-
-
     QFile file(headerFilePath);
 
     if (!file.open(QIODevice::ReadOnly))
@@ -123,40 +79,76 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
         return false;
     }
 
-    QMap<QString, QString> basedWords;
-    basedWords.insert("samples", ""); //0
-    basedWords.insert("lines", ""); //1
-    basedWords.insert("bands", ""); //2
-    basedWords.insert("header", "offset"); //3
-    basedWords.insert("data", "type"); //4
-    basedWords.insert("interleave", ""); //5
-    basedWords.insert("byte", "order"); //6
-    basedWords.insert("wavelength", "="); //7
+    QList<QString> basedWords;
+    basedWords.append("dataPath");
+    basedWords.append("calibrationPath");
+    basedWords.append("waveLength");
+    basedWords.append("samples");
+    basedWords.append("lines");
+    basedWords.append("bands");
+    basedWords.append("byteOrder");
+    basedWords.append("dataType");
+    basedWords.append("dataType");
+    basedWords.append("date");
+    basedWords.append("time");
+    basedWords.append("pixelSize");
+    basedWords.append("altitude");
+    basedWords.append("viewingDirection");
+    basedWords.append("aperture");
+    basedWords.append("rotationAngle");
+    basedWords.append("leftTopCornerCoord");
+    basedWords.append("leftBottomCornerCoord");
+    basedWords.append("rightTopCornerCoord");
+    basedWords.append("rightTopCornerCoord");
+
     QString readingLine("");
     u::uint8 wordsPoints = 0;
 
     while (!file.atEnd())
     {
         readingLine = file.readLine();
-        QStringList readWords = readingLine.split(" ", QString::SkipEmptyParts);
-            if (basedWords.contains(readWords.at(0)))
+        QStringList readWords = readingLine.split("=", QString::SkipEmptyParts);
+        foreach (QString str1, readWords)
+        {
+            str1 = str1.trimmed();
+        }
+        if (readWords.size() != 2)
+        {
+            return false;
+        }
+        if (basedWords.contains(readWords.at(0)))
             {
-                if (basedWords.value(readWords.at(0)).compare("") == 0)
-                {
-
-                    if (QString(readWords.at(0)).compare("samples") == 0)
+                    if (QString(readWords.at(0)).compare("dataPath") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split(endOfStr);
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_dataPath = data.at(0);
+                        m_dataPath.remove(0, 1);
+                        m_dataPath.remove(m_dataPath.size()-1, 1);
+                    } else if (QString(readWords.at(0)).compare("calibrationPath") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_calibrationPath = data.at(0);
+                        m_calibrationPath.remove(0, 1);
+                        m_calibrationPath.remove(m_calibrationPath.size()-1, 1);
+                    } else if (QString(readWords.at(0)).compare("wavelength") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_wavelengthPath = data.at(0);
+                        m_wavelengthPath.remove(0, 1);
+                        m_wavelengthPath.remove(m_wavelengthPath.size()-1, 1);
+                    } else if (QString(readWords.at(0)).compare("samples") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
                         m_infoData.samples = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (QString(readWords.at(0)).compare("lines") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split(endOfStr);
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
                         m_infoData.lines = QString(data.at(0)).toLong(); wordsPoints++; continue;
                     } else if (QString(readWords.at(0)).compare("bands") == 0)
                     {
-                        QStringList data = QString(readWords.at(2)).split(endOfStr);
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
                         m_infoData.bands = QString(data.at(0)).toLong(); wordsPoints++; continue;
-                    } else if (QString(readWords.at(0)).compare("interleave") == 0)
+                    } /*else if (QString(readWords.at(0)).compare("interleave") == 0)
                     {
                         QStringList data = QString(readWords.at(2)).split(endOfStr);
                         if (QString(data.at(0)).compare("bsq", Qt::CaseInsensitive) == 0)
@@ -169,66 +161,98 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                         {
                             m_interleave = BIP; wordsPoints++; continue;
                         }
-                    }
-                } else if (basedWords.value(readWords.at(0)).compare(readWords.at(1)) == 0)
-                {
-                    if (basedWords.key(readWords.at(1)).compare("header") == 0 && basedWords.value(readWords.at(0)).compare("offset") == 0)
+                    }*/
+                    else if (QString(readWords.at(0)).compare("byteOrder") == 0)
                     {
-                        QStringList data = QString(readWords.at(3)).split(endOfStr);
-                        m_headerOffset = QString(data.at(0)).toLong(); wordsPoints++; continue;
-                    } else if (basedWords.key(readWords.at(1)).compare("byte") == 0 && basedWords.value(readWords.at(0)).compare("order") == 0)
+                       QStringList data = QString(readWords.at(1)).split(endOfStr);
+                       m_byteOrder = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("dataType") == 0)
                     {
-                        QStringList data = QString(readWords.at(3)).split(endOfStr);
-                        m_byteOrder = QString(data.at(0)).toLong(); wordsPoints++; continue;
-                    } else if (basedWords.key(readWords.at(1)).compare("data") == 0 && basedWords.value(readWords.at(0)).compare("type") == 0)
-                    {
-                        QStringList data = QString(readWords.at(3)).split(endOfStr);
-                        m_infoData.formatType = TypeFromAvirisType(QString(data.at(0)).toLong()); wordsPoints++;
-                    } else if (basedWords.key(readWords.at(1)).compare("wavelength") == 0 && basedWords.value(readWords.at(0)).compare("=") == 0)
-                    {
-                        readWords.erase(readWords.begin());
-                        readWords.erase(readWords.begin());
-                        QString w = readWords.join("");
-                        readWords.clear();
-                        readWords = w.split("{", QString::SkipEmptyParts);
-                        w = readWords.join("");
-                        readWords = w.split(",", QString::SkipEmptyParts);
-                        for (u::uint32 i = 0; i < (u::uint32)readWords.size() - 1; i++) // было readWords.size() - 1
-                        {
-                            m_infoData.listChannels.push_back(QString(readWords.at(i)).toDouble());
-                        };
-                        u::uint32 k = readWords.size() - 1;
-                        while (k < m_infoData.bands)
-                        {
-                            if (!file.atEnd())
-                                readingLine = file.readLine();
-                            readWords = readingLine.split("}",QString::SkipEmptyParts);
-                            readingLine = readWords.join("");
-                            readWords.clear();
-                            readWords = readingLine.split(","+endOfStr,QString::SkipEmptyParts);//",\r\n"
-                            readingLine = readWords.join("");
-                            readWords.clear();
-                            readWords = readingLine.split(", ", QString::SkipEmptyParts);
+                       QStringList data = QString(readWords.at(1)).split(endOfStr);
+                       QString type = data.at(0);
+                       type.remove(0, 1);
+                       type.remove(type.size()-1, 1);
+                       if (type == "int8") {m_type = type_int8;}
+                       else if (type == "uint8") {m_type = type_uint8;}
+                       else if (type == "int16") {m_type = type_int16;}
+                       else if (type == "uint16") {m_type = type_uint16;}
+                       else if (type == "int32") {m_type = type_int32;}
+                       else if (type == "uint32") {m_type = type_uint32;}
+                       else if (type == "int64") {m_type = type_int64;}
+                       else if (type == "uint64") {m_type = type_uint64;}
+                       else if (type == "float") {m_type = type_float;}
+                       else if (type == "double") {m_type = type_double;}
+                       else {type = false;}
 
-                            for (u::uint32 i = 0; i < (u::uint32)readWords.size(); i++)
-                            {
-                                m_infoData.listChannels.push_back(QString(readWords.at(i)).toDouble());
-                                k++;
-                            };
+                    } else if (QString(readWords.at(0)).compare("date") == 0)
+                    {
+                        QStringList str = QString(readWords.at(1)).split(endOfStr);
+                        QStringList dateStr = QString(str.at(0)).split("/");
+                        if (dateStr.size() != 3)
+                        {
+                            return false;
                         }
-                        wordsPoints++; continue;
+                        m_date.day = dateStr.at(0);
+                        m_date.month = dateStr.at(1);
+                        m_date.year = dateStr.at(2);
+                    } else if (QString(readWords.at(0)).compare("time") == 0)
+                    {
+                        QStringList str = QString(readWords.at(1)).split(endOfStr);
+                        QStringList timeStr = QString(str.at(0)).split("/");
+                        if (timeStr.size() != 3)
+                        {
+                            return false;
+                        }
+                        m_time.hours = timeStr.at(0);
+                        m_time.minutes = timeStr.at(1);
+                        m_time.seconds = timeStr.at(2);
+                    } else if (QString(readWords.at(0)).compare("pixelSize") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_pixelSize = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("altitude") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_altitude = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("viewingDirection") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_viewingDirection = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("aperture") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_aperture = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("rotationAngle") == 0)
+                    {
+                        QStringList data = QString(readWords.at(1)).split(endOfStr);
+                        m_rotationAngle = QString(data.at(0)).toLong(); wordsPoints++; continue;
+                    } else if (QString(readWords.at(0)).compare("leftTopCornerCoord") == 0 || QString(readWords.at(0)).compare("rightTopCornerCoord") == 0
+                               || QString(readWords.at(0)).compare("leftBottomCornerCoord") == 0 || QString(readWords.at(0)).compare("rightBottomCornerCoord") == 0)
+                    {
+                        QStringList coord1 = QString(readWords.at(1)).split(endOfStr);
+                        QStringList coord = QString(coord1.at(0)).split("{");
+                        coord1.clear();
+                        coord1 = QString(coord.at(0)).split("}");
+                        coord.clear();
+                        coord = QString(coord1.at(0)).split(",");
+                        if (coord.size() != 2)
+                        {
+                            return false;
+                        }
+                        m_corners.append(BLrad(DegToRad(QString(coord.at(0)).toLong()),DegToRad(QString(data.at(1)).toLong()))); wordsPoints++; continue;
                     }
-                }
+
         }
     }
     file.close();
     return true;
-    /*if (wordsPoints != 8)
+    if (wordsPoints != basedWords.size())
     {
         return false;
-    } else {
+    } else
+    {
         return true;
-    }*/
+    }
 }
 
 u::uint32 CreaterHyperCubes::GetNumberOfBytesFromData(u::int32 format) {
@@ -249,35 +273,6 @@ u::uint32 CreaterHyperCubes::GetNumberOfBytesFromData(u::int32 format) {
     }
 }
 
-u::uint32 CreaterHyperCubes::TypeFromAvirisType(u::int32 format)
-{
-    switch (format)
-    {
-        case 1: return type_int8;
-        case 2: return type_int16;
-        case 3: return type_int32;
-        case 4: return type_float;
-        case 5: return type_double;
-        case 9: return type_2double;
-        case 12: return type_uint16;
-        default: return 0;
-    }
-}
-
-
-bool CreaterHyperCubes::getDataFilePath(const QString& headerFilePath, QString& dataFilePath)
-{
-    for (int i = 0; i < headerFilePath.length(); i++)
-    {
-        if (headerFilePath.at(i) != '.')
-        {
-            dataFilePath.append(headerFilePath.at(i));
-        } else {
-            return true;
-        }
-    }
-    return false;
-}
 
 bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 {
@@ -290,32 +285,136 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     } else if (m_infoData.samples <= 1)
     {
         return false;
-    } else if (m_infoData.formatType == 0)
-    {
-        return false;
     } else if (m_infoData.listChannels.size() != m_infoData.bands)
     {
-        m_infoData.listChannels.clear();
-        for (u::uint32 i = 0; i < m_infoData.bands; i++)
+        // прочитать из файла
+    } else if (m_type == type_unknown)
+    {
+       return false;
+    } else if (m_dataPath.size() == 0)
+    {
+        return false;
+    } else if (m_calibrationPath.size() == 0)
+    {
+        return false;
+    } else if (m_wavelengthPath.size() == 0)
+    {
+        return false;
+    } else if (m_byteOrder == -1)
+    {
+        return false;
+    } else if (m_date.day == 0 || m_date.month == 0 || m_date.year == 0)
+    {
+        return false;
+    } else if (m_time.hours == -1 || m_time.minutes == -1 || m_time.seconds == -1)
+    {
+        return false;
+    } else if (m_pixelSize == 0)
+    {
+        return false;
+    } else if (m_altitude == 0)
+    {
+        return false;
+    } else if (m_viewingDirection == -1)
+    {
+        return false;
+    } else if (m_aperture == -1)
+    {
+        return false;
+    } else if (m_rotationAngle == -1)
+    {
+        return false;
+    } else if (m_corners.size() != 4)
+    {
+        return false;
+    }
+    QFile fileDetect(m_wavelengthPath);
+    if (!fileDetect.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    QString readingLineTemp = fileDetect.readLine();
+    QString endOfStr = "";
+    if(readingLineTemp.contains("\r\n"))
+        endOfStr = "\r\n";
+    else if(readingLineTemp.contains("\n"))
+        endOfStr = "\n";
+    fileDetect.close();
+
+    // читаем значения длин волн
+    QFile waveFile(m_wavelengthPath);
+    if (waveFile.open(QIODevice::ReadOnly))
+    {
+        while (!waveFile.atEnd())
         {
-            m_infoData.listChannels.push_back(i);
+            QString waveStr = waveFile.readLine();
+            QStringList waveStrs = waveStr.split(endOfStr);
+            m_wavelength.append(QString(waveStrs.at(0)).toDouble());
         }
     }
-    m_infoData.bytesType = GetNumberOfBytesFromData(m_infoData.formatType);
+    // проверка длин волн
+    if (m_wavelength.size() != m_infoData.bands)
+    {
+        return false;
+    }
+    waveFile.close();
+
+    // проверяем, на что заканчиваются строки  файле
+    QFile fileDetect1(m_calibrationPath);
+    if (!fileDetect1.open(QIODevice::ReadOnly))
+    {
+        return false;
+    }
+    readingLineTemp = fileDetect1.readLine();
+    endOfStr = "";
+    if(readingLineTemp.contains("\r\n"))
+        endOfStr = "\r\n";
+    else if(readingLineTemp.contains("\n"))
+        endOfStr = "\n";
+    fileDetect1.close();
+
+    // читаем значения калибровочных коэффициентов
+    QFile calibFile(m_calibrationPath);
+    if (calibFile.open(QIODevice::ReadOnly))
+    {
+        while (!calibFile.atEnd())
+        {
+            QString calibStr = calibFile.readLine();
+            QStringList calibStrs = calibStr.split(endOfStr);
+            m_calibrationCoeff.append(QString(calibStrs.at(0)).toDouble());
+        }
+    }
+    // проверка калибровочных коэффициентов
+    if (m_calibrationCoeff.size() != m_infoData.bands)
+    {
+        return false;
+    }
+
+    m_infoData.bytesType = GetNumberOfBytesFromData(m_type);
+    m_infoData.formatType = m_type;
     cube->SetInfoData(m_infoData);
     cube->SetMeasurement(ADC);
+    cube->initElipsoid(ELL_WGS84);
+    cube->setCornerPoints(m_corners); // при ресайзе снова вызвать и передать новые координаты углов
+
+    char zone0[4];
+    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    cube->setPoint00(utmCord0.x, utmCord0.y); // при ресайзе снова вызвать и передать новые координаты
+    cube->setUTMforElipsoid(zone0);
+
+    double rot = calcRotAngle(cube);
+    cube->setRotationAngle(rot);
+
+    cube->setPixelSizeX(m_pixelSize);
+    cube->setPixelSizeY(m_pixelSize);
+
+
     return true;
 }
 
 bool CreaterHyperCubes::readDataToCube(HyperCube* cube, const QString& fileName)
 {
-    switch (m_interleave) {
-        case 0: return ReadBSQ(fileName, cube);
-        case 1: return ReadBIL(fileName, cube);
-        case 2: return ReadBIP(fileName, cube);
-    default:
-        return false;
-    }
+    return ReadBSQ(fileName, cube);
 }
 
 void CreaterHyperCubes::SetCancel()

@@ -89,6 +89,31 @@ void HyperCube::SetGeoDataGeographCordSys(char *GeographCordSys)
     m_geoData.GeographCordSys = GeographCordSys;
 }
 
+void HyperCube::SetDate(const Date& date)
+{
+    m_date = date;
+}
+void HyperCube::SetTime(const Time& time)
+{
+    m_time = time;
+}
+void HyperCube::SetAltitude(u::uint32 altitude)
+{
+    m_altitude = altitude;
+}
+void HyperCube::SetViewingDirection(u::uint32 viewingDirection)
+{
+    m_viewingDirection = viewingDirection;
+}
+void HyperCube::SetAperture(u::uint32 aperture)
+{
+    m_aperture = aperture;
+}
+void HyperCube::SetRotationAngle(u::uint32 rotationAngle)
+{
+    m_rotationAngle = rotationAngle;
+}
+
 void HyperCube::DestroyCube() {
     if (m_dataCube != 0)
     {
@@ -300,6 +325,31 @@ void HyperCube::UpdateListWaves(QList<double>& wavelength)
     {
         m_infoData.listChannels.push_back(wavelength.at(i));
     }
+}
+
+Date HyperCube::GetDate()
+{
+    return m_date;
+}
+Time HyperCube::GetTime()
+{
+    return m_time;
+}
+u::uint32 HyperCube::GetAltitude()
+{
+    return m_altitude;
+}
+u::uint32 HyperCube::GetViewingDirection()
+{
+    return m_viewingDirection;
+}
+u::uint32 HyperCube::GetAperture()
+{
+    return m_aperture;
+}
+u::uint32 HyperCube::GetRotationAngle()
+{
+    return m_rotationAngle;
 }
 
 void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32 R2, u::uint32 C1, u::uint32 C2)

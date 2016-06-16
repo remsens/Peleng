@@ -10,4 +10,6 @@ SUBDIRS = AvirisReadPlugin MainApp SpectrPlotter LinePlotter 2DHyperCube 3DHyper
     RgbImagePlotter \
     SpectralDistance \
     NoisePlugin \
-    SpectralLibPlugin
+    SpectralLibPlugin \
+    ReadDataPlugin/ReadDataPlugin \
+    ReadDataPlugin

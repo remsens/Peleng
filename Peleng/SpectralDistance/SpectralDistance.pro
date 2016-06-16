@@ -28,7 +28,7 @@ SOURCES += spectraldistance.cpp \
     ../Library/QCustomPlot.cpp \
     SpecDistWindow.cpp \
     ../Library/Spectr.cpp \
-    ../Library/MathOperations/interpolation.cpp
+    ../Library/MathOperations/interpolation.cpp \
     ../Library/Ellipsoid.cpp
 
 
@@ -42,7 +42,7 @@ HEADERS += spectraldistance.h\
     SpecDistWindow.h \
     ../Library/Spectr.h \
     ../Library/structures.h \
-    ../Library/MathOperations/interpolation.h
+    ../Library/MathOperations/interpolation.h \
     ../Library/Ellipsoid.h
 
 

@@ -19,6 +19,17 @@ struct InfoData {
     std::list<double> listChannels; //!<  список длин волн, соответствующих каждому каналу
 };
 
+struct Date {
+    u::uint32 day;
+    u::uint32 month;
+    u::uint32 year;
+};
+
+struct Time {
+    u::uint32 hours;
+    u::uint32 minutes;
+    u::uint32 seconds;
+};
 enum TYPES {
     type_int8,
     type_uint8,
@@ -30,7 +41,8 @@ enum TYPES {
     type_uint64,
     type_float,
     type_double,
-    type_2double
+    type_2double,
+    type_unknown
 };
 
 //! http://www.gdal.org/gdal_datamodel.html
@@ -100,6 +112,13 @@ public:
     //! Функция задания геодезической системы
     //! @param GeographCordSys - одна из стандартных координатных систем. Пример: "WGS84"
     void SetGeoDataGeographCordSys(char* GeographCordSys);
+
+    void SetDate(const Date& date);
+    void SetTime(const Time& time);
+    void SetAltitude(u::uint32 altitude);
+    void SetViewingDirection(u::uint32 viewingDirection);
+    void SetAperture(u::uint32 aperture);
+    void SetRotationAngle(u::uint32 rotationAngle);
 
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();
@@ -182,6 +201,13 @@ public:
      //! Функция получения географической координатной системы
     char* GetGeoDataGeographCordSys(){return m_geoData.GeographCordSys;}
 
+    Date GetDate();
+    Time GetTime();
+    u::uint32 GetAltitude();
+    u::uint32 GetViewingDirection();
+    u::uint32 GetAperture();
+    u::uint32 GetRotationAngle();
+
     //! Функция изменения размера гиперкуба (параметры функции - координаты, по которым будет вырезаться куб)
     //! Перед вызовом этой функции надо сохранить куб в hdf!!!
     //! @param Ch1 - начальный номер канала
@@ -247,6 +273,12 @@ private:
     InfoData m_infoData; //!< метаданные куба
     Measurements m_measurements; //!< единицы измерения гиперкуба
     geoData m_geoData;
+    Date m_date;
+    Time m_time;
+    u::uint32 m_viewingDirection;
+    u::uint32 m_altitude;
+    u::uint32 m_aperture;
+    u::uint32 m_rotationAngle;
 };
 
 #endif
