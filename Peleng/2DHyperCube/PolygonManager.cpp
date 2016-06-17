@@ -3,6 +3,7 @@
 #include "../Library/GenericExc.h"
 #include "../Library/Spectr.h"
 #include "../Library/structures.h"
+#include <QTextStream>
 #include <QXmlStreamWriter>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
@@ -179,24 +180,31 @@ void PolygonManager::saveByteMask(QByteArray byteArr, QString fileName)
 
 void PolygonManager::saveRegionToXML(Region region, QString fileName)
 {
-    QFile file(fileName);
-    QDomDocument doc("Region_of_interest");
+    QTextCodec *russianCodec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(russianCodec);
+    QDomDocument doc("region_of_interest");
     QDomElement rootElement = doc.createElement("region");
-    rootElement.setAttribute("name", "Лес");
-    rootElement.setAttribute("color", "#FFFFFF");
-    QDomElement polygon1 = doc.createElement("polygon");
-    QDomElement point1 = doc.createElement("point");
-    point1.setAttribute("breadth",34.435);
-    point1.setAttribute("longitude ",84.4235);
-    polygon1.appendChild(point1);
-
-
-    rootElement.appendChild(polygon1);
+    rootElement.setAttribute("name", region.m_name);
+    rootElement.setAttribute("color", region.m_color.name());
+    qDebug()<<region.m_name + " " + region.m_color.name();
+    foreach(PolygonObject polygon, region.m_polygonObjects)
+    {
+        QDomElement elPolygon = doc.createElement("polygon");
+        foreach (QPointF vertex, polygon.BLdegVertices)
+        {
+            QDomElement elPoint = doc.createElement("point");
+            elPoint.setAttribute("breadth",vertex.x());
+            elPoint.setAttribute("longitude ",vertex.y());
+            elPolygon.appendChild(elPoint);
+        }
+        rootElement.appendChild(elPolygon);
+    }
+    doc.appendChild(rootElement);
+    QFile file(fileName);
     if(file.open(QIODevice::WriteOnly)) {
         QTextStream(&file) <<  doc.toString();
         file.close();
     }
-
 }
 
 QByteArray PolygonManager::loadByteMaskFromFile()
@@ -265,9 +273,9 @@ void PolygonManager::drawImage(QImage mask)
 
 void PolygonManager::calcPolygonBLcord(Region &region)
 {
-    foreach (PolygonObject polygon , region.m_polygonObjects) {
-        foreach(QPointF pIm,polygon.ijVertices){
-            polygon.ijVertices.clear();
+    for (PolygonObject &polygon : region.m_polygonObjects) {
+        polygon.BLdegVertices.clear();
+        for(QPointF &pIm : polygon.ijVertices){
             point pBL = m_cube->getBLdegreeCords(pIm.x(),pIm.y());
             QPointF newBLp(pBL.x,pBL.y);
             polygon.BLdegVertices.append(newBLp);
