@@ -49,10 +49,20 @@ PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
 
     connect(m_customPlot, SIGNAL(plottableClick(QCPAbstractPlottable*,QMouseEvent*)),  SLOT(graphClicked(QCPAbstractPlottable*)));
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(CompareSpectrWithCube()));
     connect(m_customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
     connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(mouseMoveRequest(QMouseEvent*)));
     connect(ui->actionValues, SIGNAL(toggled(bool)),this,SLOT(onActionValues(bool)));
     connect(ui->actionPoints, SIGNAL(toggled(bool)),this,SLOT(onActionPoints(bool)));
+
+    leftLine = new QCPItemStraightLine(m_customPlot); // Удаляется при удалении ui->beforeCustomPlot
+    m_customPlot->addItem(leftLine);
+    rightLine = new QCPItemStraightLine(m_customPlot);// Удаляется при удалении ui->beforeCustomPlot
+    m_customPlot->addItem(rightLine);
+
+    leftLine->setVisible(false);
+    rightLine->setVisible(false);
+
 }
 
 PlotterWindow::~PlotterWindow()
@@ -145,8 +155,54 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
             menuNoise->addMenu(menuNoiseSavGolay);
             menu->addMenu(menuNoise);
         }
+        if (m_attributes->GetAvailablePlugins().contains("SpectralDistance"))
+        {
+            menu->addAction("Сравнить со спектральными кривыми гиперкуба", this, SLOT(PrepareToCompare()));
+        }
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::PrepareToCompare()
+{
+    leftLine->point1->setCoords(m_cube->GetListOfChannels().at(0), 0);
+    leftLine->point2->setCoords(m_cube->GetListOfChannels().at(0),1);
+
+    rightLine->point1->setCoords(m_cube->GetListOfChannels().last(),0);
+    rightLine->point2->setCoords(m_cube->GetListOfChannels().last(),1);
+
+    leftLine->setVisible(true);
+    rightLine->setVisible(true);
+
+    ui->horizontalSlider_start->setEnabled(true);
+    ui->horizontalSlider_end->setEnabled(true);
+    ui->horizontalSlider_start->setMaximum(m_cube->GetCountofChannels()-1);
+    ui->horizontalSlider_end->setMaximum(m_cube->GetCountofChannels()-1);
+    ui->horizontalSlider_start->setValue(0);
+    ui->horizontalSlider_end->setValue(m_cube->GetCountofChannels()-1);
+    ui->pushButton->setEnabled(true);
+    m_customPlot->replot();
+
+}
+
+void PlotterWindow::CompareSpectrWithCube()
+{
+    ui->horizontalSlider_start->setEnabled(false);
+    ui->horizontalSlider_end->setEnabled(false);
+    ui->pushButton->setEnabled(false);
+    leftLine->setVisible(false);
+    rightLine->setVisible(false);
+    leftLine->point1->setCoords(m_cube->GetListOfChannels().at(0), 0);
+    leftLine->point2->setCoords(m_cube->GetListOfChannels().at(0),1);
+
+    rightLine->point1->setCoords(m_cube->GetListOfChannels().last(),0);
+    rightLine->point2->setCoords(m_cube->GetListOfChannels().last(),1);
+
+    m_selectedSpectr->SetCurrentDataType(Spectr::INTERPOLATE_NORMED);
+    m_attributes->SetCurrentSpectr(m_selectedSpectr);
+    m_attributes->SetStartRangeWave(ui->horizontalSlider_start->value());
+    m_attributes->SetEndRangeWave(ui->horizontalSlider_end->value());
+    m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_cube, m_attributes);
 }
 
 void PlotterWindow::mouseMoveRequest(QMouseEvent *e)
@@ -481,3 +537,33 @@ void PlotterWindow::NoiseGolayAlgExecute()
 }
 
 
+
+void PlotterWindow::on_horizontalSlider_end_valueChanged(int value)
+{
+    if (value <= ui->horizontalSlider_start->value())
+    {
+        ui->horizontalSlider_end->setValue(ui->horizontalSlider_start->value()+1);
+    }
+}
+
+void PlotterWindow::on_horizontalSlider_start_valueChanged(int value)
+{
+    if (value >= ui->horizontalSlider_end->value())
+    {
+        ui->horizontalSlider_start->setValue(ui->horizontalSlider_end->value()-1);
+    }
+}
+
+void PlotterWindow::on_horizontalSlider_start_sliderMoved(int position)
+{
+    leftLine->point1->setCoords(m_cube->GetListOfChannels().at(position),0);
+    leftLine->point2->setCoords(m_cube->GetListOfChannels().at(position),m_customPlot->yAxis->range().upper);\
+    m_customPlot->replot();
+}
+
+void PlotterWindow::on_horizontalSlider_end_sliderMoved(int position)
+{
+    rightLine->point1->setCoords(m_cube->GetListOfChannels().at(position),0);
+    rightLine->point2->setCoords(m_cube->GetListOfChannels().at(position),m_customPlot->yAxis->range().upper);\
+    m_customPlot->replot();
+}

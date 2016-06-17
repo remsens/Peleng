@@ -772,9 +772,13 @@ void GLWidget::OnActionMedian2D_7Triggered()
 void GLWidget::ActionSpectralDistanceToogled()
 {
     cantDeleteVar = true;
-    m_attributes->ClearList();
-    m_attributes->SetPoint(m_dataX, m_dataY, m_dataZ);
+    Spectr* spectr = new Spectr(m_pHyperCube, m_dataX, m_dataY);
+    spectr->SetCurrentDataType(Spectr::INTERPOLATE_NORMED);
+    m_attributes->SetCurrentSpectr(spectr);
+    m_attributes->SetCurrentTitle(spectr->GetTitle());
     m_attributes->SetExternalSpectrFlag(false);
+    m_attributes->SetStartRangeWave(0);
+    m_attributes->SetEndRangeWave(m_pHyperCube->GetCountofChannels());
     m_attributes->GetAvailablePlugins().value("SpectralDistance")->Execute(m_pHyperCube, m_attributes);
     cantDeleteVar = false;
 }
@@ -977,7 +981,7 @@ void GLWidget::ActionNoiseSavitGolay5_9Toogled()
 }
 
 
-void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint16 &dataXu, u::uint16 &dataYu, u::uint16 &dataZu)
+void GLWidget::calcUintCords(float dataXf, float dataYf, float dataZf, u::uint32 &dataXu, u::uint32 &dataYu, u::uint32 &dataZu)
 {
     if (round(dataXf) < 0 && round(dataXf) >= -3) // из-за погрешностей матриц преобразований под разными углами сторона гиперкуба может иметь координаты < 0
         dataXu = u::uint16(0);

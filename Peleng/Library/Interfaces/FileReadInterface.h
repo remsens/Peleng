@@ -16,6 +16,7 @@ public:
     //virtual QObject* GetObjectPointer() = 0;
     virtual void cancel() = 0;
     virtual int getProgress() = 0;
+    virtual QString getErrorDescription() = 0;
 };
 #define FileReadInteface_iid "by.nomrec.FileReadInterface"
 Q_DECLARE_INTERFACE(FileReadInterface, FileReadInteface_iid)

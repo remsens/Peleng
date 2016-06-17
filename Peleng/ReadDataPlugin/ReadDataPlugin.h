@@ -5,15 +5,15 @@
 #include "../Library/Interfaces/FileReadInterface.h"
 #include "CreaterHyperCubes.h"
 
-class AvirisReadPlugin : public QObject, public  FileReadInterface
+class ReadDataPlugin : public QObject, public  FileReadInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "by.nomrec.hyperview.aviris" FILE "AvirisReadPlugin.json")
+    Q_PLUGIN_METADATA(IID "by.nomrec.hyperview.aviris" FILE "ReadDataPlugin.json")
     Q_INTERFACES(FileReadInterface)
 
 public:
-    AvirisReadPlugin(QObject *parent = 0);
-    virtual ~AvirisReadPlugin();
+    ReadDataPlugin(QObject *parent = 0);
+    virtual ~ReadDataPlugin();
 
 private:
     void readCubeFromFile(QString& fileName, HyperCube* cube);

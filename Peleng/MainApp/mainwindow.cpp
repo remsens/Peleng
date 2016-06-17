@@ -68,7 +68,7 @@ void MainWindow::LoadData()
     if (m_pluginsControl->GetReadingPlugins().size() > 0)
     {
         cube->DestroyCube();
-        FilePlugin = m_pluginsControl->GetReadingPlugins().value("AVIRIS Loader");
+        FilePlugin = m_pluginsControl->GetReadingPlugins().value("Data Loader");
         if (FilePlugin != 0)
         {
             if (Attributes::I()->GetHeaderPath().size() == 0)
@@ -103,34 +103,21 @@ void MainWindow::LoadData()
             timer.stop();
         } else {
 
-            QMessageBox::critical(this, "Ошибка", "Плагин чтения данных Aviris не подключен");
+            QMessageBox::critical(this, "Ошибка", "Плагин чтения данных не подключен");
             return;
         }
         if (m_canceled)
         {
             cube->DestroyCube();
             m_canceled = false;
-        } else {
-            if (m_pluginsControl->GetProcessingPlugins().size() > 0)
-            {
-                m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
-                Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
-//                if(cube->GetLines() > 2300)
-//                {
-//                    if(cube->GetColumns() > 400)
-//                        cube->ResizeCube(0,cube->GetCountofChannels()-1,1000,2200,50,400);//чтобы не висла память
-//                    else
-//                        cube->ResizeCube(0,cube->GetCountofChannels()-1,1000,2200,0,cube->GetColumns()-1);
-//                }
-                m_pelengPlugin->Execute(cube, Attributes::I());
-//
-                //Attributes::I()->SetMaskPixelsCount(3);
-//              Attributes::I()->ClearList();
-//              Attributes::I()->SetPoint(0,0, 30);
-//                Attributes::I()->SetNoiseAlg(Median2D);
-//                Attributes::I()->SetApplyToAllCube(false);
-//                Attributes::I()->GetAvailablePlugins().value("Noise Remover")->Execute(cube, Attributes::I());
-            }
+        } else if (FilePlugin->getErrorDescription().size() != 0)
+        {
+            QMessageBox::critical(this, "Ошибка", FilePlugin->getErrorDescription());
+        } else if (m_pluginsControl->GetProcessingPlugins().size() > 0)
+        {
+            m_pelengPlugin = m_pluginsControl->GetProcessingPlugins().value("3DCube UI");
+            Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
+            m_pelengPlugin->Execute(cube, Attributes::I());
         }
     }
 }

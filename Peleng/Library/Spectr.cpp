@@ -29,7 +29,7 @@ Spectr::Spectr(HyperCube* cube, u::uint32 x, u::uint32 y)
     Interpolate(m_xUnitsNormed, m_yUnitsNormed, m_xUnitsNormedInterpolated, m_yUnitsNormedInterpolated);
     m_title = "X = " + QString::number(x) + " Y = " + QString::number(y);    
     m_cube->GetMeasurements(m_measurements);
-    qDebug() << "Единицы измерения куба" + QString::number(m_measurements);
+    //qDebug() << "Единицы измерения куба" + QString::number(m_measurements);
 }
 
 Spectr::Spectr(HyperCube* cube, const QVector<double>& xUnits, const QVector<double>& yUnits, QString& title, Measurements measurements, const QList<DescriptionSpectr>& spectrDescription)

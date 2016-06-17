@@ -15,9 +15,17 @@ AvirisReadPlugin::~AvirisReadPlugin()
 
 void AvirisReadPlugin::readCubeFromFile(QString& fileName, HyperCube* cube)
 {
-    m_creater->CreateCube(fileName, cube);
+    bool res = m_creater->CreateCube(fileName, cube);
+    if (!res)
+    {
+        m_errDescription = m_creater->GetErrorDescription();
+    }
 }
 
+QString AvirisReadPlugin::getErrorDescription()
+{
+    return m_errDescription;
+}
 QString AvirisReadPlugin::getHeaderDescription()
 {
     return "Формат заголовков AVIRIS(*.hdr)";

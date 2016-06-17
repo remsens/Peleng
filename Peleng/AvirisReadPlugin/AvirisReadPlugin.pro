@@ -29,9 +29,9 @@ HEADERS += avirisreadplugin.h \
     ../Library/HyperCube.h \
     ../Library/Types.h \
     ../Library/GenericExc.h \
-    ConvertDataCubeToLittleEndian.h \
     ../Library/structures.h \
-    ../Library/Ellipsoid.h
+    ../Library/Ellipsoid.h \
+    ../Library/convertdatacubetolittleendian.h
 
 unix {
     target.path = /usr/lib

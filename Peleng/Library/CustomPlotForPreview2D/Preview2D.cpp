@@ -43,10 +43,18 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const QString
     m_cube = cube;
     m_attr = attr;
     if(rows>cols)
-         this->resize(this->width(), this->width() * cols / rows + m_ui->frameSliders->height());
+    {
+        //this->resize(200, 100);
+        this->resize(this->width(), this->width() * (double)cols / (double)rows + m_ui->frameSliders->height());
+    }
     else
-        this->resize(this->width() * rows / cols, this->width() + m_ui->frameSliders->height() );
-//    if(rows>cols)
+    {
+        //this->resize(this->width() , this->width()* (double)cols/(double)rows + m_ui->frameSliders->height());
+        this->resize(200, 400);
+        //this->resize(this->width(), this->width() * (double)cols / (double)rows + m_ui->frameSliders->height());
+        //this->resize(this->height() * (double)rows/(double)cols  , this->height()  + m_ui->frameSliders->height());
+    }
+     //if(rows>cols)
 //         m_cPlot->resize(600, 600 * cols / rows);
 //    else
 //        m_cPlot->resize(600 * rows / cols, 600 );

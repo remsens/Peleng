@@ -96,6 +96,13 @@ public:
     //2D куб - Гистограмма
     void SetTempChanel(double *pChan);
     double *GetTempChanel();
+
+    // Сравнение спектральных кривых
+    void SetStartRangeWave(const u::uint32 startRangeWave);
+    void SetEndRangeWave(const u::uint32 endRangeWave);
+
+    u::uint32 GetStartRangeWave() const;
+    u::uint32 GetEndRangeWave() const;
 private:
     Attributes();
     Attributes(const Attributes&);
@@ -129,6 +136,8 @@ private:
     double* m_tempChan; //! указатель на временный канал из 2D модуля
     QString m_SPlotter_Ytitle; //! подпись по оси Y в SpectrPlotter
     Spectr* m_spectr;
+    u::uint32 m_startRangeWave;
+    u::uint32 m_endRangeWave;
 };
 
 #endif // ATTRIBUTES_H

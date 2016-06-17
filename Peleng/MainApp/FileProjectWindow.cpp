@@ -1,4 +1,4 @@
-#include "FileProjectWindow.h"
+﻿#include "FileProjectWindow.h"
 #include "ui_FileProjectWindow.h"
 
 #include <QFileDialog>
@@ -19,6 +19,8 @@ FileProjectWindow::FileProjectWindow(Attributes* attr, QDialog *parent)
     QObject::connect(m_ui->pushButton_openTempDir, SIGNAL(clicked()), this, SLOT(ChooseTempDir()));
     QObject::connect(m_ui->pushButton_spectralLibs, SIGNAL(clicked()), this, SLOT(ChooseSpectralLibDir()));
     QObject::connect(m_ui->pushButton_CreateFileProject, SIGNAL(clicked()), this, SLOT(CreateFileProject()));
+    m_ui->pushButton_CreateFileProject->setEnabled(false);
+
 }
 
 FileProjectWindow::~FileProjectWindow()
@@ -33,6 +35,8 @@ void FileProjectWindow::OpenHeaderFile()
     QFileInfo file(m_headerFile);
     m_tempDir = file.dir().absolutePath();
     m_ui->lineEdit_tempDir->setText(m_tempDir);
+    m_ui->pushButton_CreateFileProject->setEnabled(true);
+
 }
 void FileProjectWindow::ChooseTempDir()
 {
@@ -44,6 +48,7 @@ void FileProjectWindow::ChooseSpectralLibDir()
 {
     m_spectralLibDir = QFileDialog::getExistingDirectory(this, tr("Выбрать директорию спектральных библиотек"), m_tempDir, QFileDialog::ShowDirsOnly
                                                          | QFileDialog::DontResolveSymlinks);
+    m_ui->lineEdit_spectralLibs->setText(m_spectralLibDir);
 }
 void FileProjectWindow::CreateFileProject()
 {
@@ -87,4 +92,3 @@ void FileProjectWindow::CreateFileProject()
     emit SendProjectFilePath(file1.absoluteFilePath());
     this->close();
 }
-

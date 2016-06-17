@@ -9,7 +9,7 @@
 #include "../Library/HyperCube.h"
 #include "../Library/Types.h"
 #include "CreaterHyperCubes.h"
-#include "convertdatacubetolittleendian.h"
+#include "../Library/convertdatacubetolittleendian.h"
 #include "../Library/Ellipsoid.h"
 
 
@@ -22,9 +22,15 @@ CreaterHyperCubes::~CreaterHyperCubes()
 
 }
 
+QString CreaterHyperCubes::GetErrorDescription()
+{
+    return m_errDescription;
+}
+
 // Ошибки, получаемые при загрузке фалов можно сделать подробнее
 bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
 {
+    m_errDescription = "";
     m_cancel = false;
     m_progress = 0;
     bool res = false;
@@ -354,7 +360,6 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
 
             cube->SetDataBuffer(i, tempbuf, chunk_size, 0);
             m_progress = i*100/m_infoData.bands-1;
-            //qDebug() << tempbuf;
         }
        delete [] tempbuf;
    }

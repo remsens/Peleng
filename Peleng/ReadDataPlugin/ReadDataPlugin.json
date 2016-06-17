@@ -1,0 +1,6 @@
+{
+    "Type" : "FileFormat",
+    "Name" : "Data Loader",
+    "Description" : "Заголовочные файлы данных (*.hdr)",
+    "Extinsion" : "*.hdr"
+}
