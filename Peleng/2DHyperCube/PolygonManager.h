@@ -22,6 +22,7 @@ public:
     void finishPolygonCreation();
     void setRows(int rows){m_rows = rows;}
     void setCols(int cols){m_cols = cols;}
+    void resizedHyperCube();
 public slots:
     //! слот соединяющийся с сигналом по экшену в контестном меню с 2D куба
     void createPolygonSlot();
@@ -32,25 +33,13 @@ private:
     //! функция отрисовки линии на customPlot
     void drawLine(QPointF p1, QPointF p2, QColor color);
 
-    //! функция создания байтовой маски из полигонов
-    QByteArray byteMaskFromPolygons(QVector<PolygonObject> polygonArr);
-
-    //! функция создания байтовой маски из 2 других байтовых масок
-    QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
-
-    //! функция сохранения байтовой маски на диск
-    void saveByteMask(QByteArray byteArr, QString fileName);
-
     //! функция сохранения региона интереса на диск
     void saveRegionToXML(Region region, QString fileName);
 
-    //! функция загрузки байтовой маски с диска
-    QByteArray loadByteMaskFromFile();
+    //! функция создания изображения(с альфа-каналом) из региона
+    QImage imageFromRegion(Region region);
 
-    //! функция создания изображения(с альфа-каналом) из байтовой маски
-    QImage imageFromByteMask(QByteArray byteArr,QColor color);
-
-    //! функция отрисовки изображения на m_cusPlot
+    //! функция, рисующая изображение текущего (т.е. с индексом m_currIndexRegion) региона
     void drawImage(QImage mask);
 
     //! функция рассчета широты/долготы в градусах для вершин полигона
@@ -60,9 +49,11 @@ private:
     //! функция загрузки региона с диска из XML-файла
     Region loadRegionFromXML(QString fileName);
 
-
-    //! функция заполняющая ijVertices полигонов Региона по заданным BLdegVertices
+    //! функция для рассчета пиксельных координат вершин полигонов региона по широте и долготе вершин полигонов в регионе
     void create_ijVerticesFromBLdegVertices(Region& region);
+
+    //! функция для определения, попадает ли пиксель изображения в выбранный регион
+    bool is_ijInRegion(int i, int j, Region region);
 
 private slots:
 
@@ -103,8 +94,8 @@ private slots:
     //!  слот обработчика выбора "Дисперсия по области" из контекстного меню
     void onMenuStandardDeviation();
 
-    //! расчет  СКО случайной величины Х
-    double calcStandardDeviation(QVector<double> X);
+    //! расчет  дисперсии случайной величины Х
+    double calcVariance(QVector<double> X);
 
 
 private:
