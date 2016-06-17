@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui printsupport xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,6 +16,7 @@ Release:     DLLDESTDIR = ../../Release/MainApp/release
 
 DEFINES += TWODHYPERCUBE_LIBRARY
 CONFIG += plugin
+CONFIG += c++11
 unix {
     target.path = /usr/lib
     INSTALLS += target

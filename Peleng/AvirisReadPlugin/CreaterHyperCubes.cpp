@@ -95,10 +95,17 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
     point p2 = cube->getUTMcords(cube->GetLines()-1,cube->GetColumns()-1);
     point p3 = cube->getUTMcords(cube->GetLines()-1,0);
 
-    pointInt ijP0 = cube->getImageCords(p0.x,p0.y);
-    pointInt ijP1 = cube->getImageCords(p1.x,p1.y);
-    pointInt ijP2 = cube->getImageCords(p2.x,p2.y);
-    pointInt ijP3 = cube->getImageCords(p3.x,p3.y);
+    pointInt ijP0 = cube->getImageCordsFromUTM(p0.x,p0.y);
+    pointInt ijP1 = cube->getImageCordsFromUTM(p1.x,p1.y);
+    pointInt ijP2 = cube->getImageCordsFromUTM(p2.x,p2.y);
+    pointInt ijP3 = cube->getImageCordsFromUTM(p3.x,p3.y);
+
+
+
+    point pT = cube->getBLdegreeCords(0,cube->GetColumns()-1);
+    pointInt ijFromDeg = cube->getImageCordsFromBLdeg(35.501278,241.122);
+    qDebug()<<"ijFromDeg "<<ijFromDeg.x<<" "<<ijFromDeg.y;
+
     return res;
 
 }

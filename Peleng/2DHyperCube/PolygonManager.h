@@ -33,13 +33,16 @@ private:
     void drawLine(QPointF p1, QPointF p2, QColor color);
 
     //! функция создания байтовой маски из полигонов
-    QByteArray byteMaskFromPolygons(QVector<QPolygonF> polygonArr);
+    QByteArray byteMaskFromPolygons(QVector<PolygonObject> polygonArr);
 
     //! функция создания байтовой маски из 2 других байтовых масок
     QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
 
     //! функция сохранения байтовой маски на диск
     void saveByteMask(QByteArray byteArr, QString fileName);
+
+    //! функция сохранения региона интереса на диск
+    void saveRegionToXML(Region region, QString fileName);
 
     //! функция загрузки байтовой маски с диска
     QByteArray loadByteMaskFromFile();
@@ -49,6 +52,17 @@ private:
 
     //! функция отрисовки изображения на m_cusPlot
     void drawImage(QImage mask);
+
+    //! функция рассчета широты/долготы в градусах для вершин полигона
+    //! рассчитаные координаты записываются в region.m_polygonObjects.BLdegVertices
+    void calcPolygonBLcord(Region& region);
+
+    //! функция загрузки региона с диска из XML-файла
+    Region loadRegionFromXML(QString fileName);
+
+
+    //! функция заполняющая ijVertices полигонов Региона по заданным BLdegVertices
+    void create_ijVerticesFromBLdegVertices(Region& region);
 
 private slots:
 
@@ -103,7 +117,6 @@ private:
     bool m_flagDoubleClicked;
     QCustomPlot * m_cusPlot;
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
-    QVector<QPolygonF> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
     QVector<Region> m_RegionArr;
     int m_currIndexRegion;// номер текущей (выделенной в списке) области
 };

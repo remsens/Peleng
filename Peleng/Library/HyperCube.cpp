@@ -526,7 +526,17 @@ point HyperCube::getUTMcords(int row, int col)
     return p;
 }
 
-pointInt HyperCube::getImageCords(double utmX, double utmY)
+point HyperCube::getBLdegreeCords(int row, int col)
+{
+    point pUTM = getUTMcords(row,col);
+    xyzREAL pBLrad = m_geoData.earth.UTM_To_BLH(pUTM.x,pUTM.y,0,m_geoData.utmZone);
+    point pBLdeg;
+    pBLdeg.x = RadToDeg(pBLrad.x);
+    pBLdeg.y = RadToDeg(pBLrad.y);
+    return pBLdeg;
+}
+
+pointInt HyperCube::getImageCordsFromUTM(double utmX, double utmY)
 {
      point p0 = getPoint00();
      double angl = getRotationAngle();
@@ -541,6 +551,15 @@ pointInt HyperCube::getImageCords(double utmX, double utmY)
      ijInt.x = round(ij.x);
      ijInt.y = round(ij.y);
      return ijInt;
+}
+
+pointInt HyperCube::getImageCordsFromBLdeg(double breadthDeg, double longitudeDeg)
+{
+    double breadthRad = DegToRad(breadthDeg);
+    double longitudeRad = DegToRad(longitudeDeg);
+    xyzREAL pUTM = m_geoData.earth.BLH_To_UTM(breadthRad, longitudeRad, 0);
+    pointInt ijInt = getImageCordsFromUTM(pUTM.x, pUTM.y);
+    return ijInt;
 }
 
 double HyperCube::getPixelSizeY() const
