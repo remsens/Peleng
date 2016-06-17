@@ -283,6 +283,64 @@ void PolygonManager::calcPolygonBLcord(Region &region)
     }
 }
 
+Region PolygonManager::loadRegionFromXML(QString fileName)
+{
+    QFile file(fileName);
+    Region region;
+    if(!file.open(QIODevice::ReadOnly)){
+        file.close();
+        QMessageBox::critical(this,"ошибка","ЭНевозможно открыть файл");
+        return region;
+    }
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        QMessageBox::critical(this, "Ошибка добавления действия", "Невозможно установить контент файла");
+    }
+    //считываем все данные из xml в region
+    QDomNode rootNode = doc.namedItem("region");
+    region.m_color.setNamedColor( rootNode.toElement().attribute("color",""));
+    region.m_name = rootNode.toElement().attribute("name","");
+    QDomNodeList poligons = rootNode.childNodes();
+    int iPoly = 0;
+    for(int i = 0; i < poligons.count(); i++){
+        if(poligons.at(i).nodeName() == "polygon"){
+            PolygonObject polObj;
+            region.m_polygonObjects.append(polObj);
+            QDomNodeList points = poligons.at(iPoly).childNodes();
+            int iPoint = 0;
+            for(int j = 0; j < points.count(); j++){
+
+                if(points.at(j).nodeName() == "point"){
+
+                    QPointF BLpoint(points.at(iPoint).toElement().attribute("breadth").toDouble(),
+                                    points.at(iPoint).toElement().attribute("longitude").toDouble());
+                    region.m_polygonObjects.last().BLdegVertices.append(BLpoint);
+                    iPoint += 1;
+                }
+            }
+            iPoly +=1;
+        }
+    }
+    //переводим координаты в пиксельные
+    //pointInt ijP = getImageCordsFromBLdeg()
+    return region;
+}
+
+void PolygonManager::create_ijVerticesFromBLdegVertices(Region &region)
+{
+    for(PolygonObject &polObj : region.m_polygonObjects){
+        QPolygonF ijVertices(polObj.BLdegVertices.count());
+        for(int i = 0; i < ijVertices.count(); ++i){
+            pointInt ijCord = m_cube->getImageCordsFromBLdeg(polObj.BLdegVertices.at(i).x(),
+                                                             polObj.BLdegVertices.at(i).y());
+            ijVertices[i].setX(ijCord.x);
+            ijVertices[i].setY(ijCord.y);
+        }
+        polObj.ijVertices.append(ijVertices);
+    }
+}
+
 void PolygonManager::tableContextMenuRequest(QPoint pos)
 {
 
@@ -359,23 +417,36 @@ void PolygonManager::onButtonSaveRegion()
 
 void PolygonManager::onButtonLoadRegion()
 {
-//    if (ui->tableWidget->selectedItems().isEmpty())
-//        return;
-    onButtonAddRegion(); //создаем новый регион интереса, в который загружаем данные с диска
-    ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
-    try
-    {
-        QByteArray byteArr = loadByteMaskFromFile();
-        QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-        QImage mask = imageFromByteMask(byteArr,color);
-        drawImage(mask);
-        m_cusPlot->replot();
-    }
-    catch(GenericExc e)
-    {
-        QMessageBox::warning(this,"предупреждение","не подходит размер выбранной маски к размеру изображения");
-        qDebug()<<e.GetWhat();
-    }
+
+//    onButtonAddRegion(); //создаем новый регион интереса, в который загружаем данные с диска
+//    ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.xml");
+    Region newReg = loadRegionFromXML(fileName);
+    create_ijVerticesFromBLdegVertices(newReg);
+
+    m_RegionArr.append(newReg);
+
+    int rowsCount = ui->tableWidget->rowCount();
+    ui->tableWidget->insertRow(rowsCount);
+    ui->tableWidget->setItem(rowsCount,0, new QTableWidgetItem());
+    ui->tableWidget->setItem(rowsCount,1, new QTableWidgetItem());
+    ui->tableWidget->item(rowsCount,1)->setBackgroundColor(newReg.m_color);
+    ui->tableWidget->item(rowsCount,0)->setText(m_RegionArr.last().m_name);
+
+//    try
+//    {
+//        QByteArray byteArr = loadByteMaskFromFile();
+//        QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
+//        QImage mask = imageFromByteMask(byteArr,color);
+//        drawImage(mask);
+//        m_cusPlot->replot();
+//    }
+//    catch(GenericExc e)
+//    {
+//        QMessageBox::warning(this,"предупреждение","не подходит размер выбранной маски к размеру изображения");
+//        qDebug()<<e.GetWhat();
+//    }
 
 }
 

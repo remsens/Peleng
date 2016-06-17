@@ -53,9 +53,16 @@ private:
     //! функция отрисовки изображения на m_cusPlot
     void drawImage(QImage mask);
 
-    //!  функция рассчета широты/долготы в градусах для вершин полигона
-    //!  рассчитаные координаты записываются в region.m_polygonObjects.BLdegVertices
+    //! функция рассчета широты/долготы в градусах для вершин полигона
+    //! рассчитаные координаты записываются в region.m_polygonObjects.BLdegVertices
     void calcPolygonBLcord(Region& region);
+
+    //! функция загрузки региона с диска из XML-файла
+    Region loadRegionFromXML(QString fileName);
+
+
+    //! функция заполняющая ijVertices полигонов Региона по заданным BLdegVertices
+    void create_ijVerticesFromBLdegVertices(Region& region);
 
 private slots:
 
