@@ -22,7 +22,7 @@ public:
     ~Region();
 
 public:
-    QByteArray m_byteArr; //удалить
+    //QByteArray m_byteArr; //удалить
     QString m_name;                         //!< название региона
     QColor m_color;                         //!< цвет региона
     QVector<PolygonObject> m_polygonObjects;      //!< полигоны из которых состоит регион
