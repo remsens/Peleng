@@ -12,6 +12,8 @@ public:
     bool CreateCube(QString& headerFilePath, HyperCube* cube);
     void SetCancel();
     int GetProgress();
+    QString GetErrorDescription();
+
 private:
     bool parseHeaderFile(QString& headerFilePath);
     bool getDataFilePath(const QString& headerFilePath, QString& dataFilePath);
@@ -37,6 +39,7 @@ private:
     Interleave m_interleave;
     bool m_cancel;
     int m_progress;
+    QString m_errDescription;
 };
 
 #endif // CREATERHYPERCUBES_H

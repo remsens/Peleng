@@ -14,7 +14,16 @@ ReadDataPlugin::~ReadDataPlugin()
 
 void ReadDataPlugin::readCubeFromFile(QString& fileName, HyperCube* cube)
 {
-    m_creater->CreateCube(fileName, cube);
+     bool res = m_creater->CreateCube(fileName, cube);
+     if (!res)
+     {
+         m_errDescription = m_creater->GetErrorDescription();
+     }
+}
+
+QString ReadDataPlugin::getErrorDescription()
+{
+    return m_errDescription;
 }
 
 QString ReadDataPlugin::getHeaderDescription()

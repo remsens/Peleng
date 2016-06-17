@@ -22,9 +22,15 @@ CreaterHyperCubes::~CreaterHyperCubes()
 
 }
 
+QString CreaterHyperCubes::GetErrorDescription()
+{
+    return m_errDescription;
+}
+
 // Ошибки, получаемые при загрузке фалов можно сделать подробнее
 bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
 {
+    m_errDescription = "";
     m_cancel = false;
     m_progress = 0;
     bool res = false;

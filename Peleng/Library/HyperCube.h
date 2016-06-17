@@ -118,7 +118,7 @@ public:
     void SetAltitude(u::uint32 altitude);
     void SetViewingDirection(u::uint32 viewingDirection);
     void SetAperture(u::uint32 aperture);
-    void SetRotationAngle(u::uint32 rotationAngle);
+   // void SetRotationAngle(u::uint32 rotationAngle);
 
     //! Функция удаления данных из куба. (Под вопросом, нужно ли удалять метаданные?)
     void DestroyCube();

@@ -23,28 +23,36 @@ CreaterHyperCubes::~CreaterHyperCubes()
 
 }
 
+QString CreaterHyperCubes::GetErrorDescription()
+{
+    return m_errDescription;
+}
+
 // Ошибки, получаемые при загрузке фалов можно сделать подробнее
 bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
 {
+    m_errDescription = "";
     m_cancel = false;
     m_progress = 0;
     bool res = false;
+
+    // задать все значения по умолчанию
     res = parseHeaderFile(headerFilePath);
     if (!res)
     {
-      QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения файла заголовка %1").arg(headerFilePath), QMessageBox::Ok);
+      //QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения файла заголовка %1").arg(headerFilePath), QMessageBox::Ok);
       return false;
     }
     res = setMetaDataToCube(cube);
     if (!res)
     {
-        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка метаданных или ошибка выделения памяти"), QMessageBox::Ok);
+        //QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка метаданных или ошибка выделения памяти"), QMessageBox::Ok);
         return false;
     }
     res = readDataToCube(cube, m_dataPath);
     if (!res)
     {
-        QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения данных гиперкуба"), QMessageBox::Ok);
+        //QMessageBox::critical(NULL, QObject::tr("Ошибка!"), QObject::tr("Ошибка чтения данных гиперкуба"), QMessageBox::Ok);
         return false;
     }
     if (m_byteOrder == 1)
@@ -79,6 +87,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     QString dirPath = dir.absolutePath();
     if (!file.open(QIODevice::ReadOnly))
     {
+        m_errDescription = "Невозможно открыть файл с метаданными";
         return false;
     }
 
@@ -116,7 +125,6 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             readWords.removeAt(i);
             readWords.insert(i, temp);
         }
-        int res =  QString(readWords.at(0)).compare("dataPath");
         if (QString(readWords.at(0)).compare("dataPath") == 0)
         {
             QStringList data = QString(readWords.at(1)).split(endOfStr);
@@ -242,6 +250,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             coord = QString(coord1.at(0)).split(",", QString::SkipEmptyParts);
             if (coord.size() != 2)
             {
+                m_errDescription = "Невожможно прочитать географические координаты";
                 return false;
             }
             m_corners.append(BLrad(DegToRad(QString(coord.at(0)).toLong()),DegToRad(QString(coord.at(1)).toLong()))); continue;
@@ -274,12 +283,14 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 {
     if (m_infoData.bands <= 1)
     {
+        m_errDescription.append("Не задано число каналов");
         return false;
     } else if (m_infoData.lines <=1 )
     {
         return false;
     } else if (m_infoData.samples <= 1)
     {
+        m_errDescription.append("Не задано число столбцов");
         return false;
     } else if (m_type == type_unknown)
     {
@@ -293,7 +304,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     } else if (m_wavelengthPath.size() == 0)
     {
         return false;
-    } else if (m_byteOrder == -1)
+    } else if (m_byteOrder != 0 || m_byteOrder != 1)
     {
         return false;
     } else if (m_date.day == 0 || m_date.month == 0 || m_date.year == 0)
@@ -401,7 +412,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 
     cube->setPixelSizeX(m_pixelSize);
     cube->setPixelSizeY(m_pixelSize);
-
+    cube->Set
 
     return true;
 }

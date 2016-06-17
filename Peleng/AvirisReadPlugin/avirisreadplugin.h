@@ -20,8 +20,10 @@ private:
     QString getHeaderDescription();
     void cancel();
     int getProgress();
+    QString getErrorDescription();
 private:
     CreaterHyperCubes* m_creater;
+    QString m_errDescription;
 };
 
 #endif // AVIRISREADPLUGIN_H

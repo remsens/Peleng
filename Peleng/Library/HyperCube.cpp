@@ -109,10 +109,10 @@ void HyperCube::SetAperture(u::uint32 aperture)
 {
     m_aperture = aperture;
 }
-void HyperCube::SetRotationAngle(u::uint32 rotationAngle)
+/*void HyperCube::SetRotationAngle(u::uint32 rotationAngle)
 {
     m_rotationAngle = rotationAngle;
-}
+}*/
 
 void HyperCube::DestroyCube() {
     if (m_dataCube != 0)
