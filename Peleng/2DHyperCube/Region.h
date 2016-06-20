@@ -9,9 +9,10 @@
 
 struct PolygonObject
 {
-    QPolygonF ijVertices;            //!< полигон, в вершинах которого пиксельные координаты
+    QPolygonF ijVertices;           //!< полигон, в вершинах которого пиксельные координаты
     QPolygonF BLdegVertices;        //!< полигон, в вершинах которого широта/долгота в десятичных градусах
-    QVector<QCPItemLine *> lines; //!< линии соединяющие вершины
+    QVector<QCPItemLine *> lines;   //!< линии соединяющие вершины
+    QCPCurve *contour = NULL;
 };
 
 class Region
@@ -26,8 +27,6 @@ public:
     QString m_name;                         //!< название региона
     QColor m_color;                         //!< цвет региона
     QVector<PolygonObject> m_polygonObjects;      //!< полигоны из которых состоит регион
-    QCPItemPixmap *m_pixItem;               //!< указатель на полупрозрачную картинку с регионом
-                                            //!  (и линии стираются с customplota) при его завершении
 };
 
 #endif // REGION_H
