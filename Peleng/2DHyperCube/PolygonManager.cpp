@@ -117,17 +117,7 @@ void PolygonManager::finishPolygonCreation()
     m_parent2D->setToolTip("");
     drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(),
              m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.first(), color );
-//    QImage regImage = imageFromRegion(m_RegionArr.at(m_currIndexRegion));
-//    drawImage(regImage);
 
-//    for (int i = 0; i < m_RegionArr[m_currIndexRegion].m_polygonObjects.count(); ++i){
-//        if( !m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.isEmpty()){
-//            foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines) {
-//                m_cusPlot->removeItem(line);
-//            }
-//            m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.clear();
-//        }
-//    }
     for (int i = 0; i < m_RegionArr[m_currIndexRegion].m_polygonObjects.count(); ++i){
         if( !m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.isEmpty()){
             foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines) {
@@ -160,14 +150,11 @@ void PolygonManager::resizedHyperCube()
             m_cusPlot->replot();
             m_currIndexRegion = i;
             create_ijVerticesFromBLdegVertices(region);
-//            QImage regionImage = imageFromRegion(region);
-//            drawImage(regionImage);
             drawregion(region);
 
         i++;
     }
     m_currIndexRegion = initIndex;
-    m_cusPlot->setViewport(QRect(0,0,m_cube->GetLines(),m_cube->GetColumns()));
 }
 
 
@@ -197,56 +184,6 @@ void PolygonManager::saveRegionToXML(Region region, QString fileName)
         QTextStream(&file) <<  doc.toString();
         file.close();
     }
-}
-
-QImage PolygonManager::imageFromRegion(Region region)
-{
-    QImage mask(m_rows,m_cols,QImage::Format_ARGB32);
-    mask.fill(qRgba(0, 0, 0, 0));
-    for(int i = 0; i < m_rows; ++i)
-    {
-        for(int j = 0; j < m_cols; ++j)
-        {
-            if(is_ijInRegion(i,j,region))
-            {
-                mask.setPixel(i,j,QColor(region.m_color.red(), region.m_color.green(),
-                                         region.m_color.blue(), 120).rgba());
-            }
-
-        }
-    }
-    return mask;
-}
-void PolygonManager::drawImage(QImage mask)
-{
-    if(m_RegionArr[m_currIndexRegion].m_pixItem != NULL)
-        m_cusPlot->removeItem(m_RegionArr[m_currIndexRegion].m_pixItem); // мб удалить?
-
-    QCPItemPixmap *pixItem = new QCPItemPixmap(m_cusPlot);
-    QPixmap alphaImage(QPixmap::fromImage(mask));
-    pixItem->setPixmap(alphaImage);
-    pixItem->setScaled(true,Qt::IgnoreAspectRatio,Qt::FastTransformation);
-    m_cusPlot->addItem(pixItem);
-    pixItem->topLeft->setType(QCPItemPosition::ptPlotCoords );
-    pixItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
-    pixItem->topLeft->setCoords(-0.5,-0.5);
-    pixItem->bottomRight->setCoords(m_rows-1+0.5,m_cols-1+0.5);
-    pixItem->setClipToAxisRect(true);
-    pixItem->setClipAxisRect(m_cusPlot->axisRect());
-
-    m_RegionArr[m_currIndexRegion].m_pixItem = pixItem;
-    m_cusPlot->replot();
-//    // Новый вариант построения полигонов
-//    //----тест fill
-//     QCPCurve *newCurve = new QCPCurve(m_customPlot->xAxis, m_customPlot->yAxis);
-//     QColor color("red");
-//     color.setAlphaF(0.2);
-//     newCurve->setBrush(QBrush(color));
-//     m_customPlot->addPlottable(newCurve);
-//     QVector<double> key1( { 1,   4, 5, 6 , 10} );;
-//     QVector<double> val1( { 4, 2, 3, 2, 8 } );;
-//     newCurve->setData(key1,val1);
-//    //----конец тест fill
 }
 
 void PolygonManager::calcPolygonBLcord(Region &region)
@@ -350,7 +287,7 @@ void PolygonManager::drawPoligonObject(PolygonObject &polObj, QColor color)
 QCPCurve *PolygonManager::drawPoligon(QPolygonF polygon, QColor color)
 {
     QCPCurve *contour = new QCPCurve(m_cusPlot->xAxis, m_cusPlot->yAxis);
-    color.setAlphaF(0.2);
+    color.setAlphaF(0.7);
     contour->setBrush(QBrush(color));
     contour->setPen(QPen(color));
     m_cusPlot->addPlottable(contour);
@@ -462,8 +399,7 @@ void PolygonManager::onButtonLoadRegion()
     ui->tableWidget->item(rowsCount,1)->setBackgroundColor(newReg.m_color);
     ui->tableWidget->item(rowsCount,0)->setText(newReg.m_name);
     ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
-//    QImage regionImage = imageFromRegion(newReg);
-//    drawImage(regionImage);
+
     drawregion(m_RegionArr.last());
 
 }
@@ -548,23 +484,6 @@ void PolygonManager::onMenuStandardDeviation()
         std[k] = sqrt(calcVariance(buf));
         buf.clear();
     }
-    //    for (int k = 0; k < Chnls; ++k)
-    //    {
-    //        for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
-    //        {
-    //            for(int j = 0; j < m_cols; ++j)
-    //            {
-    //                if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
-    //                {
-    //                   buf.append(data[k][i*m_cols + j]);
-    //                }
-    //            }
-    //        }
-    //        std[k] = sqrt(calcStandardDeviation(buf));
-    //        buf.clear();
-    //    }
-
-
     QList<double> Wawes;
     Wawes.append(m_cube->GetListOfChannels());
     QVector<double> wawesVect;
@@ -577,17 +496,6 @@ void PolygonManager::onMenuStandardDeviation()
     m_attributes->SetCurrentYUnits(std);
     m_attributes->SetExternalSpectrFlag(true);
     m_attributes->SetCurrentSpectr(spectr);
-
-    /* m_attributes->SetXUnit(wawesVect);
-    m_attributes->SetYUnit(std);
-    m_attributes->SetExternalSpectrFlag(true);
-    QList<Attributes::DescriptionSpectr> list;
-    Attributes::DescriptionSpectr descriptionAverSpctr;
-    descriptionAverSpctr.title = "СКО по региону '";
-    descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
-    list.append(descriptionAverSpctr);
-    m_attributes->SetDescriptionSpectr(list);*/
-
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
 }
 

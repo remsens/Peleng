@@ -36,12 +36,6 @@ private:
     //! функция сохранения региона интереса на диск
     void saveRegionToXML(Region region, QString fileName);
 
-    //! функция создания изображения(с альфа-каналом) из региона
-    QImage imageFromRegion(Region region);
-
-    //! функция, рисующая изображение текущего (т.е. с индексом m_currIndexRegion) региона
-    void drawImage(QImage mask);
-
     //! функция рассчета широты/долготы в градусах для вершин полигона
     //! рассчитаные координаты записываются в region.m_polygonObjects.BLdegVertices
     void calcPolygonBLcord(Region& region);
