@@ -9,9 +9,10 @@
 
 struct PolygonObject
 {
-    QPolygonF ijVertices;            //!< полигон, в вершинах которого пиксельные координаты
+    QPolygonF ijVertices;           //!< полигон, в вершинах которого пиксельные координаты
     QPolygonF BLdegVertices;        //!< полигон, в вершинах которого широта/долгота в десятичных градусах
-    QVector<QCPItemLine *> lines; //!< линии соединяющие вершины
+    QVector<QCPItemLine *> lines;   //!< линии соединяющие вершины
+    QCPCurve *contour = NULL;
 };
 
 class Region

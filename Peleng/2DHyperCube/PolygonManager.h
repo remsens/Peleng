@@ -55,6 +55,14 @@ private:
     //! функция для определения, попадает ли пиксель изображения в выбранный регион
     bool is_ijInRegion(int i, int j, Region region);
 
+    void drawregion (Region &region);
+
+    void drawPoligonObject (PolygonObject &polObj, QColor color);
+
+    QCPCurve* drawPoligon(QPolygonF polygon, QColor color);
+
+    void keyValueFromPoligon(QVector<double> &key, QVector<double> &value, QPolygonF polygon);
+
 private slots:
 
 
@@ -96,6 +104,7 @@ private slots:
 
     //! расчет  дисперсии случайной величины Х
     double calcVariance(QVector<double> X);
+
 
 
 private:

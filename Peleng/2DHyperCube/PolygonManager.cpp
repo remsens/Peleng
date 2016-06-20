@@ -117,9 +117,17 @@ void PolygonManager::finishPolygonCreation()
     m_parent2D->setToolTip("");
     drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(),
              m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.first(), color );
-    QImage regImage = imageFromRegion(m_RegionArr.at(m_currIndexRegion));
-    drawImage(regImage);
+//    QImage regImage = imageFromRegion(m_RegionArr.at(m_currIndexRegion));
+//    drawImage(regImage);
 
+//    for (int i = 0; i < m_RegionArr[m_currIndexRegion].m_polygonObjects.count(); ++i){
+//        if( !m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.isEmpty()){
+//            foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines) {
+//                m_cusPlot->removeItem(line);
+//            }
+//            m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.clear();
+//        }
+//    }
     for (int i = 0; i < m_RegionArr[m_currIndexRegion].m_polygonObjects.count(); ++i){
         if( !m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.isEmpty()){
             foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines) {
@@ -129,6 +137,7 @@ void PolygonManager::finishPolygonCreation()
         }
     }
 
+    drawregion(m_RegionArr[m_currIndexRegion]);
     calcPolygonBLcord(m_RegionArr[m_currIndexRegion]);
     m_cusPlot->replot();
 }
@@ -140,9 +149,7 @@ void PolygonManager::resizedHyperCube()
     int initIndex = m_currIndexRegion;
     int i = 0;
     for(Region &region : m_RegionArr){
-        if(region.m_pixItem != NULL)
-        {
-            m_cusPlot->removeItem(region.m_pixItem);
+
             for (int i = 0; i < region.m_polygonObjects.count(); ++i){
                 if( !region.m_polygonObjects[i].lines.isEmpty()){
                     foreach (QCPItemLine* line, region.m_polygonObjects[i].lines) {
@@ -153,12 +160,14 @@ void PolygonManager::resizedHyperCube()
             m_cusPlot->replot();
             m_currIndexRegion = i;
             create_ijVerticesFromBLdegVertices(region);
-            QImage regionImage = imageFromRegion(region);
-            drawImage(regionImage);
-        }
+//            QImage regionImage = imageFromRegion(region);
+//            drawImage(regionImage);
+            drawregion(region);
+
         i++;
     }
     m_currIndexRegion = initIndex;
+    m_cusPlot->setViewport(QRect(0,0,m_cube->GetLines(),m_cube->GetColumns()));
 }
 
 
@@ -227,6 +236,17 @@ void PolygonManager::drawImage(QImage mask)
 
     m_RegionArr[m_currIndexRegion].m_pixItem = pixItem;
     m_cusPlot->replot();
+//    // Новый вариант построения полигонов
+//    //----тест fill
+//     QCPCurve *newCurve = new QCPCurve(m_customPlot->xAxis, m_customPlot->yAxis);
+//     QColor color("red");
+//     color.setAlphaF(0.2);
+//     newCurve->setBrush(QBrush(color));
+//     m_customPlot->addPlottable(newCurve);
+//     QVector<double> key1( { 1,   4, 5, 6 , 10} );;
+//     QVector<double> val1( { 4, 2, 3, 2, 8 } );;
+//     newCurve->setData(key1,val1);
+//    //----конец тест fill
 }
 
 void PolygonManager::calcPolygonBLcord(Region &region)
@@ -312,6 +332,49 @@ bool PolygonManager::is_ijInRegion(int i, int j, Region region)
     return false;
 }
 
+void PolygonManager::drawregion(Region &region)
+{
+    for(auto &polObj : region.m_polygonObjects){
+        QColor color = region.m_color;
+        drawPoligonObject(polObj, color);
+    }
+}
+
+void PolygonManager::drawPoligonObject(PolygonObject &polObj, QColor color)
+{
+    if(polObj.contour != NULL)
+        m_cusPlot->removePlottable(polObj.contour);
+    polObj.contour = drawPoligon(polObj.ijVertices, color);
+}
+
+QCPCurve *PolygonManager::drawPoligon(QPolygonF polygon, QColor color)
+{
+    QCPCurve *contour = new QCPCurve(m_cusPlot->xAxis, m_cusPlot->yAxis);
+    color.setAlphaF(0.2);
+    contour->setBrush(QBrush(color));
+    contour->setPen(QPen(color));
+    m_cusPlot->addPlottable(contour);
+    QVector<double> key;
+    QVector<double> val;
+    keyValueFromPoligon(key, val, polygon);
+    contour->setData(key,val);
+    m_cusPlot->replot();
+    return contour;
+}
+
+void PolygonManager::keyValueFromPoligon(QVector<double> &key, QVector<double> &value, QPolygonF polygon)
+{
+    key.clear();
+    value.clear();
+    for(QPointF p : polygon){
+        key.append(p.x());
+        value.append(p.y());
+    }
+    //соединяем линией первую и последную точку
+    key.append(polygon.first().x());
+    value.append(polygon.first().y());
+}
+
 void PolygonManager::tableContextMenuRequest(QPoint pos)
 {
 
@@ -353,16 +416,17 @@ void PolygonManager::onButtonRemoveRegion()
     if( ui->tableWidget->selectedItems().isEmpty())
         return;
     int selectedRow = ui->tableWidget->selectedItems().at(0)->row();
-    if(m_RegionArr[selectedRow].m_pixItem != NULL)
-    {
-        m_cusPlot->removeItem(m_RegionArr[selectedRow].m_pixItem);
-        for (int i = 0; i < m_RegionArr[selectedRow].m_polygonObjects.length(); ++i){
-            foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_polygonObjects[i].lines) {
-                m_cusPlot->removeItem(line);
-            }
+
+
+    for (int i = 0; i < m_RegionArr[selectedRow].m_polygonObjects.length(); ++i){
+        if(m_RegionArr[selectedRow].m_polygonObjects[i].contour != NULL)
+            m_cusPlot->removePlottable(m_RegionArr[selectedRow].m_polygonObjects[i].contour);
+        foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_polygonObjects[i].lines) {
+            m_cusPlot->removeItem(line);
         }
-        m_cusPlot->replot();
     }
+    m_cusPlot->replot();
+
     ui->tableWidget->removeRow(selectedRow);
     m_RegionArr.remove(selectedRow);
     m_currIndexRegion = selectedRow;
@@ -398,8 +462,9 @@ void PolygonManager::onButtonLoadRegion()
     ui->tableWidget->item(rowsCount,1)->setBackgroundColor(newReg.m_color);
     ui->tableWidget->item(rowsCount,0)->setText(newReg.m_name);
     ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
-    QImage regionImage = imageFromRegion(newReg);
-    drawImage(regionImage);
+//    QImage regionImage = imageFromRegion(newReg);
+//    drawImage(regionImage);
+    drawregion(m_RegionArr.last());
 
 }
 
