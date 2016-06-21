@@ -252,6 +252,7 @@ public:
     int getUTMnum();
 
     //! функция для выбора одной зоны, если куб находится сразу в нескольких
+    //! @return - номер зоны
     int chooseOneUTMzone();
 
 
