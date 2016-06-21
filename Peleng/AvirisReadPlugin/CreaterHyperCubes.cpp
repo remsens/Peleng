@@ -63,14 +63,19 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
     cube->initElipsoid(ELL_WGS84);
 
     QVector<BLrad> corners;
-    corners.append(BLrad(DegToRad(35.562078),DegToRad(241.011208)));
-    corners.append(BLrad(DegToRad(35.501278),DegToRad(241.122)));
+//    corners.append(BLrad(DegToRad(35.562078),DegToRad(241.011208)));
+//    corners.append(BLrad(DegToRad(35.501278),DegToRad(241.122)));
+//    corners.append(BLrad(DegToRad(35.2209),DegToRad(240.892469)));
+//    corners.append(BLrad(DegToRad(35.281503),DegToRad(240.781911)));
+    corners.append(BLrad(DegToRad(15.562078),DegToRad(41.011208)));
+    corners.append(BLrad(DegToRad(5.501278),DegToRad(141.122)));
     corners.append(BLrad(DegToRad(35.2209),DegToRad(240.892469)));
     corners.append(BLrad(DegToRad(35.281503),DegToRad(240.781911)));
     cube->setCornerPoints(corners); // при ресайзе снова вызвать и передать новые координаты углов
-
+    int zoneNum = cube->chooseOneUTMzone();
+    cube->setUTMnum(zoneNum);
     char zone0[4];
-    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0,zoneNum);
     cube->setPoint00(utmCord0.x, utmCord0.y); // при ресайзе снова вызвать и передать новые координаты
     cube->setUTMforElipsoid(zone0);
 
@@ -81,9 +86,9 @@ bool CreaterHyperCubes::CreateCube(QString &headerFilePath, HyperCube* cube)
     cube->setPixelSizeY(15.3);
 
     //тесты
-    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone0);
-    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone0);
-    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone0);
+    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone0,zoneNum);
+    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone0,zoneNum);
+    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone0,zoneNum);
     point p0 = cube->getUTMcords(0,0);
     point p1 = cube->getUTMcords(0,cube->GetColumns()-1);
     point p2 = cube->getUTMcords(cube->GetLines()-1,cube->GetColumns()-1);
@@ -525,10 +530,11 @@ double CreaterHyperCubes::calcRotAngle(HyperCube *cube)
 
     char zone0[4], zone1[4], zone2[4], zone3[4] ;
     QVector<BLrad> corners = cube->getCornerPoints();
-    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
-    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone1);
-    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone2);
-    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone3);
+    int cubeZone = cube->getUTMnum();
+    xyzREAL utmCord0 =  cube->getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0, cubeZone);
+    xyzREAL utmCord1 =  cube->getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone1, cubeZone);
+    xyzREAL utmCord2 =  cube->getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone2, cubeZone);
+    xyzREAL utmCord3 =  cube->getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone3, cubeZone);
     qDebug()<<"все точки должны быть в одной UTM зоне";
     qDebug()<<" 0 угол: "<<zone0 <<" 1 угол:  "<<zone1<<" 2 угол: "<<zone2<<" 3 угол: "<<zone3;
 

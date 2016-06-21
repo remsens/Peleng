@@ -363,7 +363,7 @@ void HyperCube::ResizeCube(u::uint32 Ch1, u::uint32 Ch2, u::uint32 R1, u::uint32
     // устанавливаем новый вектор с координатами вершин
     setCornerPoints(corners);
     // устанавливаем нулевую точку
-    xyzREAL utmCord0 =  getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone);
+    xyzREAL utmCord0 =  getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone, getUTMnum());
     setPoint00(utmCord0.x, utmCord0.y);
 }
 
@@ -507,7 +507,9 @@ pointInt HyperCube::getImageCordsFromBLdeg(double breadthDeg, double longitudeDe
 {
     double breadthRad = DegToRad(breadthDeg);
     double longitudeRad = DegToRad(longitudeDeg);
-    xyzREAL pUTM = m_geoData.earth.BLH_To_UTM(breadthRad, longitudeRad, 0);
+    int cubeUTM = getUTMnum();
+    char temp[4];
+    xyzREAL pUTM = m_geoData.earth.BLH_To_UTM(breadthRad, longitudeRad, 0, temp, cubeUTM);
     pointInt ijInt = getImageCordsFromUTM(pUTM.x, pUTM.y);
     return ijInt;
 }
@@ -550,12 +552,54 @@ void HyperCube::setPoint00(double x, double y)
 
 void HyperCube::setUTMforElipsoid(char zone[])
 {
+    if(m_geoData.utmZoneNum < 0 || m_geoData.utmZoneNum > 60) //если нет, значит уже установили
+        setUTMnum(atoi(zone));
     for(int i = 0; i < 4; ++i)
         m_geoData.utmZone[i] = zone[i];
 }
 
 void HyperCube::getUTMforElipsoid(char * outZone)
 {
+    int temp;
+    getUTMforElipsoid(outZone, temp);
+}
+
+void HyperCube::getUTMforElipsoid(char *outZone, int &zoneNum)
+{
+    zoneNum = m_geoData.utmZoneNum;
     for(int i = 0; i < 4; ++i)
         outZone[i] = m_geoData.utmZone[i];
+}
+
+void HyperCube::setUTMnum(int num)
+{
+    m_geoData.utmZoneNum = num;
+}
+
+int HyperCube::getUTMnum()
+{
+    return m_geoData.utmZoneNum;
+}
+
+int HyperCube::chooseOneUTMzone()
+{
+    char zone0[4], zone1[4], zone2[4], zone3[4] ;
+    QVector<BLrad> corners = getCornerPoints();
+    xyzREAL utmCord0 =  getElipsoid().BLH_To_UTM(corners.at(0).breadth, corners.at(0).longitude, 0, zone0);
+    xyzREAL utmCord1 =  getElipsoid().BLH_To_UTM(corners.at(1).breadth, corners.at(1).longitude, 0, zone1);
+    xyzREAL utmCord2 =  getElipsoid().BLH_To_UTM(corners.at(2).breadth, corners.at(2).longitude, 0, zone2);
+    xyzREAL utmCord3 =  getElipsoid().BLH_To_UTM(corners.at(3).breadth, corners.at(3).longitude, 0, zone3);
+    int z0 = atoi(zone0);
+    int z1 = atoi(zone1);
+    int z2 = atoi(zone2);
+    int z3 = atoi(zone3);
+    QVector<int> zones;
+    zones.append(z0);
+    zones.append(z1);
+    zones.append(z2);
+    zones.append(z3);
+    qSort(zones);
+    int zoneCube = zones.at(1);
+    qDebug()<<"зона для всего куба = "<<zoneCube;
+    return zoneCube;
 }

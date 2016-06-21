@@ -54,6 +54,7 @@ struct geoData{
     double pixelSizeY;              //!< размер пикселя в метрах по оси Y (т.е. высота 1 line'a)
     point point00;                  //!< UTM координаты точки куба c координатами sample = 0, line = 0
     char utmZone[4];                //! зона UTM в формате для TEllipsoid
+    int utmZoneNum;                 //! номер зоны, в которой находится гиперкуб
 
 };
 
@@ -246,6 +247,12 @@ public:
     //! get/set  UTM зоны, в которой находится гиперкуб
     void setUTMforElipsoid(char zone[]);
     void getUTMforElipsoid(char *outZone);
+    void getUTMforElipsoid(char *outZone, int& zoneNum);
+    void setUTMnum(int num);
+    int getUTMnum();
+
+    //! функция для выбора одной зоны, если куб находится сразу в нескольких
+    int chooseOneUTMzone();
 
 
 private:
