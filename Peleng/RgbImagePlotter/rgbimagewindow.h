@@ -24,8 +24,9 @@ public slots:
 
     void plotImage(HyperCube *cube, Attributes *attr, SettingsDialog *settings);
 
-
-
+private:
+    void showAtCustomplot(QImage image);
+    void initCustomplotSettings();
 
 private slots:
     void updateSize();

@@ -13,12 +13,12 @@ RgbImageWindow::RgbImageWindow(QWidget *parent) :
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(QIcon(":/rgb/icons/icons/RGB.png"));
 
+    initCustomplotSettings();
 
-
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_in.png"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_out.png"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/move.png"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
-    QObject::connect(ui->widget,SIGNAL(updateSize()),this,SLOT(updateSize()));
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_in.png"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_out.png"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/move.png"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
+//    QObject::connect(ui->widget,SIGNAL(updateSize()),this,SLOT(updateSize()));
 
 }
 
@@ -70,17 +70,40 @@ void RgbImageWindow::plotImage(HyperCube *cube, Attributes *attr, SettingsDialog
         return;
     }
 
-    QPixmap mainPixmap = QPixmap::fromImage(image);
+    showAtCustomplot(image);
 
-    ((ZoomImage*)ui->widget)->setMainPixmap(mainPixmap);
-    ui->centralwidget->adjustSize();
-    this->adjustSize();
+//    ui->centralwidget->adjustSize();
+//    this->adjustSize();
 }
 
+void RgbImageWindow::showAtCustomplot(QImage image)
+{
 
+   QCPItemPixmap *MyImage = new QCPItemPixmap(ui->widget);
+   QPixmap pixmap = QPixmap::fromImage(image);
+   MyImage->setPixmap(pixmap);
+   MyImage->topLeft->setType(QCPItemPosition::ptPlotCoords);
+   MyImage->bottomRight->setType(QCPItemPosition::ptPlotCoords);
+   MyImage->topLeft->setCoords(ui->widget->xAxis->range().lower, ui->widget->yAxis->range().upper);
+   MyImage->bottomRight->setCoords(ui->widget->xAxis->range().upper, ui->widget->yAxis->range().lower);
+   MyImage->setScaled(true,Qt::IgnoreAspectRatio);
+   ui->widget->addItem(MyImage);
 
+}
 
-
+void RgbImageWindow::initCustomplotSettings()
+{
+    ui->widget->setInteraction(QCP::iRangeDrag , true);
+    ui->widget->setInteraction(QCP::iRangeZoom  , true);
+    ui->widget->yAxis->setTicks(false);
+    ui->widget->xAxis->setTicks(false);
+    ui->widget->xAxis->setTickLabels(false);
+    ui->widget->yAxis->setTickLabels(false);
+    ui->widget->xAxis->setVisible(false);
+    ui->widget->yAxis->setVisible(false);
+    ui->widget->axisRect()->setAutoMargins(QCP::msNone);
+    ui->widget->axisRect()->setMargins(QMargins(0,0,0,0));
+}
 
 void RgbImageWindow::updateSize()
 {
