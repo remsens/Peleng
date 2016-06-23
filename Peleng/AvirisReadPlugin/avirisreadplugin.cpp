@@ -4,13 +4,22 @@
 AvirisReadPlugin::AvirisReadPlugin(QObject *parent) :
     QObject(parent)
 {
-    m_creater = new CreaterHyperCubes();
+
 }
 
 
 AvirisReadPlugin::~AvirisReadPlugin()
 {
 
+}
+
+void AvirisReadPlugin::Init()
+{
+    m_creater = new CreaterHyperCubes();
+}
+void AvirisReadPlugin::Destroy()
+{
+    delete m_creater;
 }
 
 void AvirisReadPlugin::readCubeFromFile(QString& fileName, HyperCube* cube)

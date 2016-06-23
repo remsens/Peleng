@@ -21,6 +21,9 @@ private:
     void cancel();
     int getProgress();
     QString getErrorDescription();
+    void Init();
+    void Destroy();
+
 private:
     CreaterHyperCubes* m_creater;
     QString m_errDescription;
