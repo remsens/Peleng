@@ -15,9 +15,9 @@ RgbImageWindow::RgbImageWindow(QWidget *parent) :
 
 
 
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/1447945148_12_Zoom_in.ico"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/1447945175_13_Zoom_out.ico"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/1447945314_move.ico"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
+    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_in.png"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
+    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_out.png"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
+    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/move.png"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
     QObject::connect(ui->widget,SIGNAL(updateSize()),this,SLOT(updateSize()));
 
 }
