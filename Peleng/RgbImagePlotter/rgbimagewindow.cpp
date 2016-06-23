@@ -29,9 +29,9 @@ RgbImageWindow::~RgbImageWindow()
 
 void RgbImageWindow::plotImage(HyperCube *cube, Attributes *attr, SettingsDialog *settings)
 {
-
+    m_cube = cube;
     QImage image(cube->GetLines(), cube->GetColumns(), QImage::Format_RGB32);
-
+    setAspectRatio();
 
     if (settings->getTypeOfMethod()!=2) {
         RgbProfile profile;
@@ -103,6 +103,24 @@ void RgbImageWindow::initCustomplotSettings()
     ui->widget->yAxis->setVisible(false);
     ui->widget->axisRect()->setAutoMargins(QCP::msNone);
     ui->widget->axisRect()->setMargins(QMargins(0,0,0,0));
+}
+
+void RgbImageWindow::setAspectRatio()
+{
+    int rows = m_cube->GetLines();
+    int cols = m_cube->GetColumns();
+    double RowsToCols = (double)rows / (double)cols;
+    const int defaultWidth = 500;
+    const int defaultHeight = 500;
+    if(rows>cols)
+    {
+        this->resize(defaultWidth, defaultWidth / RowsToCols);
+    }
+    else
+    {
+        this->resize(defaultHeight*RowsToCols, defaultHeight);
+
+    }
 }
 
 void RgbImageWindow::updateSize()

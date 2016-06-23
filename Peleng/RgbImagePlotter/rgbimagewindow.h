@@ -27,12 +27,14 @@ public slots:
 private:
     void showAtCustomplot(QImage image);
     void initCustomplotSettings();
+    void setAspectRatio();
 
 private slots:
     void updateSize();
 
 private:
-    Ui::RgbImageWindow *ui;    
+    Ui::RgbImageWindow *ui;
+    HyperCube *m_cube;
 };
 
 #endif // RGBIMAGEWINDOW_H
