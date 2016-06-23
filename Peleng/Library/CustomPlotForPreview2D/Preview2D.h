@@ -35,6 +35,7 @@ private:
     int m_rows, m_cols;
     HyperCube* m_cube;
     Attributes* m_attr;
+    int defaultWidth, defaultHeight, slidersHeight;
 };
 
 #endif // PREVIEW2D_H

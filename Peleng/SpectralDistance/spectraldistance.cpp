@@ -139,7 +139,7 @@ void SpectralDistance::CalcEvklidDistance()
             QVector<double> dataSpectr;
             m_pHyperCube->GetSpectrumPoint(i, j, dataSpectr);
             normSpectr(dataSpectr);
-            for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave() - 1; z++)
+            for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
             {
                 //double value = m_pHyperCube->GetDataPoint(i, j, z);
                 spectral_distance +=pow(dataSpectr.at(z)
@@ -479,9 +479,12 @@ void SpectralDistance::CalcSID()
             {
                 //double l = log2(dataSpectr.at(z)/dataSpectrOrigin.at(z));
                 //qDebug() << l;
-                d1 += dataSpectr.at(z)*log2(dataSpectr.at(z)/dataSpectrOrigin.at(z));
-                //qDebug() << d1;
-                d2 += dataSpectrOrigin.at(z)*log2(dataSpectrOrigin.at(z)/dataSpectr.at(z));
+                if (dataSpectr.at(z) != 0 && dataSpectrOrigin.at(z) != 0)
+                {
+                    d1 += dataSpectr.at(z)*log2(dataSpectr.at(z)/dataSpectrOrigin.at(z));
+                    //qDebug() << d1;
+                    d2 += dataSpectrOrigin.at(z)*log2(dataSpectrOrigin.at(z)/dataSpectr.at(z));
+                }
             }
             dataSpectr.clear();
             //qDebug() << d1+d2;
@@ -559,19 +562,15 @@ void SpectralDistance::CalcEntropy()
             double d2 = 0;
             for (int z = m_attr->GetStartRangeWave(); z < m_attr->GetEndRangeWave(); z++)
             {
-                //if (dataSpectrOrigin.at(z)!= 0)
+                if (dataSpectr.at(z) != 0 && dataSpectrOrigin.at(z) != 0)
+                {
                     d1 += dataSpectr.at(z)/dataSpectrOrigin.at(z);
-                    qDebug() << dataSpectr.at(z) << dataSpectrOrigin.at(z);
-                //else d1 += max_value;
-                //if (dataSpectr.at(z) != 0)
                     d2 += dataSpectrOrigin.at(z)/dataSpectr.at(z);
-                    qDebug() << dataSpectr.at(z) << dataSpectrOrigin.at(z);
-                //else d2 += max_value;
+                }
+
             }
             dataSpectr.clear();
-            qDebug() << d1*d2;
             cube_map[i][j] =  log2(d1*d2);
-            qDebug() << cube_map[i][j];
             if (cube_map[i][j] > max_value)
             {
                 max_value = cube_map[i][j];
@@ -657,7 +656,7 @@ double SpectralDistance::averageSpectralValue(const QVector<double> &dataSpectr)
             chanel_sum += dataSpectr.at(z);
 
     }
-    return chanel_sum / (double)dataSpectr.size();
+    return chanel_sum / (double)(m_attr->GetEndRangeWave() - m_attr->GetStartRangeWave());
 }
 
 QObject *SpectralDistance::GetObjectPointer()

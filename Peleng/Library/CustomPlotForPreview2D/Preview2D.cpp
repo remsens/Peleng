@@ -12,9 +12,13 @@ Preview2D::Preview2D(bool needSliders, QWidget *parent) :
     if(!needSliders)
     {
         m_ui->frameSliders->hide();
+        slidersHeight = 0;
     }
     m_cPlot = new QCustomPlot(this);
     m_ui->verticalLayout_2->addWidget(m_cPlot);
+    defaultWidth = this->width();
+    defaultHeight = this->height();
+    slidersHeight = m_ui->frameSliders->height();
     colorMap = new QCPColorMap(m_cPlot->xAxis, m_cPlot->yAxis);
     m_cPlot->addPlottable(colorMap);
     m_cPlot->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -26,7 +30,6 @@ Preview2D::Preview2D(bool needSliders, QWidget *parent) :
     m_cPlot->yAxis->setVisible(false);
     m_cPlot->axisRect()->setAutoMargins(QCP::msNone);
     m_cPlot->axisRect()->setMargins(QMargins(0,0,0,-1));// -1 устраняет баг с полосой белых пикселей при 0
-    //TODO
     setWindowIcon(QIcon(":/IconsCube/iconsCube/Heat Map-50.png"));
     setAttribute(Qt::WA_DeleteOnClose, true);
 }
@@ -42,22 +45,16 @@ void Preview2D::Plot(double* data, const int rows, const int cols, const QString
     m_cols = cols;
     m_cube = cube;
     m_attr = attr;
+    double RowsToCols = (double)rows / (double)cols;
     if(rows>cols)
     {
-        //this->resize(200, 100);
-        this->resize(this->width(), this->width() * (double)cols / (double)rows + m_ui->frameSliders->height());
+        this->resize(defaultWidth, defaultWidth / RowsToCols + slidersHeight);
     }
     else
     {
-        //this->resize(this->width() , this->width()* (double)cols/(double)rows + m_ui->frameSliders->height());
-        this->resize(200, 400);
-        //this->resize(this->width(), this->width() * (double)cols / (double)rows + m_ui->frameSliders->height());
-        //this->resize(this->height() * (double)rows/(double)cols  , this->height()  + m_ui->frameSliders->height());
+        this->resize((defaultHeight - slidersHeight)*RowsToCols, defaultHeight + slidersHeight);
+
     }
-     //if(rows>cols)
-//         m_cPlot->resize(600, 600 * cols / rows);
-//    else
-//        m_cPlot->resize(600 * rows / cols, 600 );
     setWindowTitle(title);
     int minCMap =  32767;
     int maxCMap = -32767;

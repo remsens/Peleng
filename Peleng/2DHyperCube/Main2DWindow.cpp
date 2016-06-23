@@ -189,8 +189,7 @@ void Main2DWindow::dataCubeResize()
     delete [] ChnlLimits;
     delete[] m_tempChanel;
     setHyperCube(m_pCube);
-    polyMngr->setRows(rows);
-    polyMngr->setCols(cols);
+    polyMngr->resizedHyperCube();
     initArrChanLimits();
 
     fillChanList();
@@ -280,6 +279,8 @@ void Main2DWindow::setHyperCube(HyperCube *ptrCube)
     m_tempChanel = new double[rows*cols];
     colorMap->data()->setSize(rows, cols);
     colorMap->data()->setRange(QCPRange(0, rows-1), QCPRange(0, cols-1));
+    ui->customPlot->xAxis->setRange(QCPRange(0, rows-1));
+    ui->customPlot->yAxis->setRange(QCPRange(0, cols-1));
 }
 
 void Main2DWindow::setInitCustomplotSettings()
@@ -291,6 +292,8 @@ void Main2DWindow::setInitCustomplotSettings()
     ui->customPlot->yAxis->setTickLabels(false);
     ui->customPlot->xAxis->setVisible(false);
     ui->customPlot->yAxis->setVisible(false);
+    ui->customPlot->xAxis->setRange(QCPRange(0, rows-1));
+    ui->customPlot->yAxis->setRange(QCPRange(0, cols-1));
     ui->customPlot->axisRect()->setAutoMargins(QCP::msNone);
     ui->customPlot->axisRect()->setMargins(QMargins(0,0,0,0));// -1 устраняет баг с полосой белых пикселей при 0 (0,0,0,-1) //PS: убрал, не надо
     colorMap->setKeyAxis(ui->customPlot->xAxis);
@@ -356,7 +359,7 @@ void Main2DWindow::drawHeatMap(int minCMap, int maxCMap)
             colorMap->data()->setCell(x, y,m_tempChanel[x * cols + y] );
         }
     }
-    ui->customPlot->rescaleAxes();
+    //ui->customPlot->rescaleAxes();
     colorMap->setInterpolate(m_interplolate);
     colorMap->setDataRange(QCPRange(minCMap,maxCMap));
     ui->customPlot->replot();

@@ -22,6 +22,7 @@ public:
     void finishPolygonCreation();
     void setRows(int rows){m_rows = rows;}
     void setCols(int cols){m_cols = cols;}
+    void resizedHyperCube();
 public slots:
     //! слот соединяющийся с сигналом по экшену в контестном меню с 2D куба
     void createPolygonSlot();
@@ -32,23 +33,29 @@ private:
     //! функция отрисовки линии на customPlot
     void drawLine(QPointF p1, QPointF p2, QColor color);
 
-    //! функция создания байтовой маски из полигонов
-    QByteArray byteMaskFromPolygons(QVector<QPolygonF> polygonArr);
+    //! функция сохранения региона интереса на диск
+    void saveRegionToXML(Region region, QString fileName);
 
-    //! функция создания байтовой маски из 2 других байтовых масок
-    QByteArray byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2);
+    //! функция рассчета широты/долготы в градусах для вершин полигона
+    //! рассчитаные координаты записываются в region.m_polygonObjects.BLdegVertices
+    void calcPolygonBLcord(Region& region);
 
-    //! функция сохранения байтовой маски на диск
-    void saveByteMask(QByteArray byteArr, QString fileName);
+    //! функция загрузки региона с диска из XML-файла
+    Region loadRegionFromXML(QString fileName);
 
-    //! функция загрузки байтовой маски с диска
-    QByteArray loadByteMaskFromFile();
+    //! функция для рассчета пиксельных координат вершин полигонов региона по широте и долготе вершин полигонов в регионе
+    void create_ijVerticesFromBLdegVertices(Region& region);
 
-    //! функция создания изображения(с альфа-каналом) из байтовой маски
-    QImage imageFromByteMask(QByteArray byteArr,QColor color);
+    //! функция для определения, попадает ли пиксель изображения в выбранный регион
+    bool is_ijInRegion(int i, int j, Region region);
 
-    //! функция отрисовки изображения на m_cusPlot
-    void drawImage(QImage mask);
+    void drawregion (Region &region);
+
+    void drawPoligonObject (PolygonObject &polObj, QColor color);
+
+    QCPCurve* drawPoligon(QPolygonF polygon, QColor color);
+
+    void keyValueFromPoligon(QVector<double> &key, QVector<double> &value, QPolygonF polygon);
 
 private slots:
 
@@ -89,8 +96,9 @@ private slots:
     //!  слот обработчика выбора "Дисперсия по области" из контекстного меню
     void onMenuStandardDeviation();
 
-    //! расчет  СКО случайной величины Х
-    double calcStandardDeviation(QVector<double> X);
+    //! расчет  дисперсии случайной величины Х
+    double calcVariance(QVector<double> X);
+
 
 
 private:
@@ -103,7 +111,6 @@ private:
     bool m_flagDoubleClicked;
     QCustomPlot * m_cusPlot;
     QWidget * m_parent2D; // qwidget, а не Main2DWindow, т.к. его нельзя объявить
-    QVector<QPolygonF> m_polygonArr; //массив полигонов, принадлежащих одной области интереса. При создании новой области он будет очищаться
     QVector<Region> m_RegionArr;
     int m_currIndexRegion;// номер текущей (выделенной в списке) области
 };

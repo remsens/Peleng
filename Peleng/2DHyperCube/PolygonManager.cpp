@@ -3,6 +3,10 @@
 #include "../Library/GenericExc.h"
 #include "../Library/Spectr.h"
 #include "../Library/structures.h"
+#include <QTextStream>
+#include <QXmlStreamWriter>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
 
 class BackgroundDelegate : public QStyledItemDelegate // для того, чтобы через выделение не был виден цвет ячейки
 {
@@ -72,10 +76,9 @@ void PolygonManager::createPolygonSlot()
     QString strForLineHelp = "Выберите точку; двойной щелчок для завершения";
     m_parent2D->setToolTip(strForLineHelp);
     m_cusPlot->setCursor(QCursor(QPixmap(":/IconsCube/iconsCube/start_flag.png"),10,29));
-    QPolygonF polygon;
-    m_polygonArr.append(polygon);
+    PolygonObject polygonArea;
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.append(polygonArea);
     m_polyCreationInProcess = true;
-    //connect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     connect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
 }
 
@@ -83,15 +86,16 @@ void PolygonManager::addPolygonPoint(double x,double y)
 {
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
     QPointF p(x,y);
-    if (m_polygonArr.last().size() > 0)
-        drawLine(m_polygonArr.last().last(), p,  color);
-    m_polygonArr.last().append(p);
+    if (m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.size() > 0)
+        drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(), p,  color);
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.last().ijVertices.append(p);
 }
 
 void PolygonManager::drawLine(QPointF p1, QPointF p2, QColor color)
 {
     QCPItemLine *line = new QCPItemLine(m_cusPlot);
-    m_RegionArr[m_currIndexRegion].m_lines.append(line);
+    //    m_RegionArr[m_currIndexRegion].m_lines.append(line);
+    m_RegionArr[m_currIndexRegion].m_polygonObjects.last().lines.append(line);
     line->start->setCoords(p1);
     line->end->setCoords(p2);
     line->setPen(QPen(color));
@@ -105,132 +109,207 @@ void PolygonManager::mouseDblClickOnParentColorMap( QMouseEvent *)
 }
 void PolygonManager::finishPolygonCreation()
 {
-//    disconnect(m_parent2D,SIGNAL(signalCurrentDataXY(uint,uint)),this,SLOT(addPolygonPoint(uint,uint)));
     disconnect(m_parent2D,SIGNAL(signalDoubleCordsClicked(double,double)),this,SLOT(addPolygonPoint(double,double)));
     QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
     m_polyCreationInProcess = false;
     m_flagDoubleClicked = true;
     m_cusPlot->setCursor(QCursor(Qt::ArrowCursor));
     m_parent2D->setToolTip("");
-    drawLine(m_polygonArr.last().last(), m_polygonArr.last().first(), color );
-    QByteArray byteArr = byteMaskFromPolygons(m_polygonArr); //байтовая маска из полигонов
-    m_RegionArr[m_currIndexRegion].m_byteArr = byteMaskFrom2ByteMasks(m_RegionArr[m_currIndexRegion].m_byteArr, byteArr);//добавляем полученную маску к уже существующей маске
-    QImage mask = imageFromByteMask(m_RegionArr[m_currIndexRegion].m_byteArr,color);
-    drawImage(mask);
+    drawLine(m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.last(),
+             m_RegionArr.at(m_currIndexRegion).m_polygonObjects.last().ijVertices.first(), color );
+
+    for (int i = 0; i < m_RegionArr[m_currIndexRegion].m_polygonObjects.count(); ++i){
+        if( !m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.isEmpty()){
+            foreach (QCPItemLine* line, m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines) {
+                m_cusPlot->removeItem(line);
+            }
+            m_RegionArr[m_currIndexRegion].m_polygonObjects[i].lines.clear();
+        }
+    }
+
+    drawregion(m_RegionArr[m_currIndexRegion]);
+    calcPolygonBLcord(m_RegionArr[m_currIndexRegion]);
     m_cusPlot->replot();
 }
 
-QByteArray PolygonManager::byteMaskFromPolygons(QVector<QPolygonF> polygonArr)
+void PolygonManager::resizedHyperCube()
 {
-    QByteArray byteArr(m_rows*m_cols,0x00);
-    for(int i = 0; i < m_rows; ++i)
-    {
-        for(int j = 0; j < m_cols; ++j)
-        {
-            foreach(QPolygonF polygon, polygonArr)
-            {
-                if(polygon.containsPoint(QPoint(i,j),Qt::WindingFill))
-                {
-                    byteArr[i*m_cols+j] = 0x01;
+    m_rows = m_cube->GetLines();
+    m_cols = m_cube->GetColumns();
+    int initIndex = m_currIndexRegion;
+    int i = 0;
+    for(Region &region : m_RegionArr){
+
+            for (int i = 0; i < region.m_polygonObjects.count(); ++i){
+                if( !region.m_polygonObjects[i].lines.isEmpty()){
+                    foreach (QCPItemLine* line, region.m_polygonObjects[i].lines) {
+                        m_cusPlot->removeItem(line);
+                    }
                 }
             }
-        }
+            m_cusPlot->replot();
+            m_currIndexRegion = i;
+            create_ijVerticesFromBLdegVertices(region);
+            drawregion(region);
+
+        i++;
     }
-    return byteArr;
+    m_currIndexRegion = initIndex;
 }
 
-QByteArray PolygonManager::byteMaskFrom2ByteMasks(QByteArray arr1, QByteArray arr2)
+
+void PolygonManager::saveRegionToXML(Region region, QString fileName)
 {
-    QByteArray byteArr(m_rows*m_cols,0x00);
-    if(arr1.size() != byteArr.size()  ||  arr2.size() != byteArr.size())
+    QTextCodec *russianCodec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(russianCodec);
+    QDomDocument doc("region_of_interest");
+    QDomElement rootElement = doc.createElement("region");
+    rootElement.setAttribute("name", region.m_name);
+    rootElement.setAttribute("color", region.m_color.name());
+    foreach(PolygonObject polygon, region.m_polygonObjects)
     {
-        qDebug()<<"in func byteMaskFrom2ByteMasks arr1 and arr2 sizes are DIFFERENT or != m_rows*m_cols";
-        return byteArr;
-    }
-    for(int i = 0; i < m_rows; ++i)
-    {
-        for(int j = 0; j < m_cols; ++j)
+        QDomElement elPolygon = doc.createElement("polygon");
+        foreach (QPointF vertex, polygon.BLdegVertices)
         {
-            if(arr1.at(i*m_cols+j) == 0x01  ||  arr2.at(i*m_cols+j) == 0x01)
-                byteArr[i*m_cols+j] = 0x01;
+            QDomElement elPoint = doc.createElement("point");
+            elPoint.setAttribute("breadth",vertex.x());
+            elPoint.setAttribute("longitude ",vertex.y());
+            elPolygon.appendChild(elPoint);
         }
+        rootElement.appendChild(elPolygon);
     }
-    return byteArr;
-}
-
-void PolygonManager::saveByteMask(QByteArray byteArr, QString fileName)
-{
-
+    doc.appendChild(rootElement);
     QFile file(fileName);
-    if(file.open(QIODevice::WriteOnly))
-    {
-        file.write(byteArr);
+    if(file.open(QIODevice::WriteOnly)) {
+        QTextStream(&file) <<  doc.toString();
         file.close();
     }
 }
 
-QByteArray PolygonManager::loadByteMaskFromFile()
+void PolygonManager::calcPolygonBLcord(Region &region)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.area");
+    for (PolygonObject &polygon : region.m_polygonObjects) {
+        polygon.BLdegVertices.clear();
+        for(QPointF &pIm : polygon.ijVertices){
+            point pBL = m_cube->getBLdegreeCords(pIm.x(),pIm.y());
+            QPointF newBLp(pBL.x,pBL.y);
+            polygon.BLdegVertices.append(newBLp);
+        }
+    }
+}
+
+Region PolygonManager::loadRegionFromXML(QString fileName)
+{
     QFile file(fileName);
-    QByteArray byteArr(m_rows*m_cols,0x00);
-    if(file.open(QIODevice::ReadOnly))
-    {
-        if (file.size() != m_rows*m_cols) // потестировать это
-        {
-            qDebug()<< "file.size() != m_rows*m_cols;  чтение запрещено";
-            throw GenericExc("не подходит размер выбранной маски к размеру изображения",-1);
-            return byteArr; //возвращаем заполненный нулями байтэррэй
-        }
-        else
-        {
-            byteArr = file.readAll();
-            file.close();
-            return byteArr;
-        }
+    Region region;
+    if(!file.open(QIODevice::ReadOnly)){
+        file.close();
+        QMessageBox::critical(this,"ошибка","ЭНевозможно открыть файл");
+        return region;
     }
-    else
-    {
-        qDebug()<<fileName<<" isn't opened";
-        return byteArr;
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        file.close();
+        QMessageBox::critical(this, "Ошибка добавления действия", "Невозможно установить контент файла");
     }
-}
+    //считываем все данные из xml в region
+    QDomNode rootNode = doc.namedItem("region");
+    region.m_color.setNamedColor( rootNode.toElement().attribute("color",""));
+    region.m_name = rootNode.toElement().attribute("name","");
+    QDomNodeList poligons = rootNode.childNodes();
+    int iPoly = 0;
+    for(int i = 0; i < poligons.count(); i++){
+        if(poligons.at(i).nodeName() == "polygon"){
+            PolygonObject polObj;
+            region.m_polygonObjects.append(polObj);
+            QDomNodeList points = poligons.at(iPoly).childNodes();
+            int iPoint = 0;
+            for(int j = 0; j < points.count(); j++){
 
+                if(points.at(j).nodeName() == "point"){
 
-QImage PolygonManager::imageFromByteMask(QByteArray byteArr, QColor color)
-{
-    QImage mask(m_rows,m_cols,QImage::Format_ARGB32);
-    mask.fill(qRgba(0, 0, 0, 0));
-    for(int i = 0; i < m_rows; ++i)
-    {
-        for(int j = 0; j < m_cols; ++j)
-        {
-            if(byteArr.at(i*m_cols+j) == 0x01)
-            {
-                mask.setPixel(i,j,QColor(color.red(), color.green(), color.blue(), 120).rgba());
+                    QPointF BLpoint(points.at(iPoint).toElement().attribute("breadth").toDouble(),
+                                    points.at(iPoint).toElement().attribute("longitude").toDouble());
+                    region.m_polygonObjects.last().BLdegVertices.append(BLpoint);
+                    iPoint += 1;
+                }
             }
+            iPoly +=1;
         }
     }
-    return mask;
+    //переводим координаты в пиксельные
+    //pointInt ijP = getImageCordsFromBLdeg()
+    return region;
 }
-void PolygonManager::drawImage(QImage mask)
+
+void PolygonManager::create_ijVerticesFromBLdegVertices(Region &region)
 {
-    if(m_RegionArr[m_currIndexRegion].m_pixItem != NULL)
-        m_cusPlot->removeItem(m_RegionArr[m_currIndexRegion].m_pixItem);
+    for(PolygonObject &polObj : region.m_polygonObjects){
+        polObj.ijVertices.clear();
+        QPolygonF ijVertices(polObj.BLdegVertices.count());
+        for(int i = 0; i < ijVertices.count(); ++i){
+            pointInt ijCord = m_cube->getImageCordsFromBLdeg(polObj.BLdegVertices.at(i).x(),
+                                                             polObj.BLdegVertices.at(i).y());
+            ijVertices[i].setX(ijCord.x);
+            ijVertices[i].setY(ijCord.y);
+        }
+        polObj.ijVertices.append(ijVertices);
+    }
+}
 
-    QCPItemPixmap *pixItem = new QCPItemPixmap(m_cusPlot);
-    QPixmap alphaImage(QPixmap::fromImage(mask));
-    pixItem->setPixmap(alphaImage);
-    pixItem->setScaled(true,Qt::IgnoreAspectRatio,Qt::FastTransformation);
-    m_cusPlot->addItem(pixItem);
-    pixItem->topLeft->setType(QCPItemPosition::ptPlotCoords );
-    pixItem->bottomRight->setType(QCPItemPosition::ptPlotCoords);
-    pixItem->topLeft->setCoords(-0.5,-0.5);
-    pixItem->bottomRight->setCoords(m_rows-1+0.5,m_cols-1+0.5);
-    pixItem->setClipToAxisRect(true);
-    pixItem->setClipAxisRect(m_cusPlot->axisRect());
+bool PolygonManager::is_ijInRegion(int i, int j, Region region)
+{
+    foreach(PolygonObject polygon, region.m_polygonObjects)
+    {
+        if(polygon.ijVertices.containsPoint(QPoint(i,j),Qt::WindingFill))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
-    m_RegionArr[m_currIndexRegion].m_pixItem = pixItem;
+void PolygonManager::drawregion(Region &region)
+{
+    for(auto &polObj : region.m_polygonObjects){
+        QColor color = region.m_color;
+        drawPoligonObject(polObj, color);
+    }
+}
+
+void PolygonManager::drawPoligonObject(PolygonObject &polObj, QColor color)
+{
+    if(polObj.contour != NULL)
+        m_cusPlot->removePlottable(polObj.contour);
+    polObj.contour = drawPoligon(polObj.ijVertices, color);
+}
+
+QCPCurve *PolygonManager::drawPoligon(QPolygonF polygon, QColor color)
+{
+    QCPCurve *contour = new QCPCurve(m_cusPlot->xAxis, m_cusPlot->yAxis);
+    color.setAlphaF(0.7);
+    contour->setBrush(QBrush(color));
+    contour->setPen(QPen(color));
+    m_cusPlot->addPlottable(contour);
+    QVector<double> key;
+    QVector<double> val;
+    keyValueFromPoligon(key, val, polygon);
+    contour->setData(key,val);
+    m_cusPlot->replot();
+    return contour;
+}
+
+void PolygonManager::keyValueFromPoligon(QVector<double> &key, QVector<double> &value, QPolygonF polygon)
+{
+    key.clear();
+    value.clear();
+    for(QPointF p : polygon){
+        key.append(p.x());
+        value.append(p.y());
+    }
+    //соединяем линией первую и последную точку
+    key.append(polygon.first().x());
+    value.append(polygon.first().y());
 }
 
 void PolygonManager::tableContextMenuRequest(QPoint pos)
@@ -258,10 +337,8 @@ void PolygonManager::pickColor()
 
 void PolygonManager::onButtonAddRegion()
 {
-    QByteArray byteArr(m_rows*m_cols,0x00);
     Region region;
     m_RegionArr.append(region);
-    m_RegionArr.last().m_byteArr = byteArr;
     int rowsCount = ui->tableWidget->rowCount();
     ui->tableWidget->insertRow(rowsCount);
     ui->tableWidget->setItem(rowsCount,0, new QTableWidgetItem());
@@ -276,14 +353,17 @@ void PolygonManager::onButtonRemoveRegion()
     if( ui->tableWidget->selectedItems().isEmpty())
         return;
     int selectedRow = ui->tableWidget->selectedItems().at(0)->row();
-    if(m_RegionArr[selectedRow].m_pixItem != NULL)
-    {
-        m_cusPlot->removeItem(m_RegionArr[selectedRow].m_pixItem);
-        foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_lines) {
+
+
+    for (int i = 0; i < m_RegionArr[selectedRow].m_polygonObjects.length(); ++i){
+        if(m_RegionArr[selectedRow].m_polygonObjects[i].contour != NULL)
+            m_cusPlot->removePlottable(m_RegionArr[selectedRow].m_polygonObjects[i].contour);
+        foreach (QCPItemLine* line, m_RegionArr[selectedRow].m_polygonObjects[i].lines) {
             m_cusPlot->removeItem(line);
         }
-        m_cusPlot->replot();
     }
+    m_cusPlot->replot();
+
     ui->tableWidget->removeRow(selectedRow);
     m_RegionArr.remove(selectedRow);
     m_currIndexRegion = selectedRow;
@@ -298,32 +378,29 @@ void PolygonManager::onButtonSaveRegion()
 {
     if (ui->tableWidget->selectedItems().isEmpty())
         return;
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.area");
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Сохранить файл"),m_RegionArr.at(m_currIndexRegion).m_name,"*.xml");
     if (fileName.contains(".area",Qt::CaseInsensitive))
-        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName);
+        saveRegionToXML(m_RegionArr.at(m_currIndexRegion),fileName);
     else
-        saveByteMask(m_RegionArr.at(m_currIndexRegion).m_byteArr,fileName+".area");
+        saveRegionToXML(m_RegionArr.at(m_currIndexRegion),fileName+".xml");
 }
 
 void PolygonManager::onButtonLoadRegion()
 {
-//    if (ui->tableWidget->selectedItems().isEmpty())
-//        return;
-    onButtonAddRegion(); //создаем новый регион интереса, в который загружаем данные с диска
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),"*.xml");
+    Region newReg = loadRegionFromXML(fileName);
+    create_ijVerticesFromBLdegVertices(newReg);
+    m_RegionArr.append(newReg);
+    int rowsCount = ui->tableWidget->rowCount();
+    ui->tableWidget->insertRow(rowsCount);
+    ui->tableWidget->setItem(rowsCount,0, new QTableWidgetItem());
+    ui->tableWidget->setItem(rowsCount,1, new QTableWidgetItem());
+    ui->tableWidget->item(rowsCount,1)->setBackgroundColor(newReg.m_color);
+    ui->tableWidget->item(rowsCount,0)->setText(newReg.m_name);
     ui->tableWidget->setCurrentCell(ui->tableWidget->rowCount() - 1,0);
-    try
-    {
-        QByteArray byteArr = loadByteMaskFromFile();
-        QColor color = m_RegionArr.at(m_currIndexRegion).m_color;
-        QImage mask = imageFromByteMask(byteArr,color);
-        drawImage(mask);
-        m_cusPlot->replot();
-    }
-    catch(GenericExc e)
-    {
-        QMessageBox::warning(this,"предупреждение","не подходит размер выбранной маски к размеру изображения");
-        qDebug()<<e.GetWhat();
-    }
+
+    drawregion(m_RegionArr.last());
 
 }
 
@@ -351,7 +428,7 @@ void PolygonManager::onMenuAverageSpectr()
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(m_RegionArr[m_currIndexRegion].m_byteArr.at(i*m_cols+j) == 0x01)
+            if( is_ijInRegion(i,j,m_RegionArr.at(m_currIndexRegion)))//m_RegionArr.at(m_currIndexRegion).m_polygonObjects.m_byteArr.at(i*m_cols+j) == 0x01
             {
                 numSpctrs++;
                 QVector<double> spectr;
@@ -372,7 +449,7 @@ void PolygonManager::onMenuAverageSpectr()
     Wawes.append(m_cube->GetListOfChannels());
     QVector<double> wawesVect;
     for (int i = 0; i < Chnls; ++i )
-       wawesVect.push_back(Wawes[i]);
+        wawesVect.push_back(Wawes[i]);
     // править размерность
     QString title = "Среднее по региону '" + m_RegionArr[m_currIndexRegion].m_name + "'";
     Spectr* spectr = new Spectr (m_cube, wawesVect, averageSpectrVect, title, Measurements::ADC);
@@ -394,7 +471,7 @@ void PolygonManager::onMenuStandardDeviation()
     {
         for(int j = 0; j < m_cols; ++j)
         {
-            if(m_RegionArr[m_currIndexRegion].m_byteArr.at(i*m_cols+j) == 0x01)
+            if(is_ijInRegion(i,j,m_RegionArr.at(m_currIndexRegion)))
             {
                 ijArr.append(QPoint(i,j));
             }
@@ -403,32 +480,15 @@ void PolygonManager::onMenuStandardDeviation()
     for (int k = 0; k < Chnls; ++k)
     {
         foreach(QPoint p,ijArr)
-             buf.append(m_cube->GetDataPoint(p.x(),p.y(),k)); //  buf.append(data[k][p.x()*m_cols + p.y()]);
-        std[k] = sqrt(calcStandardDeviation(buf));
+            buf.append(m_cube->GetDataPoint(p.x(),p.y(),k)); //  buf.append(data[k][p.x()*m_cols + p.y()]);
+        std[k] = sqrt(calcVariance(buf));
         buf.clear();
     }
-//    for (int k = 0; k < Chnls; ++k)
-//    {
-//        for(int i = 0; i < m_rows; ++i) // долго из-за порядка циклов
-//        {
-//            for(int j = 0; j < m_cols; ++j)
-//            {
-//                if(m_RegionArr[m_currIndexRegion].m_byteArr[i*m_cols+j] == 0x01)
-//                {
-//                   buf.append(data[k][i*m_cols + j]);
-//                }
-//            }
-//        }
-//        std[k] = sqrt(calcStandardDeviation(buf));
-//        buf.clear();
-//    }
-
-
     QList<double> Wawes;
     Wawes.append(m_cube->GetListOfChannels());
     QVector<double> wawesVect;
     for (int i = 0; i < Chnls; ++i )
-       wawesVect.push_back(Wawes[i]);
+        wawesVect.push_back(Wawes[i]);
     QString title = "СКО по региону " + m_RegionArr[m_currIndexRegion].m_name;
     //править
     Spectr* spectr = new Spectr (m_cube, wawesVect, std, title, Measurements::ADC);
@@ -436,21 +496,10 @@ void PolygonManager::onMenuStandardDeviation()
     m_attributes->SetCurrentYUnits(std);
     m_attributes->SetExternalSpectrFlag(true);
     m_attributes->SetCurrentSpectr(spectr);
-
-   /* m_attributes->SetXUnit(wawesVect);
-    m_attributes->SetYUnit(std);
-    m_attributes->SetExternalSpectrFlag(true);
-    QList<Attributes::DescriptionSpectr> list;
-    Attributes::DescriptionSpectr descriptionAverSpctr;
-    descriptionAverSpctr.title = "СКО по региону '";
-    descriptionAverSpctr.description= m_RegionArr[m_currIndexRegion].m_name + "'";
-    list.append(descriptionAverSpctr);
-    m_attributes->SetDescriptionSpectr(list);*/
-
     m_attributes->GetAvailablePlugins().value("Spectr UI")->Execute(m_cube, m_attributes);
 }
 
-double PolygonManager::calcStandardDeviation(QVector<double> X)
+double PolygonManager::calcVariance(QVector<double> X)
 {
     double mean=0.0, std=0.0;
     int n = X.length();
@@ -483,7 +532,6 @@ void PolygonManager::currentRowChanged(QModelIndex curr, QModelIndex prev)
         connect(ui->tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(currentRowChanged(QModelIndex,QModelIndex)));
     }
     m_currIndexRegion = curr.row();
-    m_polygonArr.clear();
 }
 
 PolygonManager::~PolygonManager()

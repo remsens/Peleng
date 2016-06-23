@@ -304,7 +304,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     } else if (m_wavelengthPath.size() == 0)
     {
         return false;
-    } else if (m_byteOrder != 0 || m_byteOrder != 1)
+    } else if (m_byteOrder != 0 && m_byteOrder != 1)
     {
         return false;
     } else if (m_date.day == 0 || m_date.month == 0 || m_date.year == 0)
@@ -412,7 +412,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 
     cube->setPixelSizeX(m_pixelSize);
     cube->setPixelSizeY(m_pixelSize);
-    cube->Set
+   // cube->Set
 
     return true;
 }
