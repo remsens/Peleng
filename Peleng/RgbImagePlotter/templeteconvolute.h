@@ -49,9 +49,8 @@ void RgbChannelPlot(HyperCube *cube, qint32 rCh, qint32 gCh, qint32 bCh, QImage 
 
     for (unsigned int i = 0; i < cube->GetLines(); i++){
         for (unsigned int j = 0; j < cube->GetColumns(); j++){
-            if ((data[rCh][j]<0) || (data[gCh][j]<0) || (data[bCh][j]<0) || (data[rCh][j]>8000) || (data[gCh][j]>8000) || (data[bCh][j]>8000)) continue;
-            image.setPixel(i,j,qRgb((char)(data[rCh][i*cube->GetColumns()+j]/maxR*255) ,(char)(data[gCh][i*cube->GetColumns()+j]/maxG*255),(char)(data[bCh][i*cube->GetColumns()+j]/maxB*255)));
-
+            image.setPixel(i,j,qRgb((char)(data[rCh][i*cube->GetColumns()+j]/maxR*255) ,
+                           (char)(data[gCh][i*cube->GetColumns()+j]/maxG*255),(char)(data[bCh][i*cube->GetColumns()+j]/maxB*255)));
         }
     }
 
