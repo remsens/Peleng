@@ -33,7 +33,8 @@ SOURCES +=\
     ../Library/MathOperations/interpolation.cpp \
     ../Library/Spectr.cpp \
     ../Library/Ellipsoid.cpp \
-    SpectrCompareAlg.cpp
+    SpectrCompareAlg.cpp \
+    AddSpectr.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -48,7 +49,8 @@ HEADERS  += \
     ../Library/Spectr.h \
     ../Library/structures.h \
     ../Library/Ellipsoid.h \
-    SpectrCompareAlg.h
+    SpectrCompareAlg.h \
+    AddSpectr.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library
