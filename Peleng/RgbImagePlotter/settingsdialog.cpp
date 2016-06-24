@@ -47,18 +47,22 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::accept()
 {
+    if(TypeOfMethod == 2)
+    {
+        QDialog::accept();
+        return;
+    }
+    if ( (list.size()) && (list[0]>800)) {
 
-     if ( (list.size()) && (list[0]>800)) {
-
-         QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. минимальная длина волны %1").arg(list[0]) );
-         this->rejected();
-     } else if ( (list.size()) && (list[list.size()-1]<400)) {
-         QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. максимальная длина волны %1").arg(list[list.size()-1]) );
-         this->rejected();
-     }
-     else {
-         QDialog::accept();
-     }
+        QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. минимальная длина волны %1").arg(list[0]) );
+        this->rejected();
+    } else if ( (list.size()) && (list[list.size()-1]<400)) {
+        QMessageBox::warning(this, "Внимание!", QString("Не может быть построено RGB изображение по профилю, т.к. максимальная длина волны %1").arg(list[list.size()-1]) );
+        this->rejected();
+    }
+    else {
+        QDialog::accept();
+    }
 }
 
 

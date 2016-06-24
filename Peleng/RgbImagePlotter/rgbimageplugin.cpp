@@ -24,9 +24,9 @@ void RgbImagePlugin::Execute(HyperCube *cube, Attributes *attr)
     if (dialog.exec()) {
 
 
-        RgbImageWindow *rgbImageWindow = new RgbImageWindow();
+        RgbImageWindow *rgbImageWindow = new RgbImageWindow(cube);
 
-        rgbImageWindow->plotImage(cube, attr,&dialog);
+        rgbImageWindow->plotImage(attr,&dialog);
         rgbImageWindow->show();
     }
 
