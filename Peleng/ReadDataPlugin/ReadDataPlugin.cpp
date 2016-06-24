@@ -3,13 +3,21 @@
 ReadDataPlugin::ReadDataPlugin(QObject *parent) :
     QObject(parent)
 {
-    m_creater = new CreaterHyperCubes();
 }
 
 
 ReadDataPlugin::~ReadDataPlugin()
 {
 
+}
+
+void ReadDataPlugin::Init()
+{
+    m_creater = new CreaterHyperCubes();
+}
+void ReadDataPlugin::Destroy()
+{
+    delete m_creater;
 }
 
 void ReadDataPlugin::readCubeFromFile(QString& fileName, HyperCube* cube)

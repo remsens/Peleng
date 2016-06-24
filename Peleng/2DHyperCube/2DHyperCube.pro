@@ -65,6 +65,6 @@ RESOURCES += \
     icons2Dcube.qrc \
 
 
-win32: LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
-INCLUDEPATH += $$PWD/../Library/GDAL/include
-DEPENDPATH += $$PWD/../Library/GDAL/include
+win32: LIBS += -L$$PWD/../Library/GDAL/x64/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/x64/include
+DEPENDPATH += $$PWD/../Library/GDAL/x64/include

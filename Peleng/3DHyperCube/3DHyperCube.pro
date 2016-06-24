@@ -71,9 +71,9 @@ DEPENDPATH += $$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/include
 
 win32: LIBS += -L$$PWD/E:/Qt5.5/Tools/mingw492_32/i686-w64-mingw32/lib/ -lopengl32
 
-LIBS += -L$$PWD/../Library/GDAL/lib/ -lgdal_i
-INCLUDEPATH += $$PWD/../Library/GDAL/include
-DEPENDPATH += $$PWD/../Library/GDAL/include
+LIBS += -L$$PWD/../Library/GDAL/x64/lib/ -lgdal_i
+INCLUDEPATH += $$PWD/../Library/GDAL/x64/include
+DEPENDPATH += $$PWD/../Library/GDAL/x64/include
 
 RESOURCES += \
     icons3Dcube.qrc \

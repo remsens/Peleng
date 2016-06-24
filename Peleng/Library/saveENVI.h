@@ -4,10 +4,10 @@
 #include <../Library/HyperCube.h>
 #include <QFileDialog>
 #include <../Library/Types.h>
-#include "../Library/GDAL/include/gdal_priv.h"
-#include "../Library/GDAL/include/cpl_conv.h" // for CPLMalloc()
-#include "../Library/GDAL/include/cpl_string.h"
-#include "../Library/GDAL/include/ogr_spatialref.h"
+#include "../Library/GDAL/x64/include/gdal_priv.h"
+#include "../Library/GDAL/x64/include/cpl_conv.h" // for CPLMalloc()
+#include "../Library/GDAL/x64/include/cpl_string.h"
+#include "../Library/GDAL/x64/include/ogr_spatialref.h"
 #include <QProgressBar>
 #include <QDebug>
 #include <QCoreApplication>

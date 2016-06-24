@@ -71,6 +71,7 @@ void MainWindow::LoadData()
         FilePlugin = m_pluginsControl->GetReadingPlugins().value("Data Loader");
         if (FilePlugin != 0)
         {
+            FilePlugin->Init();
             if (Attributes::I()->GetHeaderPath().size() == 0)
             {
                 QMessageBox::critical(this, "Ошибка", "Файл-заголовок не может быть пустым");
@@ -119,6 +120,7 @@ void MainWindow::LoadData()
             Attributes::I()->SetAvailablePlugins(m_pluginsControl->GetProcessingPlugins());
             m_pelengPlugin->Execute(cube, Attributes::I());
         }
+        FilePlugin->Destroy();
     }
 }
 
@@ -133,6 +135,7 @@ void MainWindow::LoadAvirisData()
         FilePlugin = m_pluginsControl->GetReadingPlugins().value("AVIRIS Loader");
         if (FilePlugin != 0)
         {
+            FilePlugin->Init();
             QString FileName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
                                                      "",
                                                     FilePlugin->getHeaderDescription());
@@ -195,6 +198,7 @@ void MainWindow::LoadAvirisData()
 //                Attributes::I()->GetAvailablePlugins().value("Noise Remover")->Execute(cube, Attributes::I());
             }
         }
+        FilePlugin->Destroy();
     }
 }
 

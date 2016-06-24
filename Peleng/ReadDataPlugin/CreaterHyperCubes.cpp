@@ -70,6 +70,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     QFile fileDetect(headerFilePath);
     if (!fileDetect.open(QIODevice::ReadOnly))
     {
+        m_errDescription = "Невозможно открыть файл-заголовок";
         return false;
     }
     QString readingLineTemp = fileDetect.readLine();
@@ -119,6 +120,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
     {
         readingLine = file.readLine();
         QStringList readWords = readingLine.split("=", QString::SkipEmptyParts);
+        if (readWords.size() < 1) continue;
         for (int i = 0; i < readWords.size(); i++)
         {
             QString temp = QString(readWords.at(i)).trimmed();
@@ -127,6 +129,11 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
         }
         if (QString(readWords.at(0)).compare("dataPath") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан путь к файлу с данными";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             QString temp = data.at(0);
             temp = data.at(0);
@@ -135,6 +142,11 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_dataPath.append(dirPath).append(temp);
         } else if (QString(readWords.at(0)).compare("calibrationPath") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан путь к файлу с калибровочными коэффициентами";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             QString temp = data.at(0);
             temp = data.at(0);
@@ -143,6 +155,11 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_calibrationPath.append(dirPath).append(temp);
         } else if (QString(readWords.at(0)).compare("wavelength") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан путь к файлу с длинами волн";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             QString temp = data.at(0);
             temp = data.at(0);
@@ -151,14 +168,29 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_wavelengthPath.append(dirPath).append(temp);
         } else if (QString(readWords.at(0)).compare("samples") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задано количество столбцов гиперкуба";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_infoData.samples = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("lines") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задано количество строк гиперкуба";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_infoData.lines = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("bands") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задано количество каналов гиперкуба";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_infoData.bands = QString(data.at(0)).toLong(); continue;
         } /*else if (QString(readWords.at(0)).compare("interleave") == 0)
@@ -177,10 +209,20 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                     }*/
         else if (QString(readWords.at(0)).compare("byteOrder") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан тип записи данных в одном байте гиперкуба";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_byteOrder = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("dataType") == 0)
         {
+            if (readWords.size() <= 2)
+            {
+                m_errDescription = "Не задан тип данных гиперкуба";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             QString type = data.at(0);
             type.remove(0, 1);
@@ -199,10 +241,16 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
 
         } else if (QString(readWords.at(0)).compare("date") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задана дата съемки";
+                return false;
+            }
             QStringList str = QString(readWords.at(1)).split(endOfStr);
             QStringList dateStr = QString(str.at(0)).split("/");
             if (dateStr.size() != 3)
             {
+                m_errDescription = "Неверно задана дата съемки";
                 return false;
             }
             m_date.day = QString(dateStr.at(0)).toInt();
@@ -210,10 +258,16 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_date.year = QString(dateStr.at(2)).toInt();
         } else if (QString(readWords.at(0)).compare("time") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задано время съемки";
+                return false;
+            }
             QStringList str = QString(readWords.at(1)).split(endOfStr);
             QStringList timeStr = QString(str.at(0)).split(":");
             if (timeStr.size() != 3)
             {
+                m_errDescription = "Неверно задано время съемки";
                 return false;
             }
             m_time.hours = QString(timeStr.at(0)).toInt();
@@ -221,27 +275,57 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_time.seconds = QString(timeStr.at(2)).toInt();
         } else if (QString(readWords.at(0)).compare("pixelSize") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан размер пикселя";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_pixelSize = QString(data.at(0)).toDouble(); continue;
         } else if (QString(readWords.at(0)).compare("altitude") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задана высота над уровнем моря";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_altitude = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("viewingDirection") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задано направление съемки";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_viewingDirection = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("aperture") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задана апертура объектива";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_aperture = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("rotationAngle") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задан угол повора изображения относительно севера";
+                return false;
+            }
             QStringList data = QString(readWords.at(1)).split(endOfStr);
             m_rotationAngle = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("leftTopCornerCoord") == 0 || QString(readWords.at(0)).compare("rightTopCornerCoord") == 0
                    || QString(readWords.at(0)).compare("leftBottomCornerCoord") == 0 || QString(readWords.at(0)).compare("rightBottomCornerCoord") == 0)
         {
+            if (readWords.size() < 2)
+            {
+                m_errDescription = "Не задана географические координаты снимка";
+                return false;
+            }
             QStringList coord1 = QString(readWords.at(1)).split(endOfStr);
             QStringList coord = QString(coord1.at(0)).split("{",QString::SkipEmptyParts);
             coord1.clear();
@@ -283,58 +367,73 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 {
     if (m_infoData.bands <= 1)
     {
-        m_errDescription.append("Не задано число каналов");
+        m_errDescription = "Не задано число каналов";
         return false;
     } else if (m_infoData.lines <=1 )
     {
+        m_errDescription = "Не задано число строк";
         return false;
     } else if (m_infoData.samples <= 1)
     {
-        m_errDescription.append("Не задано число столбцов");
+        m_errDescription = "Не задано число столбцов";
         return false;
     } else if (m_type == type_unknown)
     {
+        m_errDescription = "Неизвестный тип данных";
        return false;
     } else if (m_dataPath.size() == 0)
     {
+        m_errDescription = "Неверно задан путь к файлу с данными";
         return false;
     } else if (m_calibrationPath.size() == 0)
     {
+        m_errDescription = "Неверно задан путь к калибровочным данным";
         return false;
     } else if (m_wavelengthPath.size() == 0)
     {
+        m_errDescription = "Неверно задан путь к файлу с длинами волн";
         return false;
     } else if (m_byteOrder != 0 && m_byteOrder != 1)
     {
+        m_errDescription = "Не правильно задан тип записи байт";
         return false;
     } else if (m_date.day == 0 || m_date.month == 0 || m_date.year == 0)
     {
+        m_errDescription = "Не правильно задана дата съемки";
         return false;
     } else if (m_time.hours == -1 || m_time.minutes == -1 || m_time.seconds == -1)
     {
+        m_errDescription = "Не правильно задано время съемки";
         return false;
     } else if (m_pixelSize == 0)
     {
+        m_errDescription = "Не задан размер пикселя";
         return false;
     } else if (m_altitude == 0)
     {
+        m_errDescription = "Не задана высота над уровнем моря";
         return false;
     } else if (m_viewingDirection == -1)
     {
+        m_errDescription = "Не задана направление визирования";
         return false;
     } else if (m_aperture == -2)
     {
+        m_errDescription = "Не задана апертура объектива";
         return false;
     } else if (m_rotationAngle == -1)
     {
+        m_errDescription = "Не задан угол повора снимка относительно севера";
         return false;
     } else if (m_corners.size() != 4)
     {
+        m_errDescription = "Не заданы географические координаты";
         return false;
     }
     QFile fileDetect(m_wavelengthPath);
     if (!fileDetect.open(QIODevice::ReadOnly))
     {
+        m_errDescription = "Невозможно открыть файл с длинами волн";
         return false;
     }
     QString readingLineTemp = fileDetect.readLine();
@@ -359,6 +458,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     // проверка длин волн
     if (m_wavelength.size() != m_infoData.bands)
     {
+        m_errDescription = "Неизвестный формат файла с длинами волн";
         return false;
     }
     waveFile.close();
@@ -367,6 +467,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     QFile fileDetect1(m_calibrationPath);
     if (!fileDetect1.open(QIODevice::ReadOnly))
     {
+        m_errDescription = "Невозможно открыть файл с калибровочными кооэффициентами";
         return false;
     }
     readingLineTemp = fileDetect1.readLine();
@@ -391,6 +492,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
     // проверка калибровочных коэффициентов
     if (m_calibrationCoeff.size() != m_infoData.bands)
     {
+        m_errDescription = "Неизвестный формат файла с калибровочными коэффициентами";
         return false;
     }
 
@@ -419,7 +521,7 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 
 bool CreaterHyperCubes::readDataToCube(HyperCube* cube, const QString& fileName)
 {
-    return ReadBIP(fileName, cube);
+    return ReadBSQ(fileName, cube);
 }
 
 
@@ -440,6 +542,7 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
     QFile dataFile(fileName);
     if (!dataFile.open(QIODevice::ReadOnly))
     {
+        m_errDescription = "Невозможно открыть файл с данными гиперкуба";
         return false;
     }
     for (u::uint32 i = 0; i < m_infoData.bands; i++)
@@ -454,6 +557,7 @@ u::logic CreaterHyperCubes::ReadBSQ(const QString& fileName, HyperCube* cube)
         {
             if (dataFile.read(tempbuf, chunk_size) != chunk_size)
             {
+                m_errDescription = "Ошибка чтения файла с данными гиперкуба";
                 return false;
             }
 
