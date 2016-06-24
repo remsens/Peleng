@@ -5,21 +5,22 @@
 #include "templeteconvolute.h"
 #include "rgbprofile.h"
 
-RgbImageWindow::RgbImageWindow(QWidget *parent) :
+RgbImageWindow::RgbImageWindow(HyperCube *cube, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RgbImageWindow)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowIcon(QIcon(":/rgb/icons/icons/RGB.png"));
+    m_cube = cube;
+    initCustomplotSettings();
 
-
-
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_in.png"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_out.png"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
-    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/move.png"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
-    QObject::connect(ui->widget,SIGNAL(updateSize()),this,SLOT(updateSize()));
-
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_in.png"),"Zoom In",ui->widget,SLOT(ZoomInSetter()));
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/zoom_out.png"),"Zoom Out",ui->widget,SLOT(ZoomOutSetter()));
+//    ui->toolBar->addAction(QIcon(":/rgb/icons/icons/move.png"),"Zoom Scroll",ui->widget,SLOT(MoveSetter()));
+//    QObject::connect(ui->widget,SIGNAL(updateSize()),this,SLOT(updateSize()));
+    QObject::connect(ui->widget->xAxis, SIGNAL(rangeChanged(QCPRange,QCPRange)),this,SLOT(xRangeChanged(QCPRange,QCPRange)));
+    QObject::connect(ui->widget->yAxis, SIGNAL(rangeChanged(QCPRange,QCPRange)),this,SLOT(yRangeChanged(QCPRange,QCPRange)));
 }
 
 RgbImageWindow::~RgbImageWindow()
@@ -27,11 +28,11 @@ RgbImageWindow::~RgbImageWindow()
     delete ui;
 }
 
-void RgbImageWindow::plotImage(HyperCube *cube, Attributes *attr, SettingsDialog *settings)
+void RgbImageWindow::plotImage(Attributes *attr, SettingsDialog *settings)
 {
-
+    HyperCube *cube = m_cube;
     QImage image(cube->GetLines(), cube->GetColumns(), QImage::Format_RGB32);
-
+    setAspectRatio();
 
     if (settings->getTypeOfMethod()!=2) {
         RgbProfile profile;
@@ -70,15 +71,60 @@ void RgbImageWindow::plotImage(HyperCube *cube, Attributes *attr, SettingsDialog
         return;
     }
 
-    QPixmap mainPixmap = QPixmap::fromImage(image);
+    showAtCustomplot(image);
 
-    ((ZoomImage*)ui->widget)->setMainPixmap(mainPixmap);
-    ui->centralwidget->adjustSize();
-    this->adjustSize();
+//    ui->centralwidget->adjustSize();
+//    this->adjustSize();
 }
 
+void RgbImageWindow::showAtCustomplot(QImage image)
+{
 
+   QCPItemPixmap *MyImage = new QCPItemPixmap(ui->widget);
+   QPixmap pixmap = QPixmap::fromImage(image);
+   MyImage->setPixmap(pixmap);
+   MyImage->topLeft->setType(QCPItemPosition::ptPlotCoords);
+   MyImage->bottomRight->setType(QCPItemPosition::ptPlotCoords);
+   MyImage->topLeft->setCoords(ui->widget->xAxis->range().lower, ui->widget->yAxis->range().upper);
+   MyImage->bottomRight->setCoords(ui->widget->xAxis->range().upper, ui->widget->yAxis->range().lower);
+   MyImage->setScaled(true,Qt::IgnoreAspectRatio);
+   ui->widget->addItem(MyImage);
 
+}
+
+void RgbImageWindow::initCustomplotSettings()
+{
+    ui->widget->setInteraction(QCP::iRangeDrag , true);
+    ui->widget->setInteraction(QCP::iRangeZoom  , true);
+    ui->widget->yAxis->setTicks(false);
+    ui->widget->xAxis->setTicks(false);
+    ui->widget->xAxis->setTickLabels(false);
+    ui->widget->yAxis->setTickLabels(false);
+    ui->widget->xAxis->setVisible(false);
+    ui->widget->yAxis->setVisible(false);
+    ui->widget->axisRect()->setAutoMargins(QCP::msNone);
+    ui->widget->axisRect()->setMargins(QMargins(0,0,0,0));
+    ui->widget->xAxis->setRange(0,m_cube->GetLines()-1);
+    ui->widget->yAxis->setRange(0,m_cube->GetColumns()-1);
+}
+
+void RgbImageWindow::setAspectRatio()
+{
+    int rows = m_cube->GetLines();
+    int cols = m_cube->GetColumns();
+    double RowsToCols = (double)rows / (double)cols;
+    const int defaultWidth = 1000;
+    const int defaultHeight = 1000;
+    if(rows>cols)
+    {
+        this->resize(defaultWidth, defaultWidth / RowsToCols);
+    }
+    else
+    {
+        this->resize(defaultHeight*RowsToCols, defaultHeight);
+
+    }
+}
 
 
 
@@ -88,3 +134,47 @@ void RgbImageWindow::updateSize()
     this->adjustSize();
 }
 
+void RgbImageWindow::xRangeChanged(QCPRange newRange, QCPRange oldRange)
+{
+    int XrangeUpper = m_cube->GetLines() - 1;
+    scaleRulesForAxis(ui->widget->xAxis, XrangeUpper, newRange, oldRange);
+}
+
+void RgbImageWindow::yRangeChanged(QCPRange newRange, QCPRange oldRange)
+{
+    int YrangeUpper = m_cube->GetColumns() - 1;
+    scaleRulesForAxis(ui->widget->yAxis, YrangeUpper, newRange, oldRange);
+}
+
+void RgbImageWindow::scaleRulesForAxis(QCPAxis *axis, double rangeUpper, QCPRange newRange, QCPRange oldRange)
+{
+
+    QCPRange boundedRange = newRange;
+    double lowerRangeBound = 0;
+    double upperRangeBound = rangeUpper;
+    const int MAX_ZOOM = 4;
+    if((upperRangeBound - lowerRangeBound)/boundedRange.size() > MAX_ZOOM)
+    {
+        axis->setRange(oldRange);
+        return;
+    }
+
+    if (boundedRange.size() > upperRangeBound-lowerRangeBound)
+    {
+        boundedRange = QCPRange(lowerRangeBound, upperRangeBound);
+    } else
+    {
+        double oldSize = boundedRange.size();
+        if (boundedRange.lower < lowerRangeBound)
+        {
+            boundedRange.lower = lowerRangeBound;
+            boundedRange.upper = lowerRangeBound+oldSize;
+        }
+        if (boundedRange.upper > upperRangeBound)
+        {
+            boundedRange.lower = upperRangeBound-oldSize;
+            boundedRange.upper = upperRangeBound;
+        }
+    }
+    axis->setRange(boundedRange);
+}
