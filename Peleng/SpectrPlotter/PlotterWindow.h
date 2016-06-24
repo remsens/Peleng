@@ -56,7 +56,7 @@ private slots:
     void on_horizontalSlider_start_sliderMoved(int position);
 
     void on_horizontalSlider_end_sliderMoved(int position);
-
+    void findInSpectralLib();
 public slots:
     void on_actionHold_toggled(bool value);
     void on_actionSave_toggled();

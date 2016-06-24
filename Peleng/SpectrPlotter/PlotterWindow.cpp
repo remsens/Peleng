@@ -159,8 +159,14 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
         {
             menu->addAction("Сравнить со спектральными кривыми гиперкуба", this, SLOT(PrepareToCompare()));
         }
+        menu->addAction("Поиск схожих в спектральной библиотеке", this, SLOT(findInSpectralLib()));
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::findInSpectralLib()
+{
+
 }
 
 void PlotterWindow::PrepareToCompare()
