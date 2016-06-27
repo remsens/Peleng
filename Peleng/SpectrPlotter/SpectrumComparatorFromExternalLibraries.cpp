@@ -8,6 +8,8 @@
 #include <QTextCodec>
 #include "../Library/HyperCube.h"
 #include "SpectrCompareAlg.h"
+#include <QProgressDialog>
+#include <QApplication>
 
 SpectrumComparatorFromExternalLibraries::SpectrumComparatorFromExternalLibraries()
 {
@@ -22,10 +24,19 @@ SpectrumComparatorFromExternalLibraries::~SpectrumComparatorFromExternalLibrarie
 void SpectrumComparatorFromExternalLibraries::GetSimilarSpectra(HyperCube *cube, Spectr* currentSpectr, int startWave, int endWave, QString startDir, u::uint32 countOfSimilarSpectra, CompareMode mode, QMap<double, Spectr *> &similarSpectra)
 {
     // проходим по всем файлам. Узнаем общее количество файлов
-    //QDir dir("d://AvirisData/SpectralLib");
-    //if (!dir.exists()) QMessageBox::critical(this, "Ошибка", QObject::tr("Несуществует директория со спектральными библиотеками"));
     // получили пути ко всем файлам
-    QStringList fileNames = getDirFiles("d://AvirisData/SpectralLib");
+    QProgressDialog* progressBar  = new QProgressDialog();
+    progressBar->setLabelText("Производится анализ файлов в спектральной библиотеке...");
+    QString descr = QString("Поиск выбранного спектра в спектральной библиотеке....");
+    //progressBar->setWindowIcon(icon);
+    progressBar->setWindowTitle(descr);
+    progressBar->setRange(0, 100);
+    progressBar->setWindowModality(Qt::WindowModal);
+    progressBar->setCancelButtonText("Отменить");
+    progressBar->show();
+    progressBar->setValue(0);
+    QApplication::processEvents();
+    QStringList fileNames = getDirFiles(startDir);
     double minCompareValue = 0;
     // формируем спектр. Если размер similarSpectra < countOfSimiralSpectra, то добавляем в вектор
     QStringList possibleTitles;
@@ -49,8 +60,15 @@ void SpectrumComparatorFromExternalLibraries::GetSimilarSpectra(HyperCube *cube,
     possibleTitles.append("Last X Value:");
     possibleTitles.append("Number of X Values:");
     possibleTitles.append("Additional Information:");
+    progressBar->setLabelText("Производится загрузка и сравнение спектральных кривых...");
     for (int z = 0; z < fileNames.size(); z++)
     {
+        if (progressBar->wasCanceled())
+        {
+            delete progressBar;
+            similarSpectra.clear();
+            return;
+        }
         QFile fileIn(fileNames.at(z));
 
         QTextStream* m_inStream = new QTextStream(&fileIn);
@@ -236,7 +254,6 @@ void SpectrumComparatorFromExternalLibraries::GetSimilarSpectra(HyperCube *cube,
             case SID: result = SpectrCompareAlg::SID(currentSpectr->GetCurrentDataY(), spectr->GetCurrentDataY(), startWave, endWave); break;
             case Entropy: result = SpectrCompareAlg::Entropy(currentSpectr->GetCurrentDataY(), spectr->GetCurrentDataY(), startWave, endWave); break;
         }
-        qDebug() << z << "   "<< result;
         QList<double> keys = similarSpectra.keys();
         qSort(keys.begin(), keys.end());
         if (similarSpectra.size() < countOfSimilarSpectra)
@@ -253,7 +270,15 @@ void SpectrumComparatorFromExternalLibraries::GetSimilarSpectra(HyperCube *cube,
                similarSpectra.insert(result, spectr);
 
         }
+        int persent = (double)z/(double)fileNames.size()*100;
+        qDebug() << persent;
+        progressBar->setValue(persent);
+        QApplication::processEvents();
     }
+    progressBar->setValue(100);
+    QApplication::processEvents();
+    progressBar->hide();
+    delete progressBar;
     qDebug() << fileNames.size();
 
 }

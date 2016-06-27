@@ -7,6 +7,7 @@
 #include "../Library/Attributes/Attributes.h"
 #include "../Library/Spectr.h"
 #include "../Library/structures.h"
+#include "SpectrumComparatorFromExternalLibraries.h"
 
 namespace Ui {
 class PlotterWindow;
@@ -76,6 +77,13 @@ public slots:
     void ActionNoiseSavitGolay5_7Toogled();
     void ActionNoiseSavitGolay5_9Toogled();
 
+    void ActionEvclideDistToogled();
+    void ActionSpectraAngleToogled();
+    void ActionSpectraDistanceToogled();
+    void ActionSpectraCorrelationToogled();
+    void ActionSIDToogled();
+    void ActionEntropyToogled();
+
     void ActionNormalization();
     void AddSpectr();
     void CompareSpectrWithCube();
@@ -103,6 +111,7 @@ private:
     Spectr* m_selectedSpectr;
     Measurements m_measurement;
     QCPItemStraightLine *leftLine, *rightLine;
+    SpectrumComparatorFromExternalLibraries::CompareMode m_modeCompare;
 };
 
 #endif // PLOTTERWINDOW_H
