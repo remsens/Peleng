@@ -218,7 +218,7 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
             m_byteOrder = QString(data.at(0)).toLong(); continue;
         } else if (QString(readWords.at(0)).compare("dataType") == 0)
         {
-            if (readWords.size() <= 2)
+            if (readWords.size() < 2)
             {
                 m_errDescription = "Не задан тип данных гиперкуба";
                 return false;

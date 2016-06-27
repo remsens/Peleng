@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include "../Library/structures.h"
 
-
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::PlotterWindow)
@@ -159,8 +158,63 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
         {
             menu->addAction("Сравнить со спектральными кривыми гиперкуба", this, SLOT(PrepareToCompare()));
         }
+        QMenu* menuCompareSpectrInExternalLib = new QMenu("Поиск схожих в спектральной библиотеке", this);
+        menuCompareSpectrInExternalLib->addAction("Евклидово расстояние", this, SLOT(ActionEvclideDistToogled()));
+        menuCompareSpectrInExternalLib->addAction("Спектральное расстояние", this, SLOT(ActionSpectraDistanceToogled()));
+        menuCompareSpectrInExternalLib->addAction("Спектральный угол", this, SLOT(ActionSpectraAngleToogled()));
+        menuCompareSpectrInExternalLib->addAction("Спектральная корреляция", this, SLOT(ActionSpectraCorrelationToogled()));
+        menuCompareSpectrInExternalLib->addAction("Спектральная информационная дивергенция", this, SLOT(ActionSIDToogled()));
+        menuCompareSpectrInExternalLib->addAction("Энтропийная мера близости", this, SLOT(ActionEntropyToogled()));
+        menu->addMenu(menuCompareSpectrInExternalLib);
     }
     menu->popup(m_customPlot->mapToGlobal(pos));
+}
+
+void PlotterWindow::ActionEvclideDistToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::EvclidDist;
+    findInSpectralLib();
+}
+void PlotterWindow::ActionSpectraAngleToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::SpectrumAngle;
+    findInSpectralLib();
+}
+void PlotterWindow::ActionSpectraDistanceToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::SpectrumDist;
+    findInSpectralLib();
+}
+void PlotterWindow::ActionSpectraCorrelationToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::SpectralCorrelation;
+    findInSpectralLib();
+}
+void PlotterWindow::ActionSIDToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::SID;
+    findInSpectralLib();
+}
+void PlotterWindow::ActionEntropyToogled()
+{
+    m_modeCompare = SpectrumComparatorFromExternalLibraries::Entropy;
+    findInSpectralLib();
+}
+
+void PlotterWindow::findInSpectralLib()
+{
+    QMap<double, Spectr*> spectrMap;
+    SpectrumComparatorFromExternalLibraries comparator;
+    m_selectedSpectr->SetCurrentDataType(Spectr::NORMED_INTERPOLATE);
+    ActionNormalization();
+    comparator.GetSimilarSpectra(m_cube, m_selectedSpectr, 0, m_cube->GetCountofChannels() - 1, m_attributes->GetSpectralLibPath(), 15, m_modeCompare, spectrMap);
+    QList<Spectr*> spectrList = spectrMap.values();
+    for (int i = 0; i < spectrList.size(); i++)
+    {
+         plotSpectr(spectrList.at(i)->GetCurrentDataX(), spectrList.at(i)->GetCurrentDataY(), spectrList.at(i)->GetTitle());
+         m_listSpectr.push_back(spectrList.at(i));
+    }
+    spectrMap.clear(); spectrList.clear();
 }
 
 void PlotterWindow::PrepareToCompare()
