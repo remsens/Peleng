@@ -279,8 +279,6 @@ void SpectrumComparatorFromExternalLibraries::GetSimilarSpectra(HyperCube *cube,
     QApplication::processEvents();
     progressBar->hide();
     delete progressBar;
-    qDebug() << fileNames.size();
-
 }
 
 QStringList SpectrumComparatorFromExternalLibraries::getDirFiles( const QString& dirName  )
