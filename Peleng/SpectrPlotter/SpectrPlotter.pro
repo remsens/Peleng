@@ -34,7 +34,8 @@ SOURCES +=\
     ../Library/Spectr.cpp \
     ../Library/Ellipsoid.cpp \
     SpectrCompareAlg.cpp \
-    AddSpectr.cpp
+    AddSpectr.cpp \
+    SpectrumComparatorFromExternalLibraries.cpp
 
 HEADERS  += \
     ../Library/GenericExc.h \
@@ -50,7 +51,8 @@ HEADERS  += \
     ../Library/structures.h \
     ../Library/Ellipsoid.h \
     SpectrCompareAlg.h \
-    AddSpectr.h
+    AddSpectr.h \
+    SpectrumComparatorFromExternalLibraries.h
 
 INCLUDEPATH += $$PWD/../Library\
 DEPENDPATH += $$PWD/../Library

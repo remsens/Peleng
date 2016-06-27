@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "../Library/structures.h"
-#include "AddSpectr.h"
+#include "SpectrumComparatorFromExternalLibraries.h"
 #include "SpectrCompareAlg.h"
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -167,27 +167,18 @@ void PlotterWindow::contextMenuRequest(QPoint pos)
 
 void PlotterWindow::findInSpectralLib()
 {
-    QVector<Spectr*> spectrList;
-    QDir dir(m_attributes->GetSpectralLibPath());
-    if (!dir.exists()) QMessageBox::critical(this, "Ошибка", QObject::tr("Несуществует директория со спектральными библиотеками").arg(m_attributes->GetSpectralLibPath()));
-    QStringList fileNames;
-    QStringList fileList = dir.entryList( QDir::Files );
-    for ( QStringList::Iterator fit = fileList.begin(); fit != fileList.end(); ++fit )
+    QMap<double, Spectr*> spectrMap;
+    SpectrumComparatorFromExternalLibraries comparator;
+    m_selectedSpectr->SetCurrentDataType(Spectr::NORMED_INTERPOLATE);
+    ActionNormalization();
+    comparator.GetSimilarSpectra(m_cube, m_selectedSpectr, 0, m_cube->GetCountofChannels() - 1,"", 15,SpectrumComparatorFromExternalLibraries::EvclidDist, spectrMap);
+    QList<Spectr*> spectrList = spectrMap.values();
+    for (int i = 0; i < spectrList.size(); i++)
     {
-        Spectr* spectr = AddSpectrFromSpectralLib(dir.absPath() + "/" + *fit, m_cube);
-        spectr->SetCurrentDataType(Spectr::INTERPOLATE_NORMED);
-        double value = SpectrCompareAlg::SpectralDistance(m_selectedSpectr->GetCurrentDataY(), spectr->GetCurrentDataY());
+         plotSpectr(spectrList.at(i)->GetCurrentDataX(), spectrList.at(i)->GetCurrentDataY(), spectrList.at(i)->GetTitle());
+         m_listSpectr.push_back(spectrList.at(i));
     }
-
-        QStringList dirList = dir.entryList( QDir::Dirs );
-        dirList.remove( "." );
-        dirList.remove( ".." );
-        for ( QStringList::Iterator dit = dirList.begin(); dit != dirList.end(); ++dit ) {
-            QDir curDir = dir;
-            curDir.cd( *dit );
-            QStringList curList = getDirFiles( curDir.absPath() );
-            for ( QStringList::Iterator it = curList.begin(); it != curList.end(); ++it ) fileNames.append( QFileInfo(*it).absFilePath() );
-        }
+    spectrMap.clear(); spectrList.clear();
 }
 
 void PlotterWindow::PrepareToCompare()
