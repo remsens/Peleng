@@ -1315,7 +1315,7 @@ QImage GLWidget::from2Dmass2QImage(double **sidesData,int dim1,int dim2,int minC
     if (gray == true)
         colorMap->setGradient(QCPColorGradient::gpGrayscale);
     else
-        colorMap->setGradient(QCPColorGradient::gpSpectrum);
+        colorMap->setGradient(QCPColorGradient::gpJet);
     colorMap->rescaleDataRange(true);
     colorMap->setDataRange(QCPRange(minContrast,maxContrast));
     customPlot->rescaleAxes();
