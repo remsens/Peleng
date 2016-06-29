@@ -516,7 +516,6 @@ bool CreaterHyperCubes::setMetaDataToCube(HyperCube* cube)
 
     cube->setPixelSizeX(m_pixelSize);
     cube->setPixelSizeY(m_pixelSize);
-   // cube->Set
 
     return true;
 }

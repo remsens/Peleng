@@ -97,14 +97,33 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     poDstDS->SetMetadataItem("wavelength units","Nanometers","ENVI");
 
     //задание метаданных. Должно осуществляться программно, а не вручную
-    double arr[6] = { 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
+    double arr[6]= { 319757.4400, 15.3, 12, 3937198.1380, 32, 15.3 };//{ 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
     cube->SetGeoDataGeoTransform(arr);
-    cube->SetNorthernHemisphere(true);
+    cube->SetNorthernHemisphere(true);//
     char Sferoid[] = "WGS84";
     cube->SetGeoDataGeographCordSys(Sferoid);
     //конец задания метаданных
 
-    OGRSpatialReference oSRS;
+    if(cube->getCornerPoints().at(0).breadth > 0 )
+        cube->SetNorthernHemisphere(true);
+    else
+        cube->SetNorthernHemisphere(false);
+
+    point p0 = cube->getPoint00();
+    double angl = cube->getRotationAngle();
+    double sinA = sin(angl);
+    double cosA = cos(angl);
+    double xPxlSize = cube->getPixelSizeX();
+    double yPxlSize = cube->getPixelSizeY();
+    arr[0] = p0.x;
+    arr[1] = xPxlSize*cosA;
+    arr[2] = yPxlSize*sinA;
+    arr[3] = p0.y;
+    arr[4] = xPxlSize*sinA;
+    arr[5] = - yPxlSize*cosA;
+    //cube->SetGeoDataGeoTransform(arr);
+    qDebug()<<"геомассив "<<arr[0]<<" "<<arr[1]<<" "<<arr[2]<<" "<<arr[3]<<" "<<arr[4]<<" "<<arr[5]<<" ";
+
     char *pszSRS_WKT = NULL;
     double transform[6];
     cube->GetGeoDataGeoTransform(transform);
@@ -113,10 +132,12 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     char zoneUTMchar[4];
     cube->getUTMforElipsoid(zoneUTMchar);
     int zone = atoi(zoneUTMchar);
+    OGRSpatialReference oSRS;
     oSRS.SetUTM( zone,cube->GetNorthernHemisphere() ); //установка картографической проекции
 
     oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeographCordSys() ); // установка геодезического датума
     oSRS.exportToWkt( &pszSRS_WKT );
+
     poDstDS->SetProjection( pszSRS_WKT );
     CPLFree( pszSRS_WKT );
     //конец установки
