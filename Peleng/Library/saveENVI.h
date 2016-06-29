@@ -38,7 +38,8 @@ class ENVIsaver
 public:
     ENVIsaver();
     static bool save(const char* dstName, HyperCube* cube, GDALDataType type);// еще передать параметры: время, координаты и т.п.
-
+private:
+    static void addRotationToHdr(QString hdrName, HyperCube* cube);
 };
 
 template <typename T>
@@ -143,7 +144,30 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     //конец установки
     GDALClose( (GDALDatasetH) poDstDS );
     delete[] abyRaster;
+
+    QString hdrFileName = QString(dstName);
+    hdrFileName = hdrFileName + ".hdr";
+    addRotationToHdr(hdrFileName, cube);
     return true;
+}
+
+template <typename T>
+void ENVIsaver<T>::addRotationToHdr(QString hdrName, HyperCube *cube)
+{
+
+    QFile file(hdrName);//hdrName
+    if(!file.open(QIODevice::ReadWrite)) // open for read and write
+    {
+        qDebug()<<"не открылся файл hdr";
+        return;
+    }
+    QByteArray fileData;
+    fileData = file.readAll();
+    QString text(fileData);
+    text.replace(QString("WGS-84"), QString("WGS-84, units=Meters, rotation=200"));
+    file.seek(0);
+    file.write(text.toUtf8());
+    file.close();
 }
 
 void saveENVI(HyperCube* pCube)
