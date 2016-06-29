@@ -337,7 +337,9 @@ bool CreaterHyperCubes::parseHeaderFile(QString& headerFilePath)
                 m_errDescription = "Невожможно прочитать географические координаты";
                 return false;
             }
-            m_corners.append(BLrad(DegToRad(QString(coord.at(0)).toLong()),DegToRad(QString(coord.at(1)).toLong()))); continue;
+            double degBreadth = QString(coord.at(0)).toDouble();
+            double degLong = QString(coord.at(1)).toDouble();
+            m_corners.append(BLrad(DegToRad(degBreadth), DegToRad(degLong))); continue;
         }
     }
     file.close();
