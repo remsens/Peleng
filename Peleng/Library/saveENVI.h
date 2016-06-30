@@ -97,9 +97,6 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
     poDstDS->SetMetadataItem("wavelength",waves,"ENVI");
     poDstDS->SetMetadataItem("wavelength units","Nanometers","ENVI");
 
-    //задание метаданных. Должно осуществляться программно, а не вручную
-    double arr[6]= { 319757.4400, 15.3, 12, 3937198.1380, 32, 15.3 };//{ 319757.4400, 15.3, 0, 3937198.1380, 0, 15.3 };
-    cube->SetGeoDataGeoTransform(arr);
     cube->SetNorthernHemisphere(true);//
     char Sferoid[] = "WGS84";
     cube->SetGeoDataGeographCordSys(Sferoid);
@@ -111,40 +108,36 @@ bool ENVIsaver<T>::save(const char *dstName, HyperCube *cube, GDALDataType type)
         cube->SetNorthernHemisphere(false);
 
     point p0 = cube->getPoint00();
-    double angl = cube->getRotationAngle();
-    double sinA = sin(angl);
-    double cosA = cos(angl);
     double xPxlSize = cube->getPixelSizeX();
     double yPxlSize = cube->getPixelSizeY();
+    double arr[6];
     arr[0] = p0.x;
-    arr[1] = xPxlSize*cosA;
-    arr[2] = yPxlSize*sinA;
+    arr[1] = xPxlSize;
+    arr[2] = 0;
     arr[3] = p0.y;
-    arr[4] = xPxlSize*sinA;
-    arr[5] = - yPxlSize*cosA;
-    //cube->SetGeoDataGeoTransform(arr);
-    qDebug()<<"геомассив "<<arr[0]<<" "<<arr[1]<<" "<<arr[2]<<" "<<arr[3]<<" "<<arr[4]<<" "<<arr[5]<<" ";
+    arr[4] = 0;
+    arr[5] = yPxlSize;
+    cube->SetGeoDataGeoTransform(arr);
 
     char *pszSRS_WKT = NULL;
     double transform[6];
     cube->GetGeoDataGeoTransform(transform);
     poDstDS->SetGeoTransform( transform );
-
     char zoneUTMchar[4];
     cube->getUTMforElipsoid(zoneUTMchar);
+
     int zone = atoi(zoneUTMchar);
     OGRSpatialReference oSRS;
     oSRS.SetUTM( zone,cube->GetNorthernHemisphere() ); //установка картографической проекции
-
     oSRS.SetWellKnownGeogCS( cube->GetGeoDataGeographCordSys() ); // установка геодезического датума
     oSRS.exportToWkt( &pszSRS_WKT );
 
     poDstDS->SetProjection( pszSRS_WKT );
     CPLFree( pszSRS_WKT );
-    //конец установки
     GDALClose( (GDALDatasetH) poDstDS );
     delete[] abyRaster;
 
+    //GDAL не пишет угол поворота в хидер. Дописываем его и единицы измерения(м) в файл
     QString hdrFileName = QString(dstName);
     hdrFileName = hdrFileName + ".hdr";
     addRotationToHdr(hdrFileName, cube);
@@ -164,7 +157,9 @@ void ENVIsaver<T>::addRotationToHdr(QString hdrName, HyperCube *cube)
     QByteArray fileData;
     fileData = file.readAll();
     QString text(fileData);
-    text.replace(QString("WGS-84"), QString("WGS-84, units=Meters, rotation=200"));
+    double rotation = RadToDeg(cube->getRotationAngle());
+    QString insert = QString("WGS-84, units=Meters, rotation=") + QString::number(rotation);
+    text.replace(QString("WGS-84"), insert);
     file.seek(0);
     file.write(text.toUtf8());
     file.close();

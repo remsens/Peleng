@@ -45,7 +45,7 @@ enum TYPES {
     type_unknown
 };
 
-//! http://www.gdal.org/gdal_datamodel.html
+
 struct BLrad
 {
     double breadth,longitude;
@@ -55,11 +55,12 @@ struct BLrad
 struct  point { double   x,y; };
 struct  pointInt { int   x,y; };
 struct geoData{
-    double GeoTransform[6];
+    double GeoTransform[6];         //!<  http://www.gdal.org/gdal_datamodel.html. Задавать матрицу так, словно
+                                    //!   угол поворота снимка равен нулю. Угол допишется при сохранении отдельно
     bool northernHemisphere;
     char* GeographCordSys;
     QVector<BLrad> cornerPoints;    //!< вектор с координатами (в радианах) 4-х угловых точек гиперснимка.
-                                    //!< Обход по часовой стрелке начиная с (0,0) вершины
+                                    //!  Обход по часовой стрелке начиная с (0,0) вершины
     TEllipsoid earth;
     double rotationAngle;           //!< угол поворота снимка в радианах от 0 до 2Pi
     double pixelSizeX;              //!< размер пикселя в метрах по оси Х (т.е. ширина 1 sampl'a)
