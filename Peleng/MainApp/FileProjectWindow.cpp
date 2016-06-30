@@ -5,7 +5,7 @@
 #include <QTextStream>
 #include "QXmlStreamWriter"
 #include <QMessageBox>
-
+#include <QTextCodec>
 FileProjectWindow::FileProjectWindow(Attributes* attr, QDialog *parent)
     : QDialog(parent)
     , m_ui(new Ui::FileProjectWindow)
@@ -52,6 +52,8 @@ void FileProjectWindow::ChooseSpectralLibDir()
 }
 void FileProjectWindow::CreateFileProject()
 {
+    QTextCodec *russianCodec = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(russianCodec);
     m_projectName = m_ui->lineEdit_fileName->text();
     QString fileName = m_tempDir + "/" + m_projectName + ".xml";
     QFile file(fileName);
