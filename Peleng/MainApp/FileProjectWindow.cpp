@@ -20,7 +20,6 @@ FileProjectWindow::FileProjectWindow(Attributes* attr, QDialog *parent)
     QObject::connect(m_ui->pushButton_spectralLibs, SIGNAL(clicked()), this, SLOT(ChooseSpectralLibDir()));
     QObject::connect(m_ui->pushButton_CreateFileProject, SIGNAL(clicked()), this, SLOT(CreateFileProject()));
     m_ui->pushButton_CreateFileProject->setEnabled(false);
-
 }
 
 FileProjectWindow::~FileProjectWindow()
@@ -30,7 +29,7 @@ FileProjectWindow::~FileProjectWindow()
 
 void FileProjectWindow::OpenHeaderFile()
 {
-    m_headerFile = QFileDialog::getOpenFileName(this, tr("Открыть файл"), "");
+    m_headerFile = QFileDialog::getOpenFileName(this, "Open File", "", "*.hdr");
     m_ui->lineEdit_fileHEader->setText(m_headerFile);
     QFileInfo file(m_headerFile);
     m_tempDir = file.dir().absolutePath();
@@ -40,13 +39,13 @@ void FileProjectWindow::OpenHeaderFile()
 }
 void FileProjectWindow::ChooseTempDir()
 {
-    m_tempDir = QFileDialog::getExistingDirectory(this, tr("Директория для хранения временных файлов"), m_tempDir, QFileDialog::ShowDirsOnly
+    m_tempDir = QFileDialog::getExistingDirectory(this, QObject::tr("Directory for temp files").toUtf8(), m_tempDir, QFileDialog::ShowDirsOnly
                                                   | QFileDialog::DontResolveSymlinks);
 
 }
 void FileProjectWindow::ChooseSpectralLibDir()
 {
-    m_spectralLibDir = QFileDialog::getExistingDirectory(this, tr("Выбрать директорию спектральных библиотек"), m_tempDir, QFileDialog::ShowDirsOnly
+    m_spectralLibDir = QFileDialog::getExistingDirectory(this, QObject::tr("Directory of spectral library").toUtf8(), m_tempDir, QFileDialog::ShowDirsOnly
                                                          | QFileDialog::DontResolveSymlinks);
     m_ui->lineEdit_spectralLibs->setText(m_spectralLibDir);
 }

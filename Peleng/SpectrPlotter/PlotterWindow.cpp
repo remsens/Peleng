@@ -4,6 +4,8 @@
 #include <QtAlgorithms>
 #include <QDebug>
 #include <QMessageBox>
+#include <QDir>
+#include <QFileDialog>
 #include "../Library/structures.h"
 
 PlotterWindow::PlotterWindow(HyperCube* cube, Attributes* attr, QWidget *parent)
@@ -203,18 +205,29 @@ void PlotterWindow::ActionEntropyToogled()
 
 void PlotterWindow::findInSpectralLib()
 {
-    QMap<double, Spectr*> spectrMap;
-    SpectrumComparatorFromExternalLibraries comparator;
-    m_selectedSpectr->SetCurrentDataType(Spectr::NORMED_INTERPOLATE);
-    ActionNormalization();
-    comparator.GetSimilarSpectra(m_cube, m_selectedSpectr, 0, m_cube->GetCountofChannels() - 1, m_attributes->GetSpectralLibPath(), 15, m_modeCompare, spectrMap);
-    QList<Spectr*> spectrList = spectrMap.values();
-    for (int i = 0; i < spectrList.size(); i++)
+    if (m_attributes->GetSpectralLibPath().size() == 0)
     {
-         plotSpectr(spectrList.at(i)->GetCurrentDataX(), spectrList.at(i)->GetCurrentDataY(), spectrList.at(i)->GetTitle());
-         m_listSpectr.push_back(spectrList.at(i));
+        m_attributes->SetSpectralLibPath(QString("D:/"));
     }
-    spectrMap.clear(); spectrList.clear();
+    QDir tempDir;
+    tempDir.setPath(m_attributes->GetSpectralLibPath());
+    tempDir = QFileDialog::getExistingDirectory(this, tr("Поддиректория для спектральных библиотек"), m_attributes->GetSpectralLibPath(), QFileDialog::ShowDirsOnly
+                                                  | QFileDialog::DontResolveSymlinks);
+    if (tempDir.absolutePath().size() != 0)
+    {
+        QMap<double, Spectr*> spectrMap;
+        SpectrumComparatorFromExternalLibraries comparator;
+        m_selectedSpectr->SetCurrentDataType(Spectr::NORMED_INTERPOLATE);
+        ActionNormalization();
+        comparator.GetSimilarSpectra(m_cube, m_selectedSpectr, 0, m_cube->GetCountofChannels() - 1, tempDir.absolutePath(), 15, m_modeCompare, spectrMap);
+        QList<Spectr*> spectrList = spectrMap.values();
+        for (int i = 0; i < spectrList.size(); i++)
+        {
+             plotSpectr(spectrList.at(i)->GetCurrentDataX(), spectrList.at(i)->GetCurrentDataY(), spectrList.at(i)->GetTitle());
+             m_listSpectr.push_back(spectrList.at(i));
+        }
+        spectrMap.clear(); spectrList.clear();
+    }
 }
 
 void PlotterWindow::PrepareToCompare()

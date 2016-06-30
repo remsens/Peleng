@@ -52,7 +52,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::OpenProject()
 {
-    m_fileProjectName = QFileDialog::getOpenFileName(this, tr("Открыть файл"),
+    m_fileProjectName = QFileDialog::getOpenFileName(this, "Открыть файл",
                                              "",
                                             "*.xml");
     if (m_fileProjectName.size() == 0)
